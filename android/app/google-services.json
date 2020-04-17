@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "207455736812",
+    "firebase_url": "https://qwallet-7a780.firebaseio.com",
+    "project_id": "qwallet-7a780",
+    "storage_bucket": "qwallet-7a780.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207455736812:android:67275e00841e3443fc26c9",
+        "android_client_info": {
+          "package_name": "pl.merskip.qwallet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "207455736812-g9g0rljqdo77amnl09p40tjmqnbnrfub.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pl.merskip.qwallet",
+            "certificate_hash": "658aef03e137bd38226c9e5806fc9c980bab2cbf"
+          }
+        },
+        {
+          "client_id": "207455736812-9dj4dp3e7025jf3i598srdq4nuh3aqp8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyEBzbhfYoD2PZuQ0GWI_PoycSNTi5rvQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "207455736812-9dj4dp3e7025jf3i598srdq4nuh3aqp8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
