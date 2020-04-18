@@ -1,27 +1,24 @@
+import 'package:QWallet/stream_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class WalletList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamWidget(
       stream: Firestore.instance.collection('wallets').snapshots(),
-      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Text('Loading...');
-          default:
-            return ListView(
-              children:
-                  snapshot.data.documents.map((DocumentSnapshot document) {
-                return ListTile(
-                  title: Text(document['title']),
-                );
-              }).toList(),
+      builder: (QuerySnapshot data) {
+        return ListView.separated(
+          itemCount: data.documents.length,
+          itemBuilder: (context, index) {
+            final document = data.documents[index];
+            return ListTile(
+              leading: Icon(Icons.account_balance_wallet),
+              title: Text(document['title']),
             );
-        }
+          },
+          separatorBuilder: (context, index) => Divider(),
+        );
       },
     );
   }
