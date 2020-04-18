@@ -1,4 +1,3 @@
-
 import 'package:QWallet/firebase_service.dart';
 import 'package:flutter/material.dart';
 
@@ -60,11 +59,9 @@ class WalletPage extends StatelessWidget {
   String getDisplayName(User user) {
     if (user.displayName != null && user.email != null) {
       return "${user.displayName} (${user.email})";
-    }
-    else if (user.displayName != null || user.email != null) {
+    } else if (user.displayName != null || user.email != null) {
       return user.displayName ?? user.email;
-    }
-    else {
+    } else {
       return "Anonymous";
     }
   }

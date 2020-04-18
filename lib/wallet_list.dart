@@ -19,9 +19,13 @@ class WalletList extends StatelessWidget {
               data.documents.length + (data.metadata.isFromCache ? 1 : 0),
           itemBuilder: (context, index) {
             if (index == 0 && data.metadata.isFromCache) {
-              return ListTile(
-                leading: Icon(Icons.cached),
-                title: Text("From cache"),
+              return Padding(
+                padding: const EdgeInsets.only(left: 4, top: 4),
+                child: Row(children: <Widget>[
+                  Icon(Icons.cached),
+                  SizedBox(width: 4),
+                  Text("From cache"),
+                ]),
               );
             }
 
