@@ -1,5 +1,6 @@
 import 'package:QWallet/Globals.dart';
 import 'package:QWallet/stream_widget.dart';
+import 'package:QWallet/wallet_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -28,6 +29,13 @@ class WalletList extends StatelessWidget {
             return ListTile(
               leading: Icon(Icons.account_balance_wallet),
               title: Text(document['name'] ?? ''),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => WalletPage(wallet: document)),
+                );
+              },
             );
           },
           separatorBuilder: (context, index) => Divider(),
