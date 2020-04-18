@@ -1,14 +1,23 @@
-import 'package:QWallet/stream_widget.dart';
+
+import 'package:QWallet/firebase_service.dart';
 import 'package:flutter/material.dart';
 
-class WalletPage extends StatelessWidget {
+import 'model/User.dart';
 
+class WalletPage extends StatelessWidget {
   final dynamic wallet;
 
   const WalletPage({Key key, this.wallet}) : super(key: key);
 
-  share() {
-
+  share(BuildContext context) async {
+    final users = await FirebaseService.instance.fetchUsers();
+    _showUserDialog(
+      context,
+      users: users,
+      onSelectedUser: (user) {
+        FirebaseService.instance.addOwner(wallet, user.uid);
+      },
+    );
   }
 
   @override
@@ -19,11 +28,44 @@ class WalletPage extends StatelessWidget {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.share),
-            onPressed: share,
+            onPressed: () => share(context),
           ),
         ],
       ),
       body: Container(),
     );
+  }
+
+  void _showUserDialog(BuildContext context,
+      {List<User> users, void Function(User) onSelectedUser}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: Text("Share to user"),
+          children: users.map((user) {
+            return SimpleDialogOption(
+              child: Text(getDisplayName(user)),
+              onPressed: () {
+                onSelectedUser(user);
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  String getDisplayName(User user) {
+    if (user.displayName != null && user.email != null) {
+      return "${user.displayName} (${user.email})";
+    }
+    else if (user.displayName != null || user.email != null) {
+      return user.displayName ?? user.email;
+    }
+    else {
+      return "Anonymous";
+    }
   }
 }

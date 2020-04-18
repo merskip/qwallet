@@ -1,8 +1,8 @@
+import 'package:QWallet/firebase_service.dart';
 import 'package:QWallet/sign_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'Globals.dart';
 import 'home_page.dart';
 
 class LandingPage extends StatelessWidget {
@@ -12,19 +12,24 @@ class LandingPage extends StatelessWidget {
       stream: FirebaseAuth.instance.onAuthStateChanged,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
-          user = snapshot.data;
-          if (user == null) {
+          final user = snapshot.data;
+          FirebaseService.instance.currentUser = user;
+          if (user == null)
             return SignInPage();
-          }
-          return HomePage();
+          else
+            return HomePage();
         } else {
-          return Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+          return _loading();
         }
       },
+    );
+  }
+
+  _loading() {
+    return Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 }

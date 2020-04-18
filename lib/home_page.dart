@@ -1,11 +1,10 @@
+import 'package:QWallet/firebase_service.dart';
 import 'package:QWallet/user_panel.dart';
 import 'package:QWallet/wallet_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-import 'Globals.dart';
 
 class HomePage extends StatelessWidget {
   final walletNameController = TextEditingController();
@@ -22,7 +21,7 @@ class HomePage extends StatelessWidget {
   _addWallet(String title) {
     Firestore.instance.collection('wallets').add({
       "name": title,
-      "owners_uid": [user.uid]
+      "owners_uid": [FirebaseService.user.uid]
     });
   }
 

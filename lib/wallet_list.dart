@@ -1,8 +1,9 @@
-import 'package:QWallet/Globals.dart';
-import 'package:QWallet/stream_widget.dart';
-import 'package:QWallet/wallet_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+import 'firebase_service.dart';
+import 'stream_widget.dart';
+import 'wallet_page.dart';
 
 class WalletList extends StatelessWidget {
   @override
@@ -10,7 +11,7 @@ class WalletList extends StatelessWidget {
     return StreamWidget(
       stream: Firestore.instance
           .collection('wallets')
-          .where('owners_uid', arrayContains: user.uid)
+          .where('owners_uid', arrayContains: FirebaseService.user.uid)
           .snapshots(),
       builder: (QuerySnapshot data) {
         return ListView.separated(
@@ -29,6 +30,7 @@ class WalletList extends StatelessWidget {
             return ListTile(
               leading: Icon(Icons.account_balance_wallet),
               title: Text(document['name'] ?? ''),
+              subtitle: Text("${document['owners_uid'].length} owners"),
               onTap: () {
                 Navigator.push(
                   context,

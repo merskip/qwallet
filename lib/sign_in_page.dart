@@ -1,4 +1,3 @@
-import 'package:QWallet/Globals.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -75,19 +74,23 @@ class _SignInPageState extends State<SignInPage> {
         builder: (context) {
           return AlertDialog(
             title: Text("Sign in with e-mail"),
-            content: Column(children: <Widget>[
-              TextField(
-                autofocus: true,
-                controller: emailController,
-                decoration: InputDecoration(
-                    labelText: "E-mail", hintText: "eg.john.smith@example.com"),
-              ),
-              TextField(
-                obscureText: true,
-                controller: passwordController,
-                decoration: InputDecoration(labelText: "Password"),
-              ),
-            ]),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                TextField(
+                  autofocus: true,
+                  controller: emailController,
+                  decoration: InputDecoration(
+                      labelText: "E-mail",
+                      hintText: "eg.john.smith@example.com"),
+                ),
+                TextField(
+                  obscureText: true,
+                  controller: passwordController,
+                  decoration: InputDecoration(labelText: "Password"),
+                ),
+              ],
+            ),
             actions: <Widget>[
               FlatButton(
                 child: Text("Cancel"),
