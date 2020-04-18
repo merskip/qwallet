@@ -2,9 +2,10 @@ import 'package:QWallet/firebase_service.dart';
 import 'package:flutter/material.dart';
 
 import 'model/User.dart';
+import 'model/Wallet.dart';
 
 class WalletPage extends StatelessWidget {
-  final dynamic wallet;
+  final Wallet wallet;
 
   const WalletPage({Key key, this.wallet}) : super(key: key);
 
@@ -23,7 +24,7 @@ class WalletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(wallet['name']),
+        title: Text(wallet.name),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.share),

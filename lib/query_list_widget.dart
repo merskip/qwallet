@@ -1,16 +1,17 @@
+import 'package:QWallet/firebase_service.dart';
 import 'package:flutter/material.dart';
 
-class StreamWidget<T> extends StatelessWidget {
-  final Stream<T> stream;
-  final Widget Function(T) builder;
+class QueryListWidget<T> extends StatelessWidget {
+  final Stream<TypedQuerySnapshot<T>> stream;
+  final Widget Function(TypedQuerySnapshot<T>) builder;
 
-  const StreamWidget({Key key, this.stream, this.builder}) : super(key: key);
+  const QueryListWidget({Key key, this.stream, this.builder}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<T>(
+    return StreamBuilder(
       stream: stream,
-      builder: (context, AsyncSnapshot<T> snapshot) {
+      builder: (context, AsyncSnapshot<TypedQuerySnapshot<T>> snapshot) {
         if (snapshot.hasError)
           return _error(snapshot);
         else if (snapshot.connectionState == ConnectionState.waiting)
