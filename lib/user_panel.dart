@@ -30,25 +30,21 @@ class _UserPanelState extends State<UserPanel> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: (user != null && !user.isAnonymous)
-          ? _avatarWithNameView(user)
-          : _anonymousView(),
+      child: user != null ? _avatarWithNameView(user) : Container(),
       onLongPress: showUserId,
     );
   }
 
   _avatarWithNameView(FirebaseUser user) {
     return Row(children: <Widget>[
-      CircleAvatar(
-        backgroundImage: NetworkImage(user.photoUrl),
-        backgroundColor: Colors.transparent,
-      ),
+      user.photoUrl != null
+          ? CircleAvatar(
+              backgroundImage: NetworkImage(user.photoUrl),
+              backgroundColor: Colors.transparent,
+            )
+          : Icon(Icons.person),
       SizedBox(width: 16),
-      Text(user.displayName)
+      Text(user.displayName ?? user.email ?? "Anonymous")
     ]);
-  }
-
-  _anonymousView() {
-    return Text("Hello!");
   }
 }
