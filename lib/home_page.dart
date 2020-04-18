@@ -5,7 +5,27 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'Globals.dart';
+
 class HomePage extends StatelessWidget {
+  final walletNameController = TextEditingController();
+
+  _signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      GoogleSignIn().signOut();
+    } catch (e) {
+      print(e); // TODO: show dialog with error
+    }
+  }
+
+  _addWallet(String title) {
+    Firestore.instance.collection('wallets').add({
+      "name": title,
+      "owners_uid": [user.uid]
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,21 +41,37 @@ class HomePage extends StatelessWidget {
       body: WalletList(),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: _addWallet,
+        onPressed: () => _showDialog(context),
       ),
     );
   }
 
-  _signOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      GoogleSignIn().signOut();
-    } catch (e) {
-      print(e); // TODO: show dialog with error
-    }
-  }
-
-  _addWallet() {
-    Firestore.instance.collection('wallets').add({"title": "New wallet"});
+  _showDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Add new wallet"),
+            content: TextField(
+              autofocus: true,
+              controller: walletNameController,
+              decoration: InputDecoration(
+                  labelText: "Name", hintText: "eg. My personal wallet"),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Cancel"),
+                onPressed: () => Navigator.pop(context),
+              ),
+              RaisedButton(
+                  child: Text("Add"),
+                  color: Theme.of(context).primaryColor,
+                  onPressed: () {
+                    _addWallet(walletNameController.text);
+                    Navigator.pop(context);
+                  })
+            ],
+          );
+        });
   }
 }
