@@ -81,7 +81,7 @@ class WalletList extends StatelessWidget {
             ),
             Spacer(),
             Text(
-              "234,54 zł", // TODO: Impl
+              wallet.formattedBalance,
               style: Theme.of(context).textTheme.headline6,
             )
           ]),
