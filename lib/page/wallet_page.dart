@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -21,13 +23,18 @@ class _WalletPageState extends State<WalletPage> {
   DateTime selectedMonth = FirebaseService.getBeginOfCurrentMonth();
   List<DateTime> months;
 
+  StreamSubscription<dynamic> monthsSubscription;
+
   void initState() {
+    monthsSubscription = FirebaseService.instance
+        .getWalletMonths(widget.wallet)
+        .listen((months) => setState(() => this.months = months));
     super.initState();
-    FirebaseService.instance.getWalletMonths(widget.wallet).listen((months) {
-      setState(() {
-        this.months = months;
-      });
-    });
+  }
+
+  void dispose() {
+    monthsSubscription.cancel();
+    super.dispose();
   }
 
   manageOwners(BuildContext context) async {
