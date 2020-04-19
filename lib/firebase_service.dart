@@ -20,11 +20,11 @@ class FirebaseService {
   static const collectionWallets = "wallets";
   static const functionUsers = "users";
 
-  FirebaseService._privateConstructor();
-
   static final FirebaseService instance = FirebaseService._privateConstructor();
 
   FirebaseUser currentUser;
+
+  FirebaseService._privateConstructor();
 
   Stream<TypedQuerySnapshot<Wallet>> getWallets() {
     return Firestore.instance
