@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 
 import '../firebase_service.dart';
-import '../model/User.dart';
 import '../model/Wallet.dart';
+import '../dialog/manage_owners_dialog.dart';
 
 class WalletPage extends StatelessWidget {
   final Wallet wallet;
 
   const WalletPage({Key key, this.wallet}) : super(key: key);
 
-  share(BuildContext context) async {
-    final users = await FirebaseService.instance.fetchUsers();
-    _showUserDialog(
-      context,
-      users: users,
-      onSelectedUser: (user) {
-        FirebaseService.instance.addOwner(wallet, user.uid);
-      },
-    );
+  manageOwners(BuildContext context) async {
+    // TODO: Add loading indicator
+    final users =
+        await FirebaseService.instance.fetchUsers(includeAnonymous: false);
+
+    final selectedUsers = await ManageOwnersDialog(wallet, users).show(context);
+    if (selectedUsers != null && selectedUsers.isNotEmpty) {
+      // TODO: Adding validation is selected any owner
+      FirebaseService.instance.setOwners(wallet, selectedUsers);
+    }
   }
 
   @override
@@ -27,43 +28,13 @@ class WalletPage extends StatelessWidget {
         title: Text(wallet.name),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.share),
-            onPressed: () => share(context),
+            icon: Icon(Icons.people),
+            tooltip: "Manage owners of this wallet",
+            onPressed: () => manageOwners(context),
           ),
         ],
       ),
       body: Container(),
     );
-  }
-
-  void _showUserDialog(BuildContext context,
-      {List<User> users, void Function(User) onSelectedUser}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: Text("Share to user"),
-          children: users.map((user) {
-            return SimpleDialogOption(
-              child: Text(getDisplayName(user)),
-              onPressed: () {
-                onSelectedUser(user);
-                Navigator.pop(context);
-              },
-            );
-          }).toList(),
-        );
-      },
-    );
-  }
-
-  String getDisplayName(User user) {
-    if (user.displayName != null && user.email != null) {
-      return "${user.displayName} (${user.email})";
-    } else if (user.displayName != null || user.email != null) {
-      return user.displayName ?? user.email;
-    } else {
-      return "Anonymous";
-    }
   }
 }

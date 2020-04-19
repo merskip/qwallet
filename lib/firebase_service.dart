@@ -37,22 +37,23 @@ class FirebaseService {
             ));
   }
 
-  Future<List<User>> fetchUsers() async {
+  Future<List<User>> fetchUsers({bool includeAnonymous = true}) async {
     final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
       functionName: functionUsers,
     );
     dynamic resp = await callable.call();
     final parsed = json.decode(resp.data).cast<Map<String, dynamic>>();
 
-    return parsed.map<User>((json) => User.fromJson(json)).toList();
+    return parsed
+        .map<User>((json) => User.fromJson(json))
+        .where((user) => includeAnonymous ? true : !user.isAnonymous)
+        .toList();
   }
 
-  addOwner(Wallet wallet, userId) async {
+  setOwners(Wallet wallet, List<User> owners) async {
     await Firestore.instance
         .collection(collectionWallets)
         .document(wallet.id)
-        .updateData({
-      'owners_uid': FieldValue.arrayUnion([userId])
-    });
+        .updateData({'owners_uid': owners.map((user) => user.uid).toList()});
   }
 }
