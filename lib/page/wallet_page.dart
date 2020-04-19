@@ -15,7 +15,7 @@ class WalletPage extends StatelessWidget {
   manageOwners(BuildContext context) async {
     // TODO: Add loading indicator
     final users =
-        await FirebaseService.instance.fetchUsers(includeAnonymous: false);
+    await FirebaseService.instance.fetchUsers(includeAnonymous: false);
 
     final selectedUsers = await ManageOwnersDialog(wallet, users).show(context);
     if (selectedUsers != null && selectedUsers.isNotEmpty) {
@@ -40,14 +40,12 @@ class WalletPage extends StatelessWidget {
       body: QueryListWidget(
         stream: FirebaseService.instance.getExpenses(wallet),
         builder: (TypedQuerySnapshot<Expense> snapshot) {
-          return ListView.builder(
-              itemCount: snapshot.values.length,
-              itemBuilder: (context, index) {
-                final expense = snapshot.values[index];
-                return ListTile(
-                  title: Text(expense.title),
-                );
-              });
+          return ListView.separated(
+            itemCount: snapshot.values.length,
+            itemBuilder: (context, index) =>
+                _expenseItem(context, snapshot.values[index]),
+            separatorBuilder: (context, index) => Divider(),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -56,6 +54,17 @@ class WalletPage extends StatelessWidget {
           FirebaseService.instance
               .addExpanse(wallet, "Expanse 1", 12.34, Timestamp.now());
         },
+      ),
+    );
+  }
+
+  _expenseItem(BuildContext context, Expense expense) {
+    return ListTile(
+      title: Text(expense.title),
+      subtitle: Text(expense.formattedDate),
+      trailing: Text(
+        expense.formattedAmount,
+        style: Theme.of(context).textTheme.headline6,
       ),
     );
   }
