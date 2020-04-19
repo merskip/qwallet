@@ -12,10 +12,10 @@ const getAllUsers = (data, context) => {
 	return auth.listUsers().then((userRecords) => {
 		const users = userRecords.users.map((user) => {
 			return {
-				uid: user['uid'],
-				isAnonymous: user['email'] === undefined,
-				displayName: user['displayName'],
-				email: user['email']
+				uid: user.uid,
+				isAnonymous: user.email === undefined,
+				displayName: user.displayName,
+				email: user.email
 			};
 		});
 		return JSON.stringify(users);
