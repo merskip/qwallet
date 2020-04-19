@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../firebase_service.dart';
 import '../model/Wallet.dart';
+import '../model/Expense.dart';
+import '../widget/query_list_widget.dart';
 import '../dialog/manage_owners_dialog.dart';
 
 class WalletPage extends StatelessWidget {
@@ -34,7 +37,26 @@ class WalletPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Container(),
+      body: QueryListWidget(
+        stream: FirebaseService.instance.getExpenses(wallet),
+        builder: (TypedQuerySnapshot<Expense> snapshot) {
+          return ListView.builder(
+              itemCount: snapshot.values.length,
+              itemBuilder: (context, index) {
+                final expense = snapshot.values[index];
+                return ListTile(
+                  title: Text(expense.title),
+                );
+              });
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          FirebaseService.instance
+              .addExpanse(wallet, "Expanse 1", 12.34, Timestamp.now());
+        },
+      ),
     );
   }
 }

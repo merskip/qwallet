@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:QWallet/model/Expense.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,16 +19,18 @@ class TypedQuerySnapshot<T> {
 
 class FirebaseService {
   static const collectionWallets = "wallets";
+  static const collectionExpenses = "expenses";
   static const functionUsers = "users";
 
   static final FirebaseService instance = FirebaseService._privateConstructor();
 
+  Firestore firestore = Firestore.instance;
   FirebaseUser currentUser;
 
   FirebaseService._privateConstructor();
 
   Stream<TypedQuerySnapshot<Wallet>> getWallets() {
-    return Firestore.instance
+    return firestore
         .collection(collectionWallets)
         .where('owners_uid', arrayContains: currentUser.uid)
         .snapshots()
@@ -51,9 +54,34 @@ class FirebaseService {
   }
 
   setOwners(Wallet wallet, List<User> owners) async {
-    await Firestore.instance
+    await firestore
         .collection(collectionWallets)
         .document(wallet.id)
         .updateData({'owners_uid': owners.map((user) => user.uid).toList()});
+  }
+
+  Stream<TypedQuerySnapshot<Expense>> getExpenses(Wallet wallet) {
+    return firestore
+        .collection(collectionWallets)
+        .document(wallet.id)
+        .collection(collectionExpenses)
+        .snapshots()
+        .map((snapshot) => TypedQuerySnapshot(
+              snapshot: snapshot,
+              mapper: (document) => Expense.from(document),
+            ));
+  }
+
+  addExpanse(Wallet wallet, String title, double amount, Timestamp date) {
+    firestore
+        .collection(collectionWallets)
+        .document(wallet.id)
+        .collection(collectionExpenses) // TODO: Make computed value or function
+        .add({
+      "wallet": wallet.snapshot.reference,
+      "title": title,
+      "amount": amount,
+      "date": date
+    });
   }
 }

@@ -20,6 +20,7 @@ class HomePage extends StatelessWidget {
   }
 
   _addWallet(String title) {
+    // TODO: Move to FirebaseService
     Firestore.instance.collection('wallets').add({
       "name": title,
       "owners_uid": [FirebaseService.instance.currentUser.uid]
