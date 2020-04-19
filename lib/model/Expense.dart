@@ -1,3 +1,4 @@
+import 'package:QWallet/firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
@@ -13,6 +14,9 @@ class Expense {
 
   String get formattedAmount =>
       NumberFormat.simpleCurrency(locale: "pl_PL").format(amount);
+
+  DateTime get month => FirebaseService.getBeginOfMonth(
+      DateTime.fromMillisecondsSinceEpoch(date.millisecondsSinceEpoch));
 
   Expense(
       {this.snapshot,

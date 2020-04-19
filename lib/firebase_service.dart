@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:QWallet/model/Expense.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:collection/collection.dart';
+import 'package:date_utils/date_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'model/User.dart';
@@ -34,11 +36,10 @@ class FirebaseService {
         .collection(collectionWallets)
         .where('owners_uid', arrayContains: currentUser.uid)
         .snapshots()
-        .map((snapshot) =>
-        TypedQuerySnapshot(
-          snapshot: snapshot,
-          mapper: (document) => Wallet.from(document),
-        ));
+        .map((snapshot) => TypedQuerySnapshot(
+              snapshot: snapshot,
+              mapper: (document) => Wallet.from(document),
+            ));
   }
 
   Future<List<User>> fetchUsers({bool includeAnonymous = true}) async {
@@ -61,28 +62,50 @@ class FirebaseService {
         .updateData({'owners_uid': owners.map((user) => user.uid).toList()});
   }
 
-  Stream<TypedQuerySnapshot<Expense>> getExpensesForCurrentMonth(
-      Wallet wallet) {
-    DateTime now = DateTime.now();
-    DateTime beginMonthDate = now.subtract(Duration(
-        days: now.day - 1,
-        hours: now.hour,
-        minutes: now.minute,
-        seconds: now.second,
-        milliseconds: now.millisecond,
-        microseconds: now.microsecond));
+  Stream<List<DateTime>> getWalletMonths(Wallet wallet) {
+    // TODO: Cloud Functions - https://firebase.google.com/docs/firestore/solutions/aggregation
+    return getExpenses(wallet).map((snapshot) {
+      return groupBy(snapshot.values, (Expense expense) => expense.month)
+          .keys
+          .toList();
+    });
+  }
+
+  Stream<TypedQuerySnapshot<Expense>> getExpenses(Wallet wallet,
+      {DateTime fromDate}) {
+    final fromTimestamp =
+        fromDate != null ? Timestamp.fromDate(fromDate) : null;
 
     return firestore
         .collection(collectionWallets)
         .document(wallet.id)
         .collection(collectionExpenses)
         .orderBy("date", descending: true)
-        .where("date", isGreaterThan: Timestamp.fromDate(beginMonthDate))
+        .where("date", isGreaterThanOrEqualTo: fromTimestamp)
+        .where("date", isLessThanOrEqualTo: getEndOfMonth(fromDate))
         .snapshots()
         .map((snapshot) => TypedQuerySnapshot(
               snapshot: snapshot,
               mapper: (document) => Expense.from(document),
             ));
+  }
+
+  // TODO: Move to global scope
+  static DateTime getBeginOfCurrentMonth() {
+    DateTime now = DateTime.now();
+    return getBeginOfMonth(now);
+  }
+
+  // TODO: Move to global scope
+  static DateTime getBeginOfMonth(DateTime date) {
+    if (date == null) return null;
+    return Utils.firstDayOfMonth(date);
+  }
+
+  // TODO: Move to global scope
+  static DateTime getEndOfMonth(DateTime date) {
+    if (date == null) return null;
+    return Utils.lastDayOfMonth(date).add(Duration(hours: 24));
   }
 
   addExpanse(Wallet wallet, String title, double amount, Timestamp date) {

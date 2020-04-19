@@ -30,6 +30,8 @@ dependencies:
   cloud_functions: ^0.4.2+3
   flutter_svg: ^0.17.4
   intl: ^0.16.1
+  collection: ^1.14.12
+  date_utils: ^0.1.0
 
 dev_dependencies:
   flutter_test:
