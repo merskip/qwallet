@@ -1,9 +1,9 @@
-import 'package:QWallet/firebase_service.dart';
-import 'package:QWallet/sign_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../firebase_service.dart';
 import 'home_page.dart';
+import 'sign_in_page.dart';
 
 class LandingPage extends StatelessWidget {
   @override
@@ -14,10 +14,7 @@ class LandingPage extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           final user = snapshot.data;
           FirebaseService.instance.currentUser = user;
-          if (user == null)
-            return SignInPage();
-          else
-            return HomePage();
+          return user == null ? SignInPage() : HomePage();
         } else {
           return _loading();
         }

@@ -1,5 +1,6 @@
-import 'package:QWallet/firebase_service.dart';
 import 'package:flutter/material.dart';
+
+import '../firebase_service.dart';
 
 class QueryListWidget<T> extends StatelessWidget {
   final Stream<TypedQuerySnapshot<T>> stream;

@@ -1,6 +1,6 @@
-
-import 'package:QWallet/landing_page.dart';
 import 'package:flutter/material.dart';
+
+import 'page/landing_page.dart';
 
 void main() {
   runApp(MyApp());

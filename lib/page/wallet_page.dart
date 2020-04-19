@@ -1,8 +1,8 @@
-import 'package:QWallet/firebase_service.dart';
 import 'package:flutter/material.dart';
 
-import 'model/User.dart';
-import 'model/Wallet.dart';
+import '../firebase_service.dart';
+import '../model/User.dart';
+import '../model/Wallet.dart';
 
 class WalletPage extends StatelessWidget {
   final Wallet wallet;

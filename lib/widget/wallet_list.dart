@@ -1,12 +1,11 @@
-import 'package:QWallet/model/Wallet.dart';
 import 'package:flutter/material.dart';
 
-import 'firebase_service.dart';
+import '../firebase_service.dart';
+import '../page/wallet_page.dart';
 import 'query_list_widget.dart';
-import 'wallet_page.dart';
+import '../model/Wallet.dart';
 
 class WalletList extends StatelessWidget {
-
   openWallet(BuildContext context, Wallet wallet) {
     Navigator.push(
       context,

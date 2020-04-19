@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:QWallet/model/Wallet.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'model/User.dart';
+import 'model/Wallet.dart';
 
 class TypedQuerySnapshot<T> {
   final QuerySnapshot snapshot;
@@ -20,16 +20,16 @@ class FirebaseService {
   static const collectionWallets = "wallets";
   static const functionUsers = "users";
 
-  static FirebaseService get instance => _instance;
-  static FirebaseService _instance = FirebaseService();
+  FirebaseService._privateConstructor();
 
-  static FirebaseUser get user => instance.currentUser;
+  static final FirebaseService instance = FirebaseService._privateConstructor();
+
   FirebaseUser currentUser;
 
   Stream<TypedQuerySnapshot<Wallet>> getWallets() {
     return Firestore.instance
         .collection(collectionWallets)
-        .where('owners_uid', arrayContains: user.uid)
+        .where('owners_uid', arrayContains: currentUser.uid)
         .snapshots()
         .map((snapshot) => TypedQuerySnapshot(
               snapshot: snapshot,
