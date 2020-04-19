@@ -105,13 +105,30 @@ class _WalletPageState extends State<WalletPage> {
   }
 
   _expenseItem(BuildContext context, Expense expense) {
-    return ListTile(
-      title: Text(expense.title),
-      subtitle: Text(expense.formattedDate),
-      trailing: Text(
-        expense.formattedAmount,
-        style: Theme.of(context).textTheme.headline6,
-      ),
-    );
+    return Dismissible(
+        key: Key(expense.id),
+        direction: DismissDirection.endToStart,
+        background: Container(
+          alignment: AlignmentDirectional.centerEnd,
+          color: Colors.red.shade600,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        child: ListTile(
+          title: Text(expense.title),
+          subtitle: Text(expense.formattedDate),
+          trailing: Text(
+            expense.formattedAmount,
+            style: Theme.of(context).textTheme.headline6,
+          ),
+        ),
+        onDismissed: (direction) {
+          FirebaseService.instance.removeExpense(widget.wallet, expense);
+        });
   }
 }

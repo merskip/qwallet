@@ -90,6 +90,15 @@ class FirebaseService {
             ));
   }
 
+  removeExpense(Wallet wallet, Expense expense) async {
+    await firestore
+        .collection(collectionWallets)
+        .document(wallet.id)
+        .collection(collectionExpenses)
+        .document(expense.id)
+        .delete();
+  }
+
   // TODO: Move to global scope
   static DateTime getBeginOfCurrentMonth() {
     DateTime now = DateTime.now();
