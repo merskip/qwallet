@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class UserPanel extends StatefulWidget {
   @override
@@ -19,9 +21,15 @@ class _UserPanelState extends State<UserPanel> {
     });
   }
 
-  showUserId() {
+  showUserInfo() {
     final snackBar = SnackBar(
-      content: Text("email: ${user.email}\nuid: ${user.uid}"),
+      content: Text("${user.email}\n${user.uid}"),
+      action: SnackBarAction(
+        label: "Copy UID",
+        onPressed: () {
+          Clipboard.setData(ClipboardData(text: user.uid));
+        },
+      ),
     );
     Scaffold.of(context).showSnackBar(snackBar);
   }
@@ -30,7 +38,7 @@ class _UserPanelState extends State<UserPanel> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: user != null ? _avatarWithNameView(user) : Container(),
-      onLongPress: showUserId,
+      onLongPress: kDebugMode ? showUserInfo : null,
     );
   }
 
