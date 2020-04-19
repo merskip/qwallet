@@ -20,11 +20,32 @@ class WalletList extends StatelessWidget {
       stream: FirebaseService.instance.getWallets(),
       builder: (TypedQuerySnapshot<Wallet> snapshot) {
         final wallets = snapshot.values;
-        return ListView.builder(
-          itemCount: wallets.length,
-          itemBuilder: (context, index) =>
-              _walletListItem(context, wallets[index]),
-        );
+        if (wallets.isNotEmpty) {
+          return ListView.builder(
+            itemCount: wallets.length,
+            itemBuilder: (context, index) =>
+                _walletListItem(context, wallets[index]),
+          );
+        } else {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SvgPicture.asset(
+                  "assets/icons8-wallet.svg",
+                  color: Colors.grey,
+                  height: 72,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  "There are no any wallets in your account.\nUse the + button to add them.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 15, color: Colors.grey),
+                ),
+              ],
+            ),
+          );
+        }
       },
     );
   }
