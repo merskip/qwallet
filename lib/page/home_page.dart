@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../firebase_service.dart';
@@ -41,7 +42,10 @@ class HomePage extends StatelessWidget {
       ),
       body: WalletList(),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: SvgPicture.asset(
+          "assets/add-wallet.svg",
+          color: Colors.white, // TODO: Use the color from Theme
+        ),
         onPressed: () => _showDialog(context),
       ),
     );

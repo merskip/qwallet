@@ -49,6 +49,7 @@ flutter:
   assets:
     - assets/icons8-google.svg
     - assets/icons8-wallet.svg
+    - assets/add-wallet.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
