@@ -34,10 +34,11 @@ class FirebaseService {
         .collection(collectionWallets)
         .where('owners_uid', arrayContains: currentUser.uid)
         .snapshots()
-        .map((snapshot) => TypedQuerySnapshot(
-              snapshot: snapshot,
-              mapper: (document) => Wallet.from(document),
-            ));
+        .map((snapshot) =>
+        TypedQuerySnapshot(
+          snapshot: snapshot,
+          mapper: (document) => Wallet.from(document),
+        ));
   }
 
   Future<List<User>> fetchUsers({bool includeAnonymous = true}) async {
@@ -60,11 +61,23 @@ class FirebaseService {
         .updateData({'owners_uid': owners.map((user) => user.uid).toList()});
   }
 
-  Stream<TypedQuerySnapshot<Expense>> getExpenses(Wallet wallet) {
+  Stream<TypedQuerySnapshot<Expense>> getExpensesForCurrentMonth(
+      Wallet wallet) {
+    DateTime now = DateTime.now();
+    DateTime beginMonthDate = now.subtract(Duration(
+        days: now.day - 1,
+        hours: now.hour,
+        minutes: now.minute,
+        seconds: now.second,
+        milliseconds: now.millisecond,
+        microseconds: now.microsecond));
+
     return firestore
         .collection(collectionWallets)
         .document(wallet.id)
         .collection(collectionExpenses)
+        .orderBy("date", descending: true)
+        .where("date", isGreaterThan: Timestamp.fromDate(beginMonthDate))
         .snapshots()
         .map((snapshot) => TypedQuerySnapshot(
               snapshot: snapshot,

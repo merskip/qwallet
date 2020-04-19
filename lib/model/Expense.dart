@@ -9,7 +9,7 @@ class Expense {
   final double amount;
   final Timestamp date;
 
-  String get formattedDate => DateFormat('dd LLLL yyyy').format(date.toDate());
+  String get formattedDate => DateFormat('d LLLL').format(date.toDate());
 
   String get formattedAmount =>
       NumberFormat.simpleCurrency(locale: "pl_PL").format(amount);

@@ -38,7 +38,7 @@ class WalletPage extends StatelessWidget {
         ],
       ),
       body: QueryListWidget(
-        stream: FirebaseService.instance.getExpenses(wallet),
+        stream: FirebaseService.instance.getExpensesForCurrentMonth(wallet),
         builder: (TypedQuerySnapshot<Expense> snapshot) {
           return ListView.separated(
             itemCount: snapshot.values.length,
