@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class SignInPage extends StatefulWidget {
@@ -16,30 +17,63 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              "Welcum to QWallet!",
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            SizedBox(height: 32),
-            RaisedButton(
-              child: Text('Sign in anonymous'),
-              // TODO: "Continue without sing in"?
+        child: Column(children: <Widget>[
+          Spacer(flex: 2),
+          Icon(
+            Icons.account_balance_wallet, // TODO: Make app icon
+            size: 84,
+            color: Theme.of(context).primaryTextTheme.headline4.color,
+          ),
+          Text(
+            "Welcum to QWallet!",
+            style: Theme.of(context).primaryTextTheme.headline4,
+          ),
+          Spacer(flex: 1),
+          Column(children: <Widget>[
+            _singInButton(
+              text: 'Stay anonymous',
+              icon: Icon(Icons.person_outline),
               onPressed: _signInAnonymous,
             ),
-            RaisedButton(
-              child: Text('Sign in with Google'),
+            SizedBox(height: 16),
+            _singInButton(
+              text: 'Sign in with Google',
+              icon: SvgPicture.asset("assets/icons8-google.svg",
+                  color: Theme.of(context).primaryColor),
               onPressed: _singInWithGoogle,
             ),
-            RaisedButton(
-              child: Text('Sign in with e-mail'),
+            SizedBox(height: 16),
+            _singInButton(
+              text: 'Get going with Email',
+              icon: Icon(Icons.alternate_email),
               onPressed: () => _showDialogForSignInWithEmail(context),
-            )
-          ],
-        ),
+            ),
+          ]),
+          Spacer(flex: 2),
+        ]),
+      ),
+    );
+  }
+
+  _singInButton({String text, Widget icon, VoidCallback onPressed}) {
+    return SizedBox(
+      height: 44,
+      width: 256,
+      child: RaisedButton(
+        child: Row(children: <Widget>[
+          SizedBox(width: 28, height: 28, child: icon),
+          SizedBox(width: 12),
+          Text(
+            text,
+            style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
+          ),
+        ]),
+        onPressed: onPressed,
+        textColor: Theme.of(context).primaryColor,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
       ),
     );
   }
