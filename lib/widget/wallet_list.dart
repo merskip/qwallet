@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../firebase_service.dart';
 import '../page/wallet_page.dart';
@@ -19,20 +20,52 @@ class WalletList extends StatelessWidget {
       stream: FirebaseService.instance.getWallets(),
       builder: (TypedQuerySnapshot<Wallet> snapshot) {
         final wallets = snapshot.values;
-        return ListView.separated(
+        return ListView.builder(
           itemCount: wallets.length,
-          itemBuilder: (context, index) {
-            final wallet = wallets[index];
-            return ListTile(
-              leading: Icon(Icons.account_balance_wallet),
-              title: Text(wallet.name ?? ''),
-              subtitle: Text("${wallet.ownersUid.length} owners"),
-              onTap: () => openWallet(context, wallet),
-            );
-          },
-          separatorBuilder: (context, index) => Divider(),
+          itemBuilder: (context, index) =>
+              _walletListItem(context, wallets[index]),
         );
       },
+    );
+  }
+
+  Widget _walletListItem(BuildContext context, Wallet wallet) {
+    return Card(
+      elevation: 5,
+      margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: InkWell(
+        onTap: () => openWallet(context, wallet),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(children: <Widget>[
+            SvgPicture.asset(
+              "assets/icons8-wallet.svg",
+              color: Theme.of(context).primaryColor,
+              width: 44,
+            ),
+            SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  wallet.name ?? '',
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "${wallet.ownersUid.length} owners",
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+              ],
+            ),
+            Spacer(),
+            Text(
+              "234,54 zł", // TODO: Impl
+              style: Theme.of(context).textTheme.headline6,
+            )
+          ]),
+        ),
+      ),
     );
   }
 }
