@@ -18,9 +18,18 @@ class Wallet {
       snapshot: document,
       id: document.documentID,
       name: document.data['name'] as String,
-      balance: document.data['balance'] as double ?? 0,
+      balance: _toDouble(document.data['balance']),
       ownersUid: List<String>.from(document.data['owners_uid']),
     );
+  }
+
+  static double _toDouble(value) {
+    if (value is double)
+      return value;
+    else if (value is int)
+      return value.toDouble();
+    else
+      return 0.0;
   }
 }
 
