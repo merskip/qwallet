@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+		
+    match /wallets/{wallet} {
+      allow create: if isSignedIn(request)
+      allow read, write: if isOwner(request, resource.data)
+    }
+    
+    match /wallets/{wallet}/expenses/{expance} {
+    	allow create: if true
+      allow read, write: if true
+    }
+    
+    function isOwner(request, wallet) {
+    	return isSignedIn(request) && request.auth.uid in wallet.owners_uid;
+    }
+    
+    function isSignedIn(request) {
+    	return request.auth != null && request.auth.uid != null;
+    }
+  }
+}

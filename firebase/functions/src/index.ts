@@ -1,14 +1,11 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+import * as functions from 'firebase-functions';
+import * as admin from "firebase-admin";
 
 admin.initializeApp();
 const auth = admin.auth();
 
-/**
- * Gets all the users (1000 MAX) from Firebase auth.
- */
-exports.users = functions.https.onCall((data, context) => {
-    console.debug("Requested users from " + context.auth.uid);
+export const callUsers = functions.https.onCall((data, context) => {
+    console.debug("Requested users from " + context.auth?.uid ?? "(anonymous)");
     return auth.listUsers().then((userRecords) => {
         const users = userRecords.users.map((user) => {
             return {
