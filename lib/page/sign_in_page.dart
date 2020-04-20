@@ -114,6 +114,7 @@ class _SignInPageState extends State<SignInPage> {
                 TextField(
                   autofocus: true,
                   controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                       labelText: "E-mail",
                       hintText: "eg.john.smith@example.com"),
