@@ -146,7 +146,7 @@ class _WalletPageState extends State<WalletPage> {
           subtitle: Text(expense.formattedDate),
           trailing: Text(
             expense.formattedAmount,
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.title,
           ),
         ),
         onDismissed: (direction) {

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>207455736812-448p436drv9rij34jtb146u33coqkq40.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.207455736812-448p436drv9rij34jtb146u33coqkq40</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>207455736812-3naf8ouq2il4a6h15nr1eg6sundlm9kj.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyABVhhhfohfzjf3As27oV4cWuf2fBuDB9I</string>
+	<key>GCM_SENDER_ID</key>
+	<string>207455736812</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>pl.merskip.qwallet</string>
+	<key>PROJECT_ID</key>
+	<string>qwallet-7a780</string>
+	<key>STORAGE_BUCKET</key>
+	<string>qwallet-7a780.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:207455736812:ios:d0330cd51cd708f4fc26c9</string>
+	<key>DATABASE_URL</key>
+	<string>https://qwallet-7a780.firebaseio.com</string>
+</dict>
+</plist>

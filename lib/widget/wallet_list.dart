@@ -70,19 +70,19 @@ class WalletList extends StatelessWidget {
               children: <Widget>[
                 Text(
                   wallet.name ?? '',
-                  style: Theme.of(context).textTheme.bodyText1,
+                  style: Theme.of(context).textTheme.body2,
                 ),
                 SizedBox(height: 4),
                 Text(
                   "${wallet.ownersUid.length} owners",
-                  style: Theme.of(context).textTheme.bodyText2,
+                  style: Theme.of(context).textTheme.body1,
                 ),
               ],
             ),
             Spacer(),
             Text(
               wallet.formattedBalance,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.title,
             )
           ]),
         ),
