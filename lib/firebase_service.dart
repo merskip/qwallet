@@ -22,7 +22,7 @@ class TypedQuerySnapshot<T> {
 class FirebaseService {
   static const collectionWallets = "wallets";
   static const collectionExpenses = "expenses";
-  static const functionUsers = "users";
+  static const functionGetUsers = "getUsers";
 
   static final FirebaseService instance = FirebaseService._privateConstructor();
 
@@ -44,13 +44,13 @@ class FirebaseService {
 
   Future<List<User>> fetchUsers({bool includeAnonymous = true}) async {
     final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-      functionName: functionUsers,
+      functionName: functionGetUsers,
     );
-    dynamic resp = await callable.call();
-    final parsed = json.decode(resp.data).cast<Map<String, dynamic>>();
+    dynamic response = await callable.call();
+    final content = response.data as List;
 
-    return parsed
-        .map<User>((json) => User.fromJson(json))
+    return content
+        .map((item) => User.fromJson(item.cast<String, dynamic>()))
         .where((user) => includeAnonymous ? true : !user.isAnonymous)
         .toList();
   }
