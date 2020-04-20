@@ -32,6 +32,7 @@ dependencies:
   intl: ^0.16.1
   collection: ^1.14.11
   date_utils: ^0.1.0
+  flutter_launcher_icons: ^0.7.4
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +54,7 @@ flutter:
     - assets/icons8-google.svg
     - assets/icons8-wallet.svg
     - assets/add-wallet.svg
+    - assets/app-icon-shape.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -79,3 +81,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_icons:
+  image_path: 'assets/app-icon.png'
+  android: true
+  ios: true

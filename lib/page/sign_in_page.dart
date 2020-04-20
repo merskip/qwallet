@@ -21,11 +21,12 @@ class _SignInPageState extends State<SignInPage> {
       body: Center(
         child: Column(children: <Widget>[
           Spacer(flex: 2),
-          Icon(
-            Icons.account_balance_wallet, // TODO: Make app icon
-            size: 84,
+          SvgPicture.asset(
+            "assets/app-icon-shape.svg",
+            width: 84,
             color: Theme.of(context).primaryTextTheme.display1.color,
           ),
+          SizedBox(height: 24),
           Text(
             "Welcum to QWallet!",
             style: Theme.of(context).primaryTextTheme.display1,
