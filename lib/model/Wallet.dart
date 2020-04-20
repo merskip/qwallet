@@ -5,13 +5,20 @@ class Wallet {
   final DocumentSnapshot snapshot;
   final String id;
   final String name;
-  final double balance; // TODO: Impl via Cloud Function
+  final double balance;
+  final bool isBalanceOutdated;
   final List<String> ownersUid;
 
   String get formattedBalance =>
       NumberFormat.simpleCurrency(locale: "pl_PL").format(balance);
 
-  Wallet({this.snapshot, this.id, this.name, this.balance, this.ownersUid});
+  Wallet(
+      {this.snapshot,
+      this.id,
+      this.name,
+      this.balance,
+      this.isBalanceOutdated,
+      this.ownersUid});
 
   factory Wallet.from(DocumentSnapshot document) {
     return Wallet(
@@ -19,6 +26,7 @@ class Wallet {
       id: document.documentID,
       name: document.data['name'] as String,
       balance: _toDouble(document.data['balance']),
+      isBalanceOutdated: _toBool(document.data['isBalanceOutdated']),
       ownersUid: List<String>.from(document.data['owners_uid']),
     );
   }
@@ -31,5 +39,11 @@ class Wallet {
     else
       return 0.0;
   }
-}
 
+  static bool _toBool(value) {
+    if (value is bool)
+      return value;
+    else
+      return false;
+  }
+}

@@ -91,9 +91,13 @@ class FirebaseService {
   }
 
   removeExpense(Wallet wallet, Expense expense) async {
-    await firestore
-        .collection(collectionWallets)
-        .document(wallet.id)
+    final walletDoc =
+        firestore.collection(collectionWallets).document(wallet.id);
+    walletDoc.updateData({
+      // TODO: Perform in translation
+      "isBalanceOutdated": true
+    });
+    await walletDoc
         .collection(collectionExpenses)
         .document(expense.id)
         .delete();
@@ -118,9 +122,13 @@ class FirebaseService {
   }
 
   addExpanse(Wallet wallet, String title, double amount, Timestamp date) {
-    firestore
-        .collection(collectionWallets)
-        .document(wallet.id)
+    final walletDoc =
+        firestore.collection(collectionWallets).document(wallet.id);
+    walletDoc.updateData({
+      // TODO: Perform in translation
+      "isBalanceOutdated": true
+    });
+    walletDoc
         .collection(collectionExpenses) // TODO: Make computed value or function
         .add({
       "wallet": wallet.snapshot.reference,

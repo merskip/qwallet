@@ -30,10 +30,6 @@ export const updateBalance = functions.firestore
         const expensesRef = walletRef.collection('expenses'); // TODO: Get only from current month
 
         return db.runTransaction(transaction => {
-            transaction.update(walletRef, {
-                isBalanceOutdated: true,
-            });
-
             return transaction.get(expensesRef).then(expensesDoc => {
 
                 const totalAmount = expensesDoc.docs

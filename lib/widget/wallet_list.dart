@@ -82,7 +82,9 @@ class WalletList extends StatelessWidget {
             Spacer(),
             Text(
               wallet.formattedBalance,
-              style: Theme.of(context).textTheme.title,
+              style: Theme.of(context).textTheme.title.apply(
+                    color: wallet.isBalanceOutdated ? Colors.grey : null,
+                  ),
             )
           ]),
         ),
