@@ -1,14 +1,14 @@
 import 'dart:convert';
 
-import 'package:QWallet/model/Expense.dart';
+import 'package:QWallet/model/expense.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:collection/collection.dart';
 import 'package:date_utils/date_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'model/User.dart';
-import 'model/Wallet.dart';
+import 'model/user.dart';
+import 'model/wallet.dart';
 
 class TypedQuerySnapshot<T> {
   final QuerySnapshot snapshot;
@@ -58,7 +58,7 @@ class FirebaseService {
   setOwners(Wallet wallet, List<User> owners) async {
     await firestore
         .collection(collectionWallets)
-        .document(wallet.id)
+        .document(wallet.snapshot.documentID)
         .updateData({'owners_uid': owners.map((user) => user.uid).toList()});
   }
 
@@ -78,7 +78,7 @@ class FirebaseService {
 
     return firestore
         .collection(collectionWallets)
-        .document(wallet.id)
+        .document(wallet.snapshot.documentID)
         .collection(collectionExpenses)
         .orderBy("date", descending: true)
         .where("date", isGreaterThanOrEqualTo: fromTimestamp)
@@ -92,14 +92,14 @@ class FirebaseService {
 
   removeExpense(Wallet wallet, Expense expense) async {
     final walletDoc =
-        firestore.collection(collectionWallets).document(wallet.id);
+        firestore.collection(collectionWallets).document(wallet.snapshot.documentID);
     walletDoc.updateData({
       // TODO: Perform in translation
       "isBalanceOutdated": true
     });
     await walletDoc
         .collection(collectionExpenses)
-        .document(expense.id)
+        .document(expense.snapshot.documentID)
         .delete();
   }
 
@@ -123,7 +123,7 @@ class FirebaseService {
 
   addExpanse(Wallet wallet, String title, double amount, Timestamp date) {
     final walletDoc =
-        firestore.collection(collectionWallets).document(wallet.id);
+        firestore.collection(collectionWallets).document(wallet.snapshot.documentID);
     walletDoc.updateData({
       // TODO: Perform in translation
       "isBalanceOutdated": true

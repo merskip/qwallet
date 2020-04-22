@@ -6,8 +6,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 import '../firebase_service.dart';
-import '../model/Wallet.dart';
-import '../model/Expense.dart';
+import '../model/wallet.dart';
+import '../model/expense.dart';
 import '../widget/query_list_widget.dart';
 import '../dialog/manage_owners_dialog.dart';
 
@@ -128,7 +128,7 @@ class _WalletPageState extends State<WalletPage> {
 
   _expenseItem(BuildContext context, Expense expense) {
     return Dismissible(
-        key: Key(expense.id),
+        key: Key(expense.snapshot.documentID),
         direction: DismissDirection.endToStart,
         background: Container(
           alignment: AlignmentDirectional.centerEnd,
@@ -142,7 +142,7 @@ class _WalletPageState extends State<WalletPage> {
           ),
         ),
         child: ListTile(
-          title: Text(expense.title),
+          title: Text(expense.name),
           subtitle: Text(expense.formattedDate),
           trailing: Text(
             expense.formattedAmount,

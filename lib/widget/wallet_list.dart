@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../firebase_service.dart';
 import '../page/wallet_page.dart';
 import 'query_list_widget.dart';
-import '../model/Wallet.dart';
+import '../model/wallet.dart';
 
 class WalletList extends StatelessWidget {
   openWallet(BuildContext context, Wallet wallet) {
@@ -81,9 +81,9 @@ class WalletList extends StatelessWidget {
             ),
             Spacer(),
             Text(
-              wallet.formattedBalance,
+              "0,00 zł",
               style: Theme.of(context).textTheme.title.apply(
-                    color: wallet.isBalanceOutdated ? Colors.grey : null,
+                    color: false ? Colors.grey : null,
                   ),
             )
           ]),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../model/Wallet.dart';
-import '../model/User.dart';
+import '../model/wallet.dart';
+import '../model/user.dart';
 
 class ManageOwnersDialog {
   final Wallet wallet;
