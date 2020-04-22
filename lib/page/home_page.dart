@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:QWallet/dialog/create_wallet_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,9 +9,7 @@ import '../widget/user_panel.dart';
 import '../widget/wallet_list.dart';
 
 class HomePage extends StatelessWidget {
-  final walletNameController = TextEditingController();
-
-  _signOut() async {
+  _onSelectedSignOut() async {
     try {
       await FirebaseAuth.instance.signOut();
       GoogleSignIn().signOut();
@@ -20,8 +18,11 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  _addWallet(String name) {
-    FirebaseService.instance.createWallet(name);
+  _onSelectedAddWallet(BuildContext context) async {
+    final name = await CreateWalletDialog().show(context);
+    if (name != null && name.isNotEmpty) {
+      FirebaseService.instance.createWallet(name);
+    }
   }
 
   @override
@@ -32,7 +33,7 @@ class HomePage extends StatelessWidget {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.exit_to_app),
-            onPressed: _signOut,
+            onPressed: _onSelectedSignOut,
           ),
         ],
       ),
@@ -42,37 +43,8 @@ class HomePage extends StatelessWidget {
           "assets/add-wallet.svg",
           color: Colors.white, // TODO: Use the color from Theme
         ),
-        onPressed: () => _showDialog(context),
+        onPressed: () => _onSelectedAddWallet(context),
       ),
     );
-  }
-
-  _showDialog(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Add new wallet"),
-            content: TextField(
-              autofocus: true,
-              controller: walletNameController,
-              decoration: InputDecoration(
-                  labelText: "Name", hintText: "eg. My personal wallet"),
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text("Cancel"),
-                onPressed: () => Navigator.pop(context),
-              ),
-              RaisedButton(
-                  child: Text("Add"),
-                  color: Theme.of(context).primaryColor,
-                  onPressed: () {
-                    _addWallet(walletNameController.text);
-                    Navigator.pop(context);
-                  })
-            ],
-          );
-        });
   }
 }

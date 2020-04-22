@@ -18,7 +18,7 @@ class ManageOwnersDialog {
   Future<List<User>> _showDialog(BuildContext context, List<User> users) {
     return showDialog(
       context: context,
-      builder: _usersDialog,
+      builder: _dialog,
     );
   }
 
@@ -27,7 +27,7 @@ class ManageOwnersDialog {
     Navigator.of(context).pop(selectedUsers);
   }
 
-  Widget _usersDialog(BuildContext context) {
+  Widget _dialog(BuildContext context) {
     return AlertDialog(
       title: Text("Manage owners"),
       content: Container(
