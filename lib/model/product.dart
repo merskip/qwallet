@@ -10,8 +10,9 @@ class Product {
   Product({this.name, this.description, this.symbol, this.snapshot});
 
   factory Product.from(DocumentSnapshot snapshot) => Product(
-      name: snapshot.data['name'],
-      description: snapshot.data['description'],
-      symbol: snapshot.data['symbol'],
-      snapshot: snapshot);
+        name: snapshot.data['name'],
+        description: snapshot.data['description'],
+        symbol: snapshot.data['symbol'],
+        snapshot: snapshot,
+      );
 }

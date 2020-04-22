@@ -1,13 +1,15 @@
 import 'package:QWallet/firebase_service.dart';
+import 'package:QWallet/model/product.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+
+import '../utils.dart';
 
 class Expense {
   final String name;
   final double amount;
   final Timestamp date;
-
-  // TODO: products
+  final List<DocumentReference> products;
 
   final DocumentSnapshot snapshot;
 
@@ -16,13 +18,14 @@ class Expense {
   String get formattedAmount =>
       NumberFormat.simpleCurrency(locale: "pl_PL").format(amount);
 
-  DateTime get month => FirebaseService.getBeginOfMonth(
+  DateTime get month => getBeginOfMonth(
       DateTime.fromMillisecondsSinceEpoch(date.millisecondsSinceEpoch));
 
   Expense({
     this.name,
     this.amount,
     this.date,
+    this.products,
     this.snapshot,
   });
 
@@ -30,6 +33,7 @@ class Expense {
         name: snapshot.data['title'],
         amount: snapshot.data['amount'],
         date: snapshot.data['date'],
+        products: snapshot.data['products'],
         snapshot: snapshot,
       );
 }
