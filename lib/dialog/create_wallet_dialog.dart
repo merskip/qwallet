@@ -4,10 +4,6 @@ class CreateWalletDialog {
   final _nameController = TextEditingController();
 
   Future<String> show(BuildContext context) async {
-    return _showDialog(context);
-  }
-
-  Future<String> _showDialog(BuildContext context) {
     return showDialog(
       context: context,
       builder: (context) => _dialog(context),

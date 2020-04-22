@@ -12,13 +12,9 @@ class ManageOwnersDialog {
   ManageOwnersDialog(this.wallet, this.users);
 
   Future<List<User>> show(BuildContext context) async {
-    return _showDialog(context, users);
-  }
-
-  Future<List<User>> _showDialog(BuildContext context, List<User> users) {
     return showDialog(
       context: context,
-      builder: _dialog,
+      builder: (context) => _dialog(context),
     );
   }
 
