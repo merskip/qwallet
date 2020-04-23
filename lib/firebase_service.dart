@@ -127,7 +127,7 @@ class FirebaseService {
         .snapshots()
         .map((snapshot) => TypedQuerySnapshot(
               snapshot: snapshot,
-              mapper: (document) => Wallet.from(document),
+              mapper: (snapshot) => Wallet.from(snapshot),
             ));
   }
 
@@ -136,6 +136,23 @@ class FirebaseService {
       "name": name,
       "owners_uid": [currentUser.uid]
     });
+  }
+
+  Stream<BillingPeriod> getBillingPeriod(
+      Wallet wallet, DocumentReference periodRef) {
+    return _billingPeriodsCollection(wallet)
+        .document(periodRef.documentID)
+        .snapshots()
+        .map((snapshot) => BillingPeriod.from(snapshot));
+  }
+
+  Stream<TypedQuerySnapshot<Expense>> getExpenses(BillingPeriod period) {
+    return _expensesCollection(period)
+        .snapshots()
+        .map((snapshot) => TypedQuerySnapshot(
+              snapshot: snapshot,
+              mapper: (snapshot) => Expense.from(snapshot),
+            ));
   }
 
   // Collections access
@@ -147,7 +164,7 @@ class FirebaseService {
       period.snapshot.reference.collection("incomes");
 
   CollectionReference _billingPeriodsCollection(Wallet wallet) =>
-      wallet.snapshot.reference.collection("perdios");
+      wallet.snapshot.reference.collection("periods");
 
   CollectionReference _productsCollection(Wallet wallet) =>
       wallet.snapshot.reference.collection("products");

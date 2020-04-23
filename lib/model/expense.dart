@@ -30,10 +30,10 @@ class Expense {
   });
 
   factory Expense.from(DocumentSnapshot snapshot) => Expense(
-        name: snapshot.data['title'],
-        amount: snapshot.data['amount'],
+        name: snapshot.data['name'] ?? "",
+        amount: toDouble(snapshot.data['amount']),
         date: snapshot.data['date'],
-        products: snapshot.data['products'],
+        products: [],//snapshot.data['products'], TODO: Impl
         snapshot: snapshot,
       );
 }

@@ -16,3 +16,12 @@ DateTime getEndOfMonth(DateTime date) {
   if (date == null) return null;
   return Utils.lastDayOfMonth(date).add(Duration(hours: 24));
 }
+
+double toDouble(dynamic value, {double defaultValue = 0.0}) {
+  if (value is double)
+    return value;
+  else if (value is int)
+    return value.toDouble();
+  else
+    return defaultValue;
+}

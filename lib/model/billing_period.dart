@@ -1,3 +1,4 @@
+import 'package:QWallet/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BillingPeriod {
@@ -21,9 +22,9 @@ class BillingPeriod {
   factory BillingPeriod.from(DocumentSnapshot snapshot) => BillingPeriod(
       startDate: snapshot.data['startDate'],
       endDate: snapshot.data['endDate'],
-      balance: snapshot.data['balance'],
+      balance: toDouble(snapshot.data['balance']),
       isBalanceOutdated: snapshot.data['isBalanceOutdated'],
-      totalIncome: snapshot.data['totalIncome'],
+      totalIncome: toDouble(snapshot.data['totalIncome']),
       snapshot: snapshot,
     );
 }
