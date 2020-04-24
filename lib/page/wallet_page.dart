@@ -42,10 +42,10 @@ class _WalletPageState extends State<WalletPage> {
 
   @override
   Widget build(BuildContext context) {
-    final periodStream = FirebaseService.instance
+    final periodStream = () => FirebaseService.instance
         .getBillingPeriod(widget.wallet, selectedPeriodRef);
-    final expensesStream = periodStream.asyncExpand(
-        (period) => FirebaseService.instance.getExpenses(period));
+    final expensesStream = periodStream()
+        .asyncExpand((period) => FirebaseService.instance.getExpenses(period));
 
     return Scaffold(
       appBar: AppBar(
@@ -58,7 +58,10 @@ class _WalletPageState extends State<WalletPage> {
           ),
         ],
       ),
-      body: ExpenseList(expensesStream: expensesStream),
+      body: ExpenseList(
+        currentPeriodStream: periodStream(),
+        expensesStream: expensesStream,
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
@@ -71,9 +74,11 @@ class _WalletPageState extends State<WalletPage> {
 }
 
 class ExpenseList extends StatelessWidget {
+  final Stream<BillingPeriod> currentPeriodStream;
   final Stream<TypedQuerySnapshot<Expense>> expensesStream;
 
-  const ExpenseList({Key key, this.expensesStream}) : super(key: key);
+  const ExpenseList({Key key, this.currentPeriodStream, this.expensesStream})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +87,14 @@ class ExpenseList extends StatelessWidget {
       builder: (TypedQuerySnapshot<Expense> snapshot) {
         if (snapshot.values.isNotEmpty) {
           return ListView.separated(
-            itemCount: snapshot.values.length,
-            itemBuilder: (context, index) =>
-                ExpenseListItem(expense: snapshot.values[index]),
+            itemCount: snapshot.values.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return CurrentBillingPeriodListItem(
+                    currentPeriod: currentPeriodStream);
+              }
+              return ExpenseListItem(expense: snapshot.values[index - 1]);
+            },
             separatorBuilder: (context, index) => Divider(),
           );
         } else {
@@ -108,6 +118,34 @@ class ExpenseList extends StatelessWidget {
           );
         }
       },
+    );
+  }
+}
+
+class CurrentBillingPeriodListItem extends StatelessWidget {
+  final Stream<BillingPeriod> currentPeriod;
+
+  const CurrentBillingPeriodListItem({Key key, this.currentPeriod})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: currentPeriod,
+      builder: (context, AsyncSnapshot<BillingPeriod> snapshot) {
+        return snapshot.hasData ? _build(snapshot.data) : Container();
+      },
+    );
+  }
+
+  _build(BillingPeriod period) {
+    return ListTile(
+      leading: Icon(Icons.date_range),
+      title: Text(period.formattedDateRange),
+      trailing: OutlineButton(
+        child: Text("Change period"),
+        onPressed: () {}, // TODO: Impl
+      ),
     );
   }
 }

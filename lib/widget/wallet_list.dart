@@ -1,3 +1,4 @@
+import 'package:QWallet/model/billing_period.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -80,12 +81,19 @@ class WalletList extends StatelessWidget {
               ],
             ),
             Spacer(),
-            Text(
-              "0,00 zł",
-              style: Theme.of(context).textTheme.title.apply(
-                    color: false ? Colors.grey : null,
-                  ),
-            )
+            StreamBuilder(
+                stream: FirebaseService.instance
+                    .getBillingPeriod(wallet, wallet.currentPeriod),
+                builder: (context, AsyncSnapshot<BillingPeriod> snapshot) {
+                  return Text(
+                    snapshot.data?.formattedBalance ?? "-",
+                    style: Theme.of(context).textTheme.title.apply(
+                          color: snapshot.data?.isBalanceOutdated ?? true
+                              ? Colors.grey
+                              : null,
+                        ),
+                  );
+                })
           ]),
         ),
       ),
