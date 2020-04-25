@@ -12,6 +12,12 @@ class BillingPeriod {
 
   final DocumentSnapshot snapshot;
 
+  bool get isNowInsideDateRange {
+    final now = DateTime.now();
+    return now.isAfter(startDate.toDate())
+        && now.isBefore(endDate.toDate());
+  }
+
   String get formattedDateRange {
     final dateFormat = DateFormat("d MMMM");
     final fromDate = dateFormat.format(startDate.toDate());

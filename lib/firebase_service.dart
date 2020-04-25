@@ -121,6 +121,13 @@ class FirebaseService {
 //    });
 //  }
 
+  Stream<Wallet> getWallet(String walletId) {
+    return _walletsCollection()
+        .document(walletId)
+        .snapshots()
+        .map((snapshot) => Wallet.from(snapshot));
+  }
+
   Stream<TypedQuerySnapshot<Wallet>> getWallets() {
     return _walletsCollection()
         .where('owners_uid', arrayContains: currentUser.uid)
@@ -136,6 +143,12 @@ class FirebaseService {
       "name": name,
       "owners_uid": [currentUser.uid]
     });
+  }
+
+  Future<void> setCurrentBillingPeriod(Wallet wallet, BillingPeriod period) {
+    return _walletsCollection()
+        .document(wallet.snapshot.documentID)
+        .updateData({'currentPeriod': period.snapshot.reference});
   }
 
   Stream<TypedQuerySnapshot<BillingPeriod>> getBillingPeriods(Wallet wallet) {
