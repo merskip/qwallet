@@ -6,11 +6,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class ChangeBillingPeriodPage extends StatelessWidget {
+class ManageBillingPeriodPage extends StatelessWidget {
   final Wallet wallet;
   final DocumentReference selectedPeriodRef;
 
-  const ChangeBillingPeriodPage({Key key, this.wallet, this.selectedPeriodRef})
+  const ManageBillingPeriodPage({Key key, this.wallet, this.selectedPeriodRef})
       : super(key: key);
 
   onSelectedSetCurrentPeriod(BuildContext context, BillingPeriod period) {
@@ -22,7 +22,7 @@ class ChangeBillingPeriodPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Change billing period"),
+        title: Text("Manage billing periods"),
       ),
       body: StreamBuilder<Wallet>(
         stream: FirebaseService.instance.getWallet(wallet.snapshot.documentID),

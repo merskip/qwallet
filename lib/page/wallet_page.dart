@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:QWallet/model/billing_period.dart';
-import 'package:QWallet/page/change_billing_period_page.dart';
+import 'package:QWallet/page/manage_billing_period_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -40,11 +40,11 @@ class _WalletPageState extends State<WalletPage> {
     }
   }
 
-  changeSelectedPeriod(BuildContext context) async {
+  onSelectedManageBillingPeriod(BuildContext context) async {
     final selectedPeriod = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChangeBillingPeriodPage(
+        builder: (context) => ManageBillingPeriodPage(
           wallet: widget.wallet,
           selectedPeriodRef: selectedPeriodRef,
         ),
@@ -78,7 +78,7 @@ class _WalletPageState extends State<WalletPage> {
       body: ExpenseList(
         currentPeriodStream: periodStream(),
         expensesStream: expensesStream,
-        onSelectedChangePeriod: () => changeSelectedPeriod(context),
+        onSelectedChangePeriod: () => onSelectedManageBillingPeriod(context),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -183,7 +183,7 @@ class CurrentBillingPeriodListItem extends StatelessWidget {
       title: Text(period.formattedDateRange),
       subtitle: Text(period.formattedDays),
       trailing: OutlineButton(
-        child: Text("Change period"),
+        child: Text("Manage periods"),
         onPressed: onSelectedChangePeriod,
       ),
     );
