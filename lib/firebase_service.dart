@@ -138,6 +138,15 @@ class FirebaseService {
     });
   }
 
+  Stream<TypedQuerySnapshot<BillingPeriod>> getBillingPeriods(Wallet wallet) {
+    return _billingPeriodsCollection(wallet)
+        .snapshots()
+        .map((snapshot) => TypedQuerySnapshot(
+              snapshot: snapshot,
+              mapper: (snapshot) => BillingPeriod.from(snapshot),
+            ));
+  }
+
   Stream<BillingPeriod> getBillingPeriod(
       Wallet wallet, DocumentReference periodRef) {
     return _billingPeriodsCollection(wallet)

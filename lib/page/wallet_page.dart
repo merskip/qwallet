@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:QWallet/model/billing_period.dart';
+import 'package:QWallet/page/change_billing_period_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 
 import '../firebase_service.dart';
 import '../model/wallet.dart';
@@ -22,7 +22,7 @@ class WalletPage extends StatefulWidget {
 }
 
 class _WalletPageState extends State<WalletPage> {
-  final DocumentReference selectedPeriodRef;
+  DocumentReference selectedPeriodRef;
 
   _WalletPageState(this.selectedPeriodRef);
 
@@ -37,6 +37,23 @@ class _WalletPageState extends State<WalletPage> {
       // TODO: Adding validation is selected any owner
       // TODO: Impl setOwners
 //      FirebaseService.instance.setOwners(widget.wallet, selectedUsers);
+    }
+  }
+
+  changeSelectedPeriod(BuildContext context) async {
+    final selectedPeriod = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChangeBillingPeriodPage(
+          wallet: widget.wallet,
+          selectedPeriodRef: selectedPeriodRef,
+        ),
+      ),
+    ) as BillingPeriod;
+    if (selectedPeriod != null) {
+      setState(() {
+        this.selectedPeriodRef = selectedPeriod.snapshot.reference;
+      });
     }
   }
 
@@ -61,6 +78,7 @@ class _WalletPageState extends State<WalletPage> {
       body: ExpenseList(
         currentPeriodStream: periodStream(),
         expensesStream: expensesStream,
+        onSelectedChangePeriod: () => changeSelectedPeriod(context),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -76,9 +94,14 @@ class _WalletPageState extends State<WalletPage> {
 class ExpenseList extends StatelessWidget {
   final Stream<BillingPeriod> currentPeriodStream;
   final Stream<TypedQuerySnapshot<Expense>> expensesStream;
+  final VoidCallback onSelectedChangePeriod;
 
-  const ExpenseList({Key key, this.currentPeriodStream, this.expensesStream})
-      : super(key: key);
+  const ExpenseList({
+    Key key,
+    this.currentPeriodStream,
+    this.expensesStream,
+    this.onSelectedChangePeriod,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -91,30 +114,42 @@ class ExpenseList extends StatelessWidget {
             itemBuilder: (context, index) {
               if (index == 0) {
                 return CurrentBillingPeriodListItem(
-                    currentPeriod: currentPeriodStream);
+                  currentPeriod: currentPeriodStream,
+                  onSelectedChangePeriod: onSelectedChangePeriod,
+                );
               }
               return ExpenseListItem(expense: snapshot.values[index - 1]);
             },
             separatorBuilder: (context, index) => Divider(),
           );
         } else {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SvgPicture.asset(
-                  "assets/icons8-wallet.svg",
-                  color: Colors.grey,
-                  height: 72,
-                ),
-                SizedBox(height: 16),
-                Text(
-                  "There are no any expenses in this wallet.\nUse the + button to add them.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 15, color: Colors.grey),
-                ),
-              ],
-            ),
+          return Column(
+            children: <Widget>[
+
+              CurrentBillingPeriodListItem(
+                currentPeriod: currentPeriodStream,
+                onSelectedChangePeriod: onSelectedChangePeriod,
+              ),
+              Divider(),
+              Spacer(),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SvgPicture.asset(
+                    "assets/icons8-wallet.svg",
+                    color: Colors.grey,
+                    height: 72,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    "There are no any expenses in this wallet.\nUse the + button to add them.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 15, color: Colors.grey),
+                  ),
+                ],
+              ),
+              Spacer(),
+            ],
           );
         }
       },
@@ -124,9 +159,13 @@ class ExpenseList extends StatelessWidget {
 
 class CurrentBillingPeriodListItem extends StatelessWidget {
   final Stream<BillingPeriod> currentPeriod;
+  final VoidCallback onSelectedChangePeriod;
 
-  const CurrentBillingPeriodListItem({Key key, this.currentPeriod})
-      : super(key: key);
+  const CurrentBillingPeriodListItem({
+    Key key,
+    this.currentPeriod,
+    this.onSelectedChangePeriod,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -142,9 +181,10 @@ class CurrentBillingPeriodListItem extends StatelessWidget {
     return ListTile(
       leading: Icon(Icons.date_range),
       title: Text(period.formattedDateRange),
+      subtitle: Text(period.formattedDays),
       trailing: OutlineButton(
         child: Text("Change period"),
-        onPressed: () {}, // TODO: Impl
+        onPressed: onSelectedChangePeriod,
       ),
     );
   }
