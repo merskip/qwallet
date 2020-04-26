@@ -88,8 +88,25 @@ class FirebaseService {
         .map((snapshot) => BillingPeriod.from(snapshot));
   }
 
+  Future<void> updateBillingPeriod(
+    Wallet wallet,
+    DocumentReference periodRef,
+    DateTime startDate,
+    DateTime endDate,
+  ) {
+    return _billingPeriodsCollection(wallet)
+        .document(periodRef.documentID)
+        .updateData({
+      'startDate': Timestamp.fromDate(startDate),
+      'endDate': Timestamp.fromDate(endDate),
+    });
+  }
+
   Future<void> addBillingPeriod(
-      Wallet wallet, DateTime startDate, DateTime endDate) {
+    Wallet wallet,
+    DateTime startDate,
+    DateTime endDate,
+  ) {
     return _billingPeriodsCollection(wallet).add({
       'startDate': Timestamp.fromDate(startDate),
       'endDate': Timestamp.fromDate(endDate),

@@ -30,18 +30,14 @@ class _BillingPeriodPageState extends State<BillingPeriodPage> {
       final startDate = _startDateKey.currentState.value;
       final endDate = _endDateKey.currentState.value;
       if (widget.editPeriod != null) {
-        // TODO: Impl update
-      }
-      else {
-        _addPeriod(startDate, endDate);
+        FirebaseService.instance.updateBillingPeriod(widget.wallet,
+            widget.editPeriod.snapshot.reference, startDate, endDate);
+      } else {
+        FirebaseService.instance
+            .addBillingPeriod(widget.wallet, startDate, endDate);
       }
       Navigator.of(context).pop();
     }
-  }
-
-  _addPeriod(DateTime startDate, DateTime endDate) {
-    FirebaseService.instance
-        .addBillingPeriod(widget.wallet, startDate, endDate);
   }
 
   @override
@@ -53,7 +49,7 @@ class _BillingPeriodPageState extends State<BillingPeriodPage> {
             : "Add new billing period"),
         actions: <Widget>[
           FlatButton(
-            child: Text("Add"),
+            child: Text(widget.editPeriod != null ? "Save" : "Add"),
             onPressed: () => _onSelectedAdd(context),
             textColor: Theme.of(context).primaryTextTheme.button.color,
             shape: CircleBorder(side: BorderSide(color: Colors.transparent)),
@@ -68,13 +64,14 @@ class _BillingPeriodPageState extends State<BillingPeriodPage> {
             _dateField(
               key: _startDateKey,
               title: "From date",
-              initialValue: widget.editPeriod?.startDate ?? DateTime.now(),
+              initialValue:
+                  widget.editPeriod?.startDate?.toDate() ?? DateTime.now(),
             ),
             SizedBox(height: 16),
             _dateField(
                 key: _endDateKey,
                 title: "To date",
-                initialValue: widget.editPeriod?.endDate ??
+                initialValue: widget.editPeriod?.endDate?.toDate() ??
                     () {
                       final now = DateTime.now();
                       return DateTime(now.year, now.month + 1, now.day);
