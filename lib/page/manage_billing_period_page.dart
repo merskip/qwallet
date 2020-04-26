@@ -17,7 +17,6 @@ class ManageBillingPeriodPage extends StatelessWidget {
 
   onSelectedSetCurrentPeriod(BuildContext context, BillingPeriod period) {
     FirebaseService.instance.setCurrentBillingPeriod(wallet, period);
-    Navigator.pop(context, period);
   }
 
   onSelectedAddPeriod(BuildContext context) {
@@ -26,10 +25,14 @@ class ManageBillingPeriodPage extends StatelessWidget {
     ));
   }
 
-  onSelectedEditPeriod(BuildContext context, BillingPeriod period) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) =>
-          BillingPeriodPage(wallet: wallet, editPeriod: period),
+  onSelectedEditPeriod(BuildContext context, BillingPeriod period) async {
+    await Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => BillingPeriodPage(
+        wallet: wallet,
+        editPeriod: period,
+        removable: period.snapshot.reference != selectedPeriodRef &&
+            period.snapshot.reference != wallet.currentPeriod,
+      ),
     ));
   }
 
@@ -52,7 +55,7 @@ class ManageBillingPeriodPage extends StatelessWidget {
                 return ListView.separated(
                   itemCount: snapshot.values.length,
                   itemBuilder: (context, index) =>
-                      _periodListItem(context, wallet,  snapshot.values[index]),
+                      _periodListItem(context, wallet, snapshot.values[index]),
                   separatorBuilder: (context, index) => Divider(),
                 );
               },
@@ -65,7 +68,8 @@ class ManageBillingPeriodPage extends StatelessWidget {
     );
   }
 
-  Widget _periodListItem(BuildContext context, Wallet wallet, BillingPeriod period) {
+  Widget _periodListItem(
+      BuildContext context, Wallet wallet, BillingPeriod period) {
     final isCurrent =
         wallet.currentPeriod.documentID == period.snapshot.documentID;
     return RadioListTile(

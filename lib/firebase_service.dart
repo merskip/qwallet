@@ -116,6 +116,12 @@ class FirebaseService {
     });
   }
 
+  Future<void> removeBillingPeriod(Wallet wallet, DocumentReference periodRef) {
+    return _billingPeriodsCollection(wallet)
+        .document(periodRef.documentID)
+        .delete();
+  }
+
   Stream<TypedQuerySnapshot<Expense>> getExpenses(BillingPeriod period) {
     return _expensesCollection(period)
         .snapshots()

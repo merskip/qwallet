@@ -8,8 +8,9 @@ import 'package:intl/intl.dart';
 class BillingPeriodPage extends StatefulWidget {
   final Wallet wallet;
   final BillingPeriod editPeriod;
+  final bool removable;
 
-  const BillingPeriodPage({Key key, @required this.wallet, this.editPeriod})
+  const BillingPeriodPage({Key key, @required this.wallet, this.editPeriod, this.removable})
       : super(key: key);
 
   @override
@@ -40,6 +41,42 @@ class _BillingPeriodPageState extends State<BillingPeriodPage> {
     }
   }
 
+  _onSelectedRemove(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Remove ${widget.editPeriod.formattedDateRange} period?"),
+          content: SingleChildScrollView(
+            child: Text(
+                "That billing period will be removed with all the attached data. "
+                "This operation cannot be undone."),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Cancel"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            RaisedButton(
+              child: Text("Remove"),
+              color: Colors.red,
+              onPressed: () => _performRemovePeriod(context),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  _performRemovePeriod(BuildContext context) {
+    Navigator.of(context).pop(); // Dismiss pop-up
+    FirebaseService.instance.removeBillingPeriod(
+      widget.wallet,
+      widget.editPeriod.snapshot.reference,
+    );
+    Navigator.of(context).pop({'removed': true});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +85,11 @@ class _BillingPeriodPageState extends State<BillingPeriodPage> {
             ? "Edit ${widget.editPeriod.formattedShortDateRange} period"
             : "Add new billing period"),
         actions: <Widget>[
+          if (widget.editPeriod != null && widget.removable)
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () => _onSelectedRemove(context),
+            ),
           FlatButton(
             child: Text(widget.editPeriod != null ? "Save" : "Add"),
             onPressed: () => _onSelectedAdd(context),
@@ -69,20 +111,21 @@ class _BillingPeriodPageState extends State<BillingPeriodPage> {
             ),
             SizedBox(height: 16),
             _dateField(
-                key: _endDateKey,
-                title: "To date",
-                initialValue: widget.editPeriod?.endDate?.toDate() ??
-                    () {
-                      final now = DateTime.now();
-                      return DateTime(now.year, now.month + 1, now.day);
-                    }(),
-                validator: (DateTime endDate) {
-                  final startDate = _startDateKey.currentState.value;
-                  if (endDate.isBefore(startDate)) {
-                    return "End date must be after start state";
-                  }
-                  return null;
-                }),
+              key: _endDateKey,
+              title: "To date",
+              initialValue: widget.editPeriod?.endDate?.toDate() ??
+                  () {
+                    final now = DateTime.now();
+                    return DateTime(now.year, now.month + 1, now.day);
+                  }(),
+              validator: (DateTime endDate) {
+                final startDate = _startDateKey.currentState.value;
+                if (endDate.isBefore(startDate)) {
+                  return "End date must be after start state";
+                }
+                return null;
+              },
+            ),
           ]),
         ),
       ),
