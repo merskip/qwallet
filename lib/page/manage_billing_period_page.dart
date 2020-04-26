@@ -43,36 +43,17 @@ class ManageBillingPeriodPage extends StatelessWidget {
           stream:
               FirebaseService.instance.getWallet(wallet.snapshot.documentID),
           builder: (context, snapshot) {
+            if (!snapshot.hasData) return Container();
             final wallet = snapshot.data;
+
             return QueryListWidget(
               stream: FirebaseService.instance.getBillingPeriods(wallet),
               builder: (TypedQuerySnapshot<BillingPeriod> snapshot) {
-                return ListView.builder(
+                return ListView.separated(
                   itemCount: snapshot.values.length,
-                  itemBuilder: (context, index) {
-                    final period = snapshot.values[index];
-                    final isCurrent = wallet.currentPeriod.documentID ==
-                        period.snapshot.documentID;
-                    return RadioListTile(
-                      value: period.snapshot.documentID,
-                      groupValue: selectedPeriodRef.documentID,
-                      onChanged: (value) {
-                        Navigator.pop(context, period);
-                      },
-                      title: Text(period.formattedDateRange),
-                      subtitle: Text(period.formattedDays),
-                      secondary: Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: <Widget>[
-                            _activeWidget(context, period, isCurrent),
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () =>
-                                  onSelectedEditPeriod(context, period),
-                            ),
-                          ]),
-                    );
-                  },
+                  itemBuilder: (context, index) =>
+                      _periodListItem(context, wallet,  snapshot.values[index]),
+                  separatorBuilder: (context, index) => Divider(),
                 );
               },
             );
@@ -84,21 +65,39 @@ class ManageBillingPeriodPage extends StatelessWidget {
     );
   }
 
-  Widget _activeWidget(
+  Widget _periodListItem(BuildContext context, Wallet wallet, BillingPeriod period) {
+    final isCurrent =
+        wallet.currentPeriod.documentID == period.snapshot.documentID;
+    return RadioListTile(
+      value: period.snapshot.documentID,
+      groupValue: selectedPeriodRef.documentID,
+      onChanged: (value) {
+        Navigator.pop(context, period);
+      },
+      title: Text(period.formattedDateRange),
+      subtitle: _currentStateWidget(context, period, isCurrent),
+      secondary: IconButton(
+        icon: Icon(Icons.edit),
+        onPressed: () => onSelectedEditPeriod(context, period),
+      ),
+    );
+  }
+
+  Widget _currentStateWidget(
       BuildContext context, BillingPeriod period, bool isCurrent) {
     if (isCurrent && period.isNowInsideDateRange) {
-      return Text("Is current");
+      return Text("Current");
     } else if (isCurrent && !period.isNowInsideDateRange) {
-      return Text("Is current (outdated)");
+      return Text("Current (outdated)");
     } else if (period.isNowInsideDateRange) {
       return RaisedButton(
-        child: Text("Set current"),
+        child: Text("Set as current"),
         color: Theme.of(context).primaryColor,
         textColor: Theme.of(context).primaryTextTheme.button.color,
         onPressed: () => onSelectedSetCurrentPeriod(context, period),
       );
     } else {
-      return SizedBox();
+      return Text("Past");
     }
   }
 }

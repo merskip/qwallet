@@ -180,7 +180,7 @@ class CurrentBillingPeriodListItem extends StatelessWidget {
   _build(BillingPeriod period) {
     return ListTile(
       leading: Icon(Icons.date_range),
-      title: Text(period.formattedDateRange),
+      title: Text(period.formattedShortDateRange),
       subtitle: Text(period.formattedDays),
       trailing: OutlineButton(
         child: Text("Manage periods"),

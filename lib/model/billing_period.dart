@@ -18,8 +18,15 @@ class BillingPeriod {
         && now.isBefore(endDate.toDate());
   }
 
+  String get formattedShortDateRange {
+    final dateFormat = DateFormat("d MMM");
+    final fromDate = dateFormat.format(startDate.toDate());
+    final toDate = dateFormat.format(endDate.toDate());
+    return "$fromDate - $toDate";
+  }
+
   String get formattedDateRange {
-    final dateFormat = DateFormat("d MMMM");
+    final dateFormat = DateFormat("d MMMM yyyy");
     final fromDate = dateFormat.format(startDate.toDate());
     final toDate = dateFormat.format(endDate.toDate());
     return "$fromDate - $toDate";

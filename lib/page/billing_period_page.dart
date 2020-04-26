@@ -45,7 +45,7 @@ class _BillingPeriodPageState extends State<BillingPeriodPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.editPeriod != null
-            ? "Edit ${widget.editPeriod.formattedDateRange} period"
+            ? "Edit ${widget.editPeriod.formattedShortDateRange} period"
             : "Add new billing period"),
         actions: <Widget>[
           FlatButton(
