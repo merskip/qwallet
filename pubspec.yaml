@@ -33,6 +33,7 @@ dependencies:
   collection: ^1.14.11
   date_utils: ^0.1.0
   flutter_launcher_icons: ^0.7.4
+  datetime_picker_formfield: ^1.0.0
 
 dev_dependencies:
   flutter_test:

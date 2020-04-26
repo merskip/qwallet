@@ -7,6 +7,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:collection/collection.dart';
 import 'package:date_utils/date_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'model/user.dart';
 import 'model/wallet.dart';
@@ -39,87 +40,6 @@ class FirebaseService {
         .where((user) => includeAnonymous ? true : !user.isAnonymous)
         .toList();
   }
-
-//  Stream<TypedQuerySnapshot<Wallet>> getWallets() {
-//    return firestore
-//        .collection(collectionWallets)
-//        .where('owners_uid', arrayContains: currentUser.uid)
-//        .snapshots()
-//        .map((snapshot) => TypedQuerySnapshot(
-//              snapshot: snapshot,
-//              mapper: (document) => Wallet.from(document),
-//            ));
-//  }
-//
-
-//
-//  setOwners(Wallet wallet, List<User> owners) async {
-//    await firestore
-//        .collection(collectionWallets)
-//        .document(wallet.snapshot.documentID)
-//        .updateData({'owners_uid': owners.map((user) => user.uid).toList()});
-//  }
-//
-//  Stream<List<DateTime>> getWalletMonths(Wallet wallet) {
-//    // TODO: Cloud Functions - https://firebase.google.com/docs/firestore/solutions/aggregation
-//    return getExpenses(wallet).map((snapshot) {
-//      return groupBy(snapshot.values, (Expense expense) => expense.month)
-//          .keys
-//          .toList();
-//    });
-//  }
-//
-//  Stream<TypedQuerySnapshot<Expense>> getExpenses(Wallet wallet,
-//      {DateTime fromDate}) {
-//    final fromTimestamp =
-//        fromDate != null ? Timestamp.fromDate(fromDate) : null;
-//
-//    return firestore
-//        .collection(collectionWallets)
-//        .document(wallet.snapshot.documentID)
-//        .collection(collectionExpenses)
-//        .orderBy("date", descending: true)
-//        .where("date", isGreaterThanOrEqualTo: fromTimestamp)
-//        .where("date", isLessThanOrEqualTo: getEndOfMonth(fromDate))
-//        .snapshots()
-//        .map((snapshot) => TypedQuerySnapshot(
-//              snapshot: snapshot,
-//              mapper: (document) => Expense.from(document),
-//            ));
-//  }
-//
-//  removeExpense(Wallet wallet, Expense expense) async {
-//    final walletDoc = firestore
-//        .collection(collectionWallets)
-//        .document(wallet.snapshot.documentID);
-//    walletDoc.updateData({
-//      // TODO: Perform in translation
-//      "isBalanceOutdated": true
-//    });
-//    await walletDoc
-//        .collection(collectionExpenses)
-//        .document(expense.snapshot.documentID)
-//        .delete();
-//  }
-//
-//  addExpanse(
-//      BillingPeriod period, String title, double amount, Timestamp date) {
-//    final walletDoc = firestore
-//        .collection(collectionWallets)
-//        .document(wallet.snapshot.documentID);
-//    walletDoc.updateData({
-//      // TODO: Perform in translation
-//      "isBalanceOutdated": true
-//    });
-//    walletDoc
-//        .collection(collectionExpenses) // TODO: Make computed value or function
-//        .add({
-//      "wallet": wallet.snapshot.reference,
-//      "title": title,
-//      "amount": amount,
-//      "date": date
-//    });
-//  }
 
   Stream<Wallet> getWallet(String walletId) {
     return _walletsCollection()
@@ -166,6 +86,17 @@ class FirebaseService {
         .document(periodRef.documentID)
         .snapshots()
         .map((snapshot) => BillingPeriod.from(snapshot));
+  }
+
+  Future<void> addBillingPeriod(
+      Wallet wallet, DateTime startDate, DateTime endDate) {
+    return _billingPeriodsCollection(wallet).add({
+      'startDate': Timestamp.fromDate(startDate),
+      'endDate': Timestamp.fromDate(endDate),
+      'balance': 0.0,
+      'isBalanceOutdated': false,
+      'totalIncome': 0.0,
+    });
   }
 
   Stream<TypedQuerySnapshot<Expense>> getExpenses(BillingPeriod period) {

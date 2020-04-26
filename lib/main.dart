@@ -13,6 +13,9 @@ class MyApp extends StatelessWidget {
       title: "QWallet",
       theme: ThemeData(
         primarySwatch: _darkenBrownColor(),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(),
+        ),
       ),
       debugShowCheckedModeBanner: false,
       home: LandingPage(),
