@@ -32,11 +32,11 @@ class WalletList extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SvgPicture.asset(
-                  "assets/icons8-wallet.svg",
-                  color: Colors.grey,
-                  height: 72,
-                ),
+//                SvgPicture.asset(
+//                  "assets/icons8-wallet.svg",
+//                  color: Colors.grey,
+//                  height: 72,
+//                ),
                 SizedBox(height: 16),
                 Text(
                   "There are no any wallets in your account.\nUse the + button to add them.",
@@ -60,11 +60,11 @@ class WalletList extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(children: <Widget>[
-            SvgPicture.asset(
-              "assets/icons8-wallet.svg",
-              color: Theme.of(context).primaryColor,
-              width: 44,
-            ),
+//            SvgPicture.asset(
+//              "assets/icons8-wallet.svg",
+//              color: Theme.of(context).primaryColor,
+//              width: 44,
+//            ),
             SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

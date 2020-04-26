@@ -135,11 +135,11 @@ class ExpenseList extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  SvgPicture.asset(
-                    "assets/icons8-wallet.svg",
-                    color: Colors.grey,
-                    height: 72,
-                  ),
+//                  SvgPicture.asset(
+//                    "assets/icons8-wallet.svg",
+//                    color: Colors.grey,
+//                    height: 72,
+//                  ),
                   SizedBox(height: 16),
                   Text(
                     "There are no any expenses in this wallet.\nUse the + button to add them.",

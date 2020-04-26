@@ -21,11 +21,11 @@ class _SignInPageState extends State<SignInPage> {
       body: Center(
         child: Column(children: <Widget>[
           Spacer(flex: 2),
-          SvgPicture.asset(
-            "assets/app-icon-shape.svg",
-            width: 84,
-            color: Theme.of(context).primaryTextTheme.display1.color,
-          ),
+//          SvgPicture.asset(
+//            "assets/app-icon-shape.svg",
+//            width: 84,
+//            color: Theme.of(context).primaryTextTheme.display1.color,
+//          ),
           SizedBox(height: 24),
           Text(
             "Welcum to QWallet!",
@@ -41,8 +41,8 @@ class _SignInPageState extends State<SignInPage> {
             SizedBox(height: 16),
             _singInButton(
               text: 'Sign in with Google',
-              icon: SvgPicture.asset("assets/icons8-google.svg",
-                  color: Theme.of(context).primaryColor),
+//              icon: SvgPicture.asset("assets/icons8-google.svg",
+//                  color: Theme.of(context).primaryColor),
               onPressed: _singInWithGoogle,
             ),
             SizedBox(height: 16),

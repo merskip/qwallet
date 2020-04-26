@@ -39,10 +39,10 @@ class HomePage extends StatelessWidget {
       ),
       body: WalletList(),
       floatingActionButton: FloatingActionButton(
-        child: SvgPicture.asset(
-          "assets/add-wallet.svg",
-          color: Colors.white, // TODO: Use the color from Theme
-        ),
+//        child: SvgPicture.asset(
+//          "assets/add-wallet.svg",
+//          color: Colors.white, // TODO: Use the color from Theme
+//        ),
         onPressed: () => _onSelectedAddWallet(context),
       ),
     );
