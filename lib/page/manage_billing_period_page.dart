@@ -1,7 +1,7 @@
-import 'package:QWallet/firebase_service.dart';
-import 'package:QWallet/model/billing_period.dart';
-import 'package:QWallet/model/wallet.dart';
-import 'package:QWallet/widget/query_list_widget.dart';
+import 'package:qwallet/firebase_service.dart';
+import 'package:qwallet/model/billing_period.dart';
+import 'package:qwallet/model/wallet.dart';
+import 'package:qwallet/widget/query_list_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

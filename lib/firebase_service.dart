@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:QWallet/model/billing_period.dart';
-import 'package:QWallet/model/expense.dart';
+import 'package:qwallet/model/billing_period.dart';
+import 'package:qwallet/model/expense.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:collection/collection.dart';

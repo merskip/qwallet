@@ -1,5 +1,5 @@
-import 'package:QWallet/firebase_service.dart';
-import 'package:QWallet/model/product.dart';
+import 'package:qwallet/firebase_service.dart';
+import 'package:qwallet/model/product.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 

@@ -1,4 +1,4 @@
-import 'package:QWallet/utils.dart';
+import 'package:qwallet/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_utils/date_utils.dart';
 import 'package:intl/intl.dart';

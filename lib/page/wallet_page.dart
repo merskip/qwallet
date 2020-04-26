@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:QWallet/model/billing_period.dart';
-import 'package:QWallet/page/manage_billing_period_page.dart';
+import 'package:qwallet/model/billing_period.dart';
+import 'package:qwallet/page/manage_billing_period_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

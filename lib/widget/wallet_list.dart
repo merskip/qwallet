@@ -1,4 +1,4 @@
-import 'package:QWallet/model/billing_period.dart';
+import 'package:qwallet/model/billing_period.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
