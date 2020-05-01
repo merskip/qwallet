@@ -5,6 +5,8 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../utils.dart';
+
 class BillingPeriodPage extends StatefulWidget {
   final Wallet wallet;
   final BillingPeriod editPeriod;
@@ -113,11 +115,8 @@ class _BillingPeriodPageState extends State<BillingPeriodPage> {
             _dateField(
               key: _endDateKey,
               title: "To date",
-              initialValue: widget.editPeriod?.endDate?.toDate() ??
-                  () {
-                    final now = DateTime.now();
-                    return DateTime(now.year, now.month + 1, now.day);
-                  }(),
+              initialValue:
+                  widget.editPeriod?.endDate?.toDate() ?? getNowPlusOneMonth(),
               validator: (DateTime endDate) {
                 final startDate = _startDateKey.currentState.value;
                 if (endDate.isBefore(startDate)) {

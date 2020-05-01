@@ -5,16 +5,19 @@ DateTime getBeginOfCurrentMonth() {
   return getBeginOfMonth(now);
 }
 
-// TODO: Move to global scope
 DateTime getBeginOfMonth(DateTime date) {
   if (date == null) return null;
   return Utils.firstDayOfMonth(date);
 }
 
-// TODO: Move to global scope
 DateTime getEndOfMonth(DateTime date) {
   if (date == null) return null;
   return Utils.lastDayOfMonth(date).add(Duration(hours: 24));
+}
+
+DateTime getNowPlusOneMonth() {
+  final now = DateTime.now();
+  return DateTime(now.year, now.month + 1, now.day);
 }
 
 double toDouble(dynamic value, {double defaultValue = 0.0}) {

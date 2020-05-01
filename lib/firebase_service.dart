@@ -8,6 +8,7 @@ import 'package:collection/collection.dart';
 import 'package:date_utils/date_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:qwallet/utils.dart';
 
 import 'model/user.dart';
 import 'model/wallet.dart';
@@ -58,10 +59,25 @@ class FirebaseService {
             ));
   }
 
-  Future<void> createWallet(String name) {
-    return _walletsCollection().add({
-      "name": name,
-      "owners_uid": [currentUser.uid]
+  Future<void> createWallet(String name) async {
+    await firestore.runTransaction((transaction) async {
+
+      final walletRef = _walletsCollection().document();
+      final billingPeriod = walletRef.collection("periods").document();
+
+      transaction.set(walletRef, {
+        "name": name,
+        "owners_uid": [currentUser.uid],
+        "currentPeriod": billingPeriod
+      });
+
+      transaction.set(billingPeriod, {
+        'startDate': Timestamp.fromDate(DateTime.now()),
+        'endDate': Timestamp.fromDate(getNowPlusOneMonth()),
+        'balance': 0.0,
+        'isBalanceOutdated': false,
+        'totalIncome': 0.0,
+      });
     });
   }
 
@@ -102,7 +118,7 @@ class FirebaseService {
     });
   }
 
-  Future<void> addBillingPeriod(
+  Future<DocumentReference> addBillingPeriod(
     Wallet wallet,
     DateTime startDate,
     DateTime endDate,
