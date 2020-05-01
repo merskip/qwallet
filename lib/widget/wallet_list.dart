@@ -1,6 +1,7 @@
 import 'package:qwallet/model/billing_period.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qwallet/widget/vector_image.dart';
 
 import '../firebase_service.dart';
 import '../page/wallet_page.dart';
@@ -32,11 +33,11 @@ class WalletList extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-//                SvgPicture.asset(
-//                  "assets/icons8-wallet.svg",
-//                  color: Colors.grey,
-//                  height: 72,
-//                ),
+                VectorImage(
+                  "assets/ic-wallet.svg",
+                  size: Size.square(72),
+                  color: Colors.grey,
+                ),
                 SizedBox(height: 16),
                 Text(
                   "There are no any wallets in your account.\nUse the + button to add them.",
@@ -60,23 +61,23 @@ class WalletList extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(children: <Widget>[
-//            SvgPicture.asset(
-//              "assets/icons8-wallet.svg",
-//              color: Theme.of(context).primaryColor,
-//              width: 44,
-//            ),
+            VectorImage(
+              "assets/ic-wallet.svg",
+              color: Theme.of(context).primaryColor,
+              size: Size.square(48),
+            ),
             SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
                   wallet.name ?? '',
-                  style: Theme.of(context).textTheme.body2,
+                  style: Theme.of(context).textTheme.bodyText1,
                 ),
                 SizedBox(height: 4),
                 Text(
                   "${wallet.ownersUid.length} owners",
-                  style: Theme.of(context).textTheme.body1,
+                  style: Theme.of(context).textTheme.bodyText2,
                 ),
               ],
             ),
@@ -87,7 +88,7 @@ class WalletList extends StatelessWidget {
                 builder: (context, AsyncSnapshot<BillingPeriod> snapshot) {
                   return Text(
                     snapshot.data?.formattedBalance ?? "-",
-                    style: Theme.of(context).textTheme.title.apply(
+                    style: Theme.of(context).textTheme.headline6.apply(
                           color: snapshot.data?.isBalanceOutdated ?? true
                               ? Colors.grey
                               : null,

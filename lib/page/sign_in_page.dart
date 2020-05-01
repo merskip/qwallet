@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:qwallet/widget/vector_image.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -21,15 +22,15 @@ class _SignInPageState extends State<SignInPage> {
       body: Center(
         child: Column(children: <Widget>[
           Spacer(flex: 2),
-//          SvgPicture.asset(
-//            "assets/app-icon-shape.svg",
-//            width: 84,
-//            color: Theme.of(context).primaryTextTheme.display1.color,
-//          ),
+          VectorImage(
+            "assets/app-logo-black.svg",
+            size: Size.square(128),
+            color: Theme.of(context).primaryTextTheme.headline4.color,
+          ),
           SizedBox(height: 24),
           Text(
             "Welcum to QWallet!",
-            style: Theme.of(context).primaryTextTheme.display1,
+            style: Theme.of(context).primaryTextTheme.headline4,
           ),
           Spacer(flex: 1),
           Column(children: <Widget>[
@@ -41,8 +42,7 @@ class _SignInPageState extends State<SignInPage> {
             SizedBox(height: 16),
             _singInButton(
               text: 'Sign in with Google',
-//              icon: SvgPicture.asset("assets/icons8-google.svg",
-//                  color: Theme.of(context).primaryColor),
+              icon: VectorImage("assets/ic-google.svg", color: Theme.of(context).primaryColor),
               onPressed: _singInWithGoogle,
             ),
             SizedBox(height: 16),

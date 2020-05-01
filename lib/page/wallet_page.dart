@@ -4,7 +4,7 @@ import 'package:qwallet/model/billing_period.dart';
 import 'package:qwallet/page/manage_billing_period_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qwallet/widget/vector_image.dart';
 
 import '../firebase_service.dart';
 import '../model/wallet.dart';
@@ -125,7 +125,6 @@ class ExpenseList extends StatelessWidget {
         } else {
           return Column(
             children: <Widget>[
-
               CurrentBillingPeriodListItem(
                 currentPeriod: currentPeriodStream,
                 onSelectedChangePeriod: onSelectedChangePeriod,
@@ -135,11 +134,11 @@ class ExpenseList extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-//                  SvgPicture.asset(
-//                    "assets/icons8-wallet.svg",
-//                    color: Colors.grey,
-//                    height: 72,
-//                  ),
+                  VectorImage(
+                    "assets/ic-wallet.svg",
+                    size: Size.square(72),
+                    color: Colors.grey,
+                  ),
                   SizedBox(height: 16),
                   Text(
                     "There are no any expenses in this wallet.\nUse the + button to add them.",
@@ -216,7 +215,7 @@ class ExpenseListItem extends StatelessWidget {
         subtitle: Text(expense.formattedDate),
         trailing: Text(
           expense.formattedAmount,
-          style: Theme.of(context).textTheme.title,
+          style: Theme.of(context).textTheme.headline6,
         ),
       ),
       onDismissed: (direction) {
