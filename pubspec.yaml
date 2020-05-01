@@ -84,6 +84,7 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
 flutter_icons:
-  image_path: 'assets/app-icon.png'
+  # run: flutter pub run flutter_launcher_icons:main
+  image_path: 'assets/app-logo.png'
   android: true
   ios: true
