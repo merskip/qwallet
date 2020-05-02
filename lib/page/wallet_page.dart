@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/dialog/edit_income_dialog.dart';
 import 'package:qwallet/model/billing_period.dart';
 import 'package:qwallet/page/expense_page.dart';
-import 'package:qwallet/page/income_page.dart';
 import 'package:qwallet/page/manage_billing_period_page.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
@@ -66,13 +66,17 @@ class _WalletPageState extends State<WalletPage> {
     );
   }
 
-  onSelectedAddIncome(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => IncomePage(),
-      ),
+  onSelectedEditIncome(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => EditIncomeDialog(periodRef: selectedPeriodRef),
     );
+//    Navigator.push(
+//      context,
+//      MaterialPageRoute(
+//        builder: (context) => IncomePage(),
+//      ),
+//    );
   }
 
   @override
@@ -104,10 +108,10 @@ class _WalletPageState extends State<WalletPage> {
             width: 40,
             height: 40,
             child: FloatingActionButton(
-              child: VectorImage("assets/ic-add-income.svg",
+              child: VectorImage("assets/ic-edit-income.svg",
                   size: Size.square(26), color: Colors.white),
-              heroTag: "add-income",
-              onPressed: () => onSelectedAddIncome(context),
+              heroTag: "edit-income",
+              onPressed: () => onSelectedEditIncome(context),
             ),
           ),
           SizedBox(width: 12),

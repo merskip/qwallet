@@ -1,4 +1,5 @@
 import 'package:date_utils/date_utils.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 DateTime getBeginOfCurrentMonth() {
@@ -32,3 +33,17 @@ double toDouble(dynamic value, {double defaultValue = 0.0}) {
 
 String formatAmount(double amount) =>
     NumberFormat.simpleCurrency(locale: "pl_PL").format(amount);
+
+FormFieldValidator<String> amountValidator() {
+  return (value) {
+    if (value.isEmpty) return "Please enter a amount";
+    if (parseAmount(value) == null) return "Invalid amount format";
+    return null;
+  };
+}
+
+double parseAmount(String text) {
+  final pureText =
+  text.replaceAll(",", ".").replaceAll(RegExp("[^0-9\.]"), "");
+  return double.tryParse(pureText) ?? null;
+}

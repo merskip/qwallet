@@ -192,6 +192,12 @@ class FirebaseService {
     });
   }
 
+  Future<void> updateTotalIncome(DocumentReference periodRef, double amount) {
+    return periodRef.updateData({
+      "totalIncome": amount
+    });
+  }
+
   // Collections access
 
   CollectionReference _expensesCollection(BillingPeriod period) =>

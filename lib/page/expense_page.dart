@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/expense.dart';
 
+import '../utils.dart';
+
 class ExpensePage extends StatefulWidget {
   final DocumentReference periodRef;
   final Expense editExpense;
@@ -32,7 +34,7 @@ class _ExpensePageState extends State<ExpensePage> {
       _formKey.currentState.save();
 
       final name = _nameKey.currentState.value;
-      final amount = _parseAmount(_amountKey.currentState.value);
+      final amount = parseAmount(_amountKey.currentState.value);
       final date = _dateKey.currentState.value;
 
       if (widget.editExpense != null) {
@@ -85,11 +87,7 @@ class _ExpensePageState extends State<ExpensePage> {
               initialValue: widget.editExpense?.amount?.toStringAsFixed(2),
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               textAlign: TextAlign.end,
-              validator: (value) {
-                if (value.isEmpty) return "Please enter a amount";
-                if (_parseAmount(value) == null) return "Invalid amount format";
-                return null;
-              },
+              validator: amountValidator(),
               textInputAction: TextInputAction.next,
               onFieldSubmitted: (_) {
                 FocusScope.of(context).requestFocus(_dateFocus);
@@ -126,11 +124,5 @@ class _ExpensePageState extends State<ExpensePage> {
         ),
       ),
     );
-  }
-
-  double _parseAmount(String text) {
-    final pureText =
-        text.replaceAll(",", ".").replaceAll(RegExp("[^0-9\.]"), "");
-    return double.tryParse(pureText) ?? null;
   }
 }
