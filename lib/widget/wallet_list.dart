@@ -104,10 +104,22 @@ class WalletList extends StatelessWidget {
     text += "\n";
     text += formatAmount(period.dailyExpense, currency: false)
         + "/" + formatAmount(period.dailyIncome);
-    return Text(
-      text,
-      style: Theme.of(context).textTheme.headline6,
-      textAlign: TextAlign.end,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          text,
+          style: Theme.of(context).textTheme.headline6,
+          textAlign: TextAlign.end,
+        ),
+        SizedBox(height: 4),
+        SizedBox(
+          width: 128,
+          child: LinearProgressIndicator(
+            value: period.dailyExpense / period.dailyIncome,
+          ),
+        ),
+      ],
     );
 //    return Text.rich(textSpan)
   }
