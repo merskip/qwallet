@@ -98,10 +98,8 @@ class FirebaseService {
             ));
   }
 
-  Stream<BillingPeriod> getBillingPeriod(
-      Wallet wallet, DocumentReference periodRef) {
-    return _billingPeriodsCollection(wallet)
-        .document(periodRef.documentID)
+  Stream<BillingPeriod> getBillingPeriod(DocumentReference periodRef) {
+    return periodRef
         .snapshots()
         .map((snapshot) => BillingPeriod.from(snapshot));
   }
@@ -156,6 +154,10 @@ class FirebaseService {
       "amount": amount,
       "date": date,
     });
+  }
+
+  Future<void> removeExpense(DocumentReference expenseRef) {
+    return expenseRef.delete();
   }
 
   // Collections access

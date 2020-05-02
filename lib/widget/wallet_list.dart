@@ -1,12 +1,11 @@
-import 'package:qwallet/model/billing_period.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qwallet/model/billing_period.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
 import '../firebase_service.dart';
+import '../model/wallet.dart';
 import '../page/wallet_page.dart';
 import 'query_list_widget.dart';
-import '../model/wallet.dart';
 
 class WalletList extends StatelessWidget {
   openWallet(BuildContext context, Wallet wallet) {
@@ -84,7 +83,7 @@ class WalletList extends StatelessWidget {
             Spacer(),
             StreamBuilder(
                 stream: FirebaseService.instance
-                    .getBillingPeriod(wallet, wallet.currentPeriod),
+                    .getBillingPeriod(wallet.currentPeriod),
                 builder: (context, AsyncSnapshot<BillingPeriod> snapshot) {
                   return Text(
                     snapshot.data?.formattedBalance ?? "-",

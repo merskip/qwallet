@@ -76,9 +76,8 @@ class _WalletPageState extends State<WalletPage> {
 
   @override
   Widget build(BuildContext context) {
-    final periodStream = () => FirebaseService.instance
-        .getBillingPeriod(widget.wallet, selectedPeriodRef);
-    final expensesStream = periodStream()
+    final expensesStream = FirebaseService.instance
+        .getBillingPeriod(selectedPeriodRef)
         .asyncExpand((period) => FirebaseService.instance.getExpenses(period));
 
     return Scaffold(
@@ -93,7 +92,7 @@ class _WalletPageState extends State<WalletPage> {
         ],
       ),
       body: ExpenseList(
-        currentPeriodStream: periodStream(),
+        currentPeriodRef: selectedPeriodRef,
         expensesStream: expensesStream,
         onSelectedChangePeriod: () => onSelectedManageBillingPeriod(context),
       ),
@@ -124,13 +123,13 @@ class _WalletPageState extends State<WalletPage> {
 }
 
 class ExpenseList extends StatelessWidget {
-  final Stream<BillingPeriod> currentPeriodStream;
+  final DocumentReference currentPeriodRef;
   final Stream<TypedQuerySnapshot<Expense>> expensesStream;
   final VoidCallback onSelectedChangePeriod;
 
   const ExpenseList({
     Key key,
-    this.currentPeriodStream,
+    this.currentPeriodRef,
     this.expensesStream,
     this.onSelectedChangePeriod,
   }) : super(key: key);
@@ -146,7 +145,7 @@ class ExpenseList extends StatelessWidget {
             itemBuilder: (context, index) {
               if (index == 0) {
                 return CurrentBillingPeriodListItem(
-                  currentPeriod: currentPeriodStream,
+                  currentPeriodRef: currentPeriodRef,
                   onSelectedChangePeriod: onSelectedChangePeriod,
                 );
               }
@@ -158,7 +157,7 @@ class ExpenseList extends StatelessWidget {
           return Column(
             children: <Widget>[
               CurrentBillingPeriodListItem(
-                currentPeriod: currentPeriodStream,
+                currentPeriodRef: currentPeriodRef,
                 onSelectedChangePeriod: onSelectedChangePeriod,
               ),
               Divider(),
@@ -189,19 +188,19 @@ class ExpenseList extends StatelessWidget {
 }
 
 class CurrentBillingPeriodListItem extends StatelessWidget {
-  final Stream<BillingPeriod> currentPeriod;
+  final DocumentReference currentPeriodRef;
   final VoidCallback onSelectedChangePeriod;
 
   const CurrentBillingPeriodListItem({
     Key key,
-    this.currentPeriod,
+    this.currentPeriodRef,
     this.onSelectedChangePeriod,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: currentPeriod,
+      stream: FirebaseService.instance.getBillingPeriod(currentPeriodRef),
       builder: (context, AsyncSnapshot<BillingPeriod> snapshot) {
         return snapshot.hasData ? _build(snapshot.data) : Container();
       },
@@ -251,8 +250,7 @@ class ExpenseListItem extends StatelessWidget {
         ),
       ),
       onDismissed: (direction) {
-        // TODO: Impl removeExpense
-//        FirebaseService.instance.removeExpense(widget.wallet, expense);
+        FirebaseService.instance.removeExpense(expense.snapshot.reference);
       },
     );
   }
