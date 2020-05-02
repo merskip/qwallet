@@ -31,8 +31,15 @@ double toDouble(dynamic value, {double defaultValue = 0.0}) {
     return defaultValue;
 }
 
-String formatAmount(double amount) =>
-    NumberFormat.simpleCurrency(locale: "pl_PL").format(amount);
+String formatAmount(double amount, {bool currency = true}) {
+  if (amount == null) return null;
+  if (currency)
+    return NumberFormat.simpleCurrency(locale: "pl_PL").format(amount);
+  else
+    return NumberFormat.currency(locale: "pl_PL", symbol: "")
+        .format(amount)
+        .trimRight();
+}
 
 FormFieldValidator<String> amountValidator() {
   return (value) {
@@ -43,7 +50,6 @@ FormFieldValidator<String> amountValidator() {
 }
 
 double parseAmount(String text) {
-  final pureText =
-  text.replaceAll(",", ".").replaceAll(RegExp("[^0-9\.]"), "");
+  final pureText = text.replaceAll(",", ".").replaceAll(RegExp("[^0-9\.]"), "");
   return double.tryParse(pureText) ?? null;
 }
