@@ -147,6 +147,15 @@ class FirebaseService {
             ));
   }
 
+  Future<void> updateExpense(
+      Expense expense, String name, double amount, Timestamp date) {
+    return expense.snapshot.reference.updateData({
+      "name": name,
+      "amount": amount,
+      "date": date,
+    });
+  }
+
   Future<DocumentReference> addExpense(
       DocumentReference periodRef, String name, double amount, Timestamp date) {
     return periodRef.collection("expenses").add({

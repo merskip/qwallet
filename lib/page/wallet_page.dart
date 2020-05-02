@@ -149,7 +149,10 @@ class ExpenseList extends StatelessWidget {
                   onSelectedChangePeriod: onSelectedChangePeriod,
                 );
               }
-              return ExpenseListItem(expense: snapshot.values[index - 1]);
+              return ExpenseListItem(
+                expense: snapshot.values[index - 1],
+                currentPeriodRef: currentPeriodRef,
+              );
             },
             separatorBuilder: (context, index) => Divider(),
           );
@@ -221,9 +224,27 @@ class CurrentBillingPeriodListItem extends StatelessWidget {
 }
 
 class ExpenseListItem extends StatelessWidget {
+  final DocumentReference currentPeriodRef;
   final Expense expense;
 
-  const ExpenseListItem({Key key, this.expense}) : super(key: key);
+  const ExpenseListItem({Key key, this.currentPeriodRef, this.expense})
+      : super(key: key);
+
+  onSelectedExpense(BuildContext context, Expense expense) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ExpensePage(
+          periodRef: currentPeriodRef,
+          editExpense: expense,
+        ),
+      ),
+    );
+  }
+
+  onDismissedExpense(Expense expense) {
+    FirebaseService.instance.removeExpense(expense.snapshot.reference);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -241,17 +262,18 @@ class ExpenseListItem extends StatelessWidget {
           ),
         ),
       ),
-      child: ListTile(
-        title: Text(expense.name),
-        subtitle: Text(expense.formattedDate),
-        trailing: Text(
-          expense.formattedAmount,
-          style: Theme.of(context).textTheme.headline6,
+      child: InkWell(
+        child: ListTile(
+          title: Text(expense.name),
+          subtitle: Text(expense.formattedDate),
+          trailing: Text(
+            expense.formattedAmount,
+            style: Theme.of(context).textTheme.headline6,
+          ),
         ),
+        onTap: () => onSelectedExpense(context, expense),
       ),
-      onDismissed: (direction) {
-        FirebaseService.instance.removeExpense(expense.snapshot.reference);
-      },
+      onDismissed: (direction) => onDismissedExpense(expense),
     );
   }
 }
