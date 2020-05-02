@@ -12,6 +12,7 @@ import '../dialog/manage_owners_dialog.dart';
 import '../firebase_service.dart';
 import '../model/expense.dart';
 import '../model/wallet.dart';
+import '../utils.dart';
 import '../widget/query_list_widget.dart';
 
 class WalletPage extends StatefulWidget {
@@ -214,7 +215,12 @@ class CurrentBillingPeriodListItem extends StatelessWidget {
     return ListTile(
       leading: Icon(Icons.date_range),
       title: Text(period.formattedShortDateRange),
-      subtitle: Text(period.formattedDays),
+      isThreeLine: true,
+      subtitle: Text([
+        period.formattedDays,
+        "Total income: ${formatAmount(period.totalIncome)}",
+        "Total expense: ${formatAmount(period.totalExpense)}",
+      ].join("\n")),
       trailing: OutlineButton(
         child: Text("Manage periods"),
         onPressed: onSelectedChangePeriod,

@@ -1,4 +1,5 @@
 import 'package:date_utils/date_utils.dart';
+import 'package:intl/intl.dart';
 
 DateTime getBeginOfCurrentMonth() {
   DateTime now = DateTime.now();
@@ -28,3 +29,6 @@ double toDouble(dynamic value, {double defaultValue = 0.0}) {
   else
     return defaultValue;
 }
+
+String formatAmount(double amount) =>
+    NumberFormat.simpleCurrency(locale: "pl_PL").format(amount);

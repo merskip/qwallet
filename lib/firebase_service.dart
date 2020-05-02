@@ -68,9 +68,8 @@ class FirebaseService {
       transaction.set(billingPeriod, {
         'startDate': Timestamp.fromDate(DateTime.now()),
         'endDate': Timestamp.fromDate(getNowPlusOneMonth()),
-        'balance': 0.0,
-        'isBalanceOutdated': false,
         'totalIncome': 0.0,
+        'totalExpense': 0.0,
       });
     });
   }
@@ -126,9 +125,8 @@ class FirebaseService {
     return _billingPeriodsCollection(wallet).add({
       'startDate': Timestamp.fromDate(startDate),
       'endDate': Timestamp.fromDate(endDate),
-      'balance': 0.0,
-      'isBalanceOutdated': false,
       'totalIncome': 0.0,
+      'totalExpense': 0.0,
     });
   }
 

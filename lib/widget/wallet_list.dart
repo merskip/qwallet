@@ -87,11 +87,7 @@ class WalletList extends StatelessWidget {
                 builder: (context, AsyncSnapshot<BillingPeriod> snapshot) {
                   return Text(
                     snapshot.data?.formattedBalance ?? "-",
-                    style: Theme.of(context).textTheme.headline6.apply(
-                          color: snapshot.data?.isBalanceOutdated ?? true
-                              ? Colors.grey
-                              : null,
-                        ),
+                    style: Theme.of(context).textTheme.headline6,
                   );
                 })
           ]),
