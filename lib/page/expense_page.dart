@@ -1,9 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:qwallet/firebase_service.dart';
 
 class ExpensePage extends StatefulWidget {
+  final DocumentReference periodRef;
+
+  const ExpensePage({Key key, this.periodRef}) : super(key: key);
+
   @override
   _ExpensePageState createState() => _ExpensePageState();
 }
@@ -25,6 +31,10 @@ class _ExpensePageState extends State<ExpensePage> {
       final name = _nameKey.currentState.value;
       final amount = _parseAmount(_amountKey.currentState.value);
       final date = _dateKey.currentState.value;
+
+      final expenseRef = FirebaseService.instance
+          .addExpense(widget.periodRef, name, amount, Timestamp.fromDate(date));
+      Navigator.of(context).pop(expenseRef);
     }
   }
 
@@ -44,6 +54,7 @@ class _ExpensePageState extends State<ExpensePage> {
               decoration: InputDecoration(
                 labelText: "Name",
               ),
+              autofocus: true,
               validator: (value) {
                 if (value.isEmpty) return "Please enter a name";
                 return null;

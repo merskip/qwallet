@@ -1,13 +1,8 @@
-import 'dart:convert';
-
-import 'package:qwallet/model/billing_period.dart';
-import 'package:qwallet/model/expense.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:collection/collection.dart';
-import 'package:date_utils/date_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:qwallet/model/billing_period.dart';
+import 'package:qwallet/model/expense.dart';
 import 'package:qwallet/utils.dart';
 
 import 'model/user.dart';
@@ -81,7 +76,7 @@ class FirebaseService {
   }
 
   Future<void> setWalletOwners(Wallet wallet, List<User> owners) {
-    _walletsCollection()
+    return _walletsCollection()
         .document(wallet.snapshot.reference.documentID)
         .updateData({
       'owners_uid': owners.map((user) => user.uid).toList(),
@@ -152,6 +147,15 @@ class FirebaseService {
               snapshot: snapshot,
               mapper: (snapshot) => Expense.from(snapshot),
             ));
+  }
+
+  Future<DocumentReference> addExpense(
+      DocumentReference periodRef, String name, double amount, Timestamp date) {
+    return periodRef.collection("expenses").add({
+      "name": name,
+      "amount": amount,
+      "date": date,
+    });
   }
 
   // Collections access

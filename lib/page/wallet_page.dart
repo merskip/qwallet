@@ -35,6 +35,7 @@ class _WalletPageState extends State<WalletPage> {
     );
     if (selectedUsers != null && selectedUsers.isNotEmpty) {
       FirebaseService.instance.setWalletOwners(widget.wallet, selectedUsers);
+      // TODO: Add refresh wallet field
     }
   }
 
@@ -59,7 +60,7 @@ class _WalletPageState extends State<WalletPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ExpensePage(),
+        builder: (context) => ExpensePage(periodRef: selectedPeriodRef),
       ),
     );
   }
