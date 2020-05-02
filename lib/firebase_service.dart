@@ -145,26 +145,51 @@ class FirebaseService {
             ));
   }
 
-  Future<void> updateExpense(
-      Expense expense, String name, double amount, Timestamp date) {
-    return expense.snapshot.reference.updateData({
-      "name": name,
-      "amount": amount,
-      "date": date,
-    });
-  }
-
   Future<DocumentReference> addExpense(
       DocumentReference periodRef, String name, double amount, Timestamp date) {
-    return periodRef.collection("expenses").add({
-      "name": name,
-      "amount": amount,
-      "date": date,
+    final expenseRef = periodRef.collection("expenses").document();
+    return firestore.runTransaction((transaction) async {
+      transaction.set(expenseRef, {
+        "name": name,
+        "amount": amount,
+        "date": date,
+      });
+
+      transaction.update(periodRef, {
+        "totalExpense": FieldValue.increment(amount),
+      });
+    }).then((value) => expenseRef);
+  }
+
+  Future<void> updateExpense(Expense expense, String name, double amount,
+      Timestamp date) {
+    return firestore.runTransaction((transaction) async {
+      final expenseRef = expense.snapshot.reference;
+      final periodRef = expenseRef.parent().parent();
+
+      transaction.update(expenseRef, {
+        "name": name,
+        "amount": amount,
+        "date": date,
+      });
+
+      final expenseDelta = amount - expense.amount;
+      transaction.update(periodRef, {
+        "totalExpense": FieldValue.increment(expenseDelta),
+      });
     });
   }
 
-  Future<void> removeExpense(DocumentReference expenseRef) {
-    return expenseRef.delete();
+  Future<void> removeExpense(Expense expense) {
+    return firestore.runTransaction((transaction) async {
+      final expenseRef = expense.snapshot.reference;
+      final periodRef = expenseRef.parent().parent();
+
+      transaction.delete(expenseRef);
+      transaction.update(periodRef, {
+        "totalExpense": FieldValue.increment(-expense.amount),
+      });
+    });
   }
 
   // Collections access

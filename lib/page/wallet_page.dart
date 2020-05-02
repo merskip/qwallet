@@ -249,7 +249,7 @@ class ExpenseListItem extends StatelessWidget {
   }
 
   onDismissedExpense(Expense expense) {
-    FirebaseService.instance.removeExpense(expense.snapshot.reference);
+    FirebaseService.instance.removeExpense(expense);
   }
 
   @override
