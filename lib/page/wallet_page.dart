@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/model/billing_period.dart';
 import 'package:qwallet/page/expense_page.dart';
+import 'package:qwallet/page/income_page.dart';
 import 'package:qwallet/page/manage_billing_period_page.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
@@ -63,6 +64,15 @@ class _WalletPageState extends State<WalletPage> {
     );
   }
 
+  onSelectedAddIncome(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => IncomePage(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final periodStream = () => FirebaseService.instance
@@ -86,10 +96,27 @@ class _WalletPageState extends State<WalletPage> {
         expensesStream: expensesStream,
         onSelectedChangePeriod: () => onSelectedManageBillingPeriod(context),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: VectorImage("assets/ic-add-expense.svg",
-            size: Size.square(32), color: Colors.white),
-        onPressed: () => onSelectedAddExpense(context),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: FloatingActionButton(
+              child: VectorImage("assets/ic-add-income.svg",
+                  size: Size.square(26), color: Colors.white),
+              heroTag: "add-income",
+              onPressed: () => onSelectedAddIncome(context),
+            ),
+          ),
+          SizedBox(width: 12),
+          FloatingActionButton(
+            child: VectorImage("assets/ic-add-expense.svg",
+                size: Size.square(32), color: Colors.white),
+            heroTag: "add-expense",
+            onPressed: () => onSelectedAddExpense(context),
+          ),
+        ],
       ),
     );
   }
