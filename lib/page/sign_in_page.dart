@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
@@ -11,9 +11,6 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final _googleSignIn = GoogleSignIn();
-
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +39,8 @@ class _SignInPageState extends State<SignInPage> {
             SizedBox(height: 16),
             _singInButton(
               text: 'Sign in with Google',
-              icon: VectorImage("assets/ic-google.svg", color: Theme.of(context).primaryColor),
+              icon: VectorImage("assets/ic-google.svg",
+                  color: Theme.of(context).primaryColor),
               onPressed: _singInWithGoogle,
             ),
             SizedBox(height: 16),
@@ -105,72 +103,99 @@ class _SignInPageState extends State<SignInPage> {
 
   _showDialogForSignInWithEmail(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Sign in with e-mail"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                TextField(
-                  autofocus: true,
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                      labelText: "E-mail",
-                      hintText: "eg.john.smith@example.com"),
-                ),
-                TextField(
-                  obscureText: true,
-                  controller: passwordController,
-                  decoration: InputDecoration(labelText: "Password"),
-                ),
-              ],
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text("Cancel"),
-                onPressed: () => Navigator.pop(context),
-              ),
-              FlatButton(
-                child: Text("Sign up"),
-                onPressed: () {
-                  _signUpWithEmail(
-                      emailController.text, passwordController.text);
-                  Navigator.pop(context);
-                },
-              ),
-              RaisedButton(
-                child: Text("Sign in"),
-                color: Theme.of(context).primaryColor,
-                onPressed: () {
-                  _signInWithEmail(
-                      emailController.text, passwordController.text);
-                  Navigator.pop(context);
-                },
-              )
-            ],
-          );
-        });
+        context: context, builder: (context) => _SignInWithEmailDialog());
   }
+}
 
-  _signUpWithEmail(String email, String password) async {
+class _SignInWithEmailDialog extends StatefulWidget {
+  @override
+  _SignInWithEmailDialogState createState() => _SignInWithEmailDialogState();
+}
+
+class _SignInWithEmailDialogState extends State<_SignInWithEmailDialog> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  String _errorMessage;
+
+  _signUpWithEmail(BuildContext context) async {
     try {
+      final email = emailController.text;
+      final password = passwordController.text;
+
       final userAuth = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       userAuth.user.sendEmailVerification();
-      await _signInWithEmail(email, password);
+      await _signInWithEmail(context);
     } catch (e) {
-      print(e); // TODO: show dialog with error
+      _handleError(e);
     }
   }
 
-  _signInWithEmail(String email, String password) async {
+  _signInWithEmail(BuildContext context) async {
     try {
+      final email = emailController.text;
+      final password = passwordController.text;
+
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
     } catch (e) {
-      print(e); // TODO: show dialog with error
+      _handleError(e);
     }
+  }
+
+  _handleError(PlatformException exception) {
+    setState(() {
+      this._errorMessage = exception.message;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text("Sign in with e-mail"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          if (_errorMessage != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Text(
+                _errorMessage,
+                style: TextStyle(color: Theme.of(context).errorColor),
+              ),
+            ),
+          TextField(
+            autofocus: true,
+            controller: emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              labelText: "E-mail",
+            ),
+          ),
+          SizedBox(height: 16),
+          TextField(
+            obscureText: true,
+            controller: passwordController,
+            decoration: InputDecoration(labelText: "Password"),
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: Text("Cancel"),
+          onPressed: () => Navigator.pop(context),
+        ),
+        FlatButton(
+          child: Text("Sign up"),
+          onPressed: () => _signUpWithEmail(context),
+        ),
+        RaisedButton(
+          child: Text("Sign in"),
+          color: Theme.of(context).primaryColor,
+          onPressed: () => _signInWithEmail(context),
+        )
+      ],
+    );
   }
 }
