@@ -1,16 +1,17 @@
 import 'dart:async';
 
-import 'package:qwallet/model/billing_period.dart';
-import 'package:qwallet/page/manage_billing_period_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/model/billing_period.dart';
+import 'package:qwallet/page/expense_page.dart';
+import 'package:qwallet/page/manage_billing_period_page.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
-import '../firebase_service.dart';
-import '../model/wallet.dart';
-import '../model/expense.dart';
-import '../widget/query_list_widget.dart';
 import '../dialog/manage_owners_dialog.dart';
+import '../firebase_service.dart';
+import '../model/expense.dart';
+import '../model/wallet.dart';
+import '../widget/query_list_widget.dart';
 
 class WalletPage extends StatefulWidget {
   final Wallet wallet;
@@ -53,6 +54,15 @@ class _WalletPageState extends State<WalletPage> {
     }
   }
 
+  onSelectedAddExpense(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ExpensePage(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final periodStream = () => FirebaseService.instance
@@ -77,11 +87,9 @@ class _WalletPageState extends State<WalletPage> {
         onSelectedChangePeriod: () => onSelectedManageBillingPeriod(context),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-//          FirebaseService.instance
-//              .addExpanse(widget.wallet, "Expanse 1", 12.34, Timestamp.now());
-        },
+        child: VectorImage("assets/ic-add-expense.svg",
+            size: Size.square(32), color: Colors.white),
+        onPressed: () => onSelectedAddExpense(context),
       ),
     );
   }

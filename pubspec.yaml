@@ -56,6 +56,8 @@ flutter:
     - assets/ic-add-wallet.svg
     - assets/ic-google.svg
     - assets/ic-wallet.svg
+    - assets/ic-add-expense.svg
+    - assets/ic-add-income.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
