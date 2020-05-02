@@ -1,40 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/firebase_service.dart';
 
 import '../model/wallet.dart';
 import '../model/user.dart';
 
-class ManageOwnersDialog {
+class ManageOwnersDialog extends StatefulWidget {
   final Wallet wallet;
-  final List<User> users;
 
-  final usersListKey = new GlobalKey<_UsersListState>();
+  const ManageOwnersDialog({Key key, this.wallet}) : super(key: key);
 
-  ManageOwnersDialog(this.wallet, this.users);
+  @override
+  _ManageOwnersDialogState createState() => _ManageOwnersDialogState();
+}
 
-  Future<List<User>> show(BuildContext context) async {
-    return showDialog(
-      context: context,
-      builder: (context) => _dialog(context),
-    );
+class _ManageOwnersDialogState extends State<ManageOwnersDialog> {
+  List<User> users;
+  final _usersListKey = new GlobalKey<_UsersListState>();
+
+  @override
+  void initState() {
+    FirebaseService.instance
+        .fetchUsers(includeAnonymous: false)
+        .then((users) => setState(() => this.users = users));
+    super.initState();
   }
 
   _onSelectedSaveChanges(BuildContext context) {
-    final selectedUsers = usersListKey.currentState.selectedUsers;
+    final selectedUsers = _usersListKey.currentState.selectedUsers;
     Navigator.of(context).pop(selectedUsers);
   }
 
-  Widget _dialog(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return AlertDialog(
       title: Text("Manage owners"),
       content: Container(
-          width: MediaQuery.of(context).size.width * 0.9,
-          child: _UsersList(
-            key: usersListKey,
-            users: users,
-            initialSelectedUsers: users
-                .where((user) => wallet.ownersUid.contains(user.uid))
-                .toList(),
-          )),
+        width: MediaQuery.of(context).size.width * 0.9,
+        child: _alertBody(),
+      ),
       actions: <Widget>[
         FlatButton(
           child: Text("Cancel"),
@@ -43,10 +46,28 @@ class ManageOwnersDialog {
         RaisedButton(
           child: Text("Save changes"),
           color: Theme.of(context).primaryColor,
-          onPressed: () => _onSelectedSaveChanges(context),
+          onPressed:
+              users != null ? () => _onSelectedSaveChanges(context) : null,
         ),
       ],
     );
+  }
+
+  Widget _alertBody() {
+    if (this.users != null) {
+      return _UsersList(
+        key: _usersListKey,
+        users: users,
+        initialSelectedUsers: users
+            .where((user) => widget.wallet.ownersUid.contains(user.uid))
+            .toList(),
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [CircularProgressIndicator()],
+      );
+    }
   }
 }
 

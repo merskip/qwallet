@@ -61,7 +61,6 @@ class FirebaseService {
 
   Future<void> createWallet(String name) async {
     await firestore.runTransaction((transaction) async {
-
       final walletRef = _walletsCollection().document();
       final billingPeriod = walletRef.collection("periods").document();
 
@@ -78,6 +77,14 @@ class FirebaseService {
         'isBalanceOutdated': false,
         'totalIncome': 0.0,
       });
+    });
+  }
+
+  Future<void> setWalletOwners(Wallet wallet, List<User> owners) {
+    _walletsCollection()
+        .document(wallet.snapshot.reference.documentID)
+        .updateData({
+      'owners_uid': owners.map((user) => user.uid).toList(),
     });
   }
 

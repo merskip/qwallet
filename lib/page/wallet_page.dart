@@ -27,16 +27,12 @@ class _WalletPageState extends State<WalletPage> {
   _WalletPageState(this.selectedPeriodRef);
 
   manageOwners(BuildContext context) async {
-    // TODO: Add loading indicator
-    final users =
-        await FirebaseService.instance.fetchUsers(includeAnonymous: false);
-
-    final selectedUsers =
-        await ManageOwnersDialog(widget.wallet, users).show(context);
+    final selectedUsers = await showDialog(
+      context: context,
+      builder: (context) => ManageOwnersDialog(wallet: widget.wallet),
+    );
     if (selectedUsers != null && selectedUsers.isNotEmpty) {
-      // TODO: Adding validation is selected any owner
-      // TODO: Impl setOwners
-//      FirebaseService.instance.setOwners(widget.wallet, selectedUsers);
+      FirebaseService.instance.setWalletOwners(widget.wallet, selectedUsers);
     }
   }
 
