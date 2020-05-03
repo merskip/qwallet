@@ -11,8 +11,10 @@ import '../utils.dart';
 class ExpensePage extends StatefulWidget {
   final DocumentReference periodRef;
   final Expense editExpense;
+  final double initialAmount;
 
-  const ExpensePage({Key key, this.periodRef, this.editExpense})
+  const ExpensePage(
+      {Key key, this.periodRef, this.editExpense, this.initialAmount})
       : super(key: key);
 
   @override
@@ -84,7 +86,7 @@ class _ExpensePageState extends State<ExpensePage> {
               decoration:
                   InputDecoration(labelText: "Amount", suffixText: "zł"),
               focusNode: _amountFocus,
-              initialValue: widget.editExpense?.amount?.toStringAsFixed(2),
+              initialValue: (widget.initialAmount ?? widget.editExpense?.amount)?.toStringAsFixed(2),
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               textAlign: TextAlign.end,
               validator: amountValidator(),
