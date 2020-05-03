@@ -139,6 +139,7 @@ class _SignInWithEmailDialogState extends State<_SignInWithEmailDialog> {
 
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
+      Navigator.of(context).pop();
     } catch (e) {
       _handleError(e);
     }
