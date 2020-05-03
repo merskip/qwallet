@@ -99,25 +99,30 @@ class WalletList extends StatelessWidget {
   }
 
   _walletBalanceHealth(BuildContext context, BillingPeriod period) {
-    String text = "";
-    text += formatAmount(period.absoluteBalance);
-    text += "\n";
-    text += formatAmount(period.dailyExpense, currency: false)
-        + "/" + formatAmount(period.dailyIncome);
+
+    double dailyBalanceFactor = period.dailyExpense / period.dailyIncome;
+    if (dailyBalanceFactor.isNaN) dailyBalanceFactor = 0.0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          text,
+          formatAmount(period.absoluteBalance),
           style: Theme.of(context).textTheme.headline6,
           textAlign: TextAlign.end,
         ),
         SizedBox(height: 4),
+        Text(
+          "${formatAmount(period.dailyExpense, currency: false)}"
+          "/${formatAmount(period.dailyIncome)}",
+          style: Theme.of(context).textTheme.bodyText1,
+          textAlign: TextAlign.end,
+        ),
+        SizedBox(height: 2),
         SizedBox(
-          width: 128,
-          child: LinearProgressIndicator(
-            value: period.dailyExpense / period.dailyIncome,
-          ),
+          width: 96,
+          height: 3,
+          child: LinearProgressIndicator(value: dailyBalanceFactor),
         ),
       ],
     );
