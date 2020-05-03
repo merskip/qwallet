@@ -99,9 +99,11 @@ class WalletList extends StatelessWidget {
   }
 
   _walletBalanceHealth(BuildContext context, BillingPeriod period) {
-
-    double dailyBalanceFactor = period.dailyExpense / period.dailyIncome;
-    if (dailyBalanceFactor.isNaN) dailyBalanceFactor = 0.0;
+    double balanceFactor = period.dailyExpense / period.dailyIncome;
+    if (balanceFactor.isNaN)
+      balanceFactor = 0.0;
+    if (balanceFactor.isInfinite)
+      balanceFactor = 1.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -122,7 +124,7 @@ class WalletList extends StatelessWidget {
         SizedBox(
           width: 96,
           height: 3,
-          child: LinearProgressIndicator(value: dailyBalanceFactor),
+          child: LinearProgressIndicator(value: balanceFactor),
         ),
       ],
     );
