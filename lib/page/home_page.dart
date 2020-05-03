@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qwallet/dialog/create_wallet_dialog.dart';
+import 'package:qwallet/page/receipt_recognizing_page.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
 import '../firebase_service.dart';
-import '../receipt_recognizer.dart';
 import '../widget/user_panel.dart';
 import '../widget/wallet_list.dart';
 
@@ -22,11 +22,17 @@ class HomePage extends StatelessWidget {
 
   _onSelectedScanReceipt(BuildContext context) async {
     final source = await _showSourcePicker(context);
-    if (source != null) {
-      var image = await ImagePicker.pickImage(source: source);
-      final totalPrice = await ReceiptRecognizer().recognizeTotalPrice(image);
-      print(totalPrice);
-    }
+    if (source == null) return;
+
+    final image = await ImagePicker.pickImage(source: source);
+    if (image == null) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReceiptRecognizingPage(receiptImage: image),
+      ),
+    );
   }
 
   Future<ImageSource> _showSourcePicker(BuildContext context) async {
