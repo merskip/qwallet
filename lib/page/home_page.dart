@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:qwallet/dialog/create_wallet_dialog.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
@@ -18,8 +19,33 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  _onSelectedScanReceipt(BuildContext context) {
+  _onSelectedScanReceipt(BuildContext context) async {
+    final source = await _showSourcePicker(context);
+    if (source != null) {
+      var image = await ImagePicker.pickImage(source: source);
+    }
+  }
 
+  Future<ImageSource> _showSourcePicker(BuildContext context) async {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) => Wrap(children: [
+        InkWell(
+          child: ListTile(
+            leading: Icon(Icons.photo_camera),
+            title: Text("Take a photo"),
+          ),
+          onTap: () => Navigator.of(context).pop(ImageSource.camera),
+        ),
+        InkWell(
+          child: ListTile(
+            leading: Icon(Icons.photo_library),
+            title: Text("Choose from gallery"),
+          ),
+          onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+        ),
+      ]),
+    );
   }
 
   _onSelectedAddWallet(BuildContext context) async {
