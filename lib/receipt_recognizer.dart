@@ -1,15 +1,24 @@
 
 import 'dart:io';
-import 'dart:math';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:qwallet/utils.dart';
 
+class ReceiptRecognizingResult {
+  final List<double> totalPriceCandidates;
+
+  ReceiptRecognizingResult({this.totalPriceCandidates});
+}
+
 class ReceiptRecognizer {
 
-  Future<double> recognizeTotalPrice(File image) async {
+  Future<ReceiptRecognizingResult> process(File image) async {
     final text = await _recognizeText(image);
-    return _findHighestNumber(text);
+    final numbers = _findNumbers(text);
+
+    return ReceiptRecognizingResult(
+        totalPriceCandidates: _getTotalPriceCandidates(numbers)
+    );
   }
 
   Future<VisionText> _recognizeText(File image) async {
@@ -18,8 +27,12 @@ class ReceiptRecognizer {
     return await textRecognizer.processImage(visionImage);
   }
 
-  double _findHighestNumber(VisionText text) {
-    final numbers = text.blocks
+  List<double> _getTotalPriceCandidates(List<double> numbers) {
+    return numbers.toSet().toList()..sort((a, b) => b.compareTo(a));
+  }
+
+  List<double> _findNumbers(VisionText text) {
+    return text.blocks
         .map((textBlock) => textBlock.lines)
         .expand((i) => i)
         .map((textLine) => textLine.elements)
@@ -27,19 +40,14 @@ class ReceiptRecognizer {
         .map((textElement) => findNumber(textElement))
         .where((amount) => amount != null)
         .toList();
-    if (numbers.isNotEmpty)
-      return numbers.reduce(max);
-    else
-      return null;
   }
 
   double findNumber(TextElement textElement) {
-    final match = RegExp(r'\d+[\.,]\d{2}').firstMatch(textElement.text);
+    final match = RegExp(r'\d+[\.,]\d{2}([^\d]|$)').firstMatch(textElement.text);
     if (match != null) {
       final numberText = textElement.text.substring(match.start, match.end);
       return parseAmount(numberText);
     }
     return null;
   }
-
 }

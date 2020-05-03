@@ -15,18 +15,21 @@ class ReceiptRecognizingPage extends StatefulWidget {
 }
 
 class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
-  double totalPrice;
+  ReceiptRecognizingResult result;
+  double selectedTotalPrice;
 
   @override
   void initState() {
-    _loadTotalPrice();
+    _recognizeReceipt();
     super.initState();
   }
 
-  _loadTotalPrice() async {
-    final totalPrice =
-        await ReceiptRecognizer().recognizeTotalPrice(widget.receiptImage);
-    setState(() => this.totalPrice = totalPrice);
+  _recognizeReceipt() async {
+    final result = await ReceiptRecognizer().process(widget.receiptImage);
+    setState(() {
+      this.result = result;
+      this.selectedTotalPrice = result.totalPriceCandidates?.first;
+    });
   }
 
   @override
@@ -38,9 +41,11 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
       body: SingleChildScrollView(
         child: Column(children: [
           Image.file(widget.receiptImage),
-          ListTile(
-            title: Text("Total price"),
-            trailing: _totalPriceWidget(context),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: result != null
+                ? _totalPriceWidget(context)
+                : CircularProgressIndicator(),
           )
         ]),
       ),
@@ -48,11 +53,19 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
   }
 
   Widget _totalPriceWidget(BuildContext context) {
-    if (totalPrice != null) {
-      return Text(formatAmount(totalPrice),
-          style: Theme.of(context).textTheme.headline6);
-    } else {
-      return CircularProgressIndicator();
-    }
+    return Row(children: [
+      Text("Total price", style: Theme.of(context).textTheme.bodyText1),
+      Spacer(),
+      DropdownButton(
+        items: result.totalPriceCandidates.map((value) {
+          return DropdownMenuItem(
+            value: value,
+            child: Text(formatAmount(value)),
+          );
+        }).toList(),
+        value: this.selectedTotalPrice,
+        onChanged: (value) => setState(() => this.selectedTotalPrice = value),
+      )
+    ]);
   }
 }
