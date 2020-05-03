@@ -55,6 +55,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
       builder: (context) => ExpensePage(
         periodRef: selectedWallet.currentPeriod,
         initialAmount: selectedTotalPrice,
+        receiptImage: widget.receiptImage,
       ),
     ));
     if (expense != null) {

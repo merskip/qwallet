@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +14,14 @@ class ExpensePage extends StatefulWidget {
   final DocumentReference periodRef;
   final Expense editExpense;
   final double initialAmount;
+  final File receiptImage;
 
   const ExpensePage(
-      {Key key, this.periodRef, this.editExpense, this.initialAmount})
+      {Key key,
+      @required this.periodRef,
+      this.editExpense,
+      this.initialAmount,
+      this.receiptImage})
       : super(key: key);
 
   @override
@@ -59,72 +66,89 @@ class _ExpensePageState extends State<ExpensePage> {
             ? "Editing \"${widget.editExpense.name}\" expense"
             : "Adding a new expense"),
       ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(children: <Widget>[
-            TextFormField(
-              key: _nameKey,
-              decoration: InputDecoration(
-                labelText: "Name",
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(children: <Widget>[
+              if (widget.receiptImage != null) _receiptPreview(context),
+              TextFormField(
+                key: _nameKey,
+                decoration: InputDecoration(
+                  labelText: "Name",
+                ),
+                autofocus: true,
+                initialValue: widget.editExpense?.name,
+                validator: (value) {
+                  if (value.isEmpty) return "Please enter a name";
+                  return null;
+                },
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (_) {
+                  FocusScope.of(context).requestFocus(_amountFocus);
+                },
               ),
-              autofocus: true,
-              initialValue: widget.editExpense?.name,
-              validator: (value) {
-                if (value.isEmpty) return "Please enter a name";
-                return null;
-              },
-              textInputAction: TextInputAction.next,
-              onFieldSubmitted: (_) {
-                FocusScope.of(context).requestFocus(_amountFocus);
-              },
-            ),
-            SizedBox(height: 16),
-            TextFormField(
-              key: _amountKey,
-              decoration:
-                  InputDecoration(labelText: "Amount", suffixText: "zł"),
-              focusNode: _amountFocus,
-              initialValue: (widget.initialAmount ?? widget.editExpense?.amount)?.toStringAsFixed(2),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              textAlign: TextAlign.end,
-              validator: amountValidator(),
-              textInputAction: TextInputAction.next,
-              onFieldSubmitted: (_) {
-                FocusScope.of(context).requestFocus(_dateFocus);
-              },
-            ),
-            SizedBox(height: 16),
-            DateTimeField(
-              key: _dateKey,
-              decoration: InputDecoration(
-                labelText: "Date",
+              SizedBox(height: 16),
+              TextFormField(
+                key: _amountKey,
+                decoration:
+                    InputDecoration(labelText: "Amount", suffixText: "zł"),
+                focusNode: _amountFocus,
+                initialValue:
+                    (widget.initialAmount ?? widget.editExpense?.amount)
+                        ?.toStringAsFixed(2),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                textAlign: TextAlign.end,
+                validator: amountValidator(),
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (_) {
+                  FocusScope.of(context).requestFocus(_dateFocus);
+                },
               ),
-              focusNode: _dateFocus,
-              format: DateFormat("d MMMM yyyy"),
-              autovalidate: true,
-              resetIcon: null,
-              initialValue:
-                  widget.editExpense?.date?.toDate() ?? DateTime.now(),
-              onShowPicker: (context, currentValue) => showDatePicker(
-                context: context,
-                firstDate: DateTime(1900),
-                initialDate: currentValue,
-                lastDate: DateTime(2100),
+              SizedBox(height: 16),
+              DateTimeField(
+                key: _dateKey,
+                decoration: InputDecoration(
+                  labelText: "Date",
+                ),
+                focusNode: _dateFocus,
+                format: DateFormat("d MMMM yyyy"),
+                autovalidate: true,
+                resetIcon: null,
+                initialValue:
+                    widget.editExpense?.date?.toDate() ?? DateTime.now(),
+                onShowPicker: (context, currentValue) => showDatePicker(
+                  context: context,
+                  firstDate: DateTime(1900),
+                  initialDate: currentValue,
+                  lastDate: DateTime(2100),
+                ),
               ),
-            ),
-            SizedBox(height: 16),
-            RaisedButton(
-              child: Text(
-                  widget.editExpense != null ? "Save changes" : "Add expense"),
-              color: Theme.of(context).primaryColor,
-              textColor: Theme.of(context).primaryTextTheme.button.color,
-              onPressed: () => _onSelectedSubmit(context),
-            ),
-          ]),
+              SizedBox(height: 16),
+              RaisedButton(
+                child: Text(widget.editExpense != null
+                    ? "Save changes"
+                    : "Add expense"),
+                color: Theme.of(context).primaryColor,
+                textColor: Theme.of(context).primaryTextTheme.button.color,
+                onPressed: () => _onSelectedSubmit(context),
+              ),
+            ]),
+          ),
         ),
       ),
     );
+  }
+
+  Widget _receiptPreview(BuildContext context) {
+    return Column(children: [
+      Image.file(
+        widget.receiptImage,
+        fit: BoxFit.fitWidth,
+        height: 192,
+      ),
+      SizedBox(height: 16,)
+    ]);
   }
 }
