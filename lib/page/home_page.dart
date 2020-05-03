@@ -6,6 +6,7 @@ import 'package:qwallet/dialog/create_wallet_dialog.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
 import '../firebase_service.dart';
+import '../receipt_recognizer.dart';
 import '../widget/user_panel.dart';
 import '../widget/wallet_list.dart';
 
@@ -23,6 +24,8 @@ class HomePage extends StatelessWidget {
     final source = await _showSourcePicker(context);
     if (source != null) {
       var image = await ImagePicker.pickImage(source: source);
+      final totalPrice = await ReceiptRecognizer().recognizeTotalPrice(image);
+      print(totalPrice);
     }
   }
 
