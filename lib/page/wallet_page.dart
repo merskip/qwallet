@@ -71,12 +71,6 @@ class _WalletPageState extends State<WalletPage> {
       context: context,
       builder: (context) => EditIncomeDialog(periodRef: selectedPeriodRef),
     );
-//    Navigator.push(
-//      context,
-//      MaterialPageRoute(
-//        builder: (context) => IncomePage(),
-//      ),
-//    );
   }
 
   @override
@@ -116,8 +110,11 @@ class _WalletPageState extends State<WalletPage> {
           ),
           SizedBox(width: 12),
           FloatingActionButton(
-            child: VectorImage("assets/ic-add-expense.svg",
-                size: Size.square(32), color: Colors.white),
+            child: VectorImage(
+              "assets/ic-add-expense.svg",
+              size: Size.square(32),
+              color: Colors.white,
+            ),
             heroTag: "add-expense",
             onPressed: () => onSelectedAddExpense(context),
           ),

@@ -1,8 +1,7 @@
-import 'package:qwallet/dialog/create_wallet_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:qwallet/dialog/create_wallet_dialog.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
 import '../firebase_service.dart';
@@ -17,6 +16,10 @@ class HomePage extends StatelessWidget {
     } catch (e) {
       print(e); // TODO: show dialog with error
     }
+  }
+
+  _onSelectedScanReceipt(BuildContext context) {
+
   }
 
   _onSelectedAddWallet(BuildContext context) async {
@@ -39,14 +42,36 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: WalletList(),
-      floatingActionButton: FloatingActionButton(
-        child: VectorImage(
-          "assets/ic-add-wallet.svg",
-          size: Size.square(32),
-          color: Colors.white,
-        ),
-        onPressed: () => _onSelectedAddWallet(context),
-      ),
+      floatingActionButton: _floatingActionsButtons(context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
+  }
+
+  Widget _floatingActionsButtons(BuildContext context) {
+    return Row(children: <Widget>[
+      Spacer(),
+      SizedBox(width: 40, height: 40), // NOTE: Left FAB placeholder
+      SizedBox(width: 16),
+      FloatingActionButton(
+        child: Icon(Icons.camera_alt),
+        heroTag: "scan-receipt",
+        onPressed: () => _onSelectedScanReceipt(context),
+      ),
+      SizedBox(width: 16),
+      SizedBox(
+        width: 40,
+        height: 40,
+        child: FloatingActionButton(
+          child: VectorImage(
+            "assets/ic-add-wallet.svg",
+            size: Size.square(26),
+            color: Colors.white,
+          ),
+          heroTag: "add-wallet",
+          onPressed: () => _onSelectedAddWallet(context),
+        ),
+      ),
+      Spacer(),
+    ]);
   }
 }
