@@ -146,7 +146,7 @@ class FirebaseService {
   }
 
   Future<DocumentReference> addExpense(
-      DocumentReference periodRef, String name, double amount, Timestamp date) {
+      DocumentReference periodRef, String name, double amount, Timestamp date, ) {
     final expenseRef = periodRef.collection("expenses").document();
     return firestore.runTransaction((transaction) async {
       transaction.set(expenseRef, {

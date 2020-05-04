@@ -1,5 +1,3 @@
-import 'package:qwallet/firebase_service.dart';
-import 'package:qwallet/model/product.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
@@ -10,6 +8,7 @@ class Expense {
   final double amount;
   final Timestamp date;
   final List<DocumentReference> products;
+  final String receiptRef;
 
   final DocumentSnapshot snapshot;
 
@@ -26,6 +25,7 @@ class Expense {
     this.amount,
     this.date,
     this.products,
+    this.receiptRef,
     this.snapshot,
   });
 
@@ -33,7 +33,8 @@ class Expense {
         name: snapshot.data['name'] ?? "",
         amount: toDouble(snapshot.data['amount']),
         date: snapshot.data['date'],
-        products: [],//snapshot.data['products'], TODO: Impl
+//        products: [],//snapshot.data['products'], TODO: Impl
+        receiptRef: snapshot.data['receiptRef'],
         snapshot: snapshot,
       );
 }

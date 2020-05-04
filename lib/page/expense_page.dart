@@ -2,11 +2,14 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/expense.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid_util.dart';
 
 import '../utils.dart';
 
@@ -38,7 +41,7 @@ class _ExpensePageState extends State<ExpensePage> {
   final _amountFocus = FocusNode();
   final _dateFocus = FocusNode();
 
-  _onSelectedSubmit(BuildContext context) {
+  _onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
@@ -51,8 +54,28 @@ class _ExpensePageState extends State<ExpensePage> {
             widget.editExpense, name, amount, Timestamp.fromDate(date));
         Navigator.of(context).pop(widget.editExpense.snapshot.reference);
       } else {
+        if (widget.receiptImage != null) {
+          final receiptStorageReference = FirebaseStorage.instance
+          .
+              .ref()
+              .child("wallets")
+              .child(widget.periodRef.parent().parent().documentID)
+              .child("receipts")
+              .child(Uuid().v4());
+
+          print("Start uploading file...");
+          final uploadTask =
+              receiptStorageReference.putFile(widget.receiptImage);
+
+          final lastEvent = await uploadTask.events.firstWhere(
+              (event) => event.type != StorageTaskEventType.progress);
+
+          final downloadUrl = await receiptStorageReference.getDownloadURL();
+          print(downloadUrl);
+        }
+
         final expenseRef = FirebaseService.instance.addExpense(
-            widget.periodRef, name, amount, Timestamp.fromDate(date));
+            widget.periodRef, name, amount, Timestamp.fromDate(date),);
         Navigator.of(context).pop(expenseRef);
       }
     }
@@ -148,7 +171,9 @@ class _ExpensePageState extends State<ExpensePage> {
         fit: BoxFit.fitWidth,
         height: 192,
       ),
-      SizedBox(height: 16,)
+      SizedBox(
+        height: 16,
+      )
     ]);
   }
 }

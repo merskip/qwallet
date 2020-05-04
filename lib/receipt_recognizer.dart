@@ -28,6 +28,9 @@ class ReceiptRecognizer {
   }
 
   List<double> _getTotalPriceCandidates(List<double> numbers) {
+    // TODO: Doesn't work correct when real total price is lower than tax
+    // eg. Total price 10,00 zł, tax A - 23,00 %
+    //     returns 23,00 zł, should [10,00, 23,00] or only 10,00
     return numbers.toSet().toList()..sort((a, b) => b.compareTo(a));
   }
 
