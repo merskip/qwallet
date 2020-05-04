@@ -56,7 +56,6 @@ class _ExpensePageState extends State<ExpensePage> {
       } else {
         if (widget.receiptImage != null) {
           final receiptStorageReference = FirebaseStorage.instance
-          .
               .ref()
               .child("wallets")
               .child(widget.periodRef.parent().parent().documentID)
