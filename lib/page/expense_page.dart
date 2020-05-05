@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/expense.dart';
 import 'package:uuid/uuid.dart';
-import 'package:uuid/uuid_util.dart';
 
 import '../utils.dart';
 
@@ -49,6 +48,7 @@ class _ExpensePageState extends State<ExpensePage> {
       final amount = parseAmount(_amountKey.currentState.value);
       final date = _dateKey.currentState.value;
 
+      String receiptPath;
       if (widget.editExpense != null) {
         FirebaseService.instance.updateExpense(
             widget.editExpense, name, amount, Timestamp.fromDate(date));
@@ -66,15 +66,14 @@ class _ExpensePageState extends State<ExpensePage> {
           final uploadTask =
               receiptStorageReference.putFile(widget.receiptImage);
 
-          final lastEvent = await uploadTask.events.firstWhere(
+          await uploadTask.events.firstWhere(
               (event) => event.type != StorageTaskEventType.progress);
 
-          final downloadUrl = await receiptStorageReference.getDownloadURL();
-          print(downloadUrl);
+          receiptPath = await receiptStorageReference.getPath();
         }
 
         final expenseRef = FirebaseService.instance.addExpense(
-            widget.periodRef, name, amount, Timestamp.fromDate(date),);
+            widget.periodRef, name, amount, Timestamp.fromDate(date), receiptPath);
         Navigator.of(context).pop(expenseRef);
       }
     }

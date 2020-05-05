@@ -8,7 +8,7 @@ class Expense {
   final double amount;
   final Timestamp date;
   final List<DocumentReference> products;
-  final String receiptRef;
+  final String receiptPath;
 
   final DocumentSnapshot snapshot;
 
@@ -25,7 +25,7 @@ class Expense {
     this.amount,
     this.date,
     this.products,
-    this.receiptRef,
+    this.receiptPath,
     this.snapshot,
   });
 
@@ -33,8 +33,8 @@ class Expense {
         name: snapshot.data['name'] ?? "",
         amount: toDouble(snapshot.data['amount']),
         date: snapshot.data['date'],
+        receiptPath: snapshot.data['receiptPath'],
 //        products: [],//snapshot.data['products'], TODO: Impl
-        receiptRef: snapshot.data['receiptRef'],
         snapshot: snapshot,
       );
 }

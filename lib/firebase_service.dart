@@ -145,14 +145,15 @@ class FirebaseService {
             ));
   }
 
-  Future<DocumentReference> addExpense(
-      DocumentReference periodRef, String name, double amount, Timestamp date, ) {
+  Future<DocumentReference> addExpense(DocumentReference periodRef, String name,
+      double amount, Timestamp date, String receiptPath) {
     final expenseRef = periodRef.collection("expenses").document();
     return firestore.runTransaction((transaction) async {
       transaction.set(expenseRef, {
         "name": name,
         "amount": amount,
         "date": date,
+        "receiptPath": receiptPath
       });
 
       transaction.update(periodRef, {
@@ -161,8 +162,8 @@ class FirebaseService {
     }).then((value) => expenseRef);
   }
 
-  Future<void> updateExpense(Expense expense, String name, double amount,
-      Timestamp date) {
+  Future<void> updateExpense(
+      Expense expense, String name, double amount, Timestamp date) {
     return firestore.runTransaction((transaction) async {
       final expenseRef = expense.snapshot.reference;
       final periodRef = expenseRef.parent().parent();
@@ -193,9 +194,7 @@ class FirebaseService {
   }
 
   Future<void> updateTotalIncome(DocumentReference periodRef, double amount) {
-    return periodRef.updateData({
-      "totalIncome": amount
-    });
+    return periodRef.updateData({"totalIncome": amount});
   }
 
   // Collections access
