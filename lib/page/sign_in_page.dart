@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qwallet/widget/vector_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -50,7 +52,9 @@ class _SignInPageState extends State<SignInPage> {
               onPressed: () => _showDialogForSignInWithEmail(context),
             ),
           ]),
-          Spacer(flex: 2),
+          Spacer(),
+          if (kIsWeb) _mobileBetaAccessPanel(),
+          Spacer(),
         ]),
       ),
     );
@@ -75,6 +79,37 @@ class _SignInPageState extends State<SignInPage> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
       ),
     );
+  }
+
+  Widget _mobileBetaAccessPanel() {
+    return Column(
+        children: [
+      Text("Get early access to mobile QWallet beta",
+      style: Theme.of(context).primaryTextTheme.headline4.copyWith(fontSize: 20)),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          RaisedButton(
+              child: Text("Android"),
+              onPressed: () =>
+                  _openUrl("https://appdistribution.firebase.dev/i/RmhybzSD")),
+          SizedBox(width: 24),
+          RaisedButton(
+            child: Text("iOS"),
+            onPressed: () =>
+                _openUrl("https://appdistribution.firebase.dev/i/D3qez77X"),
+          ),
+        ],
+      )
+    ]);
+  }
+
+  _openUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   _signInAnonymous() async {
