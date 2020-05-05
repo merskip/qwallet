@@ -40,6 +40,29 @@ class _ExpensePageState extends State<ExpensePage> {
   final _amountFocus = FocusNode();
   final _dateFocus = FocusNode();
 
+  String receiptUrl;
+
+  bool get hasReceipt {
+    return widget.receiptImage != null ||
+        widget.editExpense.receiptPath != null;
+  }
+
+
+  @override
+  void initState() {
+    if (widget.editExpense?.receiptPath != null) {
+      _loadReceiptUrl(widget.editExpense.receiptPath);
+    }
+    super.initState();
+  }
+
+  _loadReceiptUrl(String path) async {
+    final ref = await FirebaseStorage.instance.getReferenceFromUrl(path);
+    final imageUrl = await ref.getDownloadURL();
+    print("Image URL: $imageUrl");
+    setState(() => this.receiptUrl = imageUrl);
+  }
+
   _onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
@@ -69,11 +92,14 @@ class _ExpensePageState extends State<ExpensePage> {
           await uploadTask.events.firstWhere(
               (event) => event.type != StorageTaskEventType.progress);
 
-          receiptPath = await receiptStorageReference.getPath();
+          receiptPath = "gs://" +
+              await receiptStorageReference.getBucket() +
+              "/" +
+              await receiptStorageReference.getPath();
         }
 
-        final expenseRef = FirebaseService.instance.addExpense(
-            widget.periodRef, name, amount, Timestamp.fromDate(date), receiptPath);
+        final expenseRef = FirebaseService.instance.addExpense(widget.periodRef,
+            name, amount, Timestamp.fromDate(date), receiptPath);
         Navigator.of(context).pop(expenseRef);
       }
     }
@@ -93,7 +119,7 @@ class _ExpensePageState extends State<ExpensePage> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(children: <Widget>[
-              if (widget.receiptImage != null) _receiptPreview(context),
+              if (hasReceipt) _receiptPreview(context),
               TextFormField(
                 key: _nameKey,
                 decoration: InputDecoration(
@@ -164,14 +190,35 @@ class _ExpensePageState extends State<ExpensePage> {
 
   Widget _receiptPreview(BuildContext context) {
     return Column(children: [
-      Image.file(
-        widget.receiptImage,
-        fit: BoxFit.fitWidth,
-        height: 192,
-      ),
+      if (widget.receiptImage != null)
+        Image.file(
+          widget.receiptImage,
+          fit: BoxFit.fitWidth,
+          height: 192,
+        ),
+      if (widget.editExpense?.receiptPath != null)
+        _receiptStorage(context),
       SizedBox(
         height: 16,
       )
     ]);
+  }
+
+  Widget _receiptStorage(BuildContext context) {
+    if (receiptUrl != null) {
+      return Image.network(
+        receiptUrl,
+        width: 192,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null)
+            return child;
+          final progress = loadingProgress.cumulativeBytesLoaded /
+                loadingProgress.expectedTotalBytes;
+            return CircularProgressIndicator(value: progress);
+        },
+      );
+    } else {
+      return CircularProgressIndicator();
+    }
   }
 }
