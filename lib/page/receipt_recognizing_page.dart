@@ -87,6 +87,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
     return Column(children: [
       _totalPriceItem(context),
       _walletItem(context),
+      _nipItem(context),
       SizedBox(height: 16),
       RaisedButton(
         child: Text("Next"),
@@ -109,6 +110,14 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
         value: this.selectedTotalPrice,
         onChanged: (value) => setState(() => this.selectedTotalPrice = value),
       )
+    ]);
+  }
+
+  Widget _nipItem(BuildContext context) {
+    return Row(children: [
+      Text("NIP", style: Theme.of(context).textTheme.bodyText1),
+      Spacer(),
+      Text(formatNIP(result.taxpayerIdentificationNumber))
     ]);
   }
 

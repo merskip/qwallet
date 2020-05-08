@@ -41,6 +41,10 @@ String formatAmount(double amount, {bool currency = true}) {
         .trimRight();
 }
 
+String formatNIP(String nip) {
+  return nip; // TODO: Impl eg. 5270005984 -> 527-00-05-984
+}
+
 FormFieldValidator<String> amountValidator() {
   return (value) {
     if (value.isEmpty) return "Please enter a amount";
