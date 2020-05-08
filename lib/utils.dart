@@ -41,8 +41,13 @@ String formatAmount(double amount, {bool currency = true}) {
         .trimRight();
 }
 
-String formatNIP(String nip) {
-  return nip; // TODO: Impl eg. 5270005984 -> 527-00-05-984
+String formatNIP(String nip, {String separator = "-"}) {
+  return [
+    nip.substring(0, 3),
+    nip.substring(3, 5),
+    nip.substring(5, 7),
+    nip.substring(7, 10),
+  ].join(separator);
 }
 
 FormFieldValidator<String> amountValidator() {
