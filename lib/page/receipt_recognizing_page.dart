@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:qwallet/WhitelistAPI.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/wallet.dart';
 import 'package:qwallet/utils.dart';
@@ -19,6 +20,7 @@ class ReceiptRecognizingPage extends StatefulWidget {
 
 class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
   ReceiptRecognizingResult result;
+  String entityName;
   List<Wallet> wallets;
 
   double selectedTotalPrice;
@@ -37,6 +39,11 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
       this.result = result;
       this.selectedTotalPrice = result.totalPriceCandidates?.first;
     });
+
+    final entityName = await WhitelistAPI()
+        .fetchEntityName(nip: result.taxpayerIdentificationNumber);
+
+    setState(() => this.entityName = entityName);
   }
 
   _fetchWallets() async {
@@ -86,8 +93,14 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
   Widget _receiptResult(BuildContext context) {
     return Column(children: [
       _totalPriceItem(context),
-      _walletItem(context),
+      Divider(),
+      SizedBox(height: 8),
       _nipItem(context),
+      SizedBox(height: 8),
+      _entityNameItem(context),
+      SizedBox(height: 8),
+      Divider(),
+      _walletItem(context),
       SizedBox(height: 16),
       RaisedButton(
         child: Text("Next"),
@@ -117,7 +130,32 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
     return Row(children: [
       Text("NIP", style: Theme.of(context).textTheme.bodyText1),
       Spacer(),
-      Text(formatNIP(result.taxpayerIdentificationNumber))
+      Text(
+        formatNIP(result.taxpayerIdentificationNumber),
+        style: Theme.of(context).textTheme.bodyText2,
+      )
+    ]);
+  }
+
+  Widget _entityNameItem(BuildContext context) {
+    return Row(children: [
+      Spacer(),
+      if (entityName != null)
+        Flexible(
+          child: Text(
+            entityName,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 3,
+            textAlign: TextAlign.end,
+            style: Theme.of(context).textTheme.bodyText2,
+          ),
+        )
+      else
+        SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        )
     ]);
   }
 
