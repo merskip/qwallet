@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:qwallet/model/billing_period.dart';
+import 'package:qwallet/model/business_entity.dart';
 import 'package:qwallet/model/expense.dart';
 import 'package:qwallet/utils.dart';
 
@@ -195,6 +196,25 @@ class FirebaseService {
 
   Future<void> updateTotalIncome(DocumentReference periodRef, double amount) {
     return periodRef.updateData({"totalIncome": amount});
+  }
+
+  Future<BusinessEntity> getBusinessEntity(String nip) async {
+    return firestore
+        .collection("business_entities")
+        .document(nip)
+        .snapshots()
+        .map((snapshot) => snapshot.exists
+            ? BusinessEntity(
+                nip: snapshot.data['nip'], name: snapshot.data['name'])
+            : null)
+        .first;
+  }
+
+  Future<void> addBusinessEntity(String nip, String name) async {
+    return firestore
+        .collection("business_entities")
+        .document(nip)
+        .setData({"nip": nip, "name": name});
   }
 
   // Collections access

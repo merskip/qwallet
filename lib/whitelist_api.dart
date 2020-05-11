@@ -11,7 +11,7 @@ class WhitelistAPI {
   WhitelistAPI({this.baseUrl = "https://wl-api.mf.gov.pl/api/"});
 
 
-  Future<String> fetchEntityName({@required String nip}) async {
+  Future<String> fetchEntityNameByNip(String nip) async {
     final url = "$baseUrl/search/nip/$nip?date=${_getDateNow()}";
     debugPrint("Fetching url: $url");
     final response = await http.get(url);

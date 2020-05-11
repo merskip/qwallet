@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:qwallet/WhitelistAPI.dart';
+import 'package:qwallet/business_entity_repository.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/wallet.dart';
 import 'package:qwallet/utils.dart';
@@ -40,10 +40,10 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
       this.selectedTotalPrice = result.totalPriceCandidates?.first;
     });
 
-    final entityName = await WhitelistAPI()
-        .fetchEntityName(nip: result.taxpayerIdentificationNumber);
+    final entity = await BusinessEntityRepository()
+        .getBusinessEntity(nip: result.taxpayerIdentificationNumber);
 
-    setState(() => this.entityName = entityName);
+    setState(() => this.entityName = entity.name);
   }
 
   _fetchWallets() async {
