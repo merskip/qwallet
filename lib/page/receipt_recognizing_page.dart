@@ -24,7 +24,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
   String entityName;
   List<Wallet> wallets;
 
-  double selectedTotalPrice;
+  RecognizedValue<double> selectedTotalPrice;
   Wallet selectedWallet;
 
   @override
@@ -42,7 +42,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
     });
 
     final entity = await BusinessEntityRepository()
-        .getBusinessEntity(nip: result.taxpayerIdentificationNumber);
+        .getBusinessEntity(nip: result.taxpayerIdentificationNumber.value);
 
     setState(() => this.entityName = entity.name);
   }
@@ -63,7 +63,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
       builder: (context) => ExpensePage(
         periodRef: selectedWallet.currentPeriod,
         initialName: entityName,
-        initialAmount: selectedTotalPrice,
+        initialAmount: selectedTotalPrice.value,
         receiptImage: widget.receiptImage,
       ),
     ));
@@ -116,10 +116,10 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
       Text("Total price", style: Theme.of(context).textTheme.bodyText1),
       Spacer(),
       DropdownButton(
-        items: result.totalPriceCandidates.map((value) {
+        items: result.totalPriceCandidates.map((totalPriceCandidate) {
           return DropdownMenuItem(
-            value: value,
-            child: Text(formatAmount(value)),
+            value: totalPriceCandidate,
+            child: Text(formatAmount(totalPriceCandidate.value)),
           );
         }).toList(),
         value: this.selectedTotalPrice,
@@ -133,7 +133,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
       Text("NIP", style: Theme.of(context).textTheme.bodyText1),
       Spacer(),
       Text(
-        formatNIP(result.taxpayerIdentificationNumber),
+        formatNIP(result.taxpayerIdentificationNumber.value),
         style: Theme.of(context).textTheme.bodyText2,
       )
     ]);

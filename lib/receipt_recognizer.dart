@@ -3,9 +3,16 @@ import 'dart:io';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:qwallet/utils.dart';
 
+class RecognizedValue<T> {
+  final T value;
+  final TextContainer textContainer;
+
+  RecognizedValue(this.value, this.textContainer);
+}
+
 class ReceiptRecognizingResult {
-  final List<double> totalPriceCandidates;
-  final String taxpayerIdentificationNumber;
+  final List<RecognizedValue<double>> totalPriceCandidates;
+  final RecognizedValue<String> taxpayerIdentificationNumber;
 
   ReceiptRecognizingResult(
       {this.totalPriceCandidates, this.taxpayerIdentificationNumber});
@@ -17,8 +24,8 @@ class ReceiptRecognizer {
     final numbers = _findNumbers(text);
 
     return ReceiptRecognizingResult(
-        totalPriceCandidates: _getTotalPriceCandidates(numbers),
-        taxpayerIdentificationNumber: _findNIP(text),
+      totalPriceCandidates: _getTotalPriceCandidates(numbers),
+      taxpayerIdentificationNumber: _findNIP(text),
     );
   }
 
@@ -28,25 +35,27 @@ class ReceiptRecognizer {
     return await textRecognizer.processImage(visionImage);
   }
 
-  List<double> _getTotalPriceCandidates(List<double> numbers) {
+  List<RecognizedValue<double>> _getTotalPriceCandidates(
+      List<RecognizedValue<double>> numbers) {
     // TODO: Doesn't work correct when real total price is lower than tax
     // eg. Total price 10,00 zł, tax A - 23,00 %
     //     returns 23,00 zł, should [10,00, 23,00] or only 10,00
-    return numbers.toSet().toList()..sort((a, b) => b.compareTo(a));
+    return numbers.toSet().toList()..sort((a, b) => b.value.compareTo(a.value));
   }
 
-  String _findNIP(VisionText text) {
+  RecognizedValue<String> _findNIP(VisionText text) {
     for (final textBlock in text.blocks) {
       final match = RegExp(r"NIP.*?((?:\d.?){9})").firstMatch(textBlock.text);
       if (match != null) {
         final nipText = match.group(1);
-        return nipText.replaceAll(RegExp(r"[^\d]"), "");
+        final purgedNip = nipText.replaceAll(RegExp(r"[^\d]"), "");
+        return RecognizedValue(purgedNip, textBlock);
       }
     }
     return null;
   }
 
-  List<double> _findNumbers(VisionText text) {
+  List<RecognizedValue<double>> _findNumbers(VisionText text) {
     return text.blocks
         .map((textBlock) => textBlock.lines)
         .expand((i) => i)
@@ -57,12 +66,13 @@ class ReceiptRecognizer {
         .toList();
   }
 
-  double findNumber(TextElement textElement) {
+  RecognizedValue<double> findNumber(TextElement textElement) {
     final match =
         RegExp(r'\d+[\.,]\d{2}([^\d]|$)').firstMatch(textElement.text);
     if (match != null) {
       final numberText = textElement.text.substring(match.start, match.end);
-      return parseAmount(numberText);
+      final amountValue = parseAmount(numberText);
+      return RecognizedValue(amountValue, textElement);
     }
     return null;
   }
