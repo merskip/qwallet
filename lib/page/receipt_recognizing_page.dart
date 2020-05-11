@@ -61,6 +61,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
     final expense = await Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => ExpensePage(
         periodRef: selectedWallet.currentPeriod,
+        initialName: entityName,
         initialAmount: selectedTotalPrice,
         receiptImage: widget.receiptImage,
       ),

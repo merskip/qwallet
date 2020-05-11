@@ -16,12 +16,14 @@ class ExpensePage extends StatefulWidget {
   final DocumentReference periodRef;
   final Expense editExpense;
   final double initialAmount;
+  final String initialName;
   final File receiptImage;
 
   const ExpensePage(
       {Key key,
       @required this.periodRef,
       this.editExpense,
+      this.initialName,
       this.initialAmount,
       this.receiptImage})
       : super(key: key);
@@ -126,7 +128,7 @@ class _ExpensePageState extends State<ExpensePage> {
                   labelText: "Name",
                 ),
                 autofocus: true,
-                initialValue: widget.editExpense?.name,
+                initialValue: widget.initialName ?? widget.editExpense?.name,
                 validator: (value) {
                   if (value.isEmpty) return "Please enter a name";
                   return null;
