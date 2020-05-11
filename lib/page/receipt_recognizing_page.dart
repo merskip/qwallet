@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/business_entity_repository.dart';
 import 'package:qwallet/firebase_service.dart';
@@ -139,7 +140,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
   }
 
   Widget _entityNameItem(BuildContext context) {
-    return Row(children: [
+    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
       Spacer(),
       if (entityName != null)
         Flexible(
