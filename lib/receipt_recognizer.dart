@@ -13,9 +13,13 @@ class RecognizedValue<T> {
 class ReceiptRecognizingResult {
   final List<RecognizedValue<double>> totalPriceCandidates;
   final RecognizedValue<String> taxpayerIdentificationNumber;
+  final RecognizedValue<DateTime> purchaseDate;
 
-  ReceiptRecognizingResult(
-      {this.totalPriceCandidates, this.taxpayerIdentificationNumber});
+  ReceiptRecognizingResult({
+    this.totalPriceCandidates,
+    this.taxpayerIdentificationNumber,
+    this.purchaseDate,
+  });
 }
 
 class ReceiptRecognizer {
@@ -26,6 +30,7 @@ class ReceiptRecognizer {
     return ReceiptRecognizingResult(
       totalPriceCandidates: _getTotalPriceCandidates(numbers),
       taxpayerIdentificationNumber: _findNIP(text),
+      purchaseDate: _findDate(text),
     );
   }
 
@@ -53,6 +58,23 @@ class ReceiptRecognizer {
             final nipText = match.group(1);
             final purgedNip = nipText.replaceAll(RegExp(r"[^\d]"), "");
             return RecognizedValue(purgedNip, textElement);
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  RecognizedValue<DateTime> _findDate(VisionText text) {
+    for (final textBlock in text.blocks) {
+      for (final textLine in textBlock.lines) {
+        for (final textElement in textLine.elements) {
+          final match =
+              RegExp(r"(\d{4}-\d{2}-\d{2})").firstMatch(textElement.text);
+          if (match != null) {
+            final dateText = match.group(1);
+            final date = DateTime.parse(dateText);
+            return RecognizedValue(date, textElement);
           }
         }
       }

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:qwallet/business_entity_repository.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/wallet.dart';
@@ -120,6 +121,9 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
       _entityNameItem(context),
       SizedBox(height: 8),
       Divider(),
+      _purchaseDateItem(context),
+      SizedBox(height: 8),
+      Divider(),
       _walletItem(context),
       SizedBox(height: 16),
       RaisedButton(
@@ -179,6 +183,14 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
     ]);
   }
 
+  Widget _purchaseDateItem(BuildContext context) {
+    return Row(children: [
+      Text("Purchase date", style: Theme.of(context).textTheme.bodyText1),
+      Spacer(),
+      Text(DateFormat("dd MMM yyyy").format(result.purchaseDate.value))
+    ]);
+  }
+
   Widget _walletItem(BuildContext context) {
     return Row(children: [
       Text("Wallet", style: Theme.of(context).textTheme.bodyText1),
@@ -230,6 +242,15 @@ class RecognizedReceiptPainter extends CustomPainter {
         recognizingResult
             .taxpayerIdentificationNumber.textContainer.boundingBox,
         nipPaint);
+
+    final datePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = Colors.orange.withAlpha(200)
+      ..strokeWidth = 4;
+    canvas.drawRect(
+        recognizingResult
+            .purchaseDate.textContainer.boundingBox,
+        datePaint);
   }
 
   @override
