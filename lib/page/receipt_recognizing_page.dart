@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,21 +12,26 @@ import '../receipt_recognizer.dart';
 import 'expense_page.dart';
 
 class ReceiptRecognizingPage extends StatefulWidget {
-  final File receiptImage;
+  final File receiptImageFile;
 
-  const ReceiptRecognizingPage({Key key, this.receiptImage}) : super(key: key);
+  const ReceiptRecognizingPage({Key key, this.receiptImageFile})
+      : super(key: key);
 
   @override
-  _ReceiptRecognizingPageState createState() => _ReceiptRecognizingPageState();
+  _ReceiptRecognizingPageState createState() =>
+      _ReceiptRecognizingPageState(Image.file(receiptImageFile));
 }
 
 class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
+  final Image receiptImage;
   ReceiptRecognizingResult result;
   String entityName;
   List<Wallet> wallets;
 
   RecognizedValue<double> selectedTotalPrice;
   Wallet selectedWallet;
+
+  _ReceiptRecognizingPageState(this.receiptImage);
 
   @override
   void initState() {
@@ -35,7 +41,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
   }
 
   _recognizeReceipt() async {
-    final result = await ReceiptRecognizer().process(widget.receiptImage);
+    final result = await ReceiptRecognizer().process(widget.receiptImageFile);
     setState(() {
       this.result = result;
       this.selectedTotalPrice = result.totalPriceCandidates?.first;
@@ -64,7 +70,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
         periodRef: selectedWallet.currentPeriod,
         initialName: entityName,
         initialAmount: selectedTotalPrice.value,
-        receiptImage: widget.receiptImage,
+        receiptImage: widget.receiptImageFile,
       ),
     ));
     if (expense != null) {
@@ -80,7 +86,19 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
       ),
       body: SingleChildScrollView(
         child: Column(children: [
-          Image.file(widget.receiptImage),
+          if (result == null) receiptImage,
+          if (result != null)
+            FittedBox(
+              child: SizedBox(
+                width: receiptImage.width,
+                height: receiptImage.height,
+                child: CustomPaint(
+                  foregroundPainter: RecognizedReceiptPainter(
+                      receiptImage, result, selectedTotalPrice),
+                  child: receiptImage,
+                ),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: result != null
@@ -177,4 +195,46 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
       )
     ]);
   }
+}
+
+class RecognizedReceiptPainter extends CustomPainter {
+  final Image receiptImage;
+  final ReceiptRecognizingResult recognizingResult;
+  final RecognizedValue<double> selectedTotalPrice;
+
+  RecognizedReceiptPainter(
+      this.receiptImage, this.recognizingResult, this.selectedTotalPrice);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final candidatePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = Colors.blueGrey.withAlpha(200)
+      ..strokeWidth = 2;
+    for (final candidate in recognizingResult.totalPriceCandidates) {
+      canvas.drawRect(candidate.textContainer.boundingBox, candidatePaint);
+    }
+
+    final selectedTotalPricePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = Colors.blue.withAlpha(200)
+      ..strokeWidth = 4;
+    canvas.drawRect(
+        selectedTotalPrice.textContainer.boundingBox, selectedTotalPricePaint);
+
+    final nipPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = Colors.teal.withAlpha(200)
+      ..strokeWidth = 4;
+    canvas.drawRect(
+        recognizingResult
+            .taxpayerIdentificationNumber.textContainer.boundingBox,
+        nipPaint);
+  }
+
+  @override
+  bool shouldRepaint(RecognizedReceiptPainter oldDelegate) =>
+      receiptImage != oldDelegate.receiptImage ||
+      recognizingResult != oldDelegate.recognizingResult ||
+      selectedTotalPrice != oldDelegate.selectedTotalPrice;
 }

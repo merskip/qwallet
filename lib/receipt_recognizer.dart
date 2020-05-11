@@ -40,16 +40,21 @@ class ReceiptRecognizer {
     // TODO: Doesn't work correct when real total price is lower than tax
     // eg. Total price 10,00 zł, tax A - 23,00 %
     //     returns 23,00 zł, should [10,00, 23,00] or only 10,00
-    return numbers.toSet().toList()..sort((a, b) => b.value.compareTo(a.value));
+    return numbers..sort((a, b) => b.value.compareTo(a.value));
   }
 
   RecognizedValue<String> _findNIP(VisionText text) {
     for (final textBlock in text.blocks) {
-      final match = RegExp(r"NIP.*?((?:\d.?){9})").firstMatch(textBlock.text);
-      if (match != null) {
-        final nipText = match.group(1);
-        final purgedNip = nipText.replaceAll(RegExp(r"[^\d]"), "");
-        return RecognizedValue(purgedNip, textBlock);
+      for (final textLine in textBlock.lines) {
+        for (final textElement in textLine.elements) {
+          final match =
+              RegExp(r"(?:NIP)?.*?((?:\d.?){9})").firstMatch(textElement.text);
+          if (match != null) {
+            final nipText = match.group(1);
+            final purgedNip = nipText.replaceAll(RegExp(r"[^\d]"), "");
+            return RecognizedValue(purgedNip, textElement);
+          }
+        }
       }
     }
     return null;

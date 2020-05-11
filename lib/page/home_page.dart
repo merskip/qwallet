@@ -30,7 +30,7 @@ class HomePage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ReceiptRecognizingPage(receiptImage: image),
+        builder: (context) => ReceiptRecognizingPage(receiptImageFile: image),
       ),
     );
   }
