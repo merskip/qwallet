@@ -1,6 +1,10 @@
 import 'dart:io';
+import 'dart:math';
+import 'dart:ui';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+import 'package:image/image.dart';
+import 'package:qwallet/image_utils.dart';
 import 'package:qwallet/utils.dart';
 
 class RecognizedValue<T> {
@@ -11,11 +15,17 @@ class RecognizedValue<T> {
 }
 
 class ReceiptRecognizingResult {
+  final File receiptImage;
+  final VisionText visionText;
+  final Rect detectedRect;
   final List<RecognizedValue<double>> totalPriceCandidates;
   final RecognizedValue<String> taxpayerIdentificationNumber;
   final RecognizedValue<DateTime> purchaseDate;
 
   ReceiptRecognizingResult({
+    this.receiptImage,
+    this.visionText,
+    this.detectedRect,
     this.totalPriceCandidates,
     this.taxpayerIdentificationNumber,
     this.purchaseDate,
@@ -24,10 +34,22 @@ class ReceiptRecognizingResult {
 
 class ReceiptRecognizer {
   Future<ReceiptRecognizingResult> process(File image) async {
-    final text = await _recognizeText(image);
+    final rawText = await _recognizeText(image);
+    final receiptRect =  await _dectectReceipt(rawText);
+
+    final sourceImage = decodeImage(image.readAsBytesSync());
+    final resultImage = cropImage(sourceImage: sourceImage, rect: receiptRect);
+
+    final aaa = File(image.path + "2");
+    aaa.writeAsBytesSync(encodeJpg(resultImage));
+
+    final text = await _recognizeText(aaa);
     final numbers = _findNumbers(text);
 
     return ReceiptRecognizingResult(
+      receiptImage: aaa,
+      visionText: text,
+      detectedRect: receiptRect,
       totalPriceCandidates: _getTotalPriceCandidates(numbers),
       taxpayerIdentificationNumber: _findNIP(text),
       purchaseDate: _findDate(text),
@@ -38,6 +60,15 @@ class ReceiptRecognizer {
     final visionImage = FirebaseVisionImage.fromFile(image);
     final textRecognizer = FirebaseVision.instance.textRecognizer();
     return await textRecognizer.processImage(visionImage);
+  }
+
+  Future<Rect> _dectectReceipt(VisionText text) async {
+    final boundingBoxes = text.blocks.map((textBlock) => textBlock.boundingBox);
+    final top = boundingBoxes.map((it) => it.top).reduce(min);
+    final right = boundingBoxes.map((it) => it.right).reduce(max);
+    final bottom = boundingBoxes.map((it) => it.bottom).reduce(max);
+    final left = boundingBoxes.map((it) => it.left).reduce(min);
+    return Rect.fromLTRB(left, top, right, bottom);
   }
 
   List<RecognizedValue<double>> _getTotalPriceCandidates(
@@ -57,7 +88,8 @@ class ReceiptRecognizer {
           if (match != null) {
             final nipText = match.group(1);
             final purgedNip = nipText.replaceAll(RegExp(r"[^\d]"), "");
-            return RecognizedValue(purgedNip, textElement);
+            if (purgedNip.length == 10)
+              return RecognizedValue(purgedNip, textElement);
           }
         }
       }

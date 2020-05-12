@@ -1,4 +1,4 @@
-package pl.merskip.QWallet
+package pl.merskip.qwallet
 
 import io.flutter.embedding.android.FlutterActivity
 

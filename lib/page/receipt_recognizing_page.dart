@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -24,7 +25,7 @@ class ReceiptRecognizingPage extends StatefulWidget {
 }
 
 class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
-  final Image receiptImage;
+  Image receiptImage;
   ReceiptRecognizingResult result;
   String entityName;
   List<Wallet> wallets;
@@ -45,6 +46,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
     final result = await ReceiptRecognizer().process(widget.receiptImageFile);
     setState(() {
       this.result = result;
+      this.receiptImage = Image.file(result.receiptImage);
       this.selectedTotalPrice = result.totalPriceCandidates?.first;
     });
 
@@ -187,7 +189,10 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
     return Row(children: [
       Text("Purchase date", style: Theme.of(context).textTheme.bodyText1),
       Spacer(),
-      Text(DateFormat("dd MMM yyyy").format(result.purchaseDate.value))
+      if (result.purchaseDate?.value != null)
+        Text(DateFormat("dd MMM yyyy").format(result.purchaseDate.value))
+      else
+        Text("-")
     ]);
   }
 
@@ -219,6 +224,8 @@ class RecognizedReceiptPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    _paintVisionText(canvas, recognizingResult.visionText);
+
     final candidatePaint = Paint()
       ..style = PaintingStyle.stroke
       ..color = Colors.blueGrey.withAlpha(200)
@@ -243,14 +250,44 @@ class RecognizedReceiptPainter extends CustomPainter {
             .taxpayerIdentificationNumber.textContainer.boundingBox,
         nipPaint);
 
-    final datePaint = Paint()
+    if (recognizingResult.purchaseDate != null) {
+      final datePaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..color = Colors.orange.withAlpha(200)
+        ..strokeWidth = 4;
+      canvas.drawRect(
+          recognizingResult.purchaseDate.textContainer.boundingBox, datePaint);
+    }
+  }
+
+  _paintVisionText(Canvas canvas, VisionText text) {
+    final textBlockPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..color = Colors.orange.withAlpha(200)
-      ..strokeWidth = 4;
-    canvas.drawRect(
-        recognizingResult
-            .purchaseDate.textContainer.boundingBox,
-        datePaint);
+      ..color = Colors.blueGrey
+      ..strokeWidth = 2;
+
+    final textLinePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = Colors.deepPurple
+      ..strokeWidth = 3;
+
+    final textElementPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = Colors.deepOrange
+      ..strokeWidth = 3;
+
+    for (final textBlock in text.blocks) {
+//      canvas.drawRect(textBlock.boundingBox, textBlockPaint);
+      for (final textLine in textBlock.lines) {
+        canvas.drawLine(textLine.boundingBox.bottomLeft  + Offset(0, 2),
+            textLine.boundingBox.bottomRight + Offset(0, 2), textLinePaint);
+
+//        for (final textElement in textLine.elements) {
+//          canvas.drawLine(textElement.boundingBox.bottomLeft,
+//              textElement.boundingBox.bottomRight, textElementPaint);
+//        }
+      }
+    }
   }
 
   @override
