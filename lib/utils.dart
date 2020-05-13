@@ -42,6 +42,7 @@ String formatAmount(double amount, {bool currency = true}) {
 }
 
 String formatNIP(String nip, {String separator = "-"}) {
+  if (nip.length != 10) return nip;
   return [
     nip.substring(0, 3),
     nip.substring(3, 5),

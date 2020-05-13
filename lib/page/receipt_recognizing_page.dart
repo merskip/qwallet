@@ -25,7 +25,7 @@ class ReceiptRecognizingPage extends StatefulWidget {
 }
 
 class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
-  Image receiptImage;
+  final Image receiptImage;
   ReceiptRecognizingResult result;
   String entityName;
   List<Wallet> wallets;
@@ -43,17 +43,24 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
   }
 
   _recognizeReceipt() async {
-    final result = await ReceiptRecognizer().process(widget.receiptImageFile);
     setState(() {
-      this.result = result;
-      this.receiptImage = Image.file(result.receiptImage);
-      this.selectedTotalPrice = result.totalPriceCandidates?.first;
+      this.result = null;
+      this.selectedTotalPrice = null;
     });
 
-    final entity = await BusinessEntityRepository()
-        .getBusinessEntity(nip: result.taxpayerIdentificationNumber.value);
+    final result = await ReceiptRecognizer().process(widget.receiptImageFile);
+    print("Done");
+    setState(() {
+      this.result = result;
+      this.selectedTotalPrice = result.totalPriceCandidates.length > 0 ? result.totalPriceCandidates?.first : null;
+    });
 
-    setState(() => this.entityName = entity.name);
+    if (result.taxpayerIdentificationNumber != null) {
+      final entity = await BusinessEntityRepository()
+          .getBusinessEntity(nip: result.taxpayerIdentificationNumber.value);
+
+      setState(() => this.entityName = entity.name);
+    }
   }
 
   _fetchWallets() async {
@@ -69,12 +76,13 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
 
   _onSelectedSubmit(BuildContext context) async {
     final expense = await Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => ExpensePage(
-        periodRef: selectedWallet.currentPeriod,
-        initialName: entityName,
-        initialAmount: selectedTotalPrice.value,
-        receiptImage: widget.receiptImageFile,
-      ),
+      builder: (context) =>
+          ExpensePage(
+            periodRef: selectedWallet.currentPeriod,
+            initialName: entityName,
+            initialAmount: selectedTotalPrice.value,
+            receiptImage: widget.receiptImageFile,
+          ),
     ));
     if (expense != null) {
       Navigator.of(context).pop();
@@ -86,31 +94,47 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Recognizing receipt"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () => _recognizeReceipt(),
+          )
+        ],
       ),
       body: SingleChildScrollView(
-        child: Column(children: [
-          if (result == null) receiptImage,
-          if (result != null)
-            FittedBox(
-              child: SizedBox(
-                width: receiptImage.width,
-                height: receiptImage.height,
-                child: CustomPaint(
-                  foregroundPainter: RecognizedReceiptPainter(
-                      receiptImage, result, selectedTotalPrice),
-                  child: receiptImage,
-                ),
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: result != null
-                ? _receiptResult(context)
-                : CircularProgressIndicator(),
-          )
-        ]),
+        child: result == null
+            ? _recognizingReceipt()
+            : _receiptWithResult(),
       ),
     );
+  }
+
+  Widget _recognizingReceipt() {
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      children: [
+        receiptImage,
+        CircularProgressIndicator()
+      ],
+    );
+  }
+
+  Widget _receiptWithResult() {
+    final resultReceiptImage = Image.file(result.receiptImage);
+    return Column(children: [
+      FittedBox(
+        child: SizedBox(
+          width: resultReceiptImage.width,
+          height: resultReceiptImage.height,
+          child: CustomPaint(
+            foregroundPainter: RecognizedReceiptPainter(result, selectedTotalPrice),
+            child: resultReceiptImage,
+          ),
+        ),
+      ),
+      Padding(
+          padding: const EdgeInsets.all(8.0), child: _receiptResult(context))
+    ]);
   }
 
   Widget _receiptResult(BuildContext context) {
@@ -137,7 +161,10 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
 
   Widget _totalPriceItem(BuildContext context) {
     return Row(children: [
-      Text("Total price", style: Theme.of(context).textTheme.bodyText1),
+      Text("Total price", style: Theme
+          .of(context)
+          .textTheme
+          .bodyText1),
       Spacer(),
       DropdownButton(
         items: result.totalPriceCandidates.map((totalPriceCandidate) {
@@ -154,10 +181,13 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
 
   Widget _nipItem(BuildContext context) {
     return Row(children: [
-      Text("NIP", style: Theme.of(context).textTheme.bodyText1),
+      Text("NIP", style: Theme
+          .of(context)
+          .textTheme
+          .bodyText1),
       Spacer(),
       Text(
-        formatNIP(result.taxpayerIdentificationNumber.value),
+        formatNIP(result.taxpayerIdentificationNumber?.value ?? "-"),
         style: Theme.of(context).textTheme.bodyText2,
       )
     ]);
@@ -187,7 +217,10 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
 
   Widget _purchaseDateItem(BuildContext context) {
     return Row(children: [
-      Text("Purchase date", style: Theme.of(context).textTheme.bodyText1),
+      Text("Purchase date", style: Theme
+          .of(context)
+          .textTheme
+          .bodyText1),
       Spacer(),
       if (result.purchaseDate?.value != null)
         Text(DateFormat("dd MMM yyyy").format(result.purchaseDate.value))
@@ -198,7 +231,10 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
 
   Widget _walletItem(BuildContext context) {
     return Row(children: [
-      Text("Wallet", style: Theme.of(context).textTheme.bodyText1),
+      Text("Wallet", style: Theme
+          .of(context)
+          .textTheme
+          .bodyText1),
       Spacer(),
       DropdownButton(
         items: wallets.map((wallet) {
@@ -215,12 +251,10 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
 }
 
 class RecognizedReceiptPainter extends CustomPainter {
-  final Image receiptImage;
   final ReceiptRecognizingResult recognizingResult;
   final RecognizedValue<double> selectedTotalPrice;
 
-  RecognizedReceiptPainter(
-      this.receiptImage, this.recognizingResult, this.selectedTotalPrice);
+  RecognizedReceiptPainter(this.recognizingResult, this.selectedTotalPrice);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -234,21 +268,25 @@ class RecognizedReceiptPainter extends CustomPainter {
       canvas.drawRect(candidate.textContainer.boundingBox, candidatePaint);
     }
 
-    final selectedTotalPricePaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.blue.withAlpha(200)
-      ..strokeWidth = 4;
-    canvas.drawRect(
-        selectedTotalPrice.textContainer.boundingBox, selectedTotalPricePaint);
+    if (selectedTotalPrice != null) {
+      final selectedTotalPricePaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..color = Colors.blue.withAlpha(200)
+        ..strokeWidth = 4;
+      canvas.drawRect(selectedTotalPrice.textContainer.boundingBox,
+          selectedTotalPricePaint);
+    }
 
-    final nipPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.teal.withAlpha(200)
-      ..strokeWidth = 4;
-    canvas.drawRect(
-        recognizingResult
-            .taxpayerIdentificationNumber.textContainer.boundingBox,
-        nipPaint);
+    if (recognizingResult.taxpayerIdentificationNumber != null) {
+      final nipPaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..color = Colors.teal.withAlpha(200)
+        ..strokeWidth = 4;
+      canvas.drawRect(
+          recognizingResult
+              .taxpayerIdentificationNumber.textContainer.boundingBox,
+          nipPaint);
+    }
 
     if (recognizingResult.purchaseDate != null) {
       final datePaint = Paint()
@@ -279,7 +317,7 @@ class RecognizedReceiptPainter extends CustomPainter {
     for (final textBlock in text.blocks) {
 //      canvas.drawRect(textBlock.boundingBox, textBlockPaint);
       for (final textLine in textBlock.lines) {
-        canvas.drawLine(textLine.boundingBox.bottomLeft  + Offset(0, 2),
+        canvas.drawLine(textLine.boundingBox.bottomLeft + Offset(0, 2),
             textLine.boundingBox.bottomRight + Offset(0, 2), textLinePaint);
 
 //        for (final textElement in textLine.elements) {
@@ -292,7 +330,6 @@ class RecognizedReceiptPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(RecognizedReceiptPainter oldDelegate) =>
-      receiptImage != oldDelegate.receiptImage ||
-      recognizingResult != oldDelegate.recognizingResult ||
-      selectedTotalPrice != oldDelegate.selectedTotalPrice;
+          recognizingResult != oldDelegate.recognizingResult ||
+          selectedTotalPrice != oldDelegate.selectedTotalPrice;
 }

@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:image/image.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:qwallet/image_utils.dart';
 import 'package:qwallet/utils.dart';
 
@@ -33,27 +34,39 @@ class ReceiptRecognizingResult {
 }
 
 class ReceiptRecognizer {
-  Future<ReceiptRecognizingResult> process(File image) async {
-    final rawText = await _recognizeText(image);
-    final receiptRect =  await _dectectReceipt(rawText);
+  Future<ReceiptRecognizingResult> process(File image) {
+    return Future.microtask(() async {
+      print("Detecting receipt rect...");
+      final rawText = await _recognizeText(image);
+      final receiptRect = await _dectectReceipt(rawText);
 
-    final sourceImage = decodeImage(image.readAsBytesSync());
-    final resultImage = cropImage(sourceImage: sourceImage, rect: receiptRect);
+      print("Cropping image...");
+      final sourceImage = decodeImage(image.readAsBytesSync());
+      var resultImage = cropImage(sourceImage, receiptRect);
 
-    final aaa = File(image.path + "2");
-    aaa.writeAsBytesSync(encodeJpg(resultImage));
+      print("Adjusting contrast...");
+      resultImage = adjustContrast(resultImage);
 
-    final text = await _recognizeText(aaa);
-    final numbers = _findNumbers(text);
+      final tempDir = await getTemporaryDirectory();
+      final receiptImage =
+          File("${tempDir.path}/receipt-${Random().nextInt(1 << 32)}.jpg");
+      await receiptImage.writeAsBytes(encodeJpg(resultImage));
 
-    return ReceiptRecognizingResult(
-      receiptImage: aaa,
-      visionText: text,
-      detectedRect: receiptRect,
-      totalPriceCandidates: _getTotalPriceCandidates(numbers),
-      taxpayerIdentificationNumber: _findNIP(text),
-      purchaseDate: _findDate(text),
-    );
+      print("Again detecting text...");
+      final text = await _recognizeText(receiptImage);
+
+      print("Recognizing receipt...");
+      final numbers = _findNumbers(text);
+
+      return ReceiptRecognizingResult(
+        receiptImage: receiptImage,
+        visionText: text,
+        detectedRect: receiptRect,
+        totalPriceCandidates: _getTotalPriceCandidates(numbers),
+        taxpayerIdentificationNumber: _findNIP(text),
+        purchaseDate: _findDate(text),
+      );
+    });
   }
 
   Future<VisionText> _recognizeText(File image) async {

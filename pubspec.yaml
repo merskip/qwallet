@@ -41,6 +41,7 @@ dependencies:
   url_launcher: ^5.4.5
   http: ^0.12.1
   image: ^2.1.12
+  path_provider: ^1.6.8
 
 dev_dependencies:
   flutter_test:
