@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,6 +11,7 @@ import 'package:qwallet/utils.dart';
 
 import '../receipt_recognizer.dart';
 import 'expense_page.dart';
+import 'recognized_receipt_painter.dart';
 
 class ReceiptRecognizingPage extends StatefulWidget {
   final File receiptImageFile;
@@ -52,7 +52,9 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
     print("Done");
     setState(() {
       this.result = result;
-      this.selectedTotalPrice = result.totalPriceCandidates.length > 0 ? result.totalPriceCandidates?.first : null;
+      this.selectedTotalPrice =
+      result.totalPriceCandidates.length > 0 ? result.totalPriceCandidates
+          ?.first : null;
     });
 
     if (result.taxpayerIdentificationNumber != null) {
@@ -127,7 +129,8 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
           width: resultReceiptImage.width,
           height: resultReceiptImage.height,
           child: CustomPaint(
-            foregroundPainter: RecognizedReceiptPainter(result, selectedTotalPrice),
+            foregroundPainter: RecognizedReceiptPainter(
+                result, selectedTotalPrice),
             child: resultReceiptImage,
           ),
         ),
@@ -250,86 +253,3 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
   }
 }
 
-class RecognizedReceiptPainter extends CustomPainter {
-  final ReceiptRecognizingResult recognizingResult;
-  final RecognizedValue<double> selectedTotalPrice;
-
-  RecognizedReceiptPainter(this.recognizingResult, this.selectedTotalPrice);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    _paintVisionText(canvas, recognizingResult.visionText);
-
-    final candidatePaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.blueGrey.withAlpha(200)
-      ..strokeWidth = 2;
-    for (final candidate in recognizingResult.totalPriceCandidates) {
-      canvas.drawRect(candidate.textContainer.boundingBox, candidatePaint);
-    }
-
-    if (selectedTotalPrice != null) {
-      final selectedTotalPricePaint = Paint()
-        ..style = PaintingStyle.stroke
-        ..color = Colors.blue.withAlpha(200)
-        ..strokeWidth = 4;
-      canvas.drawRect(selectedTotalPrice.textContainer.boundingBox,
-          selectedTotalPricePaint);
-    }
-
-    if (recognizingResult.taxpayerIdentificationNumber != null) {
-      final nipPaint = Paint()
-        ..style = PaintingStyle.stroke
-        ..color = Colors.teal.withAlpha(200)
-        ..strokeWidth = 4;
-      canvas.drawRect(
-          recognizingResult
-              .taxpayerIdentificationNumber.textContainer.boundingBox,
-          nipPaint);
-    }
-
-    if (recognizingResult.purchaseDate != null) {
-      final datePaint = Paint()
-        ..style = PaintingStyle.stroke
-        ..color = Colors.orange.withAlpha(200)
-        ..strokeWidth = 4;
-      canvas.drawRect(
-          recognizingResult.purchaseDate.textContainer.boundingBox, datePaint);
-    }
-  }
-
-  _paintVisionText(Canvas canvas, VisionText text) {
-    final textBlockPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.blueGrey
-      ..strokeWidth = 2;
-
-    final textLinePaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.deepPurple
-      ..strokeWidth = 3;
-
-    final textElementPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.deepOrange
-      ..strokeWidth = 3;
-
-    for (final textBlock in text.blocks) {
-//      canvas.drawRect(textBlock.boundingBox, textBlockPaint);
-      for (final textLine in textBlock.lines) {
-        canvas.drawLine(textLine.boundingBox.bottomLeft + Offset(0, 2),
-            textLine.boundingBox.bottomRight + Offset(0, 2), textLinePaint);
-
-//        for (final textElement in textLine.elements) {
-//          canvas.drawLine(textElement.boundingBox.bottomLeft,
-//              textElement.boundingBox.bottomRight, textElementPaint);
-//        }
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(RecognizedReceiptPainter oldDelegate) =>
-          recognizingResult != oldDelegate.recognizingResult ||
-          selectedTotalPrice != oldDelegate.selectedTotalPrice;
-}
