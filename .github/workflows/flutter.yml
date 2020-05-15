@@ -29,4 +29,5 @@ jobs:
       uses: w9jds/firebase-action@master
       with:
         args: appdistribution:distribute "build/app/outputs/flutter-apk/app-release.apk" --app "${{secrets.FIREBASE_APP_ID}}"
+      env:
         FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}}
