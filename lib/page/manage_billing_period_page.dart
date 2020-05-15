@@ -4,7 +4,6 @@ import 'package:qwallet/model/wallet.dart';
 import 'package:qwallet/widget/query_list_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import 'billing_period_page.dart';
 

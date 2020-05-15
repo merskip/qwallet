@@ -202,14 +202,8 @@ class FirebaseService {
   CollectionReference _expensesCollection(BillingPeriod period) =>
       period.snapshot.reference.collection("expenses");
 
-  CollectionReference _incomesCollection(BillingPeriod period) =>
-      period.snapshot.reference.collection("incomes");
-
   CollectionReference _billingPeriodsCollection(Wallet wallet) =>
       wallet.snapshot.reference.collection("periods");
-
-  CollectionReference _productsCollection(Wallet wallet) =>
-      wallet.snapshot.reference.collection("products");
 
   CollectionReference _walletsCollection() => firestore.collection("wallets");
 }
