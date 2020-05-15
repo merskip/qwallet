@@ -26,4 +26,7 @@ jobs:
         FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}}
     - run: flutter build apk
     - name: Deploy to Firebase App Distribution (Android)
-      run: firebase appdistribution:distribute "build/app/outputs/flutter-apk/app-release.apk" --app "${{secrets.FIREBASE_APP_ID}}" --token "${{secrets.FIREBASE_TOKEN}}"
+      uses: w9jds/firebase-action@master
+      with:
+        args: appdistribution:distribute "build/app/outputs/flutter-apk/app-release.apk" --app "${{secrets.FIREBASE_APP_ID}}"
+        FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}}
