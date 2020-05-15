@@ -16,10 +16,17 @@ jobs:
     - run: flutter pub get
     - run: flutter analyze
 #    - run: flutter test
-    - run: flutter build apk
-    - name: upload artifact to Firebase App Distribution
-      uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
+    - run: flutter build web
+    - name: Deploy to Firebase
+      uses: w9jds/firebase-action@master
       with:
-        appId: ${{secrets.FIREBASE_APP_ID}}
-        token: ${{secrets.FIREBASE_TOKEN}}
-        file: build/app/outputs/flutter-apk/app-release.apk
+        args: deploy --only hosting
+      env:
+        FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}}
+#    - run: flutter build apk
+#    - name: upload artifact to Firebase App Distribution
+#      uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
+#      with:
+#        appId: ${{secrets.FIREBASE_APP_ID}}
+#        token: ${{secrets.FIREBASE_TOKEN}}
+#        file: build/app/outputs/flutter-apk/app-release.apk
