@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/router.dart';
 
 import 'page/landing_page.dart';
 
@@ -7,6 +8,11 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+
+  MyApp() : super() {
+    defineRoutes(router);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,7 +24,11 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: LandingPage(),
+      initialRoute: "/",
+      routes: {
+        "/": (context) => LandingPage(),
+      },
+      onGenerateRoute: router.generator,
     );
   }
 

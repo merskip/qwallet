@@ -16,26 +16,39 @@ import '../utils.dart';
 import '../widget/query_list_widget.dart';
 
 class WalletPage extends StatefulWidget {
-  final Wallet wallet;
+  final String walletId;
 
-  const WalletPage({Key key, this.wallet}) : super(key: key);
+  const WalletPage({Key key, this.walletId}) : super(key: key);
 
   @override
-  _WalletPageState createState() => _WalletPageState(wallet.currentPeriod);
+  _WalletPageState createState() => _WalletPageState();
 }
 
 class _WalletPageState extends State<WalletPage> {
+  Wallet wallet;
   DocumentReference selectedPeriodRef;
 
-  _WalletPageState(this.selectedPeriodRef);
+  _WalletPageState();
+
+
+  @override
+  void initState() {
+    FirebaseService.instance.getWallet(widget.walletId).listen((wallet) {
+      setState(() {
+        this.wallet = wallet;
+        this.selectedPeriodRef = wallet.currentPeriod;
+      });
+    });
+    super.initState();
+  }
 
   manageOwners(BuildContext context) async {
     final selectedUsers = await showDialog(
       context: context,
-      builder: (context) => ManageOwnersDialog(wallet: widget.wallet),
+      builder: (context) => ManageOwnersDialog(wallet: wallet),
     );
     if (selectedUsers != null && selectedUsers.isNotEmpty) {
-      FirebaseService.instance.setWalletOwners(widget.wallet, selectedUsers);
+      FirebaseService.instance.setWalletOwners(wallet, selectedUsers);
       // TODO: Add refresh wallet field
     }
   }
@@ -45,7 +58,7 @@ class _WalletPageState extends State<WalletPage> {
       context,
       MaterialPageRoute(
         builder: (context) => ManageBillingPeriodPage(
-          wallet: widget.wallet,
+          wallet: wallet,
           selectedPeriodRef: selectedPeriodRef,
         ),
       ),
@@ -75,13 +88,16 @@ class _WalletPageState extends State<WalletPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    if (wallet == null) return Scaffold(body: CircularProgressIndicator());
+
     final expensesStream = FirebaseService.instance
         .getBillingPeriod(selectedPeriodRef)
         .asyncExpand((period) => FirebaseService.instance.getExpenses(period));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.wallet.name),
+        title: Text(wallet.name),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.people),

@@ -5,15 +5,16 @@ import 'package:qwallet/widget/vector_image.dart';
 
 import '../firebase_service.dart';
 import '../model/wallet.dart';
-import '../page/wallet_page.dart';
 import 'query_list_widget.dart';
 
 class WalletList extends StatelessWidget {
   openWallet(BuildContext context, Wallet wallet) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => WalletPage(wallet: wallet)),
-    );
+//    Navigator.push(
+//      context,
+//      MaterialPageRoute(builder: (context) => WalletPage(wallet: wallet)),
+//    );
+    Navigator.of(context)
+        .pushNamed("/wallet/${wallet.snapshot.reference.documentID}");
   }
 
   @override
