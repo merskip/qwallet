@@ -61,7 +61,6 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Widget _homePage(BuildContext context) {
-    return Container(
-        constraints: BoxConstraints(maxWidth: 726), child: HomePage());
+    return HomePage();
   }
 }
