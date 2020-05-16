@@ -30,7 +30,6 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
   String entityName;
   List<Wallet> wallets;
 
-  RecognizedValue<double> selectedTotalPrice;
   Wallet selectedWallet;
 
   _ReceiptRecognizingPageState(this.receiptImage);
@@ -43,23 +42,15 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
   }
 
   _recognizeReceipt() async {
-    setState(() {
-      this.result = null;
-      this.selectedTotalPrice = null;
-    });
+    setState(() => this.result = null);
 
     final result = await ReceiptRecognizer().process(widget.receiptImageFile);
     print("Done");
-    setState(() {
-      this.result = result;
-      this.selectedTotalPrice =
-      result.totalPriceCandidates.length > 0 ? result.totalPriceCandidates
-          ?.first : null;
-    });
+    setState(() => this.result = result);
 
-    if (result.taxpayerIdentificationNumber != null) {
+    if (result.nip != null) {
       final entity = await BusinessEntityRepository()
-          .getBusinessEntity(nip: result.taxpayerIdentificationNumber.value);
+          .getBusinessEntity(nip: result.nip.value);
 
       setState(() => this.entityName = entity.name);
     }
@@ -78,13 +69,12 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
 
   _onSelectedSubmit(BuildContext context) async {
     final expense = await Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) =>
-          ExpensePage(
-            periodRef: selectedWallet.currentPeriod,
-            initialName: entityName,
-            initialAmount: selectedTotalPrice.value,
-            receiptImage: widget.receiptImageFile,
-          ),
+      builder: (context) => ExpensePage(
+        periodRef: selectedWallet.currentPeriod,
+        initialName: entityName,
+        initialAmount: result.totalPrice.value,
+        receiptImage: widget.receiptImageFile,
+      ),
     ));
     if (expense != null) {
       Navigator.of(context).pop();
@@ -104,9 +94,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
         ],
       ),
       body: SingleChildScrollView(
-        child: result == null
-            ? _recognizingReceipt()
-            : _receiptWithResult(),
+        child: result == null ? _recognizingReceipt() : _receiptWithResult(),
       ),
     );
   }
@@ -114,10 +102,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
   Widget _recognizingReceipt() {
     return Stack(
       alignment: AlignmentDirectional.center,
-      children: [
-        receiptImage,
-        CircularProgressIndicator()
-      ],
+      children: [receiptImage, CircularProgressIndicator()],
     );
   }
 
@@ -129,8 +114,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
           width: resultReceiptImage.width,
           height: resultReceiptImage.height,
           child: CustomPaint(
-            foregroundPainter: RecognizedReceiptPainter(
-                result, selectedTotalPrice),
+            foregroundPainter: RecognizedReceiptPainter(result),
             child: resultReceiptImage,
           ),
         ),
@@ -164,33 +148,21 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
 
   Widget _totalPriceItem(BuildContext context) {
     return Row(children: [
-      Text("Total price", style: Theme
-          .of(context)
-          .textTheme
-          .bodyText1),
+      Text("Total price", style: Theme.of(context).textTheme.bodyText1),
       Spacer(),
-      DropdownButton(
-        items: result.totalPriceCandidates.map((totalPriceCandidate) {
-          return DropdownMenuItem(
-            value: totalPriceCandidate,
-            child: Text(formatAmount(totalPriceCandidate.value)),
-          );
-        }).toList(),
-        value: this.selectedTotalPrice,
-        onChanged: (value) => setState(() => this.selectedTotalPrice = value),
-      )
+      Text(
+        formatAmount(result.totalPrice?.value) ?? "-",
+        style: Theme.of(context).textTheme.bodyText2,
+      ),
     ]);
   }
 
   Widget _nipItem(BuildContext context) {
     return Row(children: [
-      Text("NIP", style: Theme
-          .of(context)
-          .textTheme
-          .bodyText1),
+      Text("NIP", style: Theme.of(context).textTheme.bodyText1),
       Spacer(),
       Text(
-        formatNIP(result.taxpayerIdentificationNumber?.value ?? "-"),
+        formatNIP(result.nip?.value ?? "-"),
         style: Theme.of(context).textTheme.bodyText2,
       )
     ]);
@@ -220,10 +192,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
 
   Widget _purchaseDateItem(BuildContext context) {
     return Row(children: [
-      Text("Purchase date", style: Theme
-          .of(context)
-          .textTheme
-          .bodyText1),
+      Text("Purchase date", style: Theme.of(context).textTheme.bodyText1),
       Spacer(),
       if (result.purchaseDate?.value != null)
         Text(DateFormat("dd MMM yyyy").format(result.purchaseDate.value))
@@ -234,10 +203,7 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
 
   Widget _walletItem(BuildContext context) {
     return Row(children: [
-      Text("Wallet", style: Theme
-          .of(context)
-          .textTheme
-          .bodyText1),
+      Text("Wallet", style: Theme.of(context).textTheme.bodyText1),
       Spacer(),
       DropdownButton(
         items: wallets.map((wallet) {
@@ -252,4 +218,3 @@ class _ReceiptRecognizingPageState extends State<ReceiptRecognizingPage> {
     ]);
   }
 }
-

@@ -19,16 +19,16 @@ class ReceiptRecognizingResult {
   final File receiptImage;
   final VisionText visionText;
   final Rect detectedRect;
-  final List<RecognizedValue<double>> totalPriceCandidates;
-  final RecognizedValue<String> taxpayerIdentificationNumber;
+  final RecognizedValue<double> totalPrice;
+  final RecognizedValue<String> nip;
   final RecognizedValue<DateTime> purchaseDate;
 
   ReceiptRecognizingResult({
     this.receiptImage,
     this.visionText,
     this.detectedRect,
-    this.totalPriceCandidates,
-    this.taxpayerIdentificationNumber,
+    this.totalPrice,
+    this.nip,
     this.purchaseDate,
   });
 }
@@ -38,7 +38,7 @@ class ReceiptRecognizer {
     return Future.microtask(() async {
       print("Detecting receipt rect...");
       final rawText = await _recognizeText(image);
-      final receiptRect = await _dectectReceipt(rawText);
+      final receiptRect = await _detectReceiptRect(rawText);
 
       print("Cropping image...");
       final sourceImage = decodeImage(image.readAsBytesSync());
@@ -56,14 +56,12 @@ class ReceiptRecognizer {
       final text = await _recognizeText(receiptImage);
 
       print("Recognizing receipt...");
-      final numbers = _findNumbers(text);
-
       return ReceiptRecognizingResult(
         receiptImage: receiptImage,
         visionText: text,
         detectedRect: receiptRect,
-        totalPriceCandidates: _getTotalPriceCandidates(numbers),
-        taxpayerIdentificationNumber: _findNIP(text),
+        totalPrice: _getTotalPrice(text),
+        nip: _findNIP(text),
         purchaseDate: _findDate(text),
       );
     });
@@ -75,7 +73,7 @@ class ReceiptRecognizer {
     return await textRecognizer.processImage(visionImage);
   }
 
-  Future<Rect> _dectectReceipt(VisionText text) async {
+  Future<Rect> _detectReceiptRect(VisionText text) async {
     final boundingBoxes = text.blocks.map((textBlock) => textBlock.boundingBox);
     final top = boundingBoxes.map((it) => it.top).reduce(min);
     final right = boundingBoxes.map((it) => it.right).reduce(max);
@@ -84,12 +82,11 @@ class ReceiptRecognizer {
     return Rect.fromLTRB(left, top, right, bottom);
   }
 
-  List<RecognizedValue<double>> _getTotalPriceCandidates(
-      List<RecognizedValue<double>> numbers) {
-    // TODO: Doesn't work correct when real total price is lower than tax
-    // eg. Total price 10,00 zł, tax A - 23,00 %
-    //     returns 23,00 zł, should [10,00, 23,00] or only 10,00
-    return numbers..sort((a, b) => b.value.compareTo(a.value));
+  RecognizedValue<double> _getTotalPrice(VisionText text) {
+    final numbers = _findNumbers(text);
+    numbers.sort((lhs, rhs) => rhs.textContainer.boundingBox.height
+        .compareTo(lhs.textContainer.boundingBox.height));
+    return numbers.first;
   }
 
   RecognizedValue<String> _findNIP(VisionText text) {

@@ -8,39 +8,30 @@ import '../receipt_recognizer.dart';
 
 class RecognizedReceiptPainter extends CustomPainter {
   final ReceiptRecognizingResult recognizingResult;
-  final RecognizedValue<double> selectedTotalPrice;
 
-  RecognizedReceiptPainter(this.recognizingResult, this.selectedTotalPrice);
+  RecognizedReceiptPainter(this.recognizingResult);
 
   @override
   void paint(Canvas canvas, Size size) {
     _paintVisionText(canvas, recognizingResult.visionText);
 
-    final candidatePaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.orange.withAlpha(128)
-      ..strokeWidth = 4;
-    for (final candidate in recognizingResult.totalPriceCandidates) {
-      canvas.drawRect(candidate.textContainer.boundingBox, candidatePaint);
-    }
-
-    if (selectedTotalPrice != null) {
-      final selectedTotalPricePaint = Paint()
+    if (recognizingResult.totalPrice != null) {
+      final tTotalPricePaint = Paint()
         ..style = PaintingStyle.stroke
         ..color = Colors.orange
-        ..strokeWidth = 6;
-      canvas.drawRect(selectedTotalPrice.textContainer.boundingBox,
-          selectedTotalPricePaint);
+        ..strokeWidth = 3;
+      canvas.drawRect(recognizingResult.totalPrice.textContainer.boundingBox.inflate(3),
+          tTotalPricePaint);
     }
 
-    if (recognizingResult.taxpayerIdentificationNumber != null) {
+    if (recognizingResult.nip != null) {
       final nipPaint = Paint()
         ..style = PaintingStyle.stroke
         ..color = Colors.orange
-        ..strokeWidth = 6;
+        ..strokeWidth = 3;
       canvas.drawRect(
           recognizingResult
-              .taxpayerIdentificationNumber.textContainer.boundingBox,
+              .nip.textContainer.boundingBox.inflate(3),
           nipPaint);
     }
 
@@ -48,9 +39,9 @@ class RecognizedReceiptPainter extends CustomPainter {
       final datePaint = Paint()
         ..style = PaintingStyle.stroke
         ..color = Colors.orange
-        ..strokeWidth = 6;
+        ..strokeWidth = 3;
       canvas.drawRect(
-          recognizingResult.purchaseDate.textContainer.boundingBox, datePaint);
+          recognizingResult.purchaseDate.textContainer.boundingBox.inflate(3), datePaint);
     }
   }
 
@@ -80,6 +71,5 @@ class RecognizedReceiptPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(RecognizedReceiptPainter oldDelegate) =>
-      recognizingResult != oldDelegate.recognizingResult ||
-      selectedTotalPrice != oldDelegate.selectedTotalPrice;
+      recognizingResult != oldDelegate.recognizingResult;
 }
