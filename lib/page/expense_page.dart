@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -11,6 +12,7 @@ import 'package:qwallet/model/expense.dart';
 import 'package:uuid/uuid.dart';
 
 import '../utils.dart';
+import 'ReceiptPreviewPage.dart';
 
 class ExpensePage extends StatefulWidget {
   final DocumentReference periodRef;
@@ -45,6 +47,7 @@ class _ExpensePageState extends State<ExpensePage> {
   String receiptUrl;
 
   bool get hasReceipt {
+    if (kIsWeb) return false;
     return widget.receiptImage != null ||
         widget.editExpense?.receiptPath != null;
   }
@@ -208,17 +211,25 @@ class _ExpensePageState extends State<ExpensePage> {
 
   Widget _receiptStorage(BuildContext context) {
     if (receiptUrl != null) {
-      return Image.network(
-        receiptUrl,
-        width: 192,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null)
-            return child;
-          final progress = loadingProgress.cumulativeBytesLoaded /
-                loadingProgress.expectedTotalBytes;
-            return CircularProgressIndicator(value: progress);
-        },
-      );
+      return InkWell(
+          child: Image.network(
+            receiptUrl,
+            width: 192,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              final progress = loadingProgress.cumulativeBytesLoaded /
+                  loadingProgress.expectedTotalBytes;
+              return CircularProgressIndicator(value: progress);
+            },
+          ),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) =>
+                    ReceiptPreviewPage(receiptImageUrl: receiptUrl)
+              ),
+            );
+          });
     } else {
       return CircularProgressIndicator();
     }
