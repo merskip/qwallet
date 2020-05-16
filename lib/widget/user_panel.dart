@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -42,16 +45,32 @@ class _UserPanelState extends State<UserPanel> {
     );
   }
 
-  _avatarWithNameView(FirebaseUser user) {
+  Widget _avatarWithNameView(FirebaseUser user) {
     return Row(children: <Widget>[
-      user.photoUrl != null
-          ? CircleAvatar(
-              backgroundImage: NetworkImage(user.photoUrl),
-              backgroundColor: Colors.transparent,
-            )
-          : Icon(Icons.person),
+      _avatarWidget(user),
       SizedBox(width: 16),
       Text(user.displayName ?? user.email ?? "Anonymous")
     ]);
+  }
+
+  Widget _avatarWidget(FirebaseUser user) {
+    if (user.photoUrl != null) {
+      return _circleAvatar(NetworkImage(user.photoUrl));
+    } else if (user.email != null) {
+      final emailHash = md5.convert(utf8.encode(user.email));
+      final avatarUrl =
+          "https://www.gravatar.com/avatar/$emailHash?s=128&d=identicon";
+      return _circleAvatar(NetworkImage(avatarUrl));
+    } else {
+      return Icon(Icons.person);
+    }
+  }
+
+  Widget _circleAvatar(ImageProvider image) {
+    return CircleAvatar(
+      backgroundImage: image,
+      backgroundColor: Colors.transparent,
+      maxRadius: 18,
+    );
   }
 }
