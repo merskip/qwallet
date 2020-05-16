@@ -55,7 +55,6 @@ class RecognizedReceiptPainter extends CustomPainter {
   }
 
   _paintVisionText(Canvas canvas, VisionText text) {
-
     final textLinePaint = Paint()
       ..style = PaintingStyle.stroke
       ..color = Colors.blueGrey
@@ -63,19 +62,17 @@ class RecognizedReceiptPainter extends CustomPainter {
 
     final textElementPaint = Paint()
       ..style = PaintingStyle.fill
-      ..color = Colors.blue.withAlpha(16);
+      ..color = Colors.blue.withAlpha(32);
 
     for (final textBlock in text.blocks) {
       for (final textLine in textBlock.lines) {
-
         final points = List<Offset>()
           ..addAll(textLine.cornerPoints)
           ..add(textLine.cornerPoints[0]);
-        canvas.drawPoints(
-            PointMode.polygon, points, textLinePaint);
+        canvas.drawPoints(PointMode.polygon, points, textLinePaint);
 
         for (final textElement in textLine.elements) {
-        canvas.drawRect(textElement.boundingBox, textElementPaint);
+          canvas.drawRect(textElement.boundingBox, textElementPaint);
         }
       }
     }
