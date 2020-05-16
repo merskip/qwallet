@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
@@ -90,7 +91,9 @@ class HomePage extends StatelessWidget {
       FloatingActionButton(
         child: Icon(Icons.camera_alt),
         heroTag: "scan-receipt",
-        onPressed: () => _onSelectedScanReceipt(context),
+        onPressed: kIsWeb ? null : () => _onSelectedScanReceipt(context),
+        backgroundColor: kIsWeb ? Colors.grey : null,
+        disabledElevation: 0,
       ),
       SizedBox(width: 16),
       SizedBox(
