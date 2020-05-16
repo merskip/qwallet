@@ -46,7 +46,7 @@ class _ExpensePageState extends State<ExpensePage> {
 
   bool get hasReceipt {
     return widget.receiptImage != null ||
-        widget.editExpense.receiptPath != null;
+        widget.editExpense?.receiptPath != null;
   }
 
 

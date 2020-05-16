@@ -139,6 +139,7 @@ class FirebaseService {
 
   Stream<TypedQuerySnapshot<Expense>> getExpenses(BillingPeriod period) {
     return _expensesCollection(period)
+        .orderBy("date", descending: true)
         .snapshots()
         .map((snapshot) => TypedQuerySnapshot(
               snapshot: snapshot,
