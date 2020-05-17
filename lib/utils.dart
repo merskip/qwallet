@@ -22,6 +22,9 @@ DateTime getNowPlusOneMonth() {
   return DateTime(now.year, now.month + 1, now.day);
 }
 
+DateTime getDateWithoutTime(DateTime dateTime) =>
+    DateTime(dateTime.year, dateTime.month, dateTime.day);
+
 double toDouble(dynamic value, {double defaultValue = 0.0}) {
   if (value is double)
     return value;
