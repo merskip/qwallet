@@ -156,7 +156,8 @@ class _ExpensePageState extends State<ExpensePage> {
                 validator: amountValidator(),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(_dateFocus);
+                  if (!kIsWeb)
+                    FocusScope.of(context).requestFocus(_dateFocus);
                 },
               ),
               SizedBox(height: 16),
