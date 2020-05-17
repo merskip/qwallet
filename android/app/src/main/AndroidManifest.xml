@@ -15,6 +15,10 @@
             android:value="@integer/google_play_services_version" />
 
         <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2023507573427187~8579587898"/>
+
+        <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
             android:value="ocr" />
 
