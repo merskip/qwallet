@@ -14,20 +14,20 @@ void main() {
 class MyApp extends StatelessWidget {
   MyApp() : super() {
     defineRoutes(router);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     if (Platform.isAndroid) {
       FirebaseAdMob.instance
           .initialize(appId: "ca-app-pub-2023507573427187~8579587898");
     } else if (Platform.isIOS) {
       FirebaseAdMob.instance
           .initialize(appId: "ca-app-pub-2023507573427187~6712451384");
-    }
-    else if (kIsWeb) {
+    } else if (kIsWeb) {
       // TODO: Impl ads for web
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return MaterialApp(
       title: "QWallet",
       theme: ThemeData(
