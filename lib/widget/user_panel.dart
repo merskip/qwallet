@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:qwallet/dialog/user_dialog.dart';
 
 class UserPanel extends StatefulWidget {
   @override
@@ -37,10 +38,15 @@ class _UserPanelState extends State<UserPanel> {
     Scaffold.of(context).showSnackBar(snackBar);
   }
 
+  showUserDialog(BuildContext context) {
+    showDialog(context: context, builder: (context) => UserDialog(user: user));
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       child: user != null ? _avatarWithNameView(user) : Container(),
+      onTap: () => showUserDialog(context),
       onLongPress: kDebugMode ? showUserInfo : null,
     );
   }
