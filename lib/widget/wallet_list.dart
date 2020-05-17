@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/layout_utils.dart';
 import 'package:qwallet/model/billing_period.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
@@ -25,11 +26,14 @@ class WalletList extends StatelessWidget {
       builder: (TypedQuerySnapshot<Wallet> snapshot) {
         final wallets = snapshot.values;
         if (wallets.isNotEmpty) {
-          return ListView.builder(
-            itemCount: wallets.length,
-            itemBuilder: (context, index) =>
-                _walletListItem(context, wallets[index]),
-          );
+          return Builder(builder: (context) {
+            return ListView.builder(
+              padding: getContainerPadding(context),
+              itemCount: wallets.length,
+              itemBuilder: (context, index) =>
+                  _walletListItem(context, wallets[index]),
+            );
+          });
         } else {
           return EmptyStateWidget(
             icon: "assets/ic-wallet.svg",

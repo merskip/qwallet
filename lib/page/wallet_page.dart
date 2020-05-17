@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/dialog/edit_income_dialog.dart';
+import 'package:qwallet/layout_utils.dart';
 import 'package:qwallet/model/billing_period.dart';
 import 'package:qwallet/page/expense_page.dart';
 import 'package:qwallet/page/manage_billing_period_page.dart';
@@ -29,7 +30,6 @@ class _WalletPageState extends State<WalletPage> {
   DocumentReference selectedPeriodRef;
 
   _WalletPageState();
-
 
   @override
   void initState() {
@@ -88,8 +88,8 @@ class _WalletPageState extends State<WalletPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    if (wallet == null) return Scaffold(body: CircularProgressIndicator());
+    if (wallet == null)
+      return Scaffold(body: Center(child: CircularProgressIndicator()));
 
     final expensesStream = FirebaseService.instance
         .getBillingPeriod(selectedPeriodRef)
@@ -158,21 +158,24 @@ class ExpenseList extends StatelessWidget {
       stream: expensesStream,
       builder: (TypedQuerySnapshot<Expense> snapshot) {
         if (snapshot.values.isNotEmpty) {
-          return ListView.separated(
-            itemCount: snapshot.values.length + 1,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return CurrentBillingPeriodListItem(
-                  currentPeriodRef: currentPeriodRef,
-                  onSelectedChangePeriod: onSelectedChangePeriod,
-                );
-              }
-              return ExpenseListItem(
-                expense: snapshot.values[index - 1],
-                currentPeriodRef: currentPeriodRef,
-              );
+          return Builder(
+            builder: (context) {
+              return ListView.builder(
+                  padding: getContainerPadding(context),
+                  itemCount: snapshot.values.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return CurrentBillingPeriodListItem(
+                        currentPeriodRef: currentPeriodRef,
+                        onSelectedChangePeriod: onSelectedChangePeriod,
+                      );
+                    }
+                    return ExpenseListItem(
+                      expense: snapshot.values[index - 1],
+                      currentPeriodRef: currentPeriodRef,
+                    );
+                  });
             },
-            separatorBuilder: (context, index) => Divider(),
           );
         } else {
           return Column(
