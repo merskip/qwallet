@@ -11,10 +11,6 @@ import 'query_list_widget.dart';
 
 class WalletList extends StatelessWidget {
   openWallet(BuildContext context, Wallet wallet) {
-//    Navigator.push(
-//      context,
-//      MaterialPageRoute(builder: (context) => WalletPage(wallet: wallet)),
-//    );
     Navigator.of(context)
         .pushNamed("/wallet/${wallet.snapshot.reference.documentID}");
   }
