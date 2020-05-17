@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/dialog/edit_income_dialog.dart';
 import 'package:qwallet/layout_utils.dart';
@@ -102,7 +103,7 @@ class _WalletPageState extends State<WalletPage> {
           IconButton(
             icon: Icon(Icons.people),
             tooltip: "Manage owners of this wallet",
-            onPressed: () => manageOwners(context),
+            onPressed: kIsWeb ? null : () => manageOwners(context),
           ),
         ],
       ),
