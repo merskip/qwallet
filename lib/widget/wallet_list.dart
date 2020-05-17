@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/model/billing_period.dart';
 import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/empty_state_widget.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
 import '../firebase_service.dart';
@@ -30,23 +31,10 @@ class WalletList extends StatelessWidget {
                 _walletListItem(context, wallets[index]),
           );
         } else {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                VectorImage(
-                  "assets/ic-wallet.svg",
-                  size: Size.square(72),
-                  color: Colors.grey,
-                ),
-                SizedBox(height: 16),
-                Text(
-                  "There are no any wallets in your account.\nUse the + button to add them.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 15, color: Colors.grey),
-                ),
-              ],
-            ),
+          return EmptyStateWidget(
+            icon: "assets/ic-wallet.svg",
+            text:
+                "There are no any wallets in your account.\nUse the + button to add them.",
           );
         }
       },
@@ -101,10 +89,8 @@ class WalletList extends StatelessWidget {
 
   _walletBalanceHealth(BuildContext context, BillingPeriod period) {
     double balanceFactor = period.dailyExpense / period.dailyIncome;
-    if (balanceFactor.isNaN)
-      balanceFactor = 0.0;
-    if (balanceFactor.isInfinite)
-      balanceFactor = 1.0;
+    if (balanceFactor.isNaN) balanceFactor = 0.0;
+    if (balanceFactor.isInfinite) balanceFactor = 1.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
