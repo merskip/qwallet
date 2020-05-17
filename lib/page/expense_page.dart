@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/firebase_service.dart';
+import 'package:qwallet/layout_utils.dart';
 import 'package:qwallet/model/expense.dart';
 import 'package:uuid/uuid.dart';
 
@@ -122,7 +123,7 @@ class _ExpensePageState extends State<ExpensePage> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: getContainerPadding(context, vertical: 16.0),
             child: Column(children: <Widget>[
               if (hasReceipt) _receiptPreview(context),
               TextFormField(

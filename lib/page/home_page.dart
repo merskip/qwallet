@@ -1,7 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qwallet/dialog/create_wallet_dialog.dart';
 import 'package:qwallet/page/receipt_recognizing_page.dart';
@@ -12,14 +10,6 @@ import '../widget/user_panel.dart';
 import '../widget/wallet_list.dart';
 
 class HomePage extends StatelessWidget {
-  _onSelectedSignOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      GoogleSignIn().signOut();
-    } catch (e) {
-      print(e); // TODO: show dialog with error
-    }
-  }
 
   _onSelectedScanReceipt(BuildContext context) async {
     final source = await _showSourcePicker(context);
@@ -68,15 +58,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: UserPanel(),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: _onSelectedSignOut,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: UserPanel()),
       body: WalletList(),
       floatingActionButton: _floatingActionsButtons(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

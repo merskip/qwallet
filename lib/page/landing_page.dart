@@ -23,18 +23,31 @@ class _LandingPageState extends State<LandingPage> {
   _signIn() async {
     final loggedUser = await FirebaseAuth.instance.currentUser();
     if (loggedUser != null) {
+      debugPrint("Signing with current user...");
       _setSignInState(loggedUser);
-    } else {
-      FirebaseAuth.instance.onAuthStateChanged
-          .listen((user) => _setSignInState(user));
     }
-    setState(() => isLoading = false);
+
+    FirebaseAuth.instance.onAuthStateChanged
+        .listen((user) => _setSignInState(user));
+
+    if (loggedUser == null) {
+      FirebaseAuth.instance.onAuthStateChanged.first.timeout(
+        Duration(milliseconds: 500),
+        onTimeout: () {
+          print("Timeout on change auth state");
+          _setSignInState(null);
+          return null;
+        },
+      );
+    }
   }
 
   _setSignInState(FirebaseUser user) {
+    debugPrint("Sign in state: uid=${user?.uid}");
     setState(() {
       FirebaseService.instance.currentUser = user;
       isLogged = (user != null);
+      isLoading = false;
     });
   }
 
@@ -61,7 +74,6 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Widget _homePage(BuildContext context) {
-    return Container(
-        constraints: BoxConstraints(maxWidth: 726), child: HomePage());
+    return HomePage();
   }
 }
