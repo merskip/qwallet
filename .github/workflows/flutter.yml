@@ -16,7 +16,7 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter build apk --build-number="$GITHUB_RUN_NUMBER" --verbose
-      - run: git log --format="%s (%h)" ${{ github.event.after }}.. > release-notes.txt
+      - run: git log --format="%s (%h)" ${{ github.event.after }}^.. > release-notes.txt
       - name: Deploy to Firebase App Distribution
         uses: w9jds/firebase-action@master
         with:
@@ -28,27 +28,22 @@ jobs:
         with:
           name: build-android
           path: build/app/outputs/flutter-apk/app-release.apk
-  build-ios:
-    name: Build iOS
-    runs-on: macOS-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-java@v1
-        with:
-          java-version: '12.x'
-      - uses: subosito/flutter-action@v1
-        with:
-            channel: 'dev'
-      - run: flutter pub get
-      - run: flutter clean
-      - run: flutter analyze
-      - run: flutter build ios --release --no-codesign --build-number="$GITHUB_RUN_NUMBER" --verbose
-      - run: git log --format="%s (%h)" ${{ github.event.after }}.. > release-notes.txt
-      - name: Upload .ipa
-        uses: actions/upload-artifact@master
-        with:
-          name: build-ios
-          path: build/ios/iphoneos
+#   build-ios:
+#     name: Build iOS
+#     runs-on: macOS-latest
+#     steps:
+#       - uses: actions/checkout@v1
+#       - uses: actions/setup-java@v1
+#         with:
+#           java-version: '12.x'
+#       - uses: subosito/flutter-action@v1
+#         with:
+#             channel: 'dev'
+#       - run: flutter pub get
+#       - run: flutter clean
+#       - run: flutter analyze
+#       - run: flutter build ios --release --no-codesign --build-number="$GITHUB_RUN_NUMBER" --verbose
+#       - run: git log --format="%s (%h)" ${{ github.event.after }}^.. > release-notes.txt
   build-web:
     name: Build Website
     runs-on: ubuntu-latest
