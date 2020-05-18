@@ -1,5 +1,7 @@
 # QWallet
 
+![CI/CD](https://github.com/merskip/qwallet/workflows/CI/CD/badge.svg)
+
 Managing your personal wallet
 
 ## Getting Started

@@ -15,11 +15,12 @@ jobs:
           channel: 'dev'
       - run: flutter pub get
       - run: flutter analyze
-      - run: flutter build apk
+      - run: flutter build apk --build-number="$GITHUB_RUN_NUMBER"
+      - run: git log --format=%B -n 1 ${{ github.event.after }} > release-notes.txt
       - name: Deploy to Firebase App Distribution
         uses: w9jds/firebase-action@master
         with:
-          args: appdistribution:distribute "build/app/outputs/flutter-apk/app-release.apk" --app "${{secrets.FIREBASE_APP_ID}}" --groups "bptesters,web"
+          args: appdistribution:distribute "build/app/outputs/flutter-apk/app-release.apk" --app "${{secrets.FIREBASE_APP_ID}}" --groups "bptesters,web" --release-notes-file "release-notes.txt"
         env:
           FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}}
       - name: Upload .apk
@@ -41,7 +42,7 @@ jobs:
       - run: flutter pub get
       - run: flutter clean
       - run: flutter analyze
-      - run: flutter build ios --release --no-codesign
+      - run: flutter build ios --release --no-codesign --build-number="${{ GITHUB_RUN_NUMBER }}"
       - name: Upload .ipa
         uses: actions/upload-artifact@master
         with:
@@ -61,7 +62,7 @@ jobs:
       - run: flutter config --enable-web
       - run: flutter pub get
       - run: flutter analyze
-      - run: flutter build web
+      - run: flutter build web --build-number="$GITHUB_RUN_NUMBER"
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@master
         with:
