@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qwallet/dialog/create_wallet_dialog.dart';
 import 'package:qwallet/page/receipt_recognizing_page.dart';
+import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
 import '../firebase_service.dart';
@@ -78,17 +79,19 @@ class HomePage extends StatelessWidget {
         disabledElevation: 0,
       ),
       SizedBox(width: 16),
-      SizedBox(
-        width: 40,
-        height: 40,
-        child: FloatingActionButton(
-          child: VectorImage(
-            "assets/ic-add-wallet.svg",
-            size: Size.square(26),
-            color: Colors.white,
+      HandCursor(
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: FloatingActionButton(
+            child: VectorImage(
+              "assets/ic-add-wallet.svg",
+              size: Size.square(26),
+              color: Colors.white,
+            ),
+            heroTag: "add-wallet",
+            onPressed: () => _onSelectedAddWallet(context),
           ),
-          heroTag: "add-wallet",
-          onPressed: () => _onSelectedAddWallet(context),
         ),
       ),
       Spacer(),
