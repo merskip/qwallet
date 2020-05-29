@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:firebase_admob/firebase_admob.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/router.dart';
 
@@ -8,13 +12,22 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-
   MyApp() : super() {
     defineRoutes(router);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!kIsWeb) {
+      if (Platform.isAndroid) {
+        FirebaseAdMob.instance
+            .initialize(appId: "ca-app-pub-2023507573427187~8579587898");
+      } else if (Platform.isIOS) {
+        FirebaseAdMob.instance
+            .initialize(appId: "ca-app-pub-2023507573427187~6712451384");
+      }
+    }
+
     return MaterialApp(
       title: "QWallet",
       theme: ThemeData(

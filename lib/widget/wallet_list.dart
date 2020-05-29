@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:firebase_admob/firebase_admob.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/layout_utils.dart';
 import 'package:qwallet/model/billing_period.dart';
@@ -17,6 +21,40 @@ class WalletList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    if (!kIsWeb) {
+      MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+        keywords: <String>['flutterio', 'beautiful apps'],
+        contentUrl: 'https://flutter.io',
+        childDirected: false,
+        testDevices: <String>[
+        ], // Android emulators are considered test devices
+      );
+
+      BannerAd myBanner = BannerAd(
+        adUnitId: Platform.isAndroid
+            ? "ca-app-pub-2023507573427187/9644379243"
+            : "ca-app-pub-2023507573427187/1853163914",
+        size: AdSize.smartBanner,
+        targetingInfo: targetingInfo,
+        listener: (MobileAdEvent event) {
+          print("BannerAd event is $event");
+        },
+      );
+
+      myBanner
+      // typically this happens well before the ad is shown
+        ..load()
+        ..show(
+          // Positions the banner ad 60 pixels from the bottom of the screen
+          anchorOffset: 92.0,
+          // Positions the banner ad 10 pixels from the center of the screen to the right
+          horizontalCenterOffset: 0.0,
+          // Banner Position
+          anchorType: AnchorType.bottom,
+        );
+    }
+
     return QueryListWidget(
       stream: FirebaseService.instance.getWallets(),
       builder: (TypedQuerySnapshot<Wallet> snapshot) {
