@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:qwallet/widget/vector_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -64,19 +65,21 @@ class _SignInPageState extends State<SignInPage> {
     return SizedBox(
       height: 44,
       width: 256,
-      child: RaisedButton(
-        child: Row(children: <Widget>[
-          SizedBox(width: 28, height: 28, child: icon),
-          SizedBox(width: 12),
-          Text(
-            text,
-            style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
-          ),
-        ]),
-        onPressed: onPressed,
-        textColor: Theme.of(context).primaryColor,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
+      child: HandCursor(
+        child: RaisedButton(
+          child: Row(children: <Widget>[
+            SizedBox(width: 28, height: 28, child: icon),
+            SizedBox(width: 12),
+            Text(
+              text,
+              style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
+            ),
+          ]),
+          onPressed: onPressed,
+          textColor: Theme.of(context).primaryColor,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
+        ),
       ),
     );
   }
@@ -89,15 +92,19 @@ class _SignInPageState extends State<SignInPage> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          RaisedButton(
-              child: Text("Android"),
-              onPressed: () =>
-                  _openUrl("https://appdistribution.firebase.dev/i/RmhybzSD")),
+          HandCursor(
+            child: RaisedButton(
+                child: Text("Android"),
+                onPressed: () =>
+                    _openUrl("https://appdistribution.firebase.dev/i/RmhybzSD")),
+          ),
           SizedBox(width: 24),
-          RaisedButton(
-            child: Text("iOS"),
-            onPressed: () =>
-                _openUrl("https://appdistribution.firebase.dev/i/D3qez77X"),
+          HandCursor(
+            child: RaisedButton(
+              child: Text("iOS"),
+              onPressed: () =>
+                  _openUrl("https://appdistribution.firebase.dev/i/D3qez77X"),
+            ),
           ),
         ],
       )
