@@ -7,6 +7,7 @@ import 'package:qwallet/layout_utils.dart';
 import 'package:qwallet/model/billing_period.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
+import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
 import '../firebase_service.dart';
@@ -83,43 +84,46 @@ class WalletList extends StatelessWidget {
     return Card(
       elevation: 5,
       margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: InkWell(
-        onTap: () => openWallet(context, wallet),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(children: <Widget>[
-            VectorImage(
-              "assets/ic-wallet.svg",
-              color: Theme.of(context).primaryColor,
-              size: Size.square(48),
-            ),
-            SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  wallet.name ?? '',
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-                SizedBox(height: 4),
-                Text(
-                  "${wallet.ownersUid.length} owners",
-                  style: Theme.of(context).textTheme.bodyText2,
-                ),
-              ],
-            ),
-            Spacer(),
-            StreamBuilder(
-              stream: FirebaseService.instance
-                  .getBillingPeriod(wallet.currentPeriod),
-              builder: (context, AsyncSnapshot<BillingPeriod> snapshot) {
-                if (snapshot.hasData)
-                  return _walletBalanceHealth(context, snapshot.data);
-                else
-                  return Text("-");
-              },
-            )
-          ]),
+      child: HandCursor(
+        child: InkWell(
+          onTap: () => openWallet(context, wallet),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+                children: <Widget>[
+              VectorImage(
+                "assets/ic-wallet.svg",
+                color: Theme.of(context).primaryColor,
+                size: Size.square(48),
+              ),
+              SizedBox(width: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    wallet.name ?? '',
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    "${wallet.ownersUid.length} owners",
+                    style: Theme.of(context).textTheme.bodyText2,
+                  ),
+                ],
+              ),
+              Spacer(),
+              StreamBuilder(
+                stream: FirebaseService.instance
+                    .getBillingPeriod(wallet.currentPeriod),
+                builder: (context, AsyncSnapshot<BillingPeriod> snapshot) {
+                  if (snapshot.hasData)
+                    return _walletBalanceHealth(context, snapshot.data);
+                  else
+                    return Text("-");
+                },
+              )
+            ]),
+          ),
         ),
       ),
     );

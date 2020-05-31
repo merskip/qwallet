@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/widget/hand_cursor.dart';
 
 class CreateWalletDialog {
   final _nameController = TextEditingController();
@@ -25,14 +26,18 @@ class CreateWalletDialog {
             labelText: "Name", hintText: "eg. My personal wallet"),
       ),
       actions: <Widget>[
-        FlatButton(
-          child: Text("Cancel"),
-          onPressed: () => Navigator.pop(context),
+        HandCursor(
+          child: FlatButton(
+            child: Text("Cancel"),
+            onPressed: () => Navigator.pop(context),
+          ),
         ),
-        RaisedButton(
-          child: Text("Add"),
-          color: Theme.of(context).primaryColor,
-          onPressed: () => _onSelectedAdd(context),
+        HandCursor(
+          child: RaisedButton(
+            child: Text("Add"),
+            color: Theme.of(context).primaryColor,
+            onPressed: () => _onSelectedAdd(context),
+          ),
         )
       ],
     );
