@@ -137,6 +137,22 @@ class FirebaseService {
         .delete();
   }
 
+  Future<Expense> getExpense(
+      String walletId, String periodId, String expenseId) {
+    final expenseRef = firestore
+        .collection("wallets")
+        .document(walletId)
+        .collection("periods")
+        .document(periodId)
+        .collection("expenses")
+        .document(expenseId);
+
+    return expenseRef
+        .snapshots()
+        .map((snapshot) => Expense.from(snapshot))
+        .first;
+  }
+
   Stream<TypedQuerySnapshot<Expense>> getExpenses(BillingPeriod period) {
     return _expensesCollection(period)
         .orderBy("date", descending: true)
