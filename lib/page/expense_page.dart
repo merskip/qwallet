@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/layout_utils.dart';
 import 'package:qwallet/model/expense.dart';
+import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:uuid/uuid.dart';
 
 import '../utils.dart';
@@ -180,13 +181,15 @@ class _ExpensePageState extends State<ExpensePage> {
                 ),
               ),
               SizedBox(height: 16),
-              RaisedButton(
-                child: Text(widget.editExpense != null
-                    ? "Save changes"
-                    : "Add expense"),
-                color: Theme.of(context).primaryColor,
-                textColor: Theme.of(context).primaryTextTheme.button.color,
-                onPressed: () => _onSelectedSubmit(context),
+              HandCursor(
+                child: RaisedButton(
+                  child: Text(widget.editExpense != null
+                      ? "Save changes"
+                      : "Add expense"),
+                  color: Theme.of(context).primaryColor,
+                  textColor: Theme.of(context).primaryTextTheme.button.color,
+                  onPressed: () => _onSelectedSubmit(context),
+                ),
               ),
             ]),
           ),
