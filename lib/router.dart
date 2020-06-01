@@ -7,6 +7,7 @@ final router = Router();
 void defineRoutes(Router router) {
   router.define(
     "/wallet/:id",
+    transitionType: TransitionType.materialFullScreenDialog,
     handler: Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
       final walletId = params["id"][0];
