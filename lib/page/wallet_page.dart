@@ -6,6 +6,7 @@ import 'package:qwallet/model/billing_period.dart';
 import 'package:qwallet/page/expense_page.dart';
 import 'package:qwallet/page/manage_billing_period_page.dart';
 import 'package:qwallet/widget/expenses_list_widget.dart';
+import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
 import '../dialog/manage_owners_dialog.dart';
@@ -95,11 +96,12 @@ class _WalletPageState extends State<WalletPage> {
       appBar: AppBar(
         title: Text(wallet.name),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.people),
-            tooltip: "Manage owners of this wallet",
-            onPressed: kIsWeb ? null : () => manageOwners(context),
-          ),
+          if (!kIsWeb)
+            IconButton(
+              icon: Icon(Icons.people),
+              tooltip: "Manage owners of this wallet",
+              onPressed: kIsWeb ? null : () => manageOwners(context),
+            ),
         ],
       ),
       body: ExpensesListWidget(
@@ -110,25 +112,29 @@ class _WalletPageState extends State<WalletPage> {
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          SizedBox(
-            width: 40,
-            height: 40,
-            child: FloatingActionButton(
-              child: VectorImage("assets/ic-edit-income.svg",
-                  size: Size.square(26), color: Colors.white),
-              heroTag: "edit-income",
-              onPressed: () => onSelectedEditIncome(context),
+          HandCursor(
+            child: SizedBox(
+              width: 40,
+              height: 40,
+              child: FloatingActionButton(
+                child: VectorImage("assets/ic-edit-income.svg",
+                    size: Size.square(26), color: Colors.white),
+                heroTag: "edit-income",
+                onPressed: () => onSelectedEditIncome(context),
+              ),
             ),
           ),
           SizedBox(width: 12),
-          FloatingActionButton(
-            child: VectorImage(
-              "assets/ic-add-expense.svg",
-              size: Size.square(32),
-              color: Colors.white,
+          HandCursor(
+            child: FloatingActionButton(
+              child: VectorImage(
+                "assets/ic-add-expense.svg",
+                size: Size.square(32),
+                color: Colors.white,
+              ),
+              heroTag: "add-expense",
+              onPressed: () => onSelectedAddExpense(context),
             ),
-            heroTag: "add-expense",
-            onPressed: () => onSelectedAddExpense(context),
           ),
         ],
       ),

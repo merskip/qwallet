@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/model/billing_period.dart';
 import 'package:qwallet/model/expense.dart';
-import 'package:qwallet/page/expense_page.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
+import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:qwallet/widget/query_list_widget.dart';
 
 import '../firebase_service.dart';
@@ -44,14 +45,17 @@ class ExpensesListWidget extends StatelessWidget {
 
               for (final group in groups) {
                 items.add(_DaySectionItem(group.key));
-                items.addAll(group.value.map((expense) => _ExpenseItem(currentPeriodRef: currentPeriodRef, expense: expense)));
+                items.addAll(group.value.map((expense) => _ExpenseItem(
+                    currentPeriodRef: currentPeriodRef, expense: expense)));
               }
 
-              return ListView.builder(
-                padding: getContainerPadding(context),
-                physics: BouncingScrollPhysics(),
-                itemCount: items.length,
-                itemBuilder: (context, index) => items[index].build(context),
+              return Scrollbar(
+                child: ListView.builder(
+                  padding: getContainerPadding(context),
+                  physics: BouncingScrollPhysics(),
+                  itemCount: items.length,
+                  itemBuilder: (context, index) => items[index].build(context),
+                ),
               );
             },
           );
@@ -103,18 +107,20 @@ class _BillingPeriodListItem extends _ExpenseListItem {
 
   _build(BillingPeriod period) {
     return ListTile(
-        title: Text(period.formattedShortDateRange),
-        isThreeLine: true,
-        subtitle: Text([
-          period.formattedDays,
-          "Total income: ${formatAmount(period.totalIncome)}",
-          "Total expense: ${formatAmount(period.totalExpense)}",
-        ].join("\n")),
-        trailing: OutlineButton(
+      title: Text(period.formattedShortDateRange),
+      isThreeLine: true,
+      subtitle: Text([
+        period.formattedDays,
+        "Total income: ${formatAmount(period.totalIncome)}",
+        "Total expense: ${formatAmount(period.totalExpense)}",
+      ].join("\n")),
+      trailing: HandCursor(
+        child: OutlineButton(
           child: Text("Manage periods"),
           onPressed: onSelectedChangePeriod,
         ),
-      );
+      ),
+    );
   }
 }
 
@@ -141,15 +147,11 @@ class _ExpenseItem extends _ExpenseListItem {
   _ExpenseItem({this.currentPeriodRef, this.expense});
 
   onSelectedExpense(BuildContext context, Expense expense) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ExpensePage(
-          periodRef: currentPeriodRef,
-          editExpense: expense,
-        ),
-      ),
-    );
+    final walletId = currentPeriodRef.parent().parent().documentID;
+    final periodId = currentPeriodRef.documentID;
+    final expenseId = expense.snapshot.documentID;
+    Navigator.of(context)
+        .pushNamed("/wallet/$walletId/period/$periodId/expense/$expenseId");
   }
 
   onDismissedExpense(Expense expense) {
@@ -172,16 +174,18 @@ class _ExpenseItem extends _ExpenseListItem {
           ),
         ),
       ),
-      child: InkWell(
-        child: ListTile(
-          title: Text(expense.name),
-          subtitle: Text(expense.formattedDate),
-          trailing: Text(
-            expense.formattedAmount,
-            style: Theme.of(context).textTheme.headline6,
+      child: HandCursor(
+        child: InkWell(
+          child: ListTile(
+            title: Text(expense.name),
+            subtitle: Text(expense.formattedDate),
+            trailing: Text(
+              expense.formattedAmount,
+              style: Theme.of(context).textTheme.headline6,
+            ),
           ),
+          onTap: () => onSelectedExpense(context, expense),
         ),
-        onTap: () => onSelectedExpense(context, expense),
       ),
       onDismissed: (direction) => onDismissedExpense(expense),
     );

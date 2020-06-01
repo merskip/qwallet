@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:qwallet/widget/hand_cursor.dart';
 
 class UserDialog extends StatelessWidget {
 
@@ -28,12 +29,14 @@ class UserDialog extends StatelessWidget {
     return SimpleDialog(
       title: Text(user.displayName ?? user.email ?? "Anonymous"),
       children: [
-        InkWell(
-          child: ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text("Logout"),
+        HandCursor(
+          child: InkWell(
+            child: ListTile(
+              leading: Icon(Icons.exit_to_app),
+              title: Text("Logout"),
+            ),
+            onTap: () => _onSelectedSignOut(context),
           ),
-          onTap: () => _onSelectedSignOut(context),
         )
       ]
     );

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/firebase_service.dart';
+import 'package:qwallet/widget/hand_cursor.dart';
 
 import '../utils.dart';
 
@@ -55,14 +56,18 @@ class _EditIncomeDialogState extends State<EditIncomeDialog> {
         ),
       ),
       actions: <Widget>[
-        FlatButton(
-          child: Text("Cancel"),
-          onPressed: () => Navigator.pop(context),
+        HandCursor(
+          child: FlatButton(
+            child: Text("Cancel"),
+            onPressed: () => Navigator.pop(context),
+          ),
         ),
-        RaisedButton(
-          child: Text("Save changes"),
-          color: Theme.of(context).primaryColor,
-          onPressed: () => _onSelectedSubmit(context),
+        HandCursor(
+          child: RaisedButton(
+            child: Text("Save changes"),
+            color: Theme.of(context).primaryColor,
+            onPressed: () => _onSelectedSubmit(context),
+          ),
         )
       ],
     );
