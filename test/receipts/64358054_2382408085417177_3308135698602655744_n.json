@@ -1,0 +1,16 @@
+{
+    "shop": {
+        "name": "Polski Koncern Naftowy ORLEN S.A.",
+        "address": "UL. CHEMIKÓW 7, 09-411 PŁOCK"
+    },
+    "shop_branch": {
+        "name": "STACJA PALIW NR 0474 W LUBLINIE",
+        "address": "UL. GŁĘBOKA 32, 20-612 LUBLIN"
+    },
+    "nip": "7740001454",
+    "purchase_date": "2019-06-18",
+    "total_price": 150.03,
+    "products": [
+        ["VERBA 98 CN27101249.D(4)", 150.03]
+    ]
+}

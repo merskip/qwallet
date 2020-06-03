@@ -1,0 +1,17 @@
+{
+    "shop": {
+        "name": "Circle K Polska Sp. z o o.o.",
+        "address": "ul. Puławska 86, 02-603 Warszawa"
+    },
+    "shop_branch": {
+        "name": "Circle K nr 70245",
+        "address": "Al. Kraśnicka 3, 20-718 Lublin"
+    },
+    "nip": "7790001083",
+    "purchase_date": "2020-05-18",
+    "total_price": 84.27,
+    "products": [
+        ["MILES DIESEL (P2)", 63.28],
+        ["MUJNIA STANDAR", 20.99]
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "shop": {
+        "name": "Sklep \"ŻABKA\" Z4202",
+        "address": "ul. Pana Balcera 6/U4, 20-631 Lublin"
+    },
+    "shop_branch": null,
+    "nip": "5391474063",
+    "purchase_date": "2020-05-10",
+    "total_price": 11.99,
+    "products": [
+        ["NAPOJ ORANZADA 1,25 L", 3.20],
+        ["WAFLE GOFROWE 130G", 3.79],
+        ["CHRUPKI MACZUGI 80", 2.50],
+        ["CHRUPKI MACZUGI 80", 2.50]
+    ]
+}

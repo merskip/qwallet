@@ -1,0 +1,17 @@
+{
+    "shop": {
+        "name": "Jeronimo Martis Polska S.A.",
+        "address": "ul. Żniwa 5, 62-025 Kostrzyn"
+    },
+    "shop_branch": {
+        "name": "Sklep 2314",
+        "address": "ul. Jana Sawy 1A, 20-632 Lublin"
+    },
+    "nip": "7791011327",
+    "purchase_date": "2020-05-11",
+    "total_price": 17.78,
+    "products": [
+        ["Napój Muller 400g", 2.79],
+        ["EmulsSPF20Kol150ml", 14.49]
+    ]
+}

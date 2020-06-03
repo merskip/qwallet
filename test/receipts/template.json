@@ -1,0 +1,16 @@
+{
+    "shop": {
+        "name": "",
+        "address": ""
+    },
+    "shop_branch": {
+        "name": "",
+        "address": ""
+    },
+    "nip": "",
+    "purchase_date": "",
+    "total_price": 0,
+    "products": [
+        ["", 0]
+    ]
+}

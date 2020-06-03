@@ -1,0 +1,39 @@
+{
+    "shop": {
+        "name": "Hipermarket E.LECLERC",
+        "address": "ul. T Zana 19, 20-601 LUBLIN"
+    },
+    "shop_branch": null,
+    "nip": "9462651328",
+    "purchase_date": "2020-05-08",
+    "total_price": 272.02,
+    "products": [
+        [null, 5.58],
+        [null, 4.99],
+        [null, 7.29],
+        [null, 6.78],
+        [null, 1.98],
+        [null, 7.99],
+        [null, 2.49],
+        [null, 5.98],
+        [null, 15.98],
+        [null, 29.99],
+        [null, 16.99],
+        [null, 34.99],
+        [null, 19.96],
+        [null, 5.99],
+        [null, 20.69],
+        [null, 6.39],
+        [null, 4.99],
+        [null, 4.99],
+        [null, 12.94],
+        [null, 10.99],
+        [null, 6.65],
+        [null, 4.19],
+        [null, 5.39],
+        [null, 5.47],
+        [null, 13.98],
+        [null, 4.99],
+        [null, 3.38]
+    ]
+}

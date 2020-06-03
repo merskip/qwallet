@@ -1,0 +1,13 @@
+{
+    "shop": {
+        "name": "MAZEUM WSI LUBELSKIEJ W LUBLINIE",
+        "address": "ul. Warszawska 96, 20-824 Lublin"
+    },
+    "shop_branch": null,
+    "nip": "7121933378",
+    "purchase_date": "2020-08-10",
+    "total_price": 48.00,
+    "products": [
+        ["Normalny - Muzeum Wsi Lubelskiej - Kasa", 48.00]
+    ]
+}

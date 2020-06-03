@@ -1,0 +1,27 @@
+{
+    "shop": {
+        "name": "Jeronimo Martis Polska S.A.",
+        "address": "ul. Żniwa 5, 62-025 Kostrzyn"
+    },
+    "shop_branch": {
+        "name": "Sklep 2314",
+        "address": "ul. Jana Sawy 1A, 20-632 Lublin"
+    },
+    "nip": "7791011327",
+    "purchase_date": "2020-05-07",
+    "total_price": 60.97,
+    "products": [
+        ["Pom malin Pols luz", 7.79, ["Rabat", -4.20], [3.59]],
+        ["Kiełb Śl 660g", 13.99],
+        ["Parówk Z Szyn 200g", 4.99],
+        ["Szynka Kons 200g", 5.99],
+        ["Jog.FantMlCzek.104g", 1.99],
+        ["ChlebŻytniDyn 400g", 3.49],
+        ["Jaja kl M x10szt", 4.49],
+        ["Napój Muller 400g", 5.58],
+        ["CzekolKindMaxi210g", 8.99],
+        ["Napój Cola Zero 1l", 3.69],
+        ["SZCZYPIOR NAT SZT", 1.49],
+        ["MLEKO POLSKIE 3,2", 2.69]
+    ]
+}

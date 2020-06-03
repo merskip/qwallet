@@ -1,0 +1,14 @@
+{
+    "shop": {
+        "name": "Pepco Poland Sp. z o.o",
+        "address": "Strzeszyńska 73A, 60-479 Poznań"
+    },
+    "shop_branch": {
+        "name": "Pepco",
+        "address": "Sawy 1A, 20-632 Lublin"
+    },
+    "nip": "7822131157",
+    "purchase_date": "2020-05-09",
+    "total_price": 39.81,
+    "products": null
+}
