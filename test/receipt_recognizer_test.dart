@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:image/image.dart';
+import 'package:qwallet/ReceiptDetector.dart';
 import 'package:qwallet/image_utils.dart';
 import 'package:test/test.dart';
 
@@ -71,10 +72,19 @@ void main() {
 
     for (final receipt in receipts) {
       print("Checking ${receipt.photo}...");
-      final image = adjustContrast(decodeImage(receipt.photo.readAsBytesSync()));
-      final imageBytes = writeJpg(image);
-      final postFile = File(receipt.photo.path.substring(0, receipt.photo.path.length - 4) + "-post.jpg");
-      postFile.writeAsBytesSync(imageBytes);
+      final receiptRect = await ReceiptDetector().detect(receipt.photo);
+      print("Reeipt rect: $receiptRect");
+//      if (receiptRect != null) {
+//        final image = decodeImage(receipt.photo.readAsBytesSync());
+//        final croppedImage = cropImage(image, receiptRect);
+//        final adjuestedImage = adjustContrast(croppedImage);
+//        final imageBytes = writeJpg(adjuestedImage);
+//        final postFile = File(
+//            receipt.photo.path.substring(0, receipt.photo.path.length - 4) +
+//                "-post.jpg");
+//        postFile.writeAsBytesSync(imageBytes);
+//      }
+//      break;
     }
   });
 }
