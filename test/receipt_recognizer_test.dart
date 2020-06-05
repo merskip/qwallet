@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/material.dart';
+import 'package:image/image.dart';
+import 'package:qwallet/image_utils.dart';
 import 'package:test/test.dart';
-import 'package:qwallet/receipt_recognizer.dart';
-import 'package:flutter_driver/driver_extension.dart';
 
 
 class CheckReceipt {
@@ -67,15 +66,15 @@ List<CheckReceipt> getCheckReceipts() {
 }
 
 void main() {
-  enableFlutterDriverExtension();
   test('Lorem ipsum', () async {
     final receipts = getCheckReceipts();
-    final recognizer = ReceiptRecognizer();
 
     for (final receipt in receipts) {
       print("Checking ${receipt.photo}...");
-      final result = await recognizer.process(receipt.photo);
-      expect(result.totalPrice.value, receipt.pattern.totalPrice);
+      final image = adjustContrast(decodeImage(receipt.photo.readAsBytesSync()));
+      final imageBytes = writeJpg(image);
+      final postFile = File(receipt.photo.path.substring(0, receipt.photo.path.length - 4) + "-post.jpg");
+      postFile.writeAsBytesSync(imageBytes);
     }
   });
 }
