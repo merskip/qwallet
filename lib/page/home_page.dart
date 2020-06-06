@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,13 +18,13 @@ class HomePage extends StatelessWidget {
     final source = await _showSourcePicker(context);
     if (source == null) return;
 
-    final image = await ImagePicker.pickImage(source: source);
+    final image = await ImagePicker().getImage(source: source);
     if (image == null) return;
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ReceiptRecognizingPage(receiptImageFile: image),
+        builder: (context) => ReceiptRecognizingPage(receiptImageFile: File(image.path)),
       ),
     );
   }
