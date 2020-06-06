@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qwallet/dialog/create_wallet_dialog.dart';
 import 'package:qwallet/page/receipt_recognizing_page.dart';
+import 'package:qwallet/page/scan_receipt_page.dart';
 import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
@@ -51,6 +52,15 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  _onSelectedScanReceipt2(BuildContext context) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ScanReceiptPage(),
+      ),
+    );
+  }
+
   _onSelectedAddWallet(BuildContext context) async {
     final name = await CreateWalletDialog().show(context);
     if (name != null && name.isNotEmpty) {
@@ -74,9 +84,9 @@ class HomePage extends StatelessWidget {
       SizedBox(width: 40, height: 40), // NOTE: Left FAB placeholder
       SizedBox(width: 16),
       FloatingActionButton(
-        child: Icon(Icons.camera_alt),
-        heroTag: "scan-receipt",
-        onPressed: kIsWeb ? null : () => _onSelectedScanReceipt(context),
+        child: Icon(Icons.camera),
+        heroTag: "scan-receipt-2",
+        onPressed: kIsWeb ? null : () => _onSelectedScanReceipt2(context),
         backgroundColor: kIsWeb ? Colors.grey : null,
         disabledElevation: 0,
       ),
