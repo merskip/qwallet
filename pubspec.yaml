@@ -45,6 +45,7 @@ dependencies:
   fluro: ^1.6.3
   firebase_admob: ^0.9.3+2
   universal_html: ^1.2.1
+  tuple: ^1.0.3
 
 dev_dependencies:
   flutter_test:
