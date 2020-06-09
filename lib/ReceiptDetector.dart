@@ -6,10 +6,20 @@ import 'package:image/image.dart';
 
 import 'image_utils.dart';
 
+class ReceiptDetectorResult {
+  final Rect rect;
+  final Image edgeImage;
+  final _LineSegment leftLine;
+  final _LineSegment topLine;
+  final _LineSegment rightLine;
+  final _LineSegment bottomLine;
+
+  ReceiptDetectorResult(this.rect, this.edgeImage, this.leftLine, this.topLine, this.rightLine, this.bottomLine);
+}
+
 class ReceiptDetector {
-  Future<Rect> detect(File photoFile) async {
-    final photoImage = gaussianBlur(
-        copyResize(decodeImage(photoFile.readAsBytesSync()), width: 640), 2);
+  Future<ReceiptDetectorResult> detect(Image photo) async {
+    final photoImage = gaussianBlur(copyRotate(copyResize(photo, width: 640), 90), 2);
 
     final edgeImage = Image(photoImage.width, photoImage.height);
     for (int y = 1; y < photoImage.height; y++) {
@@ -33,10 +43,6 @@ class ReceiptDetector {
           0xff0000ff);
     }
 
-    final postFile = File(
-        photoFile.path.substring(0, photoFile.path.length - 4) + "-edges.jpg");
-    postFile.writeAsBytesSync(encodeJpg(edgeImage));
-
     final center = Point(edgeImage.width / 2, edgeImage.height / 2);
 
     final leftLines = verticalLines
@@ -56,7 +62,7 @@ class ReceiptDetector {
       bottomLine?.maxY?.toDouble() ?? edgeImage.height.toDouble()
     );
 
-    return edgeReceiptRect;
+    return ReceiptDetectorResult(edgeReceiptRect, edgeImage, leftLine, topLine, rightLine, bottomLine);
   }
 }
 
@@ -182,6 +188,9 @@ class _LineSegment {
   int get minY => min(start.y, end.y);
 
   int get maxY => max(start.y, end.y);
+
+  Offset get startOffset => Offset(start.x.toDouble(), start.y.toDouble());
+  Offset get endOffset => Offset(end.x.toDouble(), end.y.toDouble());
 
   _LineSegment(this.start, this.end, this.length);
 

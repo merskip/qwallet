@@ -8,6 +8,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:qwallet/image_utils.dart';
 import 'package:qwallet/utils.dart';
 
+import 'ReceiptDetector.dart';
+
 class RecognizedValue<T> {
   final T value;
   final TextContainer textContainer;
@@ -37,8 +39,7 @@ class ReceiptRecognizer {
   Future<ReceiptRecognizingResult> process(File image) {
     return Future.microtask(() async {
       print("Detecting receipt rect...");
-      final rawText = await _recognizeText(image);
-      final receiptRect = await _detectReceiptRect(rawText);
+      final receiptRect = await _detectReceiptRect(image);
 
       print("Cropping image...");
       final sourceImage = decodeImage(image.readAsBytesSync());
@@ -73,20 +74,17 @@ class ReceiptRecognizer {
     return await textRecognizer.processImage(visionImage);
   }
 
-  Future<Rect> _detectReceiptRect(VisionText text) async {
-    final boundingBoxes = text.blocks.map((textBlock) => textBlock.boundingBox);
-    final top = boundingBoxes.map((it) => it.top).reduce(min);
-    final right = boundingBoxes.map((it) => it.right).reduce(max);
-    final bottom = boundingBoxes.map((it) => it.bottom).reduce(max);
-    final left = boundingBoxes.map((it) => it.left).reduce(min);
-    return Rect.fromLTRB(left, top, right, bottom);
+  Future<Rect> _detectReceiptRect(File image) async {
+    final img = decodeJpg(image.readAsBytesSync());
+    final receiptRect = await ReceiptDetector().detect(img);
+    return receiptRect.rect;
   }
 
   RecognizedValue<double> _getTotalPrice(VisionText text) {
     final numbers = _findNumbers(text);
     numbers.sort((lhs, rhs) => rhs.textContainer.boundingBox.height
         .compareTo(lhs.textContainer.boundingBox.height));
-    return numbers.first;
+    return numbers.isNotEmpty ? numbers.first : null;
   }
 
   RecognizedValue<String> _findNIP(VisionText text) {
