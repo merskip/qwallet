@@ -51,6 +51,7 @@ class ExpensesListWidget extends StatelessWidget {
 
               return Scrollbar(
                 child: ListView.builder(
+                  shrinkWrap: true,
                   padding: getContainerPadding(context),
                   physics: BouncingScrollPhysics(),
                   itemCount: items.length,

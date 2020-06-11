@@ -42,7 +42,11 @@ class BillingPeriod {
   double get dailyExpense => totalExpense / daysCount;
 
   int get daysCount {
-    return endDate.toDate().difference(startDate.toDate()).inDays;
+    return dateRange.inDays;
+  }
+
+  Duration get dateRange {
+    return endDate.toDate().difference(startDate.toDate());
   }
 
   BillingPeriod({
