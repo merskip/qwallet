@@ -13,10 +13,12 @@ import '../ReceiptDetector.dart';
 import 'receipt_recognizing_page.dart';
 
 Future<ReceiptDetectorResult> _detect(CameraImage image) async {
-  print("Detecting...");
+  print("=== Detecting receipt live...");
+  print("[1/9] Converting image...");
   final img = await convertYUV420toImageColor(image);
+  print("[2/9] Detect receipt...");
   final receiptRect = await ReceiptDetector().detect(img);
-  print("receiptRect: ${receiptRect.rect}");
+  print("--- Result: ${receiptRect.rect}");
   return receiptRect;
 }
 
@@ -96,7 +98,7 @@ class _ScanReceiptPageState extends State<ScanReceiptPage> {
 
           final lines = [rect.leftLine, rect.topLine, rect.rightLine, rect.bottomLine].where((line) => line != null);
           if (lines.length >= 2) {
-            _takePhoto();
+//            _takePhoto();
           }
 
           isProcessing = false;
@@ -142,7 +144,7 @@ class _ScanReceiptPageState extends State<ScanReceiptPage> {
         aspectRatio: controller.value.aspectRatio,
         child: Stack(children: [
           CameraPreview(controller),
-          FittedBox(
+          if (detectedReceipt != null) FittedBox(
             child: SizedBox(
               width: detectedReceipt?.edgeImage?.width?.toDouble() ?? 0.0,
               height: detectedReceipt?.edgeImage?.height?.toDouble() ?? 0.0,
@@ -171,7 +173,22 @@ class DetectedReceiptPainter extends CustomPainter {
         ..color = Colors.orange
         ..strokeWidth = 1;
       canvas.drawRect(detectedReceipt.rect, receiptPaint);
+
+      final edgePaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..color = Colors.blue
+        ..strokeWidth = 1;
+
+      _drawEdgeLine(canvas, detectedReceipt.leftLine, edgePaint);
+      _drawEdgeLine(canvas, detectedReceipt.topLine, edgePaint);
+      _drawEdgeLine(canvas, detectedReceipt.rightLine, edgePaint);
+      _drawEdgeLine(canvas, detectedReceipt.bottomLine, edgePaint);
     }
+  }
+
+  _drawEdgeLine(Canvas canvas, LineSegment line, Paint paint) {
+    if (line != null)
+      canvas.drawLine(line.startOffset, line.endOffset, paint);
   }
 
   @override

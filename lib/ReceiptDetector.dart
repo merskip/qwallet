@@ -9,18 +9,24 @@ import 'image_utils.dart';
 class ReceiptDetectorResult {
   final Rect rect;
   final Image edgeImage;
-  final _LineSegment leftLine;
-  final _LineSegment topLine;
-  final _LineSegment rightLine;
-  final _LineSegment bottomLine;
+  final LineSegment leftLine;
+  final LineSegment topLine;
+  final LineSegment rightLine;
+  final LineSegment bottomLine;
 
   ReceiptDetectorResult(this.rect, this.edgeImage, this.leftLine, this.topLine, this.rightLine, this.bottomLine);
 }
 
 class ReceiptDetector {
   Future<ReceiptDetectorResult> detect(Image photo) async {
-    final photoImage = gaussianBlur(copyRotate(copyResize(photo, width: 640), 90), 2);
+    print("[3/9] Resize...");
+    final resized = copyResize(photo, width: 640);
+    print("[4/9] Rotate...");
+    final rotated = copyRotate(resized, 90);
+    print("[5/9] Gaussian blur...");
+    final photoImage = gaussianBlur(rotated, 2);
 
+    print("[6/9] Processing image to get edges...");
     final edgeImage = Image(photoImage.width, photoImage.height);
     for (int y = 1; y < photoImage.height; y++) {
       for (int x = 1; x < photoImage.width; x++) {
@@ -31,29 +37,32 @@ class ReceiptDetector {
       }
     }
 
+    print("[7/9] Detecting vertical lines...");
     final verticalLines = _VerticalLineDetector(edgeImage).detect();
     for (final line in verticalLines) {
       drawLine(edgeImage, line.start.xi, line.start.yi, line.end.xi, line.end.y,
           0xffff0000);
     }
 
+    print("[8/9] Detecting vertical lines...");
     final horizontalLines = _HorizontalLineDetector(edgeImage).detect();
     for (final line in horizontalLines) {
       drawLine(edgeImage, line.start.xi, line.start.yi, line.end.xi, line.end.y,
           0xff0000ff);
     }
 
+    print("[9/9] Final calculations...");
     final center = Point(edgeImage.width / 2, edgeImage.height / 2);
 
     final leftLines = verticalLines
       ..sort((lhs, rhs) => lhs.minX.compareTo(rhs.minX));
-    _LineSegment leftLine = leftLines.isNotEmpty && leftLines.first.maxX < center.xi ? leftLines.first : null;
-    _LineSegment rightLine = leftLines.isNotEmpty && leftLines.last.minX > center.xi ? leftLines.last : null;
+    LineSegment leftLine = leftLines.isNotEmpty && leftLines.first.maxX < center.xi ? leftLines.first : null;
+    LineSegment rightLine = leftLines.isNotEmpty && leftLines.last.minX > center.xi ? leftLines.last : null;
 
     final topLines = horizontalLines
       ..sort((lhs, rhs) => lhs.minY.compareTo(rhs.minY));
-    _LineSegment topLine = topLines.isNotEmpty && topLines.first.maxY < center.yi ? topLines.first : null;
-    _LineSegment bottomLine = topLines.isNotEmpty && topLines.last.minY > center.yi ? topLines.last : null;
+    LineSegment topLine = topLines.isNotEmpty && topLines.first.maxY < center.yi ? topLines.first : null;
+    LineSegment bottomLine = topLines.isNotEmpty && topLines.last.minY > center.yi ? topLines.last : null;
 
     final edgeReceiptRect = Rect.fromLTRB(
       leftLine?.minX?.toDouble() ?? 0,
@@ -71,9 +80,9 @@ class _VerticalLineDetector {
 
   _VerticalLineDetector(this.edgeImage);
 
-  List<_LineSegment> detect() {
+  List<LineSegment> detect() {
     final center = Point(edgeImage.width / 2, edgeImage.height / 2);
-    final lines = List<_LineSegment>();
+    final lines = List<LineSegment>();
     for (int x = 0; x < edgeImage.width; x += 3) {
       final position = Point(x, center.yi);
       if (_isEdge(position)) {
@@ -82,7 +91,7 @@ class _VerticalLineDetector {
         final length = sqrt(
             pow(downLeaf.x - topLeaf.x, 2) + pow(downLeaf.y - topLeaf.y, 2));
         if (length > 128) {
-          lines.add(_LineSegment(topLeaf, downLeaf, length));
+          lines.add(LineSegment(topLeaf, downLeaf, length));
           x += 3;
         }
       }
@@ -126,9 +135,9 @@ class _HorizontalLineDetector {
 
   _HorizontalLineDetector(this.edgeImage);
 
-  List<_LineSegment> detect() {
+  List<LineSegment> detect() {
     final center = Point(edgeImage.width / 2, edgeImage.height / 2);
-    final lines = List<_LineSegment>();
+    final lines = List<LineSegment>();
     for (int y = 0; y < edgeImage.height; y += 3) {
       final position = Point(center.xi, y);
       if (_isEdge(position)) {
@@ -137,7 +146,7 @@ class _HorizontalLineDetector {
         final length = sqrt(
             pow(downLeaf.x - topLeaf.x, 2) + pow(downLeaf.y - topLeaf.y, 2));
         if (length > 128) {
-          lines.add(_LineSegment(topLeaf, downLeaf, length));
+          lines.add(LineSegment(topLeaf, downLeaf, length));
           y += 3;
         }
       }
@@ -176,7 +185,7 @@ class _HorizontalLineDetector {
   }
 }
 
-class _LineSegment {
+class LineSegment {
   final Point start;
   final Point end;
   final double length;
@@ -192,7 +201,7 @@ class _LineSegment {
   Offset get startOffset => Offset(start.x.toDouble(), start.y.toDouble());
   Offset get endOffset => Offset(end.x.toDouble(), end.y.toDouble());
 
-  _LineSegment(this.start, this.end, this.length);
+  LineSegment(this.start, this.end, this.length);
 
   @override
   String toString() {
