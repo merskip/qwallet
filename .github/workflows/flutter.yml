@@ -52,7 +52,7 @@ jobs:
        - run: mkdir -p "~/Library/MobileDevice/Provisioning Profiles"
        - run: echo "${{ secrets.MOBILEPROVISION_BASE64 }}" | base64 --decode - > "~/Library/MobileDevice/Provisioning Profiles/${{ secrets.MOBILEPROVISION_FILENAME }}"
        - run: flutter build ios --release --no-codesign --build-number="$GITHUB_RUN_NUMBER" --verbose
-       - run: cd ios && xcodebuild -workspace Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration Release archive -archivePath $PWD/build/Runner.xcarchive
+       - run: cd ios && xcodebuild -workspace Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration Release archive -archivePath $PWD/build/Runner.xcarchive -allowProvisioningUpdates
        - run: cd ios && xcodebuild -exportArchive -archivePath $PWD/build/Runner.xcarchive -exportOptionsPlist exportOptions.plist -exportPath Runner.ipa -allowProvisioningUpdates
        #       - run: cd ios && pod install && cd ..
 #       - uses: yukiarrr/ios-build-action@v0.5.0
