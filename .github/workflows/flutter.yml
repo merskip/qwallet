@@ -52,9 +52,8 @@ jobs:
        - run: mkdir -p "~/Library/MobileDevice/Provisioning Profiles"
        - run: echo "${{ secrets.MOBILEPROVISION_BASE64 }}" | base64 --decode - > "~/Library/MobileDevice/Provisioning Profiles/${{ secrets.MOBILEPROVISION_FILENAME }}"
        - run: flutter build ios --release --no-codesign --build-number="$GITHUB_RUN_NUMBER" --verbose
-       - run: cd ios
-       - run: xcodebuild -workspace Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration Release archive -archivePath $PWD/build/Runner.xcarchive
-       - run: xcodebuild -exportArchive -archivePath $PWD/build/Runner.xcarchive -exportOptionsPlist exportOptions.plist -exportPath Runner.ipa -allowProvisioningUpdates
+       - run: cd ios && xcodebuild -workspace Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration Release archive -archivePath $PWD/build/Runner.xcarchive
+       - run: cd ios && xcodebuild -exportArchive -archivePath $PWD/build/Runner.xcarchive -exportOptionsPlist exportOptions.plist -exportPath Runner.ipa -allowProvisioningUpdates
        #       - run: cd ios && pod install && cd ..
 #       - uses: yukiarrr/ios-build-action@v0.5.0
 #         with:
@@ -70,7 +69,7 @@ jobs:
        - name: Deploy to Firebase App Distribution
          uses: w9jds/firebase-action@master
          with:
-           args: appdistribution:distribute "Runner.ipa" --app "${{secrets.FIREBASE_APP_ID}}" --groups "bptesters,web" --release-notes-file "release-notes.txt"
+           args: appdistribution:distribute "ios/Runner.ipa" --app "${{secrets.FIREBASE_APP_ID}}" --groups "bptesters,web" --release-notes-file "release-notes.txt"
          env:
            FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}}
 #  build-web:
