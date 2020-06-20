@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:date_utils/date_utils.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -20,7 +22,6 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         body: QueryListWidget(
             stream: FirebaseService.instance.getWallets(),
@@ -29,7 +30,8 @@ class _DashboardPageState extends State<DashboardPage> {
               final selectedPeriodRef = wallets.first.currentPeriod;
               final expensesStream = FirebaseService.instance
                   .getBillingPeriod(selectedPeriodRef)
-                  .asyncExpand((period) => FirebaseService.instance.getExpenses(period));
+                  .asyncExpand(
+                      (period) => FirebaseService.instance.getExpenses(period));
               return CustomScrollView(slivers: [
                 SliverAppBar(
                   expandedHeight: 150.0,
@@ -39,7 +41,9 @@ class _DashboardPageState extends State<DashboardPage> {
                 SliverList(
                   delegate: SliverChildListDelegate(
                     <Widget>[
-                      ExpensesListWidget(currentPeriodRef: selectedPeriodRef, expensesStream: expensesStream),
+                      ExpensesListWidget(
+                          currentPeriodRef: selectedPeriodRef,
+                          expensesStream: expensesStream),
                     ],
                   ),
                 )
@@ -59,15 +63,11 @@ class _WalletsPageView extends StatefulWidget {
 
 class __WalletsPageViewState extends State<_WalletsPageView> {
   final PageController _controller = PageController();
-  double currentPage = 0.0;
+  final StreamController<double> _currentPage = StreamController();
 
   @override
   void initState() {
-//    _controller.addListener(() {
-//      setState(() {
-//        currentPage = _controller.page;
-//      });
-//    });
+    _controller.addListener(() => _currentPage.add(_controller.page));
     super.initState();
   }
 
@@ -83,14 +83,23 @@ class __WalletsPageViewState extends State<_WalletsPageView> {
               _WalletSinglePage(wallet: wallet),
           ],
         ),
-        DotsIndicator(
-          dotsCount: widget.wallets.length,
-          position: currentPage,
-          decorator: DotsDecorator(
-              size: Size.square(4),
-              activeSize: Size.square(4),
-              activeColor: Colors.white,
-              spacing: EdgeInsets.symmetric(horizontal: 3, vertical: 6)),
+        StreamBuilder(
+          stream: _currentPage.stream,
+          builder: (context, AsyncSnapshot<double> snapshot) {
+            return Positioned(
+              bottom: 8,
+              child: DotsIndicator(
+                dotsCount: widget.wallets.length,
+                position: snapshot.data ?? 0,
+                decorator: DotsDecorator(
+                  size: Size.square(4),
+                  activeSize: Size.square(4),
+                  activeColor: Colors.white,
+                  spacing: EdgeInsets.symmetric(horizontal: 3, vertical: 6),
+                ),
+              ),
+            );
+          },
         )
       ],
     );
@@ -191,7 +200,7 @@ class _WalletSinglePage extends StatelessWidget {
                     dotData: FlDotData(show: false),
                     isCurved: true,
                     preventCurveOverShooting: true,
-                    preventCurveOvershootingThreshold: 0.3,
+                    preventCurveOvershootingThreshold: 0.1,
                     isStrokeCapRound: true,
                   )
                 ],
