@@ -56,6 +56,7 @@ jobs:
            mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
            code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
            team-id: ${{ secrets.TEAM_ID }}
+           export-method: development
        - run: git log --format="%s (%h)" ${{ github.event.after }}^.. > release-notes.txt
        - name: Deploy to Firebase App Distribution
          uses: w9jds/firebase-action@master
