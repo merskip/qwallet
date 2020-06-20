@@ -45,18 +45,22 @@ jobs:
        - run: flutter pub get
 #       - run: flutter clean
 #       - run: flutter analyze
-#       - run: flutter build ios --release --no-codesign --build-number="$GITHUB_RUN_NUMBER" --verbose
-       - run: cd ios && pod install && cd ..
-       - uses: yukiarrr/ios-build-action@v0.5.0
+       - uses: apple-actions/import-codesign-certs@v1
          with:
-           project-path: ios/Runner.xcodeproj
-           workspace-path: ios/Runner.xcworkspace
-           p12-base64: ${{ secrets.P12_BASE64 }}
-           certificate-password: ${{ secrets.P12_BASE64_PASS }}
-           mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
-           code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
-           team-id: ${{ secrets.TEAM_ID }}
-           export-method: development
+           p12-file-base64: ${{ secrets.P12_BASE64 }}
+           p12-password: ${{ secrets.P12_BASE64_PASS }}
+       - run: flutter build ios --release --no-codesign --build-number="$GITHUB_RUN_NUMBER" --verbose
+#       - run: cd ios && pod install && cd ..
+#       - uses: yukiarrr/ios-build-action@v0.5.0
+#         with:
+#           project-path: ios/Runner.xcodeproj
+#           workspace-path: ios/Runner.xcworkspace
+#           p12-base64: ${{ secrets.P12_BASE64 }}
+#           certificate-password: ${{ secrets.P12_BASE64_PASS }}
+#           mobileprovision-base64: ${{ secrets.MOBILEPROVISION_BASE64 }}
+#           code-signing-identity: ${{ secrets.CODE_SIGNING_IDENTITY }}
+#           team-id: ${{ secrets.TEAM_ID }}
+#           export-method: development
        - run: git log --format="%s (%h)" ${{ github.event.after }}^.. > release-notes.txt
        - name: Deploy to Firebase App Distribution
          uses: w9jds/firebase-action@master
