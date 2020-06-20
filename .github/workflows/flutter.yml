@@ -59,9 +59,9 @@ jobs:
        - name: Deploy to Firebase App Distribution
          uses: w9jds/firebase-action@master
          with:
-          args: appdistribution:distribute "output.ipa" --app "${{secrets.FIREBASE_APP_ID}}" --groups "bptesters,web" --release-notes-file "release-notes.txt"
-          env:
-            FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}}
+           args: appdistribution:distribute "output.ipa" --app "${{secrets.FIREBASE_APP_ID}}" --groups "bptesters,web" --release-notes-file "release-notes.txt"
+         env:
+           FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}}
 #  build-web:
 #    name: Build Website
 #    runs-on: ubuntu-latest
