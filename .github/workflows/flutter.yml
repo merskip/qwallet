@@ -49,7 +49,7 @@ jobs:
          with:
            p12-file-base64: ${{ secrets.P12_BASE64 }}
            p12-password: ${{ secrets.P12_BASE64_PASS }}
-       - run: flutter build ios --release --no-codesign --build-number="$GITHUB_RUN_NUMBER" --verbose
+       - run: flutter build ios --release --build-number="$GITHUB_RUN_NUMBER" --verbose
 #       - run: cd ios && pod install && cd ..
 #       - uses: yukiarrr/ios-build-action@v0.5.0
 #         with:
