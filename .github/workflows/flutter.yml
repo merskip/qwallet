@@ -46,6 +46,7 @@ jobs:
        - run: flutter clean
 #       - run: flutter analyze
 #       - run: flutter build ios --release --no-codesign --build-number="$GITHUB_RUN_NUMBER" --verbose
+       - run: pod install
        - uses: yukiarrr/ios-build-action@v0.5.0
          with:
            project-path: ios/Runner.xcodeproj
