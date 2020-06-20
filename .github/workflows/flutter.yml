@@ -39,16 +39,17 @@ jobs:
        - uses: actions/setup-java@v1
          with:
            java-version: '12.x'
+       - uses: apple-actions/import-codesign-certs@v1
+         with:
+          p12-file-base64: ${{ secrets.P12_BAS64 }}
+          p12-password: ${{ secrets.P12_BAS64_PASS }}
        - uses: subosito/flutter-action@v1
          with:
              channel: 'dev'
        - run: flutter pub get
 #       - run: flutter clean
 #       - run: flutter analyze
-       - uses: apple-actions/import-codesign-certs@v1
-         with:
-           p12-file-base64: ${{ secrets.P12_BASE64 }}
-           p12-password: ${{ secrets.P12_BASE64_PASS }}
+
        - run: flutter build ios --release --build-number="$GITHUB_RUN_NUMBER" --verbose
 #       - run: cd ios && pod install && cd ..
 #       - uses: yukiarrr/ios-build-action@v0.5.0
