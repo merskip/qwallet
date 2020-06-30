@@ -11,20 +11,24 @@ import '../utils.dart';
 
 class WalletsSwipeWidget extends StatefulWidget {
   final List<Wallet> wallets;
+  final void Function(Wallet wallet) onSelectedWallet;
 
-  const WalletsSwipeWidget({Key key, this.wallets}) : super(key: key);
+  const WalletsSwipeWidget({Key key, this.wallets, this.onSelectedWallet}) : super(key: key);
 
   @override
   _WalletsSwipeWidgetState createState() => _WalletsSwipeWidgetState();
 }
 
 class _WalletsSwipeWidgetState extends State<WalletsSwipeWidget> {
-  final PageController _controller = PageController();
-  final StreamController<double> _currentPage = StreamController();
+
+  final StreamController<int> _currentWalletIndex = StreamController.broadcast();
 
   @override
   void initState() {
-    _controller.addListener(() => _currentPage.add(_controller.page));
+    _currentWalletIndex.stream.listen((walletIndex) {
+      widget.onSelectedWallet(widget.wallets[walletIndex]);
+    });
+    _currentWalletIndex.add(0);
     super.initState();
   }
 
@@ -34,11 +38,14 @@ class _WalletsSwipeWidgetState extends State<WalletsSwipeWidget> {
       alignment: AlignmentDirectional.bottomCenter,
       children: [
         PageView(
-          controller: _controller,
+          onPageChanged: (index) {
+            _currentWalletIndex.add(index);
+          },
           children: [
             for (final wallet in widget.wallets)
               _WalletSinglePage(wallet: wallet),
           ],
+          physics: BouncingScrollPhysics(),
         ),
         buildDotsIndicator()
       ],
@@ -47,13 +54,13 @@ class _WalletsSwipeWidgetState extends State<WalletsSwipeWidget> {
 
   Widget buildDotsIndicator() {
     return StreamBuilder(
-      stream: _currentPage.stream,
-      builder: (context, AsyncSnapshot<double> snapshot) {
+      stream: _currentWalletIndex.stream,
+      builder: (context, AsyncSnapshot<int> snapshot) {
         return Positioned(
           bottom: 8,
           child: DotsIndicator(
             dotsCount: widget.wallets.length,
-            position: snapshot.data ?? 0,
+            position: snapshot.data?.toDouble() ?? 0.0,
             decorator: DotsDecorator(
               size: Size.square(4),
               activeSize: Size.square(4),

@@ -1,10 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
-
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -49,7 +47,12 @@ class _DashboardPageState extends State<DashboardPage> {
     return CustomScrollView(slivers: [
       SliverAppBar(
         expandedHeight: 150.0,
-        flexibleSpace: WalletsSwipeWidget(wallets: wallets),
+        flexibleSpace: WalletsSwipeWidget(
+          wallets: wallets,
+          onSelectedWallet: (selectedWallet) {
+            print("Selected wallet: $selectedWallet");
+          },
+        ),
         actions: [],
       ),
       SliverList(
