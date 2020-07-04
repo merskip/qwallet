@@ -38,14 +38,19 @@ class AppLocalizations {
       );
 
   String get language => _locale(
-        en: "Current language",
-        pl: "Aktualny język",
+        en: "Language",
+        pl: "Język",
       );
 
   String get currentLanguage => _locale(
         en: "English",
         pl: "Polski",
       );
+
+  String get version => _locale(
+    en: "Application version",
+    pl: "Wersja aplikacji",
+  );
 
   String _locale({@required String en, @required String pl}) {
     switch (locale.languageCode) {
