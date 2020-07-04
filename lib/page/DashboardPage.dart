@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -33,7 +34,7 @@ class _DashboardPageState extends State<DashboardPage> {
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
-            tooltip: "Settings",
+            tooltip: AppLocalizations.of(context).settings,
             onPressed: () {},
           )
         ],
@@ -56,7 +57,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _emptyWalletsWidget(BuildContext context) {
     return EmptyStateWidget(
       icon: "assets/ic-wallet.svg",
-      text: "There are no any wallets in your account.",
+      text: AppLocalizations.of(context).walletsEmpty,
     );
   }
 }

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/router.dart';
 
 import 'page/landing_page.dart';
@@ -37,6 +39,22 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        AppLocalizationsDelegate()
+      ],
+      supportedLocales: [
+        const Locale('en', 'US'),
+        const Locale('pl', 'Pl'),
+      ],
+      localeResolutionCallback: (Locale locale, Iterable<Locale> supportedLocales) {
+        if (supportedLocales.contains(locale))
+          return locale;
+        else
+          return supportedLocales.first;
+      },
       initialRoute: "/",
       routes: {
         "/": (context) => LandingPage(),
