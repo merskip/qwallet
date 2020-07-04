@@ -17,34 +17,43 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    return SimpleStreamWidget(
+      stream: Api.instance.getWallets(),
+      builder: (context, List<Wallet> wallets) =>
+          _buildWithWallets(context, wallets),
+    );
+  }
+
+  Widget _buildWithWallets(BuildContext context, List<Wallet> wallets) {
     return Scaffold(
-      body: SimpleStreamWidget(
-        stream: Api.instance.getWallets(),
-        builder: (context, List<Wallet> wallets) => wallets.isNotEmpty
-            ? _walletsList(context, wallets)
-            : _emptyWalletsList(context),
+      body: wallets.isNotEmpty
+          ? CustomScrollView(slivers: [_appBarWithWallets(context, wallets)])
+          : _emptyWalletsWidget(context),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            tooltip: "Settings",
+            onPressed: () {},
+          )
+        ],
       ),
     );
   }
 
-
-
-  Widget _walletsList(BuildContext context, List<Wallet> wallets) {
-    return CustomScrollView(slivers: [
-      SliverAppBar(
-        expandedHeight: 150.0,
-        flexibleSpace: WalletsSwipeWidget(
-          wallets: wallets,
-          onSelectedWallet: (wallet) {
-            _selectedWallet.add(wallet);
-          },
-        ),
-        actions: [],
+  Widget _appBarWithWallets(BuildContext context, List<Wallet> wallets) {
+    return SliverAppBar(
+      expandedHeight: 150.0,
+      flexibleSpace: WalletsSwipeWidget(
+        wallets: wallets,
+        onSelectedWallet: (wallet) {
+          _selectedWallet.add(wallet);
+        },
       ),
-    ]);
+    );
   }
 
-  Widget _emptyWalletsList(BuildContext context) {
+  Widget _emptyWalletsWidget(BuildContext context) {
     return EmptyStateWidget(
       icon: "assets/ic-wallet.svg",
       text: "There are no any wallets in your account.",
