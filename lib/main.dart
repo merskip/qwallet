@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_admob/firebase_admob.dart';
@@ -7,7 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/router.dart';
 
-import 'page/landing_page.dart';
+StreamController<Locale> locales = StreamController();
 
 void main() {
   runApp(MyApp());
@@ -38,16 +39,15 @@ class MyApp extends StatelessWidget {
           border: OutlineInputBorder(),
         ),
       ),
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        AppLocalizationsDelegate()
-      ],
       supportedLocales: [
         const Locale('en', 'US'),
-        const Locale('pl', 'Pl'),
+        const Locale('pl', 'PL'),
+      ],
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate
       ],
       localeResolutionCallback: (Locale locale, Iterable<Locale> supportedLocales) {
         if (supportedLocales.contains(locale))
@@ -56,9 +56,6 @@ class MyApp extends StatelessWidget {
           return supportedLocales.first;
       },
       initialRoute: "/",
-      routes: {
-        "/": (context) => LandingPage(),
-      },
       onGenerateRoute: router.generator,
     );
   }

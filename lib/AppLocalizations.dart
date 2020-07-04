@@ -5,7 +5,7 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const AppLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) => ['en', 'es'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => ['en', 'pl'].contains(locale.languageCode);
 
   @override
   Future<AppLocalizations> load(Locale locale) {
@@ -13,11 +13,13 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   }
 
   @override
-  bool shouldReload(AppLocalizationsDelegate old) => false;
+  bool shouldReload(AppLocalizationsDelegate old) => true;
 }
 
 class AppLocalizations {
   AppLocalizations(this.locale);
+
+  static const LocalizationsDelegate<AppLocalizations> delegate = const AppLocalizationsDelegate();
 
   final Locale locale;
 
@@ -25,22 +27,34 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static Map<String, Map<String, String>> _localizedValues = {
-    'en': {
-      'settings': 'Settings',
-      'wallets.empty': 'There are no any wallets in your account.'
-    },
-    'pl': {
-      'settings': 'Ustawienia',
-      'wallets.empty': 'Na twoim koncie nie ma żadnych portfeli.'
-    },
-  };
+  String get settings => _locale(
+        en: "Setings",
+        pl: "Ustawienia",
+      );
 
-  String get settings {
-    return _localizedValues[locale.languageCode]['settings'];
-  }
+  String get walletsEmpty => _locale(
+        en: "There are no any wallets in your account",
+        pl: "Na twoim koncie nie ma żadnych portfeli.",
+      );
 
-  String get walletsEmpty {
-    return _localizedValues[locale.languageCode]['wallets.empty'];
+  String get language => _locale(
+        en: "Current language",
+        pl: "Aktualny język",
+      );
+
+  String get currentLanguage => _locale(
+        en: "English",
+        pl: "Polski",
+      );
+
+  String _locale({@required String en, @required String pl}) {
+    switch (locale.languageCode) {
+      case "en":
+        return en;
+      case "pl":
+        return pl;
+      default:
+        return en;
+    }
   }
 }

@@ -8,9 +8,27 @@ import 'package:qwallet/model/expense.dart';
 import 'package:qwallet/page/expense_page.dart';
 import 'package:qwallet/page/wallet_page.dart';
 
+import 'page/SettingsPage.dart';
+import 'page/landing_page.dart';
+
 final router = Router();
 
 void defineRoutes(Router router) {
+  router.define(
+    "/",
+    handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      return LandingPage();
+    }),
+  );
+  router.define(
+    "/settings",
+    transitionType: TransitionType.nativeModal,
+    handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      return SettingsPage();
+    }),
+  );
   router.define(
     "/wallet/:walletId",
     transitionType: TransitionType.materialFullScreenDialog,

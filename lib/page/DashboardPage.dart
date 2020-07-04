@@ -8,6 +8,8 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
 
+import '../router.dart';
+
 class DashboardPage extends StatefulWidget {
   @override
   _DashboardPageState createState() => _DashboardPageState();
@@ -35,7 +37,7 @@ class _DashboardPageState extends State<DashboardPage> {
           IconButton(
             icon: Icon(Icons.settings),
             tooltip: AppLocalizations.of(context).settings,
-            onPressed: () {},
+            onPressed: () => router.navigateTo(context, "/settings")
           )
         ],
       ),
