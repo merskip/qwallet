@@ -2,10 +2,7 @@ import 'dart:async';
 
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Api.dart';
-import 'package:qwallet/api/BillingPeriod.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../utils.dart';
 
@@ -81,19 +78,6 @@ class _WalletSinglePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SimpleStreamWidget(
-      stream: Api.instance.getBillingPeriod(billingPeriod: wallet.currentPeriod),
-      builder: (context, BillingPeriod billingPeriod) {
-        return buildContent(context, billingPeriod);
-      },
-    );
-  }
-
-  Widget buildContent(BuildContext context, BillingPeriod billingPeriod) {
-    return buildWalletInfo(context, billingPeriod);
-  }
-
-  Widget buildWalletInfo(BuildContext context, BillingPeriod billingPeriod) {
     return Padding(
       padding: EdgeInsets.only(left: 16),
       child: Column(
@@ -106,16 +90,9 @@ class _WalletSinglePage extends StatelessWidget {
           ),
           SizedBox(height: 4),
           Text(
-            formatAmount(billingPeriod.absoluteBalance),
+            formatAmount(wallet.balance),
             style: TextStyle(
                 color: Colors.white, fontSize: 24, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(height: 2),
-          Text(
-            formatAmount(billingPeriod.dailyExpense, currency: false) +
-                "/" +
-                formatAmount(billingPeriod.dailyIncome),
-            style: Theme.of(context).primaryTextTheme.subtitle1,
           )
         ],
       ),

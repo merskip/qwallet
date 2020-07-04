@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:qwallet/api/Model.dart';
-import 'package:qwallet/api/Wallet.dart';
 
-import 'BillingPeriod.dart';
+import 'Expense.dart';
+import 'Income.dart';
+import 'Model.dart';
+import 'Wallet.dart';
 
 class Api {
   static final Api instance = Api._privateConstructor();
@@ -16,15 +19,22 @@ class Api {
   Stream<List<Wallet>> getWallets() {
     return firestore
         .collection("wallets")
-        .where('owners_uid', arrayContains: currentUser.uid)
+        .where("ownersUid", arrayContains: currentUser.uid)
         .snapshots()
         .map((snapshot) => snapshot.documents.map((s) => Wallet(s)).toList());
   }
 
-  Stream<BillingPeriod> getBillingPeriod(
-      {Reference<BillingPeriod> billingPeriod}) {
-    return billingPeriod.reference
+  Stream<List<Expense>> getExpenses(Reference<Wallet> wallet) {
+    return wallet.reference
+        .collection("expenses")
         .snapshots()
-        .map((snapshot) => BillingPeriod(snapshot));
+        .map((snapshot) => snapshot.documents.map((s) => Expense(s)).toList());
+  }
+
+  Stream<List<Income>> getIncomes(Reference<Wallet> wallet) {
+    return wallet.reference
+        .collection("incomes")
+        .snapshots()
+        .map((snapshot) => snapshot.documents.map((s) => Income(s)).toList());
   }
 }
