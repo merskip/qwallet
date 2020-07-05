@@ -34,6 +34,17 @@ double toDouble(dynamic value, {double defaultValue = 0.0}) {
     return defaultValue;
 }
 
+String formatMoney(double amount, String currency, {bool showCurrency = true}) {
+  if (amount == null) return null;
+  if (showCurrency)
+    return NumberFormat.simpleCurrency(locale: "pl_PL").format(amount);
+  else
+    return NumberFormat.currency(locale: "pl_PL", symbol: "")
+        .format(amount)
+        .trimRight();
+}
+
+
 String formatAmount(double amount, {bool currency = true}) {
   if (amount == null) return null;
   if (currency)
