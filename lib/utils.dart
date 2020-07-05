@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 Future<T> pushPage<T>(BuildContext context, {@required WidgetBuilder builder}) async {
-  final Route route = MaterialPageRoute(builder: (context) => builder(context));
+  final Route route = MaterialPageRoute<T>(builder: (context) => builder(context));
   return await Navigator.of(context).push(route);
 }
 

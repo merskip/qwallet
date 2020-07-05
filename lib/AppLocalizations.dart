@@ -92,6 +92,12 @@ class AppLocalizations {
     pl: "Waluta",
   );
 
+  String Function(String) get walletCurrencyWithExample =>
+      (String example) => _locale(
+            en: "Eg. $example",
+            pl: "Np. $example",
+          );
+
   String get currencySelection => _locale(
     en: "Currency selection",
     pl: "Wybór waluty",
@@ -99,7 +105,7 @@ class AppLocalizations {
 
   String get currencySymbol => _locale(
     en: "Currency symbol",
-    pl: "symbol waluty",
+    pl: "Symbol waluty",
   );
 
   String get currencyName => _locale(
@@ -114,7 +120,7 @@ class AppLocalizations {
 
   String get currencyISO4217Number => _locale(
     en: "ISO 4217 number",
-    pl: "Number ISO 4217",
+    pl: "Numer ISO 4217",
   );
 
   String get currencyWiki => _locale(

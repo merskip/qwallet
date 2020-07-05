@@ -7,6 +7,11 @@ import 'package:url_launcher/url_launcher.dart';
 import '../Currency.dart';
 
 class CurrencySelectionPage extends StatefulWidget {
+
+  final Currency selectedCurrency;
+
+  const CurrencySelectionPage({Key key, this.selectedCurrency}) : super(key: key);
+
   @override
   _CurrencySelectionPageState createState() => _CurrencySelectionPageState();
 }
@@ -27,21 +32,33 @@ class _CurrencySelectionPageState extends State<CurrencySelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool hasSelectedCurrency = (widget.selectedCurrency != null);
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).currencySelection),
       ),
       body: Scrollbar(
         child: ListView.builder(
-          itemCount: currencies.length,
-          itemBuilder: (BuildContext context, index) =>
-              buildCurrency(context, currencies[index]),
+          itemCount: currencies.length + (hasSelectedCurrency != null ? 2 : 0),
+          itemBuilder: (BuildContext context, index) {
+            if (hasSelectedCurrency) {
+              if (index == 0)
+                return buildCurrency(context, widget.selectedCurrency,
+                    selected: true);
+              else if (index == 1)
+                return Divider();
+              else
+                index -= 2;
+            }
+            return buildCurrency(context, currencies[index]);
+          },
         ),
       ),
     );
   }
 
-  Widget buildCurrency(BuildContext context, Currency currency) {
+  Widget buildCurrency(BuildContext context, Currency currency,
+      {bool selected = false}) {
     return ListTile(
       title: Text(currency.symbol),
       subtitle: Text(currency.name),
@@ -50,6 +67,7 @@ class _CurrencySelectionPageState extends State<CurrencySelectionPage> {
         onPressed: () => onSelectedCurrencyInfo(context, currency),
       ),
       onTap: () => onSelectedCurrency(context, currency),
+      selected: selected,
     );
   }
 }

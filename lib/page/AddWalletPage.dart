@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:intl/intl.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/page/UserSelectionPage.dart';
+import 'package:qwallet/utils.dart';
 
 import '../Currency.dart';
 import 'UsersFormField.dart';
@@ -50,6 +53,11 @@ class _AddWalletFormState extends State<_AddWalletForm> {
         owners = [currentUser];
       });
     });
+
+    // TODO: Doesn't work, always returns en_US
+    final currentLocale = Intl.getCurrentLocale();
+    currency = Currency.all
+        .firstWhere((currency) => currency.locales.contains(currentLocale));
     super.initState();
   }
 
@@ -60,21 +68,28 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   onSelectedOwners(BuildContext context) async {
-    final List<User> selectedUsers = await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => UserSelectionPage(
-          title: AppLocalizations.of(context).walletOwners,
-          allUsers: allUsers,
-          selectedUsers: owners,
-        ),
+    final List<User> selectedUsers = await pushPage(
+      context,
+      builder: (context) => UserSelectionPage(
+        title: AppLocalizations.of(context).walletOwners,
+        allUsers: allUsers,
+        selectedUsers: owners,
       ),
-    ) as List<User>;
-    if (selectedUsers != null)
+    );
+    if (selectedUsers != null) {
       setState(() => owners = selectedUsers);
+    }
   }
 
   onSelectedCurrency(BuildContext context) async {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => CurrencySelectionPage()));
+    final Currency currency = await pushPage(
+      context,
+      builder: (context) =>
+          CurrencySelectionPage(selectedCurrency: this.currency),
+    );
+    if (currency != null) {
+      setState(() => this.currency = currency);
+    }
   }
 
   @override
@@ -121,11 +136,17 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   Widget buildCurrency(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(
-        labelText: AppLocalizations.of(context).walletCurrency,
+    String locale = currency.locales.first;
+    String text = NumberFormat.simpleCurrency(locale: locale).format(1234.456);
+    return InkWell(
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context).walletCurrency,
+          helperText:
+              AppLocalizations.of(context).walletCurrencyWithExample(text),
+        ),
+        child: Text("${currency.symbol} (${currency.name})"),
       ),
-      textInputAction: TextInputAction.next,
       onTap: () => onSelectedCurrency(context),
     );
   }
