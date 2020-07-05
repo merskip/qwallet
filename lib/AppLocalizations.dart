@@ -62,6 +62,15 @@ class AppLocalizations {
     pl: "Zarządzaj portflami",
   );
 
+  String get addWallet => _locale(
+    en: "Add wallet",
+    pl: "Dodaj portfel",
+  );
+  String get walletName => _locale(
+    en: "Wallet name",
+    pl: "Nazwa portfela",
+  );
+
   String _locale({@required String en, @required String pl}) {
     switch (locale.languageCode) {
       case "en":

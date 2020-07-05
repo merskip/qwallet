@@ -43,6 +43,7 @@ class WalletsPage extends StatelessWidget {
     return FloatingActionButton(
       child: VectorImage("assets/ic-add-wallet.svg", color: Colors.white),
       onPressed: () => router.navigateTo(context, "/settings/wallets/add"),
+      tooltip: AppLocalizations.of(context).addWallet,
     );
   }
 }
