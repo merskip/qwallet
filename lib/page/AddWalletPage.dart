@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
+import 'package:qwallet/api/Api.dart';
+import 'package:qwallet/firebase_service.dart';
+import 'package:qwallet/model/user.dart';
+
+import 'UsersFormField.dart';
 
 class AddWalletPage extends StatelessWidget {
   @override
@@ -27,18 +32,25 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   final nameController = TextEditingController();
   final nameFocus = FocusNode();
 
-  final ownersController = TextEditingController();
-  final ownersFocus = FocusNode();
+  List<User> allUsers;
+  List<User> owners;
 
   @override
   void initState() {
+    FirebaseService.instance.fetchUsers(includeAnonymous: false).then((users) {
+      setState(() {
+        allUsers = users;
+        final currentUser = users
+            .firstWhere((user) => user.uid == Api.instance.currentUser.uid);
+        owners = [currentUser];
+      });
+    });
     super.initState();
   }
 
   @override
   void dispose() {
     nameController.dispose();
-    ownersFocus.dispose();
     super.dispose();
   }
 
@@ -70,9 +82,14 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   Widget buildOwners(BuildContext context) {
-    return TextFormField(
-      controller: ownersController,
-      focusNode: ownersFocus
+    return InkWell(
+      child: UsersFormField(
+        users: owners ?? [User.youPlaceholder(context)],
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context).walletOwners
+        ),
+      ),
+      onTap: () {},
     );
   }
 }
