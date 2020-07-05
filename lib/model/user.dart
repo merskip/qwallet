@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/Api.dart';
 
 import '../AppLocalizations.dart';
 
@@ -25,7 +26,7 @@ class User {
 
   factory User.youPlaceholder(BuildContext context) {
     return User(
-      uid: null,
+      uid: Api.instance.currentUser.uid,
       displayName: AppLocalizations.of(context).ownerYou,
     );
   }

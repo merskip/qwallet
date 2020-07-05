@@ -48,10 +48,10 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   @override
   void initState() {
     FirebaseService.instance.fetchUsers(includeAnonymous: false).then((users) {
+      final currentUser = users
+          .firstWhere((user) => user.uid == Api.instance.currentUser.uid);
       setState(() {
         allUsers = users;
-        final currentUser = users
-            .firstWhere((user) => user.uid == Api.instance.currentUser.uid);
         owners = [currentUser];
       });
     });
