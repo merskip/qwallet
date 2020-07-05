@@ -8,8 +8,7 @@ class UsersFormField extends FormField<List<User>> {
   UsersFormField({this.users, @required this.decoration})
       : super(builder: (FormFieldState<List<User>> state) {
           return Builder(
-            builder: (context) =>
-                buildUsersInput(context, decoration, users),
+            builder: (context) => buildUsersInput(context, decoration, users),
           );
         });
 
@@ -17,10 +16,12 @@ class UsersFormField extends FormField<List<User>> {
       BuildContext context, InputDecoration decoration, List<User> users) {
     return InputDecorator(
       decoration: decoration.copyWith(
-        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       ),
       child: Wrap(
         children: users.map((user) => buildUserChip(context, user)).toList(),
+        spacing: 4,
+        runSpacing: 4,
       ),
     );
   }

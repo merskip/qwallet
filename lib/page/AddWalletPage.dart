@@ -3,6 +3,7 @@ import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
+import 'package:qwallet/page/UserSelectionPage.dart';
 
 import 'UsersFormField.dart';
 
@@ -54,6 +55,20 @@ class _AddWalletFormState extends State<_AddWalletForm> {
     super.dispose();
   }
 
+  onSelectedOwners(BuildContext context) async {
+    final List<User> selectedUsers = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => UserSelectionPage(
+          title: AppLocalizations.of(context).walletOwners,
+          allUsers: allUsers,
+          selectedUsers: owners,
+        ),
+      ),
+    ) as List<User>;
+    if (selectedUsers != null)
+      setState(() => owners = selectedUsers);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -86,10 +101,12 @@ class _AddWalletFormState extends State<_AddWalletForm> {
       child: UsersFormField(
         users: owners ?? [User.youPlaceholder(context)],
         decoration: InputDecoration(
-          labelText: AppLocalizations.of(context).walletOwners
+          labelText: AppLocalizations.of(context).walletOwners,
+          helperText: AppLocalizations.of(context).walletOwnersHint,
+          helperMaxLines: 3,
         ),
       ),
-      onTap: () {},
+      onTap: () => onSelectedOwners(context),
     );
   }
 }

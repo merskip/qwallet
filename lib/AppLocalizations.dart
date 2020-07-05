@@ -77,6 +77,11 @@ class AppLocalizations {
     pl: "Właściciele",
   );
 
+  String get walletOwnersHint => _locale(
+    en: "Wallet's owners can fully manage of that wallet like adding expenses and incomes. They can also add other owners.",
+    pl: "Właściciele portfela mogą w pełni zarządzać tym portfelem, na przykład dodając wydatki i dochody. Mogą także dodawać innych właścicieli.",
+  );
+
   String get ownerYou => _locale(
     en: "You",
     pl: "Ty",
