@@ -82,6 +82,16 @@ class AppLocalizations {
     pl: "Właściciele portfela mogą w pełni zarządzać tym portfelem, na przykład dodając wydatki i dochody. Mogą także dodawać innych właścicieli.",
   );
 
+  String get walletOwnersErrorIsEmpty => _locale(
+    en: "Assign at least one person to this wallet",
+    pl: "Przypisz co najmniej jedną osobę do tego portfela",
+  );
+
+  String get walletOwnersErrorNoYou => _locale(
+    en: "You must be the owner of a new wallet",
+    pl: "Musisz być właścicielem nowego portfela",
+  );
+
   String get ownerYou => _locale(
     en: "You",
     pl: "Ty",
@@ -90,6 +100,12 @@ class AppLocalizations {
   String get walletCurrency => _locale(
     en: "Currency",
     pl: "Waluta",
+  );
+
+
+  String get walletCurrencyErrorIsEmpty => _locale(
+    en: "Enter some wallet name",
+    pl: "Wprowadź nazwę portfela",
   );
 
   String Function(String) get walletCurrencyWithExample =>
@@ -131,6 +147,11 @@ class AppLocalizations {
   String get currencyExamples => _locale(
     en: "Examples",
     pl: "Przykłady",
+  );
+
+  String get walletSubmitAdd => _locale(
+    en: "Add",
+    pl: "Dodaj",
   );
 
   String _locale({@required String en, @required String pl}) {

@@ -19,9 +19,11 @@ class AddWalletPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).addWallet),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: _AddWalletForm(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: _AddWalletForm(),
+        ),
       ),
     );
   }
@@ -92,6 +94,12 @@ class _AddWalletFormState extends State<_AddWalletForm> {
     }
   }
 
+  onSelectedSubmit(BuildContext context) {
+    if (_formKey.currentState.validate()) {
+      // TODO: Impl add wallet
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -101,7 +109,9 @@ class _AddWalletFormState extends State<_AddWalletForm> {
         SizedBox(height: 16),
         buildOwners(context),
         SizedBox(height: 16),
-        buildCurrency(context)
+        buildCurrency(context),
+        SizedBox(height: 16),
+        buildSubmitButton(context)
       ]),
     );
   }
@@ -117,6 +127,11 @@ class _AddWalletFormState extends State<_AddWalletForm> {
       maxLength: 50,
       textCapitalization: TextCapitalization.sentences,
       textInputAction: TextInputAction.next,
+      validator: (name) {
+        if (name.length <= 0 || name.length > 50)
+          return AppLocalizations.of(context).walletCurrencyErrorIsEmpty;
+        return null;
+      },
       onFieldSubmitted: (name) => nameFocus.nextFocus(),
     );
   }
@@ -130,6 +145,16 @@ class _AddWalletFormState extends State<_AddWalletForm> {
           helperText: AppLocalizations.of(context).walletOwnersHint,
           helperMaxLines: 3,
         ),
+        validator: (users) {
+          if (users.isEmpty)
+            return AppLocalizations.of(context).walletOwnersErrorIsEmpty;
+          final currentUserInSelected = users.firstWhere(
+              (user) => user.uid == FirebaseService.instance.currentUser.uid,
+              orElse: () => null);
+          if (currentUserInSelected == null)
+            return AppLocalizations.of(context).walletOwnersErrorNoYou;
+          return null;
+        },
       ),
       onTap: () => onSelectedOwners(context),
     );
@@ -148,6 +173,13 @@ class _AddWalletFormState extends State<_AddWalletForm> {
         child: Text("${currency.symbol} (${currency.name})"),
       ),
       onTap: () => onSelectedCurrency(context),
+    );
+  }
+
+  Widget buildSubmitButton(BuildContext context) {
+    return RaisedButton(
+      child: Text(AppLocalizations.of(context).walletSubmitAdd),
+      onPressed: () => onSelectedSubmit(context),
     );
   }
 }

@@ -5,21 +5,29 @@ class UsersFormField extends FormField<List<User>> {
   final List<User> users;
   final InputDecoration decoration;
 
-  UsersFormField({this.users, @required this.decoration})
-      : super(builder: (FormFieldState<List<User>> state) {
-          return Builder(
-            builder: (context) => buildUsersInput(context, decoration, users),
-          );
-        });
+  UsersFormField(
+      {@required this.users,
+      @required this.decoration,
+      FormFieldValidator<List<User>> validator})
+      : super(
+          builder: (FormFieldState<List<User>> state) {
+            return Builder(
+              builder: (context) => buildUsersInput(context, decoration, state),
+            );
+          },
+          initialValue: users,
+          validator: validator,
+        );
 
   static Widget buildUsersInput(
-      BuildContext context, InputDecoration decoration, List<User> users) {
+      BuildContext context, InputDecoration decoration, FormFieldState<List<User>> state) {
     return InputDecorator(
       decoration: decoration.copyWith(
         contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        errorText: state.errorText,
       ),
       child: Wrap(
-        children: users.map((user) => buildUserChip(context, user)).toList(),
+        children: state.value.map((user) => buildUserChip(context, user)).toList(),
         spacing: 4,
         runSpacing: 4,
       ),
