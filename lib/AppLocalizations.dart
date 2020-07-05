@@ -87,6 +87,46 @@ class AppLocalizations {
     pl: "Ty",
   );
 
+  String get walletCurrency => _locale(
+    en: "Currency",
+    pl: "Waluta",
+  );
+
+  String get currencySelection => _locale(
+    en: "Currency selection",
+    pl: "Wybór waluty",
+  );
+
+  String get currencySymbol => _locale(
+    en: "Currency symbol",
+    pl: "symbol waluty",
+  );
+
+  String get currencyName => _locale(
+    en: "Currency Name",
+    pl: "Nazwa waluty",
+  );
+
+  String get currencyDecimalPlaces => _locale(
+    en: "Decimal places",
+    pl: "Miejsc dziesiętnych",
+  );
+
+  String get currencyISO4217Number => _locale(
+    en: "ISO 4217 number",
+    pl: "Number ISO 4217",
+  );
+
+  String get currencyWiki => _locale(
+    en: "Wikipedia",
+    pl: "Wikipedia",
+  );
+
+  String get currencyExamples => _locale(
+    en: "Examples",
+    pl: "Przykłady",
+  );
+
   String _locale({@required String en, @required String pl}) {
     switch (locale.languageCode) {
       case "en":

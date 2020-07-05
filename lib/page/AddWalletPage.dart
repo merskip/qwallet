@@ -3,8 +3,10 @@ import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
+import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/page/UserSelectionPage.dart';
 
+import '../Currency.dart';
 import 'UsersFormField.dart';
 
 class AddWalletPage extends StatelessWidget {
@@ -35,6 +37,8 @@ class _AddWalletFormState extends State<_AddWalletForm> {
 
   List<User> allUsers;
   List<User> owners;
+
+  Currency currency;
 
   @override
   void initState() {
@@ -69,6 +73,10 @@ class _AddWalletFormState extends State<_AddWalletForm> {
       setState(() => owners = selectedUsers);
   }
 
+  onSelectedCurrency(BuildContext context) async {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => CurrencySelectionPage()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -76,7 +84,9 @@ class _AddWalletFormState extends State<_AddWalletForm> {
       child: Column(children: [
         buildNameField(context),
         SizedBox(height: 16),
-        buildOwners(context)
+        buildOwners(context),
+        SizedBox(height: 16),
+        buildCurrency(context)
       ]),
     );
   }
@@ -107,6 +117,16 @@ class _AddWalletFormState extends State<_AddWalletForm> {
         ),
       ),
       onTap: () => onSelectedOwners(context),
+    );
+  }
+
+  Widget buildCurrency(BuildContext context) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: AppLocalizations.of(context).walletCurrency,
+      ),
+      textInputAction: TextInputAction.next,
+      onTap: () => onSelectedCurrency(context),
     );
   }
 }

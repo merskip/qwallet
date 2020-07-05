@@ -2,6 +2,11 @@ import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+Future<T> pushPage<T>(BuildContext context, {@required WidgetBuilder builder}) async {
+  final Route route = MaterialPageRoute(builder: (context) => builder(context));
+  return await Navigator.of(context).push(route);
+}
+
 DateTime getBeginOfCurrentMonth() {
   DateTime now = DateTime.now();
   return getBeginOfMonth(now);
@@ -43,7 +48,6 @@ String formatMoney(double amount, String currency, {bool showCurrency = true}) {
         .format(amount)
         .trimRight();
 }
-
 
 String formatAmount(double amount, {bool currency = true}) {
   if (amount == null) return null;
