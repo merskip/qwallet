@@ -9,6 +9,7 @@ import 'package:qwallet/page/WalletsPage.dart';
 import 'package:qwallet/page/expense_page.dart';
 import 'package:qwallet/page/wallet_page.dart';
 
+import 'page/AddWalletPage.dart';
 import 'page/SettingsPage.dart';
 import 'page/landing_page.dart';
 
@@ -40,6 +41,16 @@ void defineRoutes(Router router) {
       return WalletsPage();
     }),
   );
+
+  router.define(
+    "/settings/wallets/add",
+    transitionType: TransitionType.nativeModal,
+    handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+          return AddWalletPage();
+        }),
+  );
+
 
   router.define(
     "/wallet/:walletId",
