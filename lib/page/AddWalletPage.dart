@@ -48,8 +48,8 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   @override
   void initState() {
     FirebaseService.instance.fetchUsers(includeAnonymous: false).then((users) {
-      final currentUser = users
-          .firstWhere((user) => user.uid == Api.instance.currentUser.uid);
+      final currentUser =
+          users.firstWhere((user) => user.uid == Api.instance.currentUser.uid);
       setState(() {
         allUsers = users;
         owners = [currentUser];
@@ -94,9 +94,14 @@ class _AddWalletFormState extends State<_AddWalletForm> {
     }
   }
 
-  onSelectedSubmit(BuildContext context) {
+  onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState.validate()) {
-      // TODO: Impl add wallet
+      final walletRef = await Api.instance.addWallet(
+        nameController.text,
+        owners.map((user) => user.uid).toList(),
+        currency.symbol,
+      );
+      Navigator.of(context).pop(walletRef);
     }
   }
 

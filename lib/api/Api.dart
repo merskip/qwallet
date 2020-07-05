@@ -24,6 +24,17 @@ class Api {
         .map((snapshot) => snapshot.documents.map((s) => Wallet(s)).toList());
   }
 
+  Future<Reference<Wallet>> addWallet(
+      String name, List<String> ownersUid, String currency) {
+    return firestore.collection("wallets").add({
+      "name": name,
+      "ownersUid": ownersUid,
+      "currency": currency,
+      "totalExpense": 0.0,
+      "totalIncome": 0.0
+    }).then((reference) => Reference(reference));
+  }
+
   Stream<List<Expense>> getExpenses(Reference<Wallet> wallet) {
     return wallet.reference
         .collection("expenses")
