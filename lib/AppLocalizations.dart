@@ -27,15 +27,15 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  String get settings => _locale(
-        en: "Setings",
-        pl: "Ustawienia",
-      );
-
   String get walletsEmpty => _locale(
         en: "There are no any wallets in your account",
         pl: "Na twoim koncie nie ma żadnych portfeli.",
       );
+
+  String get settings => _locale(
+    en: "Settings",
+    pl: "Ustawienia",
+  );
 
   String get language => _locale(
         en: "Language",
@@ -50,6 +50,16 @@ class AppLocalizations {
   String get version => _locale(
     en: "Application version",
     pl: "Wersja aplikacji",
+  );
+
+  String get settingsWallets => _locale(
+    en: "Wallets",
+    pl: "Portfele",
+  );
+
+  String get settingsWalletsHint => _locale(
+    en: "Manage your wallets",
+    pl: "Zarządzaj portflami",
   );
 
   String _locale({@required String en, @required String pl}) {

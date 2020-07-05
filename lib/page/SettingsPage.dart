@@ -21,8 +21,8 @@ class SettingsPage extends StatelessWidget {
         return ListView(
           children: [
             ListTile(
-              title: Text("Wallets"),
-              subtitle: Text("Manage your wallets"),
+              title: Text(AppLocalizations.of(context).settingsWallets),
+              subtitle: Text(AppLocalizations.of(context).settingsWalletsHint),
               onTap: () => onSelectedWallets(context),
             ),
             Divider(),
