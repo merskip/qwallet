@@ -3,13 +3,9 @@ import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SettingsPage extends StatelessWidget {
+import '../router.dart';
 
-  onSelectedWallets(BuildContext context) {
-    Scaffold.of(context).showSnackBar(SnackBar(
-      content: Text("TODO: Manage wallets")
-    ));
-  }
+class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +17,9 @@ class SettingsPage extends StatelessWidget {
         return ListView(
           children: [
             ListTile(
-              title: Text(AppLocalizations.of(context).settingsWallets),
-              subtitle: Text(AppLocalizations.of(context).settingsWalletsHint),
-              onTap: () => onSelectedWallets(context),
+              title: Text(AppLocalizations.of(context).wallets),
+              subtitle: Text(AppLocalizations.of(context).walletsHint),
+              onTap: () => router.navigateTo(context, "/settings/wallets"),
             ),
             Divider(),
             ListTile(

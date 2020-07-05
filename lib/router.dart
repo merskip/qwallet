@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/expense.dart';
+import 'package:qwallet/page/WalletsPage.dart';
 import 'package:qwallet/page/expense_page.dart';
 import 'package:qwallet/page/wallet_page.dart';
 
@@ -21,6 +22,7 @@ void defineRoutes(Router router) {
       return LandingPage();
     }),
   );
+
   router.define(
     "/settings",
     transitionType: TransitionType.nativeModal,
@@ -29,6 +31,16 @@ void defineRoutes(Router router) {
       return SettingsPage();
     }),
   );
+
+  router.define(
+    "/settings/wallets",
+    transitionType: TransitionType.nativeModal,
+    handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      return WalletsPage();
+    }),
+  );
+
   router.define(
     "/wallet/:walletId",
     transitionType: TransitionType.materialFullScreenDialog,

@@ -52,12 +52,12 @@ class AppLocalizations {
     pl: "Wersja aplikacji",
   );
 
-  String get settingsWallets => _locale(
+  String get wallets => _locale(
     en: "Wallets",
     pl: "Portfele",
   );
 
-  String get settingsWalletsHint => _locale(
+  String get walletsHint => _locale(
     en: "Manage your wallets",
     pl: "Zarządzaj portflami",
   );
