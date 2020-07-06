@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
+import 'package:qwallet/api/Api.dart';
+import 'package:qwallet/dialog/user_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../router.dart';
@@ -14,6 +16,8 @@ class SettingsPage extends StatelessWidget {
       ),
       body: Builder(
         builder: (context) => ListView(children: [
+          buildUserPanel(context),
+          Divider(),
           buildWallets(context),
           Divider(),
           buildLanguage(context),
@@ -21,6 +25,26 @@ class SettingsPage extends StatelessWidget {
           buildDeveloper()
         ]),
       ),
+    );
+  }
+
+  Widget buildUserPanel(BuildContext context) {
+    final user = Api.instance.currentUser;
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundImage:
+            user.photoUrl != null ? NetworkImage(user.photoUrl) : null,
+        backgroundColor: Colors.transparent,
+        maxRadius: 18,
+      ),
+      title: Text(user.displayName ?? user.email),
+      subtitle: user.displayName != null ? Text(user.email) : null,
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => UserDialog(user: user),
+        );
+      },
     );
   }
 
