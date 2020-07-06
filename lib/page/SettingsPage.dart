@@ -37,7 +37,7 @@ class SettingsPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         maxRadius: 18,
       ),
-      title: Text(user.displayName ?? user.email),
+      title: Text(user.displayName ?? user.email ?? "Anonymous"),
       subtitle: user.displayName != null ? Text(user.email) : null,
       onTap: () {
         showDialog(

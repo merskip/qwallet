@@ -69,12 +69,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/app-logo-black.svg
-    - assets/ic-add-wallet.svg
-    - assets/ic-google.svg
-    - assets/ic-wallet.svg
-    - assets/ic-add-expense.svg
-    - assets/ic-edit-income.svg
+    - assets/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

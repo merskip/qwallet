@@ -1,11 +1,10 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qwallet/widget/hand_cursor.dart';
+import 'package:qwallet/widget/vector_image.dart';
 
 class UserDialog extends StatelessWidget {
-
   final FirebaseUser user;
 
   const UserDialog({Key key, this.user}) : super(key: key);
@@ -29,16 +28,41 @@ class UserDialog extends StatelessWidget {
     return SimpleDialog(
       title: Text(user.displayName ?? user.email ?? "Anonymous"),
       children: [
-        HandCursor(
-          child: InkWell(
-            child: ListTile(
-              leading: Icon(Icons.exit_to_app),
-              title: Text("Logout"),
-            ),
-            onTap: () => _onSelectedSignOut(context),
-          ),
-        )
-      ]
+        buildProvider(),
+        Divider(),
+        buildLogout(context),
+      ],
     );
+  }
+
+  Widget buildProvider() {
+    return ListTile(
+      title: Text("Logged with"),
+      trailing: Wrap(children: [
+        if (_hasProviderId("firebase"))
+          VectorImage("assets/ic-firebase-color.svg", size: Size.square(24)),
+        if (_hasProviderId("google.com"))
+          VectorImage("assets/ic-google-color.svg", size: Size.square(24)),
+        if (_hasProviderId("password"))
+          Icon(Icons.alternate_email, size: 24,),
+      ], spacing: 4),
+      dense: true,
+    );
+  }
+
+  bool _hasProviderId(String providerId) {
+    return user.providerData.firstWhere(
+      (info) => info.providerId == providerId,
+      orElse: () => null,
+    ) != null;
+  }
+
+  Widget buildLogout(BuildContext context) {
+    return HandCursor(
+        child: ListTile(
+      leading: Icon(Icons.exit_to_app),
+      title: Text("Logout"),
+      onTap: () => _onSelectedSignOut(context),
+    ));
   }
 }
