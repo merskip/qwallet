@@ -66,7 +66,7 @@ class UserDialog extends StatelessWidget {
 
   bool _hasProviderId(String providerId) {
     final provider = user.providerData.firstWhere(
-        (info) => info.providerId == providerId,
+            (info) => info.providerId == providerId,
         orElse: () => null);
     return provider != null;
   }
@@ -82,9 +82,11 @@ class UserDialog extends StatelessWidget {
   Widget buildLogout(BuildContext context) {
     return HandCursor(
         child: ListTile(
-      leading: Icon(Icons.exit_to_app),
+          leading: Icon(Icons.exit_to_app),
       title: Text("Logout"),
-      onTap: () => _onSelectedSignOut(context),
+      onTap: () => user.isAnonymous
+          ? _onSelectedDeleteAccount(context)
+          : _onSelectedSignOut(context),
     ));
   }
 }
