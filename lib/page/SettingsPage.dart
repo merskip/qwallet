@@ -34,8 +34,13 @@ class SettingsPage extends StatelessWidget {
       leading: CircleAvatar(
         backgroundImage:
             user.photoUrl != null ? NetworkImage(user.photoUrl) : null,
-        backgroundColor: Colors.transparent,
-        maxRadius: 18,
+        backgroundColor: Colors.black12,
+        child: user.photoUrl == null
+            ? Icon(
+                user.email != null ? Icons.alternate_email : Icons.person,
+                color: Colors.black54,
+              )
+            : null,
       ),
       title: Text(user.displayName ?? user.email ?? "Anonymous"),
       subtitle: user.displayName != null ? Text(user.email) : null,

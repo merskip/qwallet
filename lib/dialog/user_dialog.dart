@@ -52,7 +52,7 @@ class UserDialog extends StatelessWidget {
   Widget buildProvider() {
     return ListTile(
       title: Text("Logged with"),
-      subtitle: user.email != null ? Text(user.email) : null,
+      subtitle: Text(user.email ?? user.uid),
       trailing: Wrap(children: [
         if (_hasProviderId("firebase"))
           VectorImage("assets/ic-firebase-color.svg", size: Size.square(24)),
