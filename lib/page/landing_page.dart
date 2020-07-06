@@ -45,12 +45,14 @@ class _LandingPageState extends State<LandingPage> {
 
   _setSignInState(FirebaseUser user) {
     debugPrint("Sign in state: uid=${user?.uid}");
-    setState(() {
-      FirebaseService.instance.currentUser = user;
-      Api.instance.currentUser = user;
-      isLogged = (user != null);
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        FirebaseService.instance.currentUser = user;
+        Api.instance.currentUser = user;
+        isLogged = (user != null);
+        isLoading = false;
+      });
+    }
   }
 
   @override
