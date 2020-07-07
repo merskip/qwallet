@@ -67,6 +67,11 @@ class AppLocalizations {
     pl: "Dodaj portfel",
   );
 
+  String get newWallet => _locale(
+    en: "New wallet",
+    pl: "Nowy portfel",
+  );
+
   String get walletName => _locale(
     en: "Wallet name",
     pl: "Nazwa portfela",

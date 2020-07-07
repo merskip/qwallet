@@ -8,6 +8,7 @@ import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/page/UserSelectionPage.dart';
 import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../Currency.dart';
 import 'UsersFormField.dart';
@@ -17,7 +18,7 @@ class AddWalletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).addWallet),
+        title: Text(AppLocalizations.of(context).newWallet),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -118,13 +119,17 @@ class _AddWalletFormState extends State<_AddWalletForm> {
     return Form(
       key: _formKey,
       child: Column(children: [
+        SizedBox(height: 8),
         buildNameField(context),
         SizedBox(height: 16),
         buildOwners(context),
-        SizedBox(height: 16),
+        SizedBox(height: 24),
         buildCurrency(context),
-        SizedBox(height: 16),
-        buildSubmitButton(context)
+        SizedBox(height: 24),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: buildSubmitButton(context),
+        )
       ]),
     );
   }
@@ -191,7 +196,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   Widget buildSubmitButton(BuildContext context) {
-    return RaisedButton(
+    return PrimaryButton(
       child: Text(AppLocalizations.of(context).walletSubmitAdd),
       onPressed: () => onSelectedSubmit(context),
     );
