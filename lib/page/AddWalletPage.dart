@@ -40,27 +40,33 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   final nameController = TextEditingController();
   final nameFocus = FocusNode();
 
+  final ownersController = UsersEditingController();
   List<User> allUsers;
-  List<User> owners;
 
   Currency currency;
 
   @override
   void initState() {
-    FirebaseService.instance.fetchUsers(includeAnonymous: false).then((users) {
-      final currentUser =
-          users.firstWhere((user) => user.uid == Api.instance.currentUser.uid);
-      setState(() {
-        allUsers = users;
-        owners = [currentUser];
-      });
-    });
+    _initOwners();
+    _initCurrency();
+    super.initState();
+  }
 
+  _initOwners() async {
+    final users = await FirebaseService.instance.fetchUsers();
+    final currentUser =
+        users.firstWhere((user) => user.uid == Api.instance.currentUser.uid);
+    setState(() {
+      allUsers = users;
+      ownersController.value = [currentUser];
+    });
+  }
+
+  _initCurrency() {
     // TODO: Doesn't work, always returns en_US
     final currentLocale = Intl.getCurrentLocale();
     currency = Currency.all
         .firstWhere((currency) => currency.locales.contains(currentLocale));
-    super.initState();
   }
 
   @override
@@ -75,11 +81,13 @@ class _AddWalletFormState extends State<_AddWalletForm> {
       builder: (context) => UserSelectionPage(
         title: AppLocalizations.of(context).walletOwners,
         allUsers: allUsers,
-        selectedUsers: owners,
+        selectedUsers: ownersController.value,
       ),
     );
     if (selectedUsers != null) {
-      setState(() => owners = selectedUsers);
+      setState(() {
+        ownersController.value = selectedUsers;
+      });
     }
   }
 
@@ -98,7 +106,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
     if (_formKey.currentState.validate()) {
       final walletRef = await Api.instance.addWallet(
         nameController.text,
-        owners.map((user) => user.uid).toList(),
+        ownersController.value.map((user) => user.uid).toList(),
         currency.symbol,
       );
       Navigator.of(context).pop(walletRef);
@@ -144,7 +152,8 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   Widget buildOwners(BuildContext context) {
     return InkWell(
       child: UsersFormField(
-        users: owners ?? [User.youPlaceholder(context)],
+        initialValue: [User.currentUser()],
+        controller: ownersController,
         decoration: InputDecoration(
           labelText: AppLocalizations.of(context).walletOwners,
           helperText: AppLocalizations.of(context).walletOwnersHint,

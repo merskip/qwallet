@@ -6,11 +6,10 @@ class UserSelectionPage extends StatefulWidget {
   final List<User> selectedUsers;
   final List<User> allUsers;
 
-  const UserSelectionPage(
-      {Key key,
-      @required this.title,
-      @required this.selectedUsers,
-      @required this.allUsers})
+  const UserSelectionPage({Key key,
+    @required this.title,
+    @required this.selectedUsers,
+    @required this.allUsers})
       : super(key: key);
 
   @override
@@ -66,22 +65,20 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
 
   Widget buildAvatar(BuildContext context, User user) {
     final isSelected = selectedUsers.contains(user);
-    if (isSelected)
+    if (isSelected) {
+      return CircleAvatar(child: Icon(Icons.check));
+    } else {
+      final avatarImage =
+          user.avatarUrl != null ? NetworkImage(user.avatarUrl) : null;
+      final avatarPlaceholderIcon = user.displayName != null
+          ? Icon(Icons.person)
+          : Icon(Icons.alternate_email);
+
       return CircleAvatar(
-        child: Icon(Icons.check),
-      );
-    else if (user.avatarUrl != null)
-      return CircleAvatar(
-        backgroundImage: NetworkImage(user.avatarUrl),
+        child: avatarImage == null ? avatarPlaceholderIcon : null,
+        backgroundImage: avatarImage,
         backgroundColor: Colors.black12,
       );
-    else
-      return CircleAvatar(
-        child: Icon(
-          user.displayName != null ? Icons.person : Icons.alternate_email,
-          color: Colors.black54,
-        ),
-        backgroundColor: Colors.black12,
-      );
+    }
   }
 }

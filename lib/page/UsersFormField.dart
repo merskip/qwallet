@@ -2,32 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/model/user.dart';
 
 class UsersFormField extends FormField<List<User>> {
-  final List<User> users;
+  final UsersEditingController controller;
   final InputDecoration decoration;
 
-  UsersFormField(
-      {@required this.users,
-      @required this.decoration,
-      FormFieldValidator<List<User>> validator})
-      : super(
-          builder: (FormFieldState<List<User>> state) {
-            return Builder(
-              builder: (context) => buildUsersInput(context, decoration, state),
-            );
-          },
-          initialValue: users,
+  UsersFormField({
+    @required List<User> initialValue,
+    @required this.controller,
+    @required this.decoration,
+    FormFieldValidator<List<User>> validator,
+  }) : super(
+          builder: (FormFieldState<List<User>> state) => Builder(
+            builder: (context) => buildUsersInput(context, decoration, state),
+          ),
+          initialValue: initialValue,
           validator: validator,
         );
 
-  static Widget buildUsersInput(
-      BuildContext context, InputDecoration decoration, FormFieldState<List<User>> state) {
+  @override
+  FormFieldState<List<User>> createState() => _UsersFormFieldState(controller);
+
+  static Widget buildUsersInput(BuildContext context,
+      InputDecoration decoration, FormFieldState<List<User>> state) {
     return InputDecorator(
       decoration: decoration.copyWith(
         contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         errorText: state.errorText,
       ),
       child: Wrap(
-        children: state.value.map((user) => buildUserChip(context, user)).toList(),
+        children:
+            state.value?.map((user) => buildUserChip(context, user))?.toList(),
         spacing: 4,
         runSpacing: 4,
       ),
@@ -52,5 +55,27 @@ class UsersFormField extends FormField<List<User>> {
       return Icon(Icons.person, color: Colors.black54);
     else
       return Icon(Icons.alternate_email, color: Colors.black54);
+  }
+}
+
+class UsersEditingController extends ValueNotifier<List<User>> {
+  UsersEditingController() : super(null);
+}
+
+class _UsersFormFieldState extends FormFieldState<List<User>> {
+  final UsersEditingController controller;
+
+  _UsersFormFieldState(this.controller);
+
+  @override
+  void initState() {
+    controller.addListener(() => this.didChange(controller.value));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 }
