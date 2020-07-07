@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:qwallet/Currency.dart';
+import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/Model.dart';
-
 
 class Wallet extends Model {
   final String name;
@@ -9,7 +10,8 @@ class Wallet extends Model {
   final double totalExpense;
   final double totalIncome;
 
-  double get balance => totalIncome - totalExpense;
+  Money get balance =>
+      Money(totalIncome - totalExpense, Currency.fromSymbol(currency));
 
   Wallet(DocumentSnapshot snapshot)
       : this.name = snapshot.data["name"],

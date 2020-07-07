@@ -3,7 +3,6 @@ import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/router.dart';
-import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
@@ -35,7 +34,7 @@ class WalletsPage extends StatelessWidget {
   Widget buildWallet(BuildContext context, Wallet wallet) {
     return ListTile(
       title: Text(wallet.name),
-      trailing: Text(formatMoney(wallet.balance, wallet.currency)),
+      trailing: Text(wallet.balance.formatted),
     );
   }
 

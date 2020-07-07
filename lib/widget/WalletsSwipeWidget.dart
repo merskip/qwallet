@@ -4,8 +4,6 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Wallet.dart';
 
-import '../utils.dart';
-
 class WalletsSwipeWidget extends StatefulWidget {
   final List<Wallet> wallets;
   final void Function(Wallet wallet) onSelectedWallet;
@@ -90,7 +88,7 @@ class _WalletSinglePage extends StatelessWidget {
           ),
           SizedBox(height: 4),
           Text(
-            formatAmount(wallet.balance),
+            wallet.balance.formatted,
             style: TextStyle(
                 color: Colors.white, fontSize: 24, fontWeight: FontWeight.w600),
           )

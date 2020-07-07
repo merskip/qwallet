@@ -22,6 +22,11 @@ class Currency {
 
   Currency(this.symbol, this.isoNumber, this.decimalPlaces, this.name, this.locales);
 
+  factory Currency.fromSymbol(String symbol) {
+    // TODO: Optimize by map
+    return all.firstWhere((currency) => currency.symbol == symbol);
+  }
+
   static final AFN = Currency("AFN", "971", 2, "Afghan afghani", ["ps"]);
   static final ALL = Currency("ALL", "8", 2, "Albanian lek", ["sq"]);
   static final AMD = Currency("AMD", "51", 2, "Armenian dram", ["hy"]);
