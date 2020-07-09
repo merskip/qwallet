@@ -26,11 +26,44 @@ class _WalletPageContent extends StatelessWidget {
 
   const _WalletPageContent({Key key, this.wallet}) : super(key: key);
 
+  onSelectedDelete(BuildContext context) async {
+    // TODO: Extract to a class/widget to make easy confirmation
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Remove wallet \"${wallet.name}\"?"),
+        content: Text(
+            "Are you sure remove the wallet \"${wallet.name}\"? This operation cannot be undone."),
+        actions: [
+          FlatButton(
+            child: Text("Cancel"),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          FlatButton(
+            child: Text("Confirm"),
+            color: Colors.red,
+            onPressed: () {
+              Api.instance.removeWallet(Reference(wallet.reference));
+              Navigator.of(context).popUntil(
+                  (route) => route.settings.name == "/settings/wallets");
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(wallet.name),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () => onSelectedDelete(context),
+          )
+        ],
       ),
       body: ListView(
         children: [

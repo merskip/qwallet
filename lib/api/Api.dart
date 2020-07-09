@@ -49,6 +49,13 @@ class Api {
     }).then((reference) => Reference(reference));
   }
 
+  Future<void> removeWallet(Reference<Wallet> wallet) {
+    return firestore
+        .collection("wallets")
+        .document(wallet.id)
+        .delete();
+  }
+
   Stream<List<Expense>> getExpenses(Reference<Wallet> wallet) {
     return wallet.reference
         .collection("expenses")
