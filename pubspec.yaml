@@ -51,6 +51,8 @@ dependencies:
   dots_indicator: ^1.0.0
   fl_chart: ^0.10.0
   package_info: ^0.4.1
+  shared_preferences: ^0.5.7+3
+  rxdart: ^0.24.1
 
 dev_dependencies:
   flutter_test:

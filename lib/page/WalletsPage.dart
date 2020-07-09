@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
+import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/router.dart';
@@ -39,13 +40,13 @@ class _WalletsPageState extends State<WalletsPage> {
         ],
       ),
       body: buildContent(context),
-      floatingActionButton: buildAddWalletButton(context),
+      floatingActionButton: isReordering ? null : buildAddWalletButton(context),
     );
   }
 
   Widget buildContent(BuildContext context) {
     return SimpleStreamWidget(
-      stream: Api.instance.getWallets(),
+      stream: LocalPreferences.orderedWallets(Api.instance.getWallets()),
       builder: (context, List<Wallet> wallets) {
         if (isReordering) {
           return buildReorderableWalletsList(context, wallets);
@@ -79,7 +80,11 @@ class _WalletsPageState extends State<WalletsPage> {
       header: Text("Drag and drop to change order of wallets",
           style: Theme.of(context).textTheme.caption),
       children: wallets.map((wallet) => buildReorderableWallet(context, wallet)).toList(),
-      onReorder: (oldIndex, newIndex) {},
+      onReorder: (oldIndex, newIndex) {
+        final wallet = wallets.removeAt(oldIndex);
+        wallets.insert(newIndex, wallet);
+        LocalPreferences.orderWallets(wallets);
+      },
     );
   }
 
@@ -91,7 +96,6 @@ class _WalletsPageState extends State<WalletsPage> {
       trailing: Icon(Icons.drag_handle),
     );
   }
-
 
   FloatingActionButton buildAddWalletButton(BuildContext context) {
     return FloatingActionButton(
