@@ -18,9 +18,13 @@ class Currency {
   final List<String> locales;
 
   /// The url to wikipedia about this currency, eg. "https://en.wikipedia.org/wiki/United_States_dollar"
-  String get wikiUrl => "https://wikipedia.org/wiki/${name.replaceAll(" ", "_")}";
+  String wikiUrl;
 
-  Currency(this.symbol, this.isoNumber, this.decimalPlaces, this.name, this.locales);
+  Currency(
+      this.symbol, this.isoNumber, this.decimalPlaces, this.name, this.locales,
+      {String wikiUrl})
+      : this.wikiUrl = wikiUrl ??
+            "https://wikipedia.org/wiki/${name.replaceAll(" ", "_")}";
 
   factory Currency.fromSymbol(String symbol) {
     // TODO: Optimize by map
@@ -74,6 +78,7 @@ class Currency {
   static final PHP = Currency("PHP", "608", 2, "Philippine peso", ["fil", "tl"]);
   static final PKR = Currency("PKR", "586", 2, "Pakistani rupee", ["ur"]);
   static final PLN = Currency("PLN", "985", 2, "Polish złoty", ["pl"]);
+  static final CBL = Currency("CBL", null, 2, "Cebuliony", ["pl"], wikiUrl: "https://www.miejski.pl/slowo-Cebuliony");
   static final RON = Currency("RON", "946", 2, "Romanian leu", ["ro"]);
   static final RSD = Currency("RSD", "941", 2, "Serbian dinar", ["sr", "sr_Latn"]);
   static final RUB = Currency("RUB", "643", 2, "Russian ruble", ["ru"]);
@@ -93,6 +98,6 @@ class Currency {
     AFN, ALL, AMD, AUD, AZN, BAM, BDT, BGN, BRL, BYN, CAD, CDF, CHF, CNY, CZK,
     DKK, DZD, EGP, ETB, EUR, GBP, GEL, HKD, HRK, HUF, IDR, ILS, INR, IRR, ISK,
     JPY, KGS, KHR, KRW, KZT, LAK, LKR, MKD, MMK, MNT, MXN, MYR, NOK, NPR, PHP,
-    PKR, PLN, RON, RSD, RUB, SEK, SGD, THB, TRY, TWD, TZS, UAH, USD, UZS, VND,
+    PKR, PLN, CBL, RON, RSD, RUB, SEK, SGD, THB, TRY, TWD, TZS, UAH, USD, UZS, VND,
   ];
 }

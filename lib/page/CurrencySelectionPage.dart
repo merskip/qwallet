@@ -93,28 +93,24 @@ class _CurrencyInfoPage extends StatelessWidget {
           title: Text(AppLocalizations.of(context).currencySymbol),
           subtitle: Text(currency.symbol),
         ),
-        Divider(),
         ListTile(
           title: Text(AppLocalizations.of(context).currencyName),
           subtitle: Text(currency.name),
         ),
-        Divider(),
         ListTile(
           title: Text(AppLocalizations.of(context).currencyDecimalPlaces),
           subtitle: Text(currency.decimalPlaces.toString()),
         ),
-        Divider(),
-        ListTile(
-          title: Text(AppLocalizations.of(context).currencyISO4217Number),
-          subtitle: Text(currency.isoNumber),
-        ),
-        Divider(),
+        if (currency.isoNumber != null)
+          ListTile(
+            title: Text(AppLocalizations.of(context).currencyISO4217Number),
+            subtitle: Text(currency.isoNumber),
+          ),
         ListTile(
           title: Text(AppLocalizations.of(context).currencyExamples),
           subtitle: Text(currencyExamples()),
           isThreeLine: true,
         ),
-        Divider(),
         ListTile(
           title: Text(AppLocalizations.of(context).currencyWiki),
           subtitle: Text(
