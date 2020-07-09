@@ -5,8 +5,9 @@ import 'hand_cursor.dart';
 class PrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Widget child;
+  final Color color;
 
-  const PrimaryButton({Key key, @required this.onPressed, this.child})
+  const PrimaryButton({Key key, @required this.onPressed, this.child, this.color})
       : super(key: key);
 
   @override
@@ -17,11 +18,11 @@ class PrimaryButton extends StatelessWidget {
       child: HandCursor(
         child: RaisedButton(
           child: DefaultTextStyle(
-            child: child,
+            child: child ?? Container(),
             style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500),
           ),
           onPressed: onPressed,
-          color: Theme.of(context).primaryColor,
+          color: color ?? Theme.of(context).primaryColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(60.0),
           ),
