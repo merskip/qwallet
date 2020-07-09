@@ -23,20 +23,14 @@ class _WalletsPageState extends State<WalletsPage> {
         actions: [
           if (!isReordering)
             IconButton(
-                icon: Icon(Icons.reorder),
-                onPressed: () {
-                  setState(() {
-                    isReordering = true;
-                  });
-                })
+              icon: Icon(Icons.reorder),
+              onPressed: () => setState(() => isReordering = true),
+            )
           else
             IconButton(
-                icon: Icon(Icons.done),
-                onPressed: () {
-                  setState(() {
-                    isReordering = false;
-                  });
-                })
+              icon: Icon(Icons.done),
+              onPressed: () => setState(() => isReordering = false),
+            )
         ],
       ),
       body: buildContent(context),
@@ -79,10 +73,15 @@ class _WalletsPageState extends State<WalletsPage> {
       padding: const EdgeInsets.all(8),
       header: Text("Drag and drop to change order of wallets",
           style: Theme.of(context).textTheme.caption),
-      children: wallets.map((wallet) => buildReorderableWallet(context, wallet)).toList(),
+      children: wallets
+          .map((wallet) => buildReorderableWallet(context, wallet))
+          .toList(),
       onReorder: (oldIndex, newIndex) {
         final wallet = wallets.removeAt(oldIndex);
-        wallets.insert(newIndex, wallet);
+        if (newIndex < wallets.length)
+          wallets.insert(newIndex, wallet);
+        else
+          wallets.add(wallet);
         LocalPreferences.orderWallets(wallets);
       },
     );
@@ -92,7 +91,6 @@ class _WalletsPageState extends State<WalletsPage> {
     return ListTile(
       key: Key(wallet.reference.documentID),
       title: Text(wallet.name),
-      subtitle: Text(wallet.balance.formatted),
       trailing: Icon(Icons.drag_handle),
     );
   }
