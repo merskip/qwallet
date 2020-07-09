@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:qwallet/firebase_service.dart';
+import 'package:qwallet/model/user.dart';
 
 import 'Expense.dart';
 import 'Income.dart';
@@ -59,5 +61,13 @@ class Api {
         .collection("incomes")
         .snapshots()
         .map((snapshot) => snapshot.documents.map((s) => Income(s)).toList());
+  }
+
+  Future<List<User>> getUsersByUids(List<String> usersUids) async {
+    // TODO: Optimize
+    final users = await FirebaseService.instance.fetchUsers();
+    return usersUids
+        .map((userUid) => users.firstWhere((user) => user.uid == userUid))
+        .toList();
   }
 }
