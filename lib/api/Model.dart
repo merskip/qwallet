@@ -12,5 +12,7 @@ abstract class Model extends Reference {
 
   final DocumentSnapshot snapshot;
 
+  String get id => snapshot.documentID;
+
   Model(this.snapshot) : super(snapshot.reference);
 }
