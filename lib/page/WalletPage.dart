@@ -3,6 +3,7 @@ import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/model/user.dart';
+import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../Currency.dart';
@@ -28,29 +29,16 @@ class _WalletPageContent extends StatelessWidget {
 
   onSelectedDelete(BuildContext context) async {
     // TODO: Extract to a class/widget to make easy confirmation
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Remove wallet \"${wallet.name}\"?"),
-        content: Text(
-            "Are you sure remove the wallet \"${wallet.name}\"? This operation cannot be undone."),
-        actions: [
-          FlatButton(
-            child: Text("Cancel"),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          FlatButton(
-            child: Text("Confirm"),
-            color: Colors.red,
-            onPressed: () {
-              Api.instance.removeWallet(Reference(wallet.reference));
-              Navigator.of(context).popUntil(
-                  (route) => route.settings.name == "/settings/wallets");
-            },
-          ),
-        ],
-      ),
-    );
+    ConfirmationDialog(
+      title: Text("Remove wallet \"${wallet.name}\"?"),
+      content: Text(
+          "Are you sure remove the wallet \"${wallet.name}\"? This operation cannot be undone."),
+      onConfirm: () {
+        Api.instance.removeWallet(Reference(wallet.reference));
+        Navigator.of(context)
+            .popUntil((route) => route.settings.name == "/settings/wallets");
+      },
+    ).show(context);
   }
 
   @override
