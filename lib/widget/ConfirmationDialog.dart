@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../AppLocalizations.dart';
+
 class ConfirmationDialog extends StatelessWidget {
   final Widget title;
   final Widget content;
+  final bool isDestructive;
 
   final VoidCallback onConfirm;
   final VoidCallback onCancel;
 
   const ConfirmationDialog(
-      {Key key, this.title, this.content, this.onConfirm, this.onCancel})
+      {Key key, this.title, this.content, this.isDestructive = false, this.onConfirm, this.onCancel})
       : super(key: key);
 
   show(BuildContext context) {
@@ -38,20 +41,14 @@ class ConfirmationDialog extends StatelessWidget {
   }
 
   Widget buildTitle(BuildContext context) {
-    return Text(
-      "Remove wallet \"Test wallet\"?",
-      style: Theme.of(context)
-          .textTheme
-          .subtitle1
-          .copyWith(fontWeight: FontWeight.w500),
-    );
+    final style = Theme.of(context).textTheme.subtitle1
+        .copyWith(fontWeight: FontWeight.w500);
+    return DefaultTextStyle(style: style, child: title);
   }
 
   Widget buildContent(BuildContext context) {
-    return Text(
-      "Are you sure remove the wallet \"Test Wallet\"? This operation cannot be undone.",
-      style: Theme.of(context).textTheme.bodyText2,
-    );
+    final style = Theme.of(context).textTheme.bodyText2;
+    return DefaultTextStyle(style: style, child: content);
   }
 
   Widget buildActions(BuildContext context) {
@@ -59,7 +56,7 @@ class ConfirmationDialog extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         FlatButton(
-          child: Text("Cancel"),
+          child: Text(AppLocalizations.of(context).confirmationCancel),
           onPressed: () {
             if (onCancel != null)
               onCancel();
@@ -68,8 +65,8 @@ class ConfirmationDialog extends StatelessWidget {
           },
         ),
         FlatButton(
-          textColor: Colors.red,
-          child: Text("Confirm"),
+          textColor: isDestructive ? Colors.red : Theme.of(context).primaryColor,
+          child: Text(AppLocalizations.of(context).confirmationConfirm),
           onPressed: () {
             if (onConfirm != null) onConfirm();
           },

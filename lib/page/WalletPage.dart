@@ -6,6 +6,7 @@ import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
+import '../AppLocalizations.dart';
 import '../Currency.dart';
 
 class WalletPage extends StatelessWidget {
@@ -28,11 +29,12 @@ class _WalletPageContent extends StatelessWidget {
   const _WalletPageContent({Key key, this.wallet}) : super(key: key);
 
   onSelectedDelete(BuildContext context) async {
-    // TODO: Extract to a class/widget to make easy confirmation
     ConfirmationDialog(
-      title: Text("Remove wallet \"${wallet.name}\"?"),
-      content: Text(
-          "Are you sure remove the wallet \"${wallet.name}\"? This operation cannot be undone."),
+      title: Text(
+          AppLocalizations.of(context).walletRemoveConfirmation(wallet.name)),
+      content: Text(AppLocalizations.of(context)
+          .walletRemoveConfirmationContent(wallet.name)),
+      isDestructive: true,
       onConfirm: () {
         Api.instance.removeWallet(Reference(wallet.reference));
         Navigator.of(context)
@@ -50,6 +52,7 @@ class _WalletPageContent extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () => onSelectedDelete(context),
+            tooltip: AppLocalizations.of(context).walletRemove,
           )
         ],
       ),
@@ -66,14 +69,14 @@ class _WalletPageContent extends StatelessWidget {
 
   Widget buildName(BuildContext context) {
     return _DetailsItem(
-      title: Text("Name"),
+      title: Text(AppLocalizations.of(context).walletName),
       value: Text(wallet.name),
     );
   }
 
   Widget buildOwners(BuildContext context) {
     return _DetailsItem(
-      title: Text("Owners"),
+      title: Text(AppLocalizations.of(context).walletOwners),
       value: FutureBuilder(
         future: Api.instance.getUsersByUids(wallet.ownersUid),
         builder: (context, AsyncSnapshot<List<User>> snapshot) {
@@ -88,14 +91,14 @@ class _WalletPageContent extends StatelessWidget {
   Widget buildCurrency(BuildContext context) {
     final currency = Currency.fromSymbol(wallet.currency);
     return _DetailsItem(
-      title: Text("Currency"),
+      title: Text(AppLocalizations.of(context).walletCurrency),
       value: Text("${currency.symbol} - ${currency.name}"),
     );
   }
 
   Widget buildBalance(BuildContext context) {
     return _DetailsItem(
-      title: Text("Balance"),
+      title: Text(AppLocalizations.of(context).walletBalance),
       value: Text(wallet.balance.formatted),
     );
   }

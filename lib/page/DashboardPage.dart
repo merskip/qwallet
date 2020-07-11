@@ -29,30 +29,27 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget _buildWithWallets(BuildContext context, List<Wallet> wallets) {
     return Scaffold(
-      body: wallets.isNotEmpty
-          ? CustomScrollView(slivers: [_appBarWithWallets(context, wallets)])
-          : _emptyWalletsWidget(context),
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            tooltip: AppLocalizations.of(context).settings,
-            onPressed: () => router.navigateTo(context, "/settings")
-          )
-        ],
-      ),
+      body: CustomScrollView(slivers: [
+        _appBarWithWallets(context, wallets),
+      ]),
     );
   }
 
   Widget _appBarWithWallets(BuildContext context, List<Wallet> wallets) {
     return SliverAppBar(
       expandedHeight: 150.0,
-      flexibleSpace: WalletsSwipeWidget(
+      flexibleSpace: wallets.isNotEmpty ? WalletsSwipeWidget(
         wallets: wallets,
         onSelectedWallet: (wallet) {
           _selectedWallet.add(wallet);
         },
-      ),
+      ) : null,
+      actions: [
+        IconButton(
+            icon: Icon(Icons.settings),
+            tooltip: AppLocalizations.of(context).settings,
+            onPressed: () => router.navigateTo(context, "/settings"))
+      ],
     );
   }
 

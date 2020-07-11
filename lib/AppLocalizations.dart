@@ -137,6 +137,60 @@ extension WalletsLocalizations on AppLocalizations {
   );
 }
 
+extension WalletLocalizations on AppLocalizations {
+  
+  String get walletName => _locale(
+        en: "Name",
+        pl: "Nazwa",
+      );
+
+  String get walletOwners => _locale(
+        en: "Owner(s)",
+        pl: "Właściciel(e)",
+      );
+
+  String get walletCurrency => _locale(
+        en: "Currency",
+        pl: "Waluta",
+      );
+  
+  String get walletBalance => _locale(
+      en: "Balance",
+      pl: "Saldo",
+    );
+
+  String get walletRemove => _locale(
+        en: "Remove wallet",
+        pl: "Usuń portfel",
+      );
+
+  String Function(String) get walletRemoveConfirmation =>
+      (String walletName) => _locale(
+            en: "Remove wallet \"$walletName\"?",
+            pl: "Czy usunąć portfel \"$walletName\"?",
+          );
+
+  String Function(String) get walletRemoveConfirmationContent =>
+      (String walletName) => _locale(
+            en: "Are you sure remove the wallet \"$walletName\"? This operation cannot be undone.",
+            pl: "Czy jesteś pewny, że chcesz usunąć portfel \"$walletName\"? Tej operacji nie można cofnąć.",
+          );
+}
+
+extension ConfirmationLocalizations on AppLocalizations {
+
+  String get confirmationCancel => _locale(
+      en: "Cancel",
+      pl: "Anuluj",
+    );
+
+  String get confirmationConfirm => _locale(
+    en: "Confirm",
+    pl: "Potwierdź",
+  );
+}
+
+
 extension AddWalletLocalizations on AppLocalizations {
 
   String get addWalletNew => _locale(
