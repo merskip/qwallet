@@ -18,7 +18,7 @@ class Income extends Transaction {
 
   Income(DocumentSnapshot snapshot)
       : title = snapshot.data['title'],
-        amount = snapshot.data['amount'],
+        amount = snapshot.data['amount'].toDouble(),
         date = snapshot.data['date'],
         super(snapshot);
 }
@@ -30,7 +30,7 @@ class Expense extends Transaction {
 
   Expense(DocumentSnapshot snapshot)
       : title = snapshot.data["title"],
-        amount = snapshot.data["amount"],
+        amount = snapshot.data["amount"].toDouble(),
         date = snapshot.data["date"],
         super(snapshot);
 }

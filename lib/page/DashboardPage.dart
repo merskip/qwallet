@@ -1,8 +1,10 @@
-import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
+import 'package:qwallet/Currency.dart';
 import 'package:qwallet/LocalPreferences.dart';
+import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
@@ -11,6 +13,8 @@ import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
+import 'package:qwallet/widget/vector_image.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adapter.dart';
 
 import '../router.dart';
@@ -21,7 +25,23 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  final StreamController<Wallet> _selectedWallet = StreamController();
+  final _selectedWallet = BehaviorSubject<Wallet>();
+
+  onSelectedAddExpense() async {
+    final wallet = _selectedWallet.value;
+    Api.instance.addExpense(Reference(wallet.reference),
+      title: "Expense no. ${Random().nextInt(1000)}",
+      amount: (Random().nextDouble() * 1000).roundToDouble(),
+    );
+  }
+
+  onSelectedAddIncome() async {
+    final wallet = _selectedWallet.value;
+    Api.instance.addIncome(Reference(wallet.reference),
+      title: "Income no. ${Random().nextInt(1000)}",
+      amount: (Random().nextDouble() * 1000).roundToDouble(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +83,15 @@ class _DashboardPageState extends State<DashboardPage> {
           },
         )
       ]),
+      floatingActionButton: FloatingActionButton(
+        child: VectorImage(
+          "assets/ic-add-income.svg",
+          color: Colors.white,
+          size: Size.square(32),
+        ),
+        tooltip: "#Add expense or income",
+        onPressed: () => Random().nextBool() ? onSelectedAddExpense() : onSelectedAddIncome(),
+      ),
     );
   }
 
@@ -137,22 +166,30 @@ class _TransactionsList extends StatelessWidget {
     return SliverFillRemainingBoxAdapter(
         child: EmptyStateWidget(
           icon: "assets/ic-wallet.svg",
-          text: "#No transactions",
+          text: "#No transactions in \"${wallet.name}\"",
         )
     );
   }
 
   Widget buildTransactions(
       BuildContext context, List<Transaction> transactions) {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          return ListTile(
-            title: Text(transactions[index].title),
-            trailing: Text(transactions[index].amount.toString()),
-          );
-        },
-        childCount: transactions.length,
+    return SliverPadding(
+      padding: EdgeInsets.only(bottom: 88),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final transaction = transactions[index];
+            final color = transaction is Income ? Colors.green : Colors.red;
+            final amountText = Money(transaction.amount, Currency.fromSymbol(wallet.currency)).formatted;
+            return ListTile(
+              title: Text(transaction.title),
+              subtitle: Text(transaction.date.toDate().toString()),
+              trailing: Text(amountText, style: TextStyle(color: color)),
+              onTap: () {},
+            );
+          },
+          childCount: transactions.length,
+        ),
       ),
     );
   }

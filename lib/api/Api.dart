@@ -49,18 +49,16 @@ class Api {
   }
 
   Future<void> removeWallet(Reference<Wallet> wallet) {
-    return firestore
-        .collection("wallets")
-        .document(wallet.id)
-        .delete();
+    return firestore.collection("wallets").document(wallet.id).delete();
   }
 
   Stream<List<Transaction>> getTransactions(Reference<Wallet> wallet) {
     final expenses = getExpenses(wallet);
     final incomes = getIncomes(wallet);
 
-    return MergeStream([expenses, incomes]).map((transactions) =>
-        transactions..sort((lhs, rhs) => lhs.date.compareTo(rhs.date)));
+    return CombineLatestStream([expenses, incomes], (List<List<Transaction>> streams) {
+      return streams.expand((e) => e).toList()..sort((lhs, rhs) => rhs.date.compareTo(lhs.date));
+    });
   }
 
   Stream<List<Expense>> getExpenses(Reference<Wallet> wallet) {
@@ -70,11 +68,29 @@ class Api {
         .map((snapshot) => snapshot.documents.map((s) => Expense(s)).toList());
   }
 
+  Future<Reference<Expense>> addExpense(Reference<Wallet> wallet,
+      {String title, double amount, Could.Timestamp date}) {
+    return wallet.reference.collection("expenses").add({
+      "title": title,
+      "amount": amount,
+      "date": date ?? Could.Timestamp.now(),
+    }).then((reference) => Reference(reference));
+  }
+
   Stream<List<Income>> getIncomes(Reference<Wallet> wallet) {
     return wallet.reference
         .collection("incomes")
         .snapshots()
         .map((snapshot) => snapshot.documents.map((s) => Income(s)).toList());
+  }
+
+  Future<Reference<Income>> addIncome(Reference<Wallet> wallet,
+      {String title, double amount, Could.Timestamp date}) {
+    return wallet.reference.collection("incomes").add({
+      "title": title,
+      "amount": amount,
+      "date": date ?? Could.Timestamp.now(),
+    }).then((reference) => Reference(reference));
   }
 
   Future<List<User>> getUsersByUids(List<String> usersUids) async {
