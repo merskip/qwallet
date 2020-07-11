@@ -40,7 +40,7 @@ class UsersFormField extends FormField<List<User>> {
   static Widget buildUserChip(BuildContext context, User user) {
     return Chip(
       avatar: buildAvatar(context, user),
-      label: Text(user.commonName),
+      label: Text(user.getCommonName(context)),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }

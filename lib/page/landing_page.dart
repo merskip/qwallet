@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Api.dart';
+import 'package:qwallet/model/user.dart';
 
 import '../firebase_service.dart';
 import 'DashboardPage.dart';
@@ -48,7 +49,7 @@ class _LandingPageState extends State<LandingPage> {
     if (mounted) {
       setState(() {
         FirebaseService.instance.currentUser = user;
-        Api.instance.currentUser = user;
+        Api.instance.currentUser = User.fromFirebase(user);
         isLogged = (user != null);
         isLoading = false;
       });

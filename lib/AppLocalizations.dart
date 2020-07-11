@@ -107,7 +107,6 @@ class AppLocalizations {
     pl: "Waluta",
   );
 
-
   String get walletCurrencyErrorIsEmpty => _locale(
     en: "Enter some wallet name",
     pl: "Wprowadź nazwę portfela",
@@ -158,6 +157,8 @@ class AppLocalizations {
     en: "Add",
     pl: "Dodaj",
   );
+
+  String get userAnonymous => _locale(en: "Anonymous", pl: "Anonimowy");
 
   String _locale({@required String en, @required String pl}) {
     switch (locale.languageCode) {

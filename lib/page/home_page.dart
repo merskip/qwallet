@@ -7,7 +7,6 @@ import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
 import '../firebase_service.dart';
-import '../widget/user_panel.dart';
 import '../widget/wallet_list.dart';
 
 class HomePage extends StatelessWidget {
@@ -59,7 +58,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: UserPanel()),
+      appBar: AppBar(),
       body: WalletList(),
       floatingActionButton: _floatingActionsButtons(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

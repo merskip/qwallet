@@ -33,17 +33,17 @@ class SettingsPage extends StatelessWidget {
     return ListTile(
       leading: CircleAvatar(
         backgroundImage:
-            user.photoUrl != null ? NetworkImage(user.photoUrl) : null,
+            user.avatarUrl != null ? NetworkImage(user.avatarUrl) : null,
         backgroundColor: Colors.black12,
-        child: user.photoUrl == null
+        child: user.avatarUrl == null
             ? Icon(
                 user.email != null ? Icons.alternate_email : Icons.person,
                 color: Colors.black54,
               )
             : null,
       ),
-      title: Text(user.displayName ?? user.email ?? "Anonymous"),
-      subtitle: user.displayName != null ? Text(user.email) : null,
+      title: Text(user.getCommonName(context)),
+      subtitle: Text(user.getSubtitle()),
       onTap: () {
         showDialog(
           context: context,

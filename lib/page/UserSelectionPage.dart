@@ -57,8 +57,8 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
   Widget buildUser(BuildContext context, User user) {
     return ListTile(
       leading: buildAvatar(context, user),
-      title: Text(user.commonName),
-      subtitle: user.displayName != null ? Text(user.email) : null,
+      title: Text(user.getCommonName(context)),
+      subtitle: Text(user.getSubtitle()),
       onTap: () => toggleSelectUser(user),
     );
   }

@@ -77,6 +77,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   onSelectedOwners(BuildContext context) async {
+    if (allUsers == null) return;
     final List<User> selectedUsers = await pushPage(
       context,
       builder: (context) => UserSelectionPage(

@@ -1,19 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:qwallet/api/Api.dart';
+import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
 class UserDialog extends StatelessWidget {
-  final FirebaseUser user;
+  final User user;
 
   const UserDialog({Key key, this.user}) : super(key: key);
 
   _onSelectedDeleteAccount(BuildContext context) async {
     try {
       debugPrint("Deleting account...");
-      await Api.instance.currentUser.delete();
+      await user.firebaseUser.delete();
 
       Navigator.of(context).popUntil(ModalRoute.withName('/'));
     } catch (e) {
@@ -38,7 +38,7 @@ class UserDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      title: Text(user.displayName ?? user.email ?? "Anonymous"),
+      title: Text(user.getCommonName(context)),
       children: [
         buildProvider(),
         Divider(),
@@ -65,7 +65,7 @@ class UserDialog extends StatelessWidget {
   }
 
   bool _hasProviderId(String providerId) {
-    final provider = user.providerData.firstWhere(
+    final provider = user.firebaseUser.providerData.firstWhere(
             (info) => info.providerId == providerId,
         orElse: () => null);
     return provider != null;

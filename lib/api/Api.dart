@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 
@@ -14,7 +13,7 @@ class Api {
   static final Api instance = Api._privateConstructor();
 
   Firestore firestore = Firestore.instance;
-  FirebaseUser currentUser;
+  User currentUser;
 
   Api._privateConstructor();
 

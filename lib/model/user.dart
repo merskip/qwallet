@@ -1,3 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/Api.dart';
 
 class User {
@@ -7,9 +10,16 @@ class User {
   final String email;
   final String avatarUrl;
 
-  String get commonName => displayName ?? email;
+  final FirebaseUser firebaseUser;
 
-  User({this.uid, this.isAnonymous, this.displayName, this.email, this.avatarUrl});
+  User({
+    this.uid,
+    this.isAnonymous,
+    this.displayName,
+    this.email,
+    this.avatarUrl,
+    this.firebaseUser
+  });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -18,16 +28,28 @@ class User {
       displayName: json['displayName'] as String,
       email: json['email'] as String,
       avatarUrl: json['avatarUrl'] as String,
+      firebaseUser: null
     );
   }
 
-  factory User.currentUser() {
-    final currentUser = Api.instance.currentUser;
+  factory User.currentUser() => Api.instance.currentUser;
+
+  factory User.fromFirebase(FirebaseUser firebaseUser) {
     return User(
-      uid: currentUser.uid,
-      displayName: currentUser.displayName,
-      email: currentUser.email,
-      avatarUrl: currentUser.photoUrl,
+        uid: firebaseUser.uid,
+        isAnonymous: firebaseUser.isAnonymous,
+        displayName: firebaseUser.displayName,
+        email: firebaseUser.email,
+        avatarUrl: firebaseUser.photoUrl,
+        firebaseUser: firebaseUser,
     );
+  }
+
+  String getCommonName(BuildContext context) {
+    return displayName ?? email ?? AppLocalizations.of(context).userAnonymous;
+  }
+
+  String getSubtitle() {
+    return displayName != null ? email : null;
   }
 }
