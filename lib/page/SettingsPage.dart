@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/Api.dart';
-import 'package:qwallet/dialog/user_dialog.dart';
+import 'package:qwallet/dialog/UserDialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../router.dart';

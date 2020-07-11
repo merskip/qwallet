@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:qwallet/widget/vector_image.dart';
@@ -25,8 +26,7 @@ class UserDialog extends StatelessWidget {
     try {
       debugPrint("Logout...");
       final googleSignIn = GoogleSignIn();
-      if (await googleSignIn.isSignedIn())
-        googleSignIn.signOut();
+      if (await googleSignIn.isSignedIn()) googleSignIn.signOut();
       await FirebaseAuth.instance.signOut();
 
       Navigator.of(context).popUntil(ModalRoute.withName('/'));
@@ -40,18 +40,17 @@ class UserDialog extends StatelessWidget {
     return SimpleDialog(
       title: Text(user.getCommonName(context)),
       children: [
-        buildProvider(),
+        buildProvider(context),
         Divider(),
-        if (!user.isAnonymous)
-          buildDeleteCurrentUser(context),
+        if (!user.isAnonymous) buildDeleteCurrentUser(context),
         buildLogout(context),
       ],
     );
   }
 
-  Widget buildProvider() {
+  Widget buildProvider(BuildContext context) {
     return ListTile(
-      title: Text("Logged with"),
+      title: Text(AppLocalizations.of(context).userLoggedHint),
       subtitle: Text(user.email ?? user.uid),
       trailing: Wrap(children: [
         if (_hasProviderId("firebase"))
@@ -66,7 +65,7 @@ class UserDialog extends StatelessWidget {
 
   bool _hasProviderId(String providerId) {
     final provider = user.firebaseUser.providerData.firstWhere(
-            (info) => info.providerId == providerId,
+        (info) => info.providerId == providerId,
         orElse: () => null);
     return provider != null;
   }
@@ -82,8 +81,8 @@ class UserDialog extends StatelessWidget {
   Widget buildLogout(BuildContext context) {
     return HandCursor(
         child: ListTile(
-          leading: Icon(Icons.exit_to_app),
-      title: Text("Logout"),
+      leading: Icon(Icons.exit_to_app),
+      title: Text(AppLocalizations.of(context).userLogout),
       onTap: () => user.isAnonymous
           ? _onSelectedDeleteAccount(context)
           : _onSelectedSignOut(context),
@@ -117,13 +116,15 @@ class _DeleteUserTileState extends State<_DeleteUserTile> {
       leading: Icon(!isDuringConfirm ? Icons.delete_outline : Icons.delete),
       title: Text(
         !isDuringConfirm
-            ? "Remove account"
-            : "Are sure you want to remove account?",
+            ? AppLocalizations.of(context).userRemoveAccount
+            : AppLocalizations.of(context).userRemoveAccountConfirmation,
         style: TextStyle(
             color: Colors.red,
             fontWeight: isDuringConfirm ? FontWeight.bold : null),
       ),
-      subtitle: isDuringConfirm ? Text("Tap here again to confirm") : null,
+      subtitle: isDuringConfirm
+          ? Text(AppLocalizations.of(context).userRemoveAccountConfirmationHint)
+          : null,
       onTap: () => onSelected(),
     );
   }

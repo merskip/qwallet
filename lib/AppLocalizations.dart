@@ -19,7 +19,8 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
 class AppLocalizations {
   AppLocalizations(this.locale);
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = const AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      const AppLocalizationsDelegate();
 
   final Locale locale;
 
@@ -28,14 +29,14 @@ class AppLocalizations {
   }
 
   String get walletsEmpty => _locale(
-        en: "There are no any wallets in your account",
-        pl: "Na twoim koncie nie ma żadnych portfeli.",
+        en: "There are no wallets in your account",
+        pl: "Na twoim koncie nie ma żadnych portfeli",
       );
 
   String get settings => _locale(
-    en: "Settings",
-    pl: "Ustawienia",
-  );
+        en: "Settings",
+        pl: "Ustawienia",
+      );
 
   String get language => _locale(
         en: "Language",
@@ -48,69 +49,74 @@ class AppLocalizations {
       );
 
   String get version => _locale(
-    en: "Application version",
-    pl: "Wersja aplikacji",
-  );
+        en: "Application version",
+        pl: "Wersja aplikacji",
+      );
 
   String get wallets => _locale(
-    en: "Wallets",
-    pl: "Portfele",
-  );
+        en: "Wallets",
+        pl: "Portfele",
+      );
 
   String get walletsHint => _locale(
-    en: "Manage your wallets",
-    pl: "Zarządzaj portflami",
-  );
+        en: "Manage your wallets",
+        pl: "Zarządzaj portflami",
+      );
 
   String get addWallet => _locale(
-    en: "Add wallet",
-    pl: "Dodaj portfel",
-  );
+        en: "Add wallet",
+        pl: "Dodaj portfel",
+      );
 
   String get newWallet => _locale(
-    en: "New wallet",
-    pl: "Nowy portfel",
-  );
+        en: "New wallet",
+        pl: "Nowy portfel",
+      );
 
   String get walletName => _locale(
-    en: "Wallet name",
-    pl: "Nazwa portfela",
-  );
+        en: "Wallet name",
+        pl: "Nazwa portfela",
+      );
 
   String get walletOwners => _locale(
-    en: "Owners",
-    pl: "Właściciele",
-  );
+        en: "Owners",
+        pl: "Właściciele",
+      );
 
   String get walletOwnersHint => _locale(
-    en: "Wallet's owners can fully manage of that wallet like adding expenses and incomes. They can also add other owners.",
-    pl: "Właściciele portfela mogą w pełni zarządzać tym portfelem, na przykład dodając wydatki i dochody. Mogą także dodawać innych właścicieli.",
-  );
+        en: "Wallet's owners can fully manage of that wallet like adding expenses and incomes. They can also add other owners.",
+        pl: "Właściciele portfela mogą w pełni zarządzać tym portfelem, na przykład dodając wydatki i dochody. Mogą także dodawać innych właścicieli.",
+      );
 
   String get walletOwnersErrorIsEmpty => _locale(
-    en: "Assign at least one person to this wallet",
-    pl: "Przypisz co najmniej jedną osobę do tego portfela",
-  );
+        en: "Assign at least one person to this wallet",
+        pl: "Przypisz co najmniej jedną osobę do tego portfela",
+      );
 
   String get walletOwnersErrorNoYou => _locale(
-    en: "You must be the owner of a new wallet",
-    pl: "Musisz być właścicielem nowego portfela",
+        en: "You must be the owner of a new wallet",
+        pl: "Musisz być właścicielem nowego portfela",
+      );
+
+  String get walletChangeOrder => _locale(
+    en: "Change wallets order",
+    pl: "Zmień kolejność portfeli",
   );
 
-  String get ownerYou => _locale(
-    en: "You",
-    pl: "Ty",
-  );
+  String get walletChangeOrderHint => _locale(
+      en: "Drag and drop to change the order of wallets",
+      pl: "Przeciągnij i upuść, aby zmienić kolejność portfeli",
+    );
 
   String get walletCurrency => _locale(
-    en: "Currency",
-    pl: "Waluta",
-  );
+        en: "Currency",
+        pl: "Waluta",
+      );
 
   String get walletCurrencyErrorIsEmpty => _locale(
-    en: "Enter some wallet name",
-    pl: "Wprowadź nazwę portfela",
-  );
+        en: "Enter some wallet name",
+        pl: "Wprowadź nazwę portfela",
+      );
 
   String Function(String) get walletCurrencyWithExample =>
       (String example) => _locale(
@@ -119,46 +125,74 @@ class AppLocalizations {
           );
 
   String get currencySelection => _locale(
-    en: "Currency selection",
-    pl: "Wybór waluty",
-  );
+        en: "Currency selection",
+        pl: "Wybór waluty",
+      );
 
   String get currencySymbol => _locale(
-    en: "Currency symbol",
-    pl: "Symbol waluty",
-  );
+        en: "Currency symbol",
+        pl: "Symbol waluty",
+      );
 
   String get currencyName => _locale(
-    en: "Currency Name",
-    pl: "Nazwa waluty",
-  );
+        en: "Currency Name",
+        pl: "Nazwa waluty",
+      );
 
   String get currencyDecimalPlaces => _locale(
-    en: "Decimal places",
-    pl: "Miejsc dziesiętnych",
-  );
+        en: "Decimal places",
+        pl: "Miejsc dziesiętnych",
+      );
 
   String get currencyISO4217Number => _locale(
-    en: "ISO 4217 number",
-    pl: "Numer ISO 4217",
-  );
+        en: "ISO 4217 number",
+        pl: "Numer ISO 4217",
+      );
 
   String get currencyWiki => _locale(
-    en: "Wikipedia",
-    pl: "Wikipedia",
-  );
+        en: "Wikipedia",
+        pl: "Wikipedia",
+      );
 
   String get currencyExamples => _locale(
-    en: "Examples",
-    pl: "Przykłady",
-  );
+        en: "Examples",
+        pl: "Przykłady",
+      );
 
   String get walletSubmitAdd => _locale(
-    en: "Add",
-    pl: "Dodaj",
+        en: "Add",
+        pl: "Dodaj",
+      );
+
+  String get userLoggedHint => _locale(
+      en: "Logged with",
+      pl: "Zalogowano przez",
+    );
+
+  String get userLogout => _locale(
+        en: "Logout",
+        pl: "Wyloguj",
+      );
+
+  String get userRemoveAccount => _locale(
+      en: "Remove account",
+      pl: "Usuń konto",
+    );
+
+  String get userRemoveAccountConfirmation => _locale(
+      en: "Are sure you want to remove account?",
+      pl: "Czy na pewno chcesz usunąć konto?",
+    );
+
+  String get userRemoveAccountConfirmationHint => _locale(
+    en: "Tap here again to confirm",
+    pl: "Naciśnij ponownie tutaj, aby potwiedzić",
   );
 
-  String get userAnonymous => _locale(en: "Anonymous", pl: "Anonimowy");
+  String get userAnonymous => _locale(
+        en: "Anonymous",
+        pl: "Anonimowy",
+      );
 
   String _locale({@required String en, @required String pl}) {
     switch (locale.languageCode) {

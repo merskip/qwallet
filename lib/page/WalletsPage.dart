@@ -25,6 +25,7 @@ class _WalletsPageState extends State<WalletsPage> {
             IconButton(
               icon: Icon(Icons.reorder),
               onPressed: () => setState(() => isReordering = true),
+              tooltip: AppLocalizations.of(context).walletChangeOrder,
             )
           else
             IconButton(
@@ -73,8 +74,10 @@ class _WalletsPageState extends State<WalletsPage> {
       BuildContext context, List<Wallet> wallets) {
     return ReorderableListView(
       padding: const EdgeInsets.all(8),
-      header: Text("Drag and drop to change order of wallets",
-          style: Theme.of(context).textTheme.caption),
+      header: Text(
+        AppLocalizations.of(context).walletChangeOrderHint,
+        style: Theme.of(context).textTheme.caption,
+      ),
       children: wallets
           .map((wallet) => buildReorderableWallet(context, wallet))
           .toList(),
