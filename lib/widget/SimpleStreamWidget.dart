@@ -17,10 +17,10 @@ class SimpleStreamWidget<T> extends StatelessWidget {
       builder: (context, AsyncSnapshot<T> snapshot) {
         if (snapshot.hasError)
           return _error(snapshot);
-        else if (snapshot.connectionState == ConnectionState.waiting)
-          return _loading(snapshot);
-        else
+        else if (snapshot.hasData)
           return builder(context, snapshot.data);
+        else
+          return _loading(snapshot);
       },
     );
   }

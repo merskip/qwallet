@@ -42,10 +42,20 @@ class AppLocalizations {
 
 extension DashbaordLocalizations on AppLocalizations {
 
+  String get dashboardTitle => _locale(
+      en: "QWallet",
+      pl: "QWallet",
+    );
+
   String get dashboardWalletsEmpty => _locale(
     en: "There are no wallets in your account",
     pl: "Na twoim koncie nie ma żadnych portfeli",
   );
+
+  String get dashboardAddWalletButton => _locale(
+      en: "Add a new wallet",
+      pl: "Dodaj nowy protfel",
+    );
 }
 
 extension SettingsLocalizations on AppLocalizations {

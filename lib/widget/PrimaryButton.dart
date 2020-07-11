@@ -6,20 +6,24 @@ class PrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Widget child;
   final Color color;
+  final bool shrinkWrap;
 
-  const PrimaryButton({Key key, @required this.onPressed, this.child, this.color})
+  const PrimaryButton({Key key, @required this.onPressed, this.child, this.color, this.shrinkWrap = false})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 44,
-      width: double.infinity,
+      width: shrinkWrap ? null : double.infinity,
       child: HandCursor(
         child: RaisedButton(
-          child: DefaultTextStyle(
-            child: child ?? Container(),
-            style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: DefaultTextStyle(
+              child: child ?? Container(),
+              style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500),
+            ),
           ),
           onPressed: onPressed,
           color: color ?? Theme.of(context).primaryColor,

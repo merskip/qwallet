@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
@@ -23,40 +24,75 @@ class _DashboardPageState extends State<DashboardPage> {
     return SimpleStreamWidget(
       stream: Api.instance.getWallets(),
       builder: (context, List<Wallet> wallets) =>
-          _buildWithWallets(context, wallets),
+          buildContent(context, wallets),
     );
   }
 
-  Widget _buildWithWallets(BuildContext context, List<Wallet> wallets) {
+  Widget buildContent(BuildContext context, List<Wallet> wallets) {
+    if (wallets.isNotEmpty)
+      return buildContentWithWallets(context, wallets);
+    else
+      return buildContentWithNoWallets(context);
+  }
+
+  Widget buildContentWithWallets(BuildContext context, List<Wallet> wallets) {
     return Scaffold(
       body: CustomScrollView(slivers: [
-        _appBarWithWallets(context, wallets),
+        SliverAppBar(
+          expandedHeight: 150.0,
+          flexibleSpace: WalletsSwipeWidget(
+            wallets: wallets,
+            onSelectedWallet: (wallet) {
+              _selectedWallet.add(wallet);
+            },
+          ),
+          actions: buildAppBarActions(context),
+        ),
       ]),
     );
   }
 
-  Widget _appBarWithWallets(BuildContext context, List<Wallet> wallets) {
-    return SliverAppBar(
-      expandedHeight: 150.0,
-      flexibleSpace: wallets.isNotEmpty ? WalletsSwipeWidget(
-        wallets: wallets,
-        onSelectedWallet: (wallet) {
-          _selectedWallet.add(wallet);
-        },
-      ) : null,
-      actions: [
-        IconButton(
-            icon: Icon(Icons.settings),
-            tooltip: AppLocalizations.of(context).settings,
-            onPressed: () => router.navigateTo(context, "/settings"))
-      ],
+  Widget buildContentWithNoWallets(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context).dashboardTitle),
+        actions: buildAppBarActions(context),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          buildNoWallets(context),
+          buildAddWalletButton(context),
+        ],
+      ),
     );
   }
 
-  Widget _emptyWalletsWidget(BuildContext context) {
+  List<Widget> buildAppBarActions(BuildContext context) {
+    return <Widget>[
+      IconButton(
+        icon: Icon(Icons.settings),
+        tooltip: AppLocalizations.of(context).settings,
+        onPressed: () => router.navigateTo(context, "/settings"),
+      ),
+    ];
+  }
+
+  Widget buildNoWallets(BuildContext context) {
     return EmptyStateWidget(
       icon: "assets/ic-wallet.svg",
       text: AppLocalizations.of(context).dashboardWalletsEmpty,
+    );
+  }
+
+  Widget buildAddWalletButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: PrimaryButton(
+        child: Text(AppLocalizations.of(context).dashboardAddWalletButton),
+        shrinkWrap: true,
+        onPressed: () => router.navigateTo(context, "/settings/wallets/add"),
+      ),
     );
   }
 }

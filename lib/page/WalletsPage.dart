@@ -64,9 +64,7 @@ class _WalletsPageState extends State<WalletsPage> {
     return ListTile(
       title: Text(wallet.name),
       trailing: Text(wallet.balance.formatted),
-      onTap: () {
-        router.navigateTo(context, "/settings/wallets/${wallet.id}");
-      },
+      onTap: () => router.navigateTo(context, "/settings/wallets/${wallet.id}"),
     );
   }
 
