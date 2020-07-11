@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/Currency.dart';
@@ -27,20 +25,9 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final _selectedWallet = BehaviorSubject<Wallet>();
 
-  onSelectedAddExpense() async {
+  onSelectedAddTransaction(BuildContext context) {
     final wallet = _selectedWallet.value;
-    Api.instance.addExpense(Reference(wallet.reference),
-      title: "Expense no. ${Random().nextInt(1000)}",
-      amount: (Random().nextDouble() * 1000).roundToDouble(),
-    );
-  }
-
-  onSelectedAddIncome() async {
-    final wallet = _selectedWallet.value;
-    Api.instance.addIncome(Reference(wallet.reference),
-      title: "Income no. ${Random().nextInt(1000)}",
-      amount: (Random().nextDouble() * 1000).roundToDouble(),
-    );
+    router.navigateTo(context, "/wallet/${wallet.id}/addTransaction");
   }
 
   @override
@@ -90,7 +77,7 @@ class _DashboardPageState extends State<DashboardPage> {
           size: Size.square(32),
         ),
         tooltip: "#Add expense or income",
-        onPressed: () => Random().nextBool() ? onSelectedAddExpense() : onSelectedAddIncome(),
+        onPressed: () => onSelectedAddTransaction(context),
       ),
     );
   }
