@@ -1,18 +1,18 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' as Could;
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
+import 'package:rxdart/rxdart.dart';
 
-import 'Expense.dart';
-import 'Income.dart';
 import 'Model.dart';
+import 'Transaction.dart';
 import 'Wallet.dart';
 
 class Api {
   static final Api instance = Api._privateConstructor();
 
-  Firestore firestore = Firestore.instance;
+  Could.Firestore firestore = Could.Firestore.instance;
   User currentUser;
 
   Api._privateConstructor();
@@ -53,6 +53,14 @@ class Api {
         .collection("wallets")
         .document(wallet.id)
         .delete();
+  }
+
+  Stream<List<Transaction>> getTransactions(Reference<Wallet> wallet) {
+    final expenses = getExpenses(wallet);
+    final incomes = getIncomes(wallet);
+
+    return MergeStream([expenses, incomes]).map((transactions) =>
+        transactions..sort((lhs, rhs) => lhs.date.compareTo(rhs.date)));
   }
 
   Stream<List<Expense>> getExpenses(Reference<Wallet> wallet) {

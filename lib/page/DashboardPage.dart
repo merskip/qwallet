@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/api/Api.dart';
+import 'package:qwallet/api/Model.dart';
+import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -49,6 +51,16 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           actions: buildAppBarActions(context),
         ),
+        StreamBuilder(
+          stream: _selectedWallet.stream,
+          builder: (context, AsyncSnapshot<Wallet> snapshot) {
+            if (snapshot.hasData) {
+              return _TransactionsList(wallet: snapshot.data);
+            } else {
+              return _silverProgressIndicator();
+            }
+          },
+        )
       ]),
     );
   }
@@ -96,4 +108,45 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
+}
+
+class _TransactionsList extends StatelessWidget {
+  final Wallet wallet;
+
+  const _TransactionsList({Key key, this.wallet}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: Api.instance.getTransactions(Reference(wallet.reference)),
+      builder: (context, AsyncSnapshot<List<Transaction>> snapshot) {
+        if (snapshot.hasData) {
+          final transactions = snapshot.data;
+          return SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                return ListTile(
+                  title: Text("Transactions for ${wallet.name}"),
+                );
+              },
+              childCount: 1,
+            ),
+          );
+        } else {
+          return _silverProgressIndicator();
+        }
+      },
+    );
+  }
+}
+
+Widget _silverProgressIndicator() {
+  return SliverPadding(
+    padding: EdgeInsets.all(8),
+    sliver: SliverList(
+      delegate: SliverChildListDelegate([
+        Center(child: CircularProgressIndicator()),
+      ]),
+    ),
+  );
 }
