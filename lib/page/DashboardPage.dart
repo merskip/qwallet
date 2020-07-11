@@ -11,6 +11,7 @@ import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
+import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adapter.dart';
 
 import '../router.dart';
 
@@ -122,20 +123,37 @@ class _TransactionsList extends StatelessWidget {
       builder: (context, AsyncSnapshot<List<Transaction>> snapshot) {
         if (snapshot.hasData) {
           final transactions = snapshot.data;
-          return SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return ListTile(
-                  title: Text("Transactions for ${wallet.name}"),
-                );
-              },
-              childCount: 1,
-            ),
-          );
-        } else {
+          if (transactions.isNotEmpty)
+            return buildTransactions(context, transactions);
+          else
+            return buildEmptyTransactions(context);
+        } else
           return _silverProgressIndicator();
-        }
       },
+    );
+  }
+
+  Widget buildEmptyTransactions(BuildContext context) {
+    return SliverFillRemainingBoxAdapter(
+        child: EmptyStateWidget(
+          icon: "assets/ic-wallet.svg",
+          text: "#No transactions",
+        )
+    );
+  }
+
+  Widget buildTransactions(
+      BuildContext context, List<Transaction> transactions) {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return ListTile(
+            title: Text(transactions[index].title),
+            trailing: Text(transactions[index].amount.toString()),
+          );
+        },
+        childCount: transactions.length,
+      ),
     );
   }
 }
@@ -143,10 +161,8 @@ class _TransactionsList extends StatelessWidget {
 Widget _silverProgressIndicator() {
   return SliverPadding(
     padding: EdgeInsets.all(8),
-    sliver: SliverList(
-      delegate: SliverChildListDelegate([
-        Center(child: CircularProgressIndicator()),
-      ]),
+    sliver: SliverToBoxAdapter(
+      child: Center(child: CircularProgressIndicator()),
     ),
   );
 }
