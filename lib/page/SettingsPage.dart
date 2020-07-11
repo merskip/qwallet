@@ -22,7 +22,7 @@ class SettingsPage extends StatelessWidget {
           Divider(),
           buildLanguage(context),
           buildApplicationVersion(),
-          buildDeveloper()
+          buildDeveloper(context)
         ]),
       ),
     );
@@ -80,10 +80,24 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget buildDeveloper() {
+  Widget buildDeveloper(BuildContext context) {
+    final subtitleStyle = Theme.of(context).textTheme.bodyText2
+        .copyWith(color: Theme.of(context).textTheme.caption.color);
+    final linkStyle = TextStyle(
+      color: Colors.blue,
+      decoration: TextDecoration.underline,
+    );
     return ListTile(
       title: Text("Developed by"),
-      subtitle: Text("Piotr Merski <merskip@gmail.com>\nmerskip.pl"),
+      subtitle: RichText(
+        text: TextSpan(style: subtitleStyle, children: [
+          TextSpan(text: "Piotr Merski"),
+          TextSpan(text: " <"),
+          TextSpan(text: "merskip@gmail.com", style: linkStyle),
+          TextSpan(text: ">\n"),
+          TextSpan(text: 'merskip.pl', style: linkStyle),
+        ]),
+      ),
       onTap: () async {
         const url = 'http://merskip.pl';
         if (await canLaunch(url)) await launch(url);
