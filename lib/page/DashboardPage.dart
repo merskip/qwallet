@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
+import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
@@ -22,7 +23,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: Api.instance.getWallets(),
+      stream: LocalPreferences.orderedWallets(Api.instance.getWallets()),
       builder: (context, List<Wallet> wallets) =>
           buildContent(context, wallets),
     );
