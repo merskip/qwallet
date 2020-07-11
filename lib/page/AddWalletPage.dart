@@ -18,7 +18,7 @@ class AddWalletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).newWallet),
+        title: Text(AppLocalizations.of(context).addWalletNew),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -81,7 +81,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
     final List<User> selectedUsers = await pushPage(
       context,
       builder: (context) => UserSelectionPage(
-        title: AppLocalizations.of(context).walletOwners,
+        title: AppLocalizations.of(context).addWalletOwners,
         allUsers: allUsers,
         selectedUsers: ownersController.value,
       ),
@@ -140,7 +140,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
       controller: nameController,
       focusNode: nameFocus,
       decoration: InputDecoration(
-        labelText: AppLocalizations.of(context).walletName,
+        labelText: AppLocalizations.of(context).addWalletName,
       ),
       autofocus: true,
       maxLength: 50,
@@ -148,7 +148,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
       textInputAction: TextInputAction.next,
       validator: (name) {
         if (name.length <= 0 || name.length > 50)
-          return AppLocalizations.of(context).walletCurrencyErrorIsEmpty;
+          return AppLocalizations.of(context).addWalletCurrencyErrorIsEmpty;
         return null;
       },
       onFieldSubmitted: (name) => nameFocus.nextFocus(),
@@ -161,18 +161,18 @@ class _AddWalletFormState extends State<_AddWalletForm> {
         initialValue: [User.currentUser()],
         controller: ownersController,
         decoration: InputDecoration(
-          labelText: AppLocalizations.of(context).walletOwners,
-          helperText: AppLocalizations.of(context).walletOwnersHint,
+          labelText: AppLocalizations.of(context).addWalletOwners,
+          helperText: AppLocalizations.of(context).addWalletOwnersHint,
           helperMaxLines: 3,
         ),
         validator: (users) {
           if (users.isEmpty)
-            return AppLocalizations.of(context).walletOwnersErrorIsEmpty;
+            return AppLocalizations.of(context).addWalletOwnersErrorIsEmpty;
           final currentUserInSelected = users.firstWhere(
               (user) => user.uid == FirebaseService.instance.currentUser.uid,
               orElse: () => null);
           if (currentUserInSelected == null)
-            return AppLocalizations.of(context).walletOwnersErrorNoYou;
+            return AppLocalizations.of(context).addWalletOwnersErrorNoYou;
           return null;
         },
       ),
@@ -186,9 +186,9 @@ class _AddWalletFormState extends State<_AddWalletForm> {
     return InkWell(
       child: InputDecorator(
         decoration: InputDecoration(
-          labelText: AppLocalizations.of(context).walletCurrency,
+          labelText: AppLocalizations.of(context).addWalletCurrency,
           helperText:
-              AppLocalizations.of(context).walletCurrencyWithExample(text),
+              AppLocalizations.of(context).addWalletCurrencyExample(text),
         ),
         child: Text("${currency.symbol} (${currency.name})"),
       ),
@@ -198,7 +198,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
 
   Widget buildSubmitButton(BuildContext context) {
     return PrimaryButton(
-      child: Text(AppLocalizations.of(context).walletSubmitAdd),
+      child: Text(AppLocalizations.of(context).addWalletSubmit),
       onPressed: () => onSelectedSubmit(context),
     );
   }

@@ -35,7 +35,7 @@ class _CurrencySelectionPageState extends State<CurrencySelectionPage> {
     final bool hasSelectedCurrency = (widget.selectedCurrency != null);
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).currencySelection),
+        title: Text(AppLocalizations.of(context).selectCurrency),
       ),
       body: Scrollbar(
         child: ListView.builder(
@@ -90,29 +90,29 @@ class _CurrencyInfoPage extends StatelessWidget {
       ),
       body: ListView(children: [
         ListTile(
-          title: Text(AppLocalizations.of(context).currencySymbol),
+          title: Text(AppLocalizations.of(context).selectCurrencySymbol),
           subtitle: Text(currency.symbol),
         ),
         ListTile(
-          title: Text(AppLocalizations.of(context).currencyName),
+          title: Text(AppLocalizations.of(context).selectCurrencyName),
           subtitle: Text(currency.name),
         ),
         ListTile(
-          title: Text(AppLocalizations.of(context).currencyDecimalPlaces),
+          title: Text(AppLocalizations.of(context).selectCurrencyDecimalPlaces),
           subtitle: Text(currency.decimalPlaces.toString()),
         ),
         if (currency.isoNumber != null)
           ListTile(
-            title: Text(AppLocalizations.of(context).currencyISO4217Number),
+            title: Text(AppLocalizations.of(context).selectCurrencyISO4217Number),
             subtitle: Text(currency.isoNumber),
           ),
         ListTile(
-          title: Text(AppLocalizations.of(context).currencyExamples),
+          title: Text(AppLocalizations.of(context).selectCurrencyExamples),
           subtitle: Text(currencyExamples()),
           isThreeLine: true,
         ),
         ListTile(
-          title: Text(AppLocalizations.of(context).currencyWiki),
+          title: Text(AppLocalizations.of(context).selectCurrencyWiki),
           subtitle: Text(
             currency.wikiUrl,
             style: TextStyle(

@@ -25,7 +25,7 @@ class _WalletsPageState extends State<WalletsPage> {
             IconButton(
               icon: Icon(Icons.reorder),
               onPressed: () => setState(() => isReordering = true),
-              tooltip: AppLocalizations.of(context).walletChangeOrder,
+              tooltip: AppLocalizations.of(context).walletsChangeOrder,
             )
           else
             IconButton(
@@ -75,7 +75,7 @@ class _WalletsPageState extends State<WalletsPage> {
     return ReorderableListView(
       padding: const EdgeInsets.all(8),
       header: Text(
-        AppLocalizations.of(context).walletChangeOrderHint,
+        AppLocalizations.of(context).walletsChangeOrderHint,
         style: Theme.of(context).textTheme.caption,
       ),
       children: wallets
@@ -104,7 +104,7 @@ class _WalletsPageState extends State<WalletsPage> {
     return FloatingActionButton(
       child: VectorImage("assets/ic-add-wallet.svg", color: Colors.white),
       onPressed: () => router.navigateTo(context, "/settings/wallets/add"),
-      tooltip: AppLocalizations.of(context).addWallet,
+      tooltip: AppLocalizations.of(context).walletsAdd,
     );
   }
 }

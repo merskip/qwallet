@@ -55,16 +55,16 @@ class SettingsPage extends StatelessWidget {
 
   Widget buildWallets(BuildContext context) {
     return ListTile(
-      title: Text(AppLocalizations.of(context).wallets),
-      subtitle: Text(AppLocalizations.of(context).walletsHint),
+      title: Text(AppLocalizations.of(context).settingsWallets),
+      subtitle: Text(AppLocalizations.of(context).settingsWalletsHint),
       onTap: () => router.navigateTo(context, "/settings/wallets"),
     );
   }
 
   Widget buildLanguage(BuildContext context) {
     return ListTile(
-      title: Text(AppLocalizations.of(context).language),
-      subtitle: Text(AppLocalizations.of(context).currentLanguage),
+      title: Text(AppLocalizations.of(context).settingsLanguage),
+      subtitle: Text(AppLocalizations.of(context).settingsCurrentLanguage),
     );
   }
 
@@ -73,7 +73,7 @@ class SettingsPage extends StatelessWidget {
       future: PackageInfo.fromPlatform(),
       builder: (context, AsyncSnapshot<PackageInfo> info) {
         return ListTile(
-          title: Text(AppLocalizations.of(context).version),
+          title: Text(AppLocalizations.of(context).settingsApplicationVersion),
           subtitle: Text("${info.data?.version} (${info.data?.buildNumber})"),
         );
       },
