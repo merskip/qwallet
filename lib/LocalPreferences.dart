@@ -18,21 +18,22 @@ class LocalPreferences {
   static Stream<List<Wallet>> orderedWallets(Stream<List<Wallet>> wallets) {
     return MergeStream([_walletsOrder.stream, wallets])
         .asyncMap((wallets) async {
+          final remainingWallets = List.of(wallets);
 
       final preferences = await SharedPreferences.getInstance();
       final walletsOrderIds = preferences.containsKey("walletsOrder") ? preferences.getStringList("walletsOrder") : [];
 
       final result = List<Wallet>();
       for (final walletId in walletsOrderIds) {
-        final foundWallet = wallets.firstWhere(
+        final foundWallet = remainingWallets.firstWhere(
             (wallet) => wallet.reference.documentID == walletId,
             orElse: () => null);
         if (foundWallet != null) {
           result.add(foundWallet);
-          wallets.remove(foundWallet);
+          remainingWallets.remove(foundWallet);
         }
       }
-      result.addAll(wallets);
+      result.addAll(remainingWallets);
       return result;
     });
   }
