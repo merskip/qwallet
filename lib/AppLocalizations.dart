@@ -56,6 +56,11 @@ extension DashbaordLocalizations on AppLocalizations {
       en: "Add a new wallet",
       pl: "Dodaj nowy protfel",
     );
+
+  String get dashboardAddTransactionButton => _locale(
+    en: "Add expense or income",
+    pl: "Dodaj wydatek lub przychód",
+  );
 }
 
 extension SettingsLocalizations on AppLocalizations {
@@ -290,5 +295,43 @@ extension SelectCurrencyLocalizations on AppLocalizations {
   String get selectCurrencyExamples => _locale(
     en: "Examples",
     pl: "Przykłady",
+  );
+}
+
+extension AddTransactionLocalizations on AppLocalizations {
+
+  String get addTransaction => _locale(
+      en: "Add expense or income",
+      pl: "Dodaj wydatek lub przychód",
+    );
+
+  String get addTransactionExpense => _locale(
+    en: "Expense",
+    pl: "Wydatek",
+  );
+
+  String get addTransactionIncome => _locale(
+    en: "Income",
+    pl: "Przychód",
+  );
+
+  String get addTransactionTitle => _locale(
+      en: "Title",
+      pl: "Tytuł",
+    );
+
+  String get addTransactionAmount => _locale(
+    en: "Amount",
+    pl: "Kwota",
+  );
+
+  String get addTransactionDate => _locale(
+    en: "Date",
+    pl: "Data",
+  );
+
+  String get addTransactionSubmit => _locale(
+    en: "Add",
+    pl: "Dodaj",
   );
 }

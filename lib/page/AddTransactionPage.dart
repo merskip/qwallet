@@ -5,6 +5,8 @@ import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
+import '../AppLocalizations.dart';
+
 class AddTransactionPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
 
@@ -28,7 +30,7 @@ class _AddTransactionPageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Add expense or income"),
+        title: Text(AppLocalizations.of(context).addTransaction),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -83,13 +85,13 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       children: [
         _TransactionTypeButton(
           icon: Icon(Icons.arrow_upward),
-          title: Text("#Expense"),
+          title: Text(AppLocalizations.of(context).addTransactionExpense),
           isSelected: type == _TransactionType.expense,
           onPressed: () => setState(() => type = _TransactionType.expense),
         ),
         _TransactionTypeButton(
           icon: Icon(Icons.arrow_downward),
-          title: Text("#Income"),
+          title: Text(AppLocalizations.of(context).addTransactionIncome),
           isSelected: type == _TransactionType.income,
           onPressed: () => setState(() => type = _TransactionType.income),
         ),
@@ -100,7 +102,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   Widget buildTitle(BuildContext context) {
     return TextFormField(
       decoration: InputDecoration(
-        labelText: "#Title",
+        labelText: AppLocalizations.of(context).addTransactionTitle,
       ),
     );
   }
@@ -108,7 +110,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   Widget buildAmount(BuildContext context) {
     return TextFormField(
       decoration: InputDecoration(
-        labelText: "#Amount",
+        labelText: AppLocalizations.of(context).addTransactionAmount,
       ),
     );
   }
@@ -116,14 +118,14 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   Widget buildDate(BuildContext context) {
     return TextFormField(
       decoration: InputDecoration(
-        labelText: "#Date",
+        labelText: AppLocalizations.of(context).addTransactionDate,
       ),
     );
   }
 
   Widget buildSubmitButton(BuildContext context) {
     return PrimaryButton(
-      child: Text("#Add"),
+      child: Text(AppLocalizations.of(context).addTransactionSubmit),
       onPressed: () => {},
     );
   }

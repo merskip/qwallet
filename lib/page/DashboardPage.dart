@@ -76,7 +76,7 @@ class _DashboardPageState extends State<DashboardPage> {
           color: Colors.white,
           size: Size.square(32),
         ),
-        tooltip: "#Add expense or income",
+        tooltip: AppLocalizations.of(context).dashboardAddTransactionButton,
         onPressed: () => onSelectedAddTransaction(context),
       ),
     );
