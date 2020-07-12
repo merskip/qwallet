@@ -35,7 +35,7 @@ class _AddTransactionPageContent extends StatelessWidget {
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16),
-          child: _AddTransactionForm(),
+          child: _AddTransactionForm(wallet: wallet),
         ),
       ),
     );
@@ -48,6 +48,11 @@ enum _TransactionType {
 }
 
 class _AddTransactionForm extends StatefulWidget {
+
+  final Wallet wallet;
+
+  const _AddTransactionForm({Key key, this.wallet}) : super(key: key);
+
   @override
   _AddTransactionFormState createState() => _AddTransactionFormState();
 }
@@ -57,6 +62,15 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   _TransactionType type = _TransactionType.expense;
 
+  final amountFocus = FocusNode();
+  final amountController = TextEditingController();
+
+  final titleFocus = FocusNode();
+  final titleController = TextEditingController();
+
+  final dateFocus = FocusNode();
+  final dateController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -65,9 +79,9 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         SizedBox(height: 8),
         buildType(context),
         SizedBox(height: 16),
-        buildTitle(context),
-        SizedBox(height: 16),
         buildAmount(context),
+        SizedBox(height: 36),
+        buildTitle(context),
         SizedBox(height: 16),
         buildDate(context),
         SizedBox(height: 16),
@@ -99,27 +113,45 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     );
   }
 
-  Widget buildTitle(BuildContext context) {
+  Widget buildAmount(BuildContext context) {
     return TextFormField(
+      controller: amountController,
+      focusNode: amountFocus,
+      autofocus: true,
       decoration: InputDecoration(
-        labelText: AppLocalizations.of(context).addTransactionTitle,
+        labelText: AppLocalizations.of(context).addTransactionAmount,
+        suffixText: widget.wallet.currency,
       ),
+      keyboardType: TextInputType.numberWithOptions(decimal: true),
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (value) => amountFocus.nextFocus(),
     );
   }
 
-  Widget buildAmount(BuildContext context) {
+  Widget buildTitle(BuildContext context) {
     return TextFormField(
+      controller: titleController,
+      focusNode: titleFocus,
       decoration: InputDecoration(
-        labelText: AppLocalizations.of(context).addTransactionAmount,
+        labelText: AppLocalizations.of(context).addTransactionTitle,
+        isDense: true,
       ),
+      maxLength: 50,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (value) => titleFocus.nextFocus(),
     );
   }
 
   Widget buildDate(BuildContext context) {
     return TextFormField(
+      controller: dateController,
+      focusNode: dateFocus,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).addTransactionDate,
+        isDense: true,
       ),
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (value) => dateFocus.nextFocus(),
     );
   }
 
