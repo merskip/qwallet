@@ -70,7 +70,8 @@ void defineRoutes(Router router) {
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
       final walletId = params["walletId"][0];
       return AddTransactionPage(
-          walletRef: Api.instance.getWalletReference(walletId));
+        initialWalletRef: Api.instance.getWalletReference(walletId),
+      );
     }),
   );
 

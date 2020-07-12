@@ -306,6 +306,11 @@ extension AddTransactionLocalizations on AppLocalizations {
       pl: "Dodaj wydatek lub przychód",
     );
 
+  String get addTransactionSelectWallet => _locale(
+      en: "Select wallet",
+      pl: "Wybierz portfel",
+    );
+
   String get addTransactionExpense => _locale(
     en: "Expense",
     pl: "Wydatek",

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/Currency.dart';
+import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/api/Model.dart';
@@ -12,23 +13,25 @@ import '../AppLocalizations.dart';
 import '../utils.dart';
 
 class AddTransactionPage extends StatelessWidget {
-  final Reference<Wallet> walletRef;
+  final Reference<Wallet> initialWalletRef;
 
-  const AddTransactionPage({Key key, this.walletRef}) : super(key: key);
+  const AddTransactionPage({Key key, this.initialWalletRef}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: Api.instance.getWallet(walletRef),
-      builder: (context, wallet) => _AddTransactionPageContent(wallet: wallet),
+      stream: Api.instance.getWallet(initialWalletRef),
+      builder: (context, wallet) =>
+          _AddTransactionPageContent(initialWallet: wallet),
     );
   }
 }
 
 class _AddTransactionPageContent extends StatelessWidget {
-  final Wallet wallet;
+  final Wallet initialWallet;
 
-  const _AddTransactionPageContent({Key key, this.wallet}) : super(key: key);
+  const _AddTransactionPageContent({Key key, this.initialWallet})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +42,7 @@ class _AddTransactionPageContent extends StatelessWidget {
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16),
-          child: _AddTransactionForm(wallet: wallet),
+          child: _AddTransactionForm(initialWallet: initialWallet),
         ),
       ),
     );
@@ -52,17 +55,19 @@ enum _TransactionType {
 }
 
 class _AddTransactionForm extends StatefulWidget {
+  final Wallet initialWallet;
 
-  final Wallet wallet;
-
-  const _AddTransactionForm({Key key, this.wallet}) : super(key: key);
+  const _AddTransactionForm({Key key, this.initialWallet}) : super(key: key);
 
   @override
-  _AddTransactionFormState createState() => _AddTransactionFormState();
+  _AddTransactionFormState createState() =>
+      _AddTransactionFormState(initialWallet);
 }
 
 class _AddTransactionFormState extends State<_AddTransactionForm> {
   final _formKey = GlobalKey<FormState>();
+
+  Wallet wallet;
 
   _TransactionType type = _TransactionType.expense;
 
@@ -75,6 +80,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   final dateFocus = FocusNode();
   final dateController = TextEditingController();
+
+  _AddTransactionFormState(this.wallet);
 
   @override
   void initState() {
@@ -96,10 +103,22 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       amount = parseAmount(amountController.text);
       if (amount != null) {
         final money =
-            Money(amount, Currency.fromSymbol(widget.wallet.currency));
+            Money(amount, Currency.fromSymbol(widget.initialWallet.currency));
         amountController.text = money.amountFormatted;
       }
     });
+  }
+
+  onSelectedWallet(BuildContext context) async {
+    final wallets =
+        await LocalPreferences.orderedWallets(Api.instance.getWallets()).first;
+    final selectedWallet = await showDialog(
+      context: context,
+      builder: (context) => _SelectWalletDialog(wallets: wallets),
+    ) as Wallet;
+    if (selectedWallet != null) {
+      setState(() => this.wallet = selectedWallet);
+    }
   }
 
   @override
@@ -148,13 +167,13 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   Widget buildWallet(BuildContext context) {
-      return ListTile(
-        title: Text(widget.wallet.name),
-        trailing: Text(widget.wallet.balance.formatted),
-        onTap: () {
-          // TODO: Impl wallet change
-        },
-      );
+    return Card(
+      child: ListTile(
+        title: Text(wallet.name),
+        trailing: Text(wallet.balance.formatted),
+        onTap: () => onSelectedWallet(context),
+      ),
+    );
   }
 
   Widget buildAmount(BuildContext context) {
@@ -164,7 +183,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       autofocus: true,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).addTransactionAmount,
-        suffixText: widget.wallet.currency,
+        suffixText: wallet.currency,
         helperText: getBalanceAfter(),
       ),
       textAlign: TextAlign.end,
@@ -176,10 +195,13 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   String getBalanceAfter() {
     if (amount != null) {
-      final balanceAfter = type == _TransactionType.expense ? widget.wallet.balance.amount - amount
-          : widget.wallet.balance.amount + amount;
-      final balanceAfterMoney = Money(balanceAfter, Currency.fromSymbol(widget.wallet.currency));
-      return AppLocalizations.of(context).addTransactionBalanceAfter(balanceAfterMoney);
+      final balanceAfter = type == _TransactionType.expense
+          ? wallet.balance.amount - amount
+          : wallet.balance.amount + amount;
+      final balanceAfterMoney =
+          Money(balanceAfter, Currency.fromSymbol(wallet.currency));
+      return AppLocalizations.of(context)
+          .addTransactionBalanceAfter(balanceAfterMoney);
     }
     return null;
   }
@@ -241,6 +263,40 @@ class _TransactionTypeButton extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(44),
       ),
+    );
+  }
+}
+
+class _SelectWalletDialog extends StatelessWidget {
+  final List<Wallet> wallets;
+
+  const _SelectWalletDialog({Key key, this.wallets}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialog(
+      title: Text(AppLocalizations.of(context).addTransactionSelectWallet),
+      children: [
+        for (final wallet in wallets)
+          buildWalletOption(context, wallet)
+      ],
+    );
+  }
+
+  Widget buildWalletOption(BuildContext context, Wallet wallet) {
+    return SimpleDialogOption(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(children: [
+          Text(
+            wallet.name,
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+          Spacer(),
+          Text(wallet.balance.formatted)
+        ]),
+      ),
+      onPressed: () => Navigator.of(context).pop(wallet),
     );
   }
 }
