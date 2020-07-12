@@ -11,5 +11,10 @@ class Money {
         .format(amount);
   }
 
+  String get amountFormatted {
+    return NumberFormat.simpleCurrency(locale: currency.locales[0], name: "")
+        .format(amount);
+  }
+
   Money(this.amount, this.currency);
 }

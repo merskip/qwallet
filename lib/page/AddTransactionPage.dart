@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/Currency.dart';
+import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
@@ -6,6 +9,7 @@ import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../AppLocalizations.dart';
+import '../utils.dart';
 
 class AddTransactionPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
@@ -64,12 +68,40 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   final amountFocus = FocusNode();
   final amountController = TextEditingController();
+  double amount;
 
   final titleFocus = FocusNode();
   final titleController = TextEditingController();
 
   final dateFocus = FocusNode();
   final dateController = TextEditingController();
+
+  @override
+  void initState() {
+    amountFocus.addListener(() {
+      if (amountFocus.hasFocus)
+        _setAmountUnformatted();
+      else
+        _setAmountFormatted();
+    });
+    super.initState();
+  }
+
+  _setAmountUnformatted() {
+    amountController.text = amount?.toStringAsFixed(2);
+  }
+
+  _setAmountFormatted() {
+    setState(() {
+
+    amount = parseAmount(amountController.text);
+    if (amount != null) {
+      final money = Money(amount, Currency.fromSymbol(widget.wallet.currency));
+      amountController.text = money.amountFormatted;
+    }
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +112,9 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         buildType(context),
         SizedBox(height: 16),
         buildAmount(context),
-        SizedBox(height: 36),
+        SizedBox(height: 16),
+        Divider(),
+        SizedBox(height: 16),
         buildTitle(context),
         SizedBox(height: 16),
         buildDate(context),
@@ -120,8 +154,18 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       autofocus: true,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).addTransactionAmount,
+        helperText: () {
+          if (amount != null) {
+            final balanceAfter = type == _TransactionType.expense ? widget.wallet.balance.amount - amount
+            : widget.wallet.balance.amount + amount;
+            final balanceAfterMoney = Money(balanceAfter, Currency.fromSymbol(widget.wallet.currency));
+            return "#Balance after: ${balanceAfterMoney.formatted}";
+          }
+          return null;
+        }(),
         suffixText: widget.wallet.currency,
       ),
+      textAlign: TextAlign.end,
       keyboardType: TextInputType.numberWithOptions(decimal: true),
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (value) => amountFocus.nextFocus(),
