@@ -152,10 +152,9 @@ class _TransactionsList extends StatelessWidget {
   Widget buildEmptyTransactions(BuildContext context) {
     return SliverFillRemainingBoxAdapter(
         child: EmptyStateWidget(
-          icon: "assets/ic-wallet.svg",
-          text: "#No transactions in \"${wallet.name}\"",
-        )
-    );
+      icon: "assets/ic-wallet.svg",
+      text: "#No transactions in \"${wallet.name}\"",
+    ));
   }
 
   Widget buildTransactions(
@@ -167,7 +166,9 @@ class _TransactionsList extends StatelessWidget {
           (context, index) {
             final transaction = transactions[index];
             final color = transaction is Income ? Colors.green : Colors.red;
-            final amountText = Money(transaction.amount, Currency.fromSymbol(wallet.currency)).formatted;
+            final amountText =
+                Money(transaction.amount, Currency.fromSymbol(wallet.currency))
+                    .formatted;
             return ListTile(
               title: Text(transaction.title),
               subtitle: Text(transaction.date.toDate().toString()),

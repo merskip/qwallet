@@ -42,7 +42,7 @@ class _AddTransactionPageContent extends StatelessWidget {
 
 enum _TransactionType {
   expense,
-  income
+  income,
 }
 
 class _AddTransactionForm extends StatefulWidget {
@@ -79,39 +79,30 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   Widget buildType(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-      RaisedButton(
-        child: Row(children: [
-          Icon(Icons.arrow_upward),
-          Text("Expense"),
-        ]),
-        color: type == _TransactionType.expense ? Theme.of(context).primaryColor : null,
-        textColor: type == _TransactionType.expense ? Colors.white : null,
-        onPressed: () {
-          setState(() => type = _TransactionType.expense);
-        },
-      ),
-      RaisedButton(
-        child: Row(children: [
-          Icon(Icons.arrow_downward),
-          Text("Income"),
-        ]),
-        color: type == _TransactionType.income ? Theme.of(context).primaryColor : null,
-        textColor: type == _TransactionType.income ? Colors.white : null,
-        onPressed: () {
-          setState(() => type = _TransactionType.income);
-        },
-      ),
-    ],);
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _TransactionTypeButton(
+          icon: Icon(Icons.arrow_upward),
+          title: Text("#Expense"),
+          isSelected: type == _TransactionType.expense,
+          onPressed: () => setState(() => type = _TransactionType.expense),
+        ),
+        _TransactionTypeButton(
+          icon: Icon(Icons.arrow_downward),
+          title: Text("#Income"),
+          isSelected: type == _TransactionType.income,
+          onPressed: () => setState(() => type = _TransactionType.income),
+        ),
+      ],
+    );
   }
 
   Widget buildTitle(BuildContext context) {
-      return TextFormField(
-        decoration: InputDecoration(
-          labelText: "#Title",
-        ),
-      );
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: "#Title",
+      ),
+    );
   }
 
   Widget buildAmount(BuildContext context) {
@@ -134,6 +125,31 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     return PrimaryButton(
       child: Text("#Add"),
       onPressed: () => {},
+    );
+  }
+}
+
+class _TransactionTypeButton extends StatelessWidget {
+  final Widget icon;
+  final Widget title;
+  final bool isSelected;
+  final VoidCallback onPressed;
+
+  const _TransactionTypeButton(
+      {Key key, this.icon, this.title, this.isSelected, this.onPressed})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton.icon(
+      onPressed: onPressed,
+      icon: icon,
+      label: title,
+      color: isSelected ? Theme.of(context).primaryColor : null,
+      textColor: isSelected ? Theme.of(context).buttonColor : null,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(44),
+      ),
     );
   }
 }
