@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/Money.dart';
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const AppLocalizationsDelegate();
@@ -323,6 +324,11 @@ extension AddTransactionLocalizations on AppLocalizations {
   String get addTransactionAmount => _locale(
     en: "Amount",
     pl: "Kwota",
+  );
+
+  String Function(Money) get addTransactionBalanceAfter => (money) => _locale(
+    en: "Balance after: ${money.formatted}",
+    pl: "Saldo po: ${money.formatted}",
   );
 
   String get addTransactionDate => _locale(

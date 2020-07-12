@@ -93,13 +93,12 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   _setAmountFormatted() {
     setState(() {
-
-    amount = parseAmount(amountController.text);
-    if (amount != null) {
-      final money = Money(amount, Currency.fromSymbol(widget.wallet.currency));
-      amountController.text = money.amountFormatted;
-    }
-
+      amount = parseAmount(amountController.text);
+      if (amount != null) {
+        final money =
+            Money(amount, Currency.fromSymbol(widget.wallet.currency));
+        amountController.text = money.amountFormatted;
+      }
     });
   }
 
@@ -108,6 +107,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     return Form(
       key: _formKey,
       child: Column(children: [
+        buildWallet(context),
         SizedBox(height: 8),
         buildType(context),
         SizedBox(height: 16),
@@ -147,6 +147,16 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     );
   }
 
+  Widget buildWallet(BuildContext context) {
+      return ListTile(
+        title: Text(widget.wallet.name),
+        trailing: Text(widget.wallet.balance.formatted),
+        onTap: () {
+          // TODO: Impl wallet change
+        },
+      );
+  }
+
   Widget buildAmount(BuildContext context) {
     return TextFormField(
       controller: amountController,
@@ -154,22 +164,24 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       autofocus: true,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).addTransactionAmount,
-        helperText: () {
-          if (amount != null) {
-            final balanceAfter = type == _TransactionType.expense ? widget.wallet.balance.amount - amount
-            : widget.wallet.balance.amount + amount;
-            final balanceAfterMoney = Money(balanceAfter, Currency.fromSymbol(widget.wallet.currency));
-            return "#Balance after: ${balanceAfterMoney.formatted}";
-          }
-          return null;
-        }(),
         suffixText: widget.wallet.currency,
+        helperText: getBalanceAfter(),
       ),
       textAlign: TextAlign.end,
       keyboardType: TextInputType.numberWithOptions(decimal: true),
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (value) => amountFocus.nextFocus(),
     );
+  }
+
+  String getBalanceAfter() {
+    if (amount != null) {
+      final balanceAfter = type == _TransactionType.expense ? widget.wallet.balance.amount - amount
+          : widget.wallet.balance.amount + amount;
+      final balanceAfterMoney = Money(balanceAfter, Currency.fromSymbol(widget.wallet.currency));
+      return AppLocalizations.of(context).addTransactionBalanceAfter(balanceAfterMoney);
+    }
+    return null;
   }
 
   Widget buildTitle(BuildContext context) {
@@ -181,6 +193,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         isDense: true,
       ),
       maxLength: 50,
+      textCapitalization: TextCapitalization.sentences,
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (value) => titleFocus.nextFocus(),
     );
