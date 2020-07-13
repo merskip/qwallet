@@ -56,8 +56,10 @@ class Api {
     final expenses = getExpenses(wallet);
     final incomes = getIncomes(wallet);
 
-    return CombineLatestStream([expenses, incomes], (List<List<Transaction>> streams) {
-      return streams.expand((e) => e).toList()..sort((lhs, rhs) => rhs.date.compareTo(lhs.date));
+    return CombineLatestStream([expenses, incomes],
+        (List<List<Transaction>> streams) {
+      return streams.expand((e) => e).toList()
+        ..sort((lhs, rhs) => rhs.date.compareTo(lhs.date));
     });
   }
 
@@ -68,13 +70,24 @@ class Api {
         .map((snapshot) => snapshot.documents.map((s) => Expense(s)).toList());
   }
 
-  Future<Reference<Expense>> addExpense(Reference<Wallet> wallet,
-      {String title, double amount, Could.Timestamp date}) {
-    return wallet.reference.collection("expenses").add({
-      "title": title,
-      "amount": amount,
-      "date": date ?? Could.Timestamp.now(),
-    }).then((reference) => Reference(reference));
+  Future<Reference<Expense>> addExpense(
+    Reference<Wallet> wallet, {
+    String title,
+    double amount,
+    DateTime date,
+  }) {
+    final expenseRef = wallet.reference.collection("expenses").document();
+    return firestore.runTransaction((transaction) async {
+      transaction.set(expenseRef, {
+        "title": title,
+        "amount": amount,
+        "date": Could.Timestamp.fromDate(date),
+      });
+
+      transaction.update(wallet.reference, {
+        "totalExpense": Could.FieldValue.increment(amount),
+      });
+    }).then((_) => Reference<Expense>(expenseRef));
   }
 
   Stream<List<Income>> getIncomes(Reference<Wallet> wallet) {
@@ -84,13 +97,24 @@ class Api {
         .map((snapshot) => snapshot.documents.map((s) => Income(s)).toList());
   }
 
-  Future<Reference<Income>> addIncome(Reference<Wallet> wallet,
-      {String title, double amount, Could.Timestamp date}) {
-    return wallet.reference.collection("incomes").add({
-      "title": title,
-      "amount": amount,
-      "date": date ?? Could.Timestamp.now(),
-    }).then((reference) => Reference(reference));
+  Future<Reference<Income>> addIncome(
+    Reference<Wallet> wallet, {
+    String title,
+    double amount,
+    DateTime date,
+  }) {
+    final incomeRef = wallet.reference.collection("incomes").document();
+    return firestore.runTransaction((transaction) async {
+      transaction.set(incomeRef, {
+        "title": title,
+        "amount": amount,
+        "date": Could.Timestamp.fromDate(date),
+      });
+
+      transaction.update(wallet.reference, {
+        "totalIncome": Could.FieldValue.increment(amount),
+      });
+    }).then((_) => Reference<Income>(incomeRef));
   }
 
   Future<List<User>> getUsersByUids(List<String> usersUids) async {

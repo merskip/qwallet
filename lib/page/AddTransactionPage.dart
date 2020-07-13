@@ -6,6 +6,7 @@ import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/api/Model.dart';
+import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -163,6 +164,31 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     }
   }
 
+  onSelectedSubmit(BuildContext context) async {
+    if (_formKey.currentState.validate()) {
+      final walletRef = Reference<Wallet>(wallet.reference);
+      Reference<Transaction> transactionRef;
+
+      if (type == _TransactionType.expense) {
+        transactionRef = await Api.instance.addExpense(
+          walletRef,
+          title: titleController.text.trim(),
+          amount: amount,
+          date: date,
+        );
+      }
+      else {
+        transactionRef = await Api.instance.addIncome(
+          walletRef,
+          title: titleController.text.trim(),
+          amount: amount,
+          date: date,
+        );
+      }
+      Navigator.of(context).pop(transactionRef);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -282,7 +308,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   Widget buildSubmitButton(BuildContext context) {
     return PrimaryButton(
       child: Text(AppLocalizations.of(context).addTransactionSubmit),
-      onPressed: () => {},
+      onPressed: () => onSelectedSubmit(context),
     );
   }
 }
