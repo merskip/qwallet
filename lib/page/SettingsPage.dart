@@ -70,6 +70,7 @@ class SettingsPage extends StatelessWidget {
     return ListTile(
       title: Text(AppLocalizations.of(context).settingsLanguage),
       subtitle: Text(AppLocalizations.of(context).settingsCurrentLanguage),
+      dense: true,
     );
   }
 
@@ -80,31 +81,36 @@ class SettingsPage extends StatelessWidget {
         return ListTile(
           title: Text(AppLocalizations.of(context).settingsApplicationVersion),
           subtitle: Text("${info.data?.version} (${info.data?.buildNumber})"),
+          dense: true,
         );
       },
     );
   }
 
   Widget buildDeveloper(BuildContext context) {
-    final subtitleStyle = Theme.of(context)
-        .textTheme
-        .bodyText2
-        .copyWith(color: Theme.of(context).textTheme.caption.color);
+    final subtitleStyle = TextStyle(
+      color: Theme.of(context).textTheme.caption.color,
+      fontSize: 12,
+    );
     final linkStyle = TextStyle(
       color: Colors.blue,
       decoration: TextDecoration.underline,
     );
     return ListTile(
       title: Text("Developed by"),
-      subtitle: RichText(
-        text: TextSpan(style: subtitleStyle, children: [
-          TextSpan(text: "Piotr Merski"),
-          TextSpan(text: " <"),
-          TextSpan(text: "merskip@gmail.com", style: linkStyle),
-          TextSpan(text: ">\n"),
-          TextSpan(text: 'merskip.pl', style: linkStyle),
-        ]),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 6.0),
+        child: RichText(
+          text: TextSpan(style: subtitleStyle, children: [
+            TextSpan(text: "Piotr Merski"),
+            TextSpan(text: " <"),
+            TextSpan(text: "merskip@gmail.com", style: linkStyle),
+            TextSpan(text: ">\n"),
+            TextSpan(text: 'merskip.pl', style: linkStyle),
+          ]),
+        ),
       ),
+      dense: true,
       onTap: () async {
         const url = 'http://merskip.pl';
         if (await canLaunch(url)) await launch(url);
