@@ -95,6 +95,21 @@ extension SettingsLocalizations on AppLocalizations {
     en: "Application version",
     pl: "Wersja aplikacji",
   );
+  
+  String get settingsPrivacyPolicy => _locale(
+      en: "Privacy policy",
+      pl: "Polityka prywatności",
+    );
+  
+  String get settingsTermsOfService => _locale(
+      en: "Terms of service",
+      pl: "Warunki usługi",
+    );
+  
+  String get settingsLicenses => _locale(
+      en: "Third-party licenses",
+      pl: "Licencje",
+    );
 }
 
 extension UserLocalizations on AppLocalizations {

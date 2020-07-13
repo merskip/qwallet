@@ -3,6 +3,7 @@ import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/dialog/UserDialog.dart';
+import 'package:qwallet/widget/vector_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../router.dart';
@@ -22,7 +23,11 @@ class SettingsPage extends StatelessWidget {
           Divider(),
           buildLanguage(context),
           buildApplicationVersion(),
-          buildDeveloper(context)
+          buildDeveloper(context),
+          Divider(),
+          buildPrivacyPolicy(context),
+          buildTermsOfService(context),
+          buildLicences(context),
         ]),
       ),
     );
@@ -81,7 +86,9 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget buildDeveloper(BuildContext context) {
-    final subtitleStyle = Theme.of(context).textTheme.bodyText2
+    final subtitleStyle = Theme.of(context)
+        .textTheme
+        .bodyText2
         .copyWith(color: Theme.of(context).textTheme.caption.color);
     final linkStyle = TextStyle(
       color: Colors.blue,
@@ -101,6 +108,49 @@ class SettingsPage extends StatelessWidget {
       onTap: () async {
         const url = 'http://merskip.pl';
         if (await canLaunch(url)) await launch(url);
+      },
+    );
+  }
+
+  Widget buildPrivacyPolicy(BuildContext context) {
+    return ListTile(
+      title: Text(AppLocalizations.of(context).settingsPrivacyPolicy),
+      dense: true,
+      onTap: () => Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("TODO"), // TODO: Impl
+      )),
+    );
+  }
+
+  Widget buildTermsOfService(BuildContext context) {
+    return ListTile(
+      title: Text(AppLocalizations.of(context).settingsTermsOfService),
+      dense: true,
+      onTap: () => Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("TODO"), // TODO: Impl
+      )),
+    );
+  }
+
+  Widget buildLicences(BuildContext context) {
+    return ListTile(
+      title: Text(AppLocalizations.of(context).settingsLicenses),
+      dense: true,
+      onTap: () async {
+        final info = await PackageInfo.fromPlatform();
+        showLicensePage(
+          context: context,
+          applicationName: "QWallet",
+          applicationVersion: "${info.version} (${info.buildNumber})",
+          applicationLegalese: "Copyright © 2020 Piotr Merski",
+          applicationIcon: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: VectorImage(
+              "assets/app-logo.svg",
+              size: Size.square(128),
+            ),
+          ),
+        );
       },
     );
   }
