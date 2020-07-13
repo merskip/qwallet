@@ -336,19 +336,39 @@ extension AddTransactionLocalizations on AppLocalizations {
     pl: "Przychód",
   );
 
-  String get addTransactionTitle => _locale(
-      en: "Title",
-      pl: "Tytuł",
-    );
-
   String get addTransactionAmount => _locale(
     en: "Amount",
     pl: "Kwota",
   );
 
+  String get addTransactionAmountErrorIsEmpty => _locale(
+    en: "Enter some amount",
+    pl: "Wprowadź jakąś kwotę",
+  );
+
+  String get addTransactionAmountErrorNonNumber => _locale(
+    en: "Enter amount in valid format",
+    pl: "Wprowadź kwotę w poprawnym formacie",
+  );
+
+  String get addTransactionAmountErrorZeroOrNegative => _locale(
+    en: "Amount must be greater then zero",
+    pl: "Kwota musi być większa niż zero",
+  );
+
   String Function(Money) get addTransactionBalanceAfter => (money) => _locale(
     en: "Balance after: ${money.formatted}",
     pl: "Saldo po: ${money.formatted}",
+  );
+
+  String get addTransactionTitle => _locale(
+    en: "Title",
+    pl: "Tytuł",
+  );
+
+  String get addTransactionTitleErrorIsEmpty => _locale(
+    en: "Enter some title",
+    pl: "Wprowadź jakiś tytuł",
   );
 
   String get addTransactionDate => _locale(

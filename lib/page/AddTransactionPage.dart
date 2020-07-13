@@ -82,7 +82,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   final dateFocus = FocusNode();
   final dateController = TextEditingController();
-  DateTime date = DateTime.now();
+  DateTime date = getDateWithoutTime(DateTime.now());
 
   _AddTransactionFormState(this.wallet);
 
@@ -149,7 +149,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   String getFormattedDate(DateTime date) {
-    return DateFormat("dd MMMM yyyy").format(date);
+    return DateFormat("d MMMM yyyy").format(date);
   }
 
   onSelectedWallet(BuildContext context) async {
@@ -165,6 +165,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   onSelectedSubmit(BuildContext context) async {
+    _setAmountFormatted();
+
     if (_formKey.currentState.validate()) {
       final walletRef = Reference<Wallet>(wallet.reference);
       Reference<Transaction> transactionRef;
@@ -176,8 +178,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           amount: amount,
           date: date,
         );
-      }
-      else {
+      } else {
         transactionRef = await Api.instance.addIncome(
           walletRef,
           title: titleController.text.trim(),
@@ -257,6 +258,17 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       textAlign: TextAlign.end,
       keyboardType: TextInputType.numberWithOptions(decimal: true),
       textInputAction: TextInputAction.next,
+      validator: (amountText) {
+        if (amountText.trim().isEmpty)
+          return AppLocalizations.of(context).addTransactionAmountErrorIsEmpty;
+        if (amount == null)
+          return AppLocalizations.of(context)
+              .addTransactionAmountErrorNonNumber;
+        if (amount <= 0)
+          return AppLocalizations.of(context)
+              .addTransactionAmountErrorZeroOrNegative;
+        return null;
+      },
       onFieldSubmitted: (value) => amountFocus.nextFocus(),
     );
   }
@@ -285,6 +297,11 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       maxLength: 50,
       textCapitalization: TextCapitalization.sentences,
       textInputAction: TextInputAction.next,
+      validator: (title) {
+        if (title.trim().isEmpty)
+          return AppLocalizations.of(context).addTransactionTitleErrorIsEmpty;
+        return null;
+      },
       onFieldSubmitted: (value) => titleFocus.nextFocus(),
     );
   }
