@@ -137,7 +137,7 @@ class _TransactionsList extends StatelessWidget {
     return StreamBuilder(
       stream: Api.instance.getTransactions(Reference(wallet.reference)),
       builder: (context, AsyncSnapshot<List<Transaction>> snapshot) {
-        if (snapshot.hasData) {
+        if (snapshot.connectionState != ConnectionState.waiting) {
           final transactions = snapshot.data;
           if (transactions.isNotEmpty)
             return buildTransactions(context, transactions);
@@ -153,14 +153,14 @@ class _TransactionsList extends StatelessWidget {
     return SliverFillRemainingBoxAdapter(
         child: EmptyStateWidget(
       icon: "assets/ic-wallet.svg",
-      text: "#No transactions in \"${wallet.name}\"",
+      text: AppLocalizations.of(context).dashboardTransactionsEmpty,
     ));
   }
 
   Widget buildTransactions(
       BuildContext context, List<Transaction> transactions) {
     return SliverPadding(
-      padding: EdgeInsets.only(bottom: 88),
+      padding: EdgeInsets.only(bottom: 88), // Padding for FAB
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, index) {
@@ -186,7 +186,7 @@ class _TransactionsList extends StatelessWidget {
 Widget _silverProgressIndicator() {
   return SliverPadding(
     padding: EdgeInsets.all(8),
-    sliver: SliverToBoxAdapter(
+    sliver: SliverFillRemainingBoxAdapter(
       child: Center(child: CircularProgressIndicator()),
     ),
   );
