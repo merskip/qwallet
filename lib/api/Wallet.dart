@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/Model.dart';
+import 'package:qwallet/utils.dart';
 
 class Wallet extends Model {
   final String name;
@@ -17,7 +18,7 @@ class Wallet extends Model {
       : this.name = snapshot.data["name"],
         this.ownersUid = snapshot.data["ownersUid"].cast<String>(),
         this.currency = snapshot.data["currency"],
-        this.totalExpense = snapshot.data["totalExpense"],
-        this.totalIncome = snapshot.data["totalIncome"],
+        this.totalExpense = toDouble(snapshot.data["totalExpense"]),
+        this.totalIncome = toDouble(snapshot.data["totalIncome"]),
         super(snapshot);
 }

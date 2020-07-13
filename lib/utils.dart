@@ -78,6 +78,6 @@ FormFieldValidator<String> amountValidator() {
 }
 
 double parseAmount(String text) {
-  final pureText = text.replaceAll(",", ".").replaceAll(RegExp("[^-0-9\.]"), "");
+  final pureText = text.replaceAll(",", "").replaceAll(RegExp("[^-0-9\.]"), "");
   return double.tryParse(pureText) ?? null;
 }

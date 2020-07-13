@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils.dart';
 import 'Model.dart';
 
 abstract class Transaction extends Model {
@@ -18,7 +19,7 @@ class Income extends Transaction {
 
   Income(DocumentSnapshot snapshot)
       : title = snapshot.data['title'],
-        amount = snapshot.data['amount'].toDouble(),
+        amount = toDouble(snapshot.data['amount']),
         date = snapshot.data['date'],
         super(snapshot);
 }
@@ -30,7 +31,7 @@ class Expense extends Transaction {
 
   Expense(DocumentSnapshot snapshot)
       : title = snapshot.data["title"],
-        amount = snapshot.data["amount"].toDouble(),
+        amount = toDouble(snapshot.data["amount"]),
         date = snapshot.data["date"],
         super(snapshot);
 }

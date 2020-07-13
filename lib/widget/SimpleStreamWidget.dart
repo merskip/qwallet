@@ -25,7 +25,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
     );
   }
 
-  _error(snapshot) {
+  _error(AsyncSnapshot<T> snapshot) {
     return Center(
       child: Row(children: <Widget>[
         Icon(Icons.error),
