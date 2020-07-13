@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/Money.dart';
@@ -80,18 +81,35 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   final dateFocus = FocusNode();
   final dateController = TextEditingController();
+  DateTime date = DateTime.now();
 
   _AddTransactionFormState(this.wallet);
 
   @override
   void initState() {
+    _configureAmount();
+    _configureDate();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    amountFocus.dispose();
+    amountController.dispose();
+    titleFocus.dispose();
+    titleController.dispose();
+    dateFocus.dispose();
+    dateController.dispose();
+    super.dispose();
+  }
+
+  _configureAmount() {
     amountFocus.addListener(() {
       if (amountFocus.hasFocus)
         _setAmountUnformatted();
       else
         _setAmountFormatted();
     });
-    super.initState();
   }
 
   _setAmountUnformatted() {
@@ -107,6 +125,30 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         amountController.text = money.amountFormatted;
       }
     });
+  }
+
+  _configureDate() {
+    dateController.text = getFormattedDate(date);
+
+    dateFocus.addListener(() async {
+      if (dateFocus.hasFocus) {
+        final date = await showDatePicker(
+          context: context,
+          initialDate: this.date,
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2100),
+        );
+        dateFocus.nextFocus();
+        if (date != null) {
+          dateController.text = getFormattedDate(date);
+          setState(() => this.date = date);
+        }
+      }
+    });
+  }
+
+  String getFormattedDate(DateTime date) {
+    return DateFormat("dd MMMM yyyy").format(date);
   }
 
   onSelectedWallet(BuildContext context) async {
@@ -227,9 +269,12 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       focusNode: dateFocus,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).addTransactionDate,
+        suffixIcon: Icon(Icons.date_range),
         isDense: true,
       ),
       textInputAction: TextInputAction.next,
+      readOnly: true,
+//      onTap: () => showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(0), lastDate: DateTime(9999)),
       onFieldSubmitted: (value) => dateFocus.nextFocus(),
     );
   }
@@ -277,8 +322,7 @@ class _SelectWalletDialog extends StatelessWidget {
     return SimpleDialog(
       title: Text(AppLocalizations.of(context).addTransactionSelectWallet),
       children: [
-        for (final wallet in wallets)
-          buildWalletOption(context, wallet)
+        for (final wallet in wallets) buildWalletOption(context, wallet)
       ],
     );
   }
