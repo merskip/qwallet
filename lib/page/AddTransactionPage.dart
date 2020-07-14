@@ -122,7 +122,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       amount = parseAmount(amountController.text);
       if (amount != null) {
         final money =
-            Money(amount, Currency.fromSymbol(widget.initialWallet.currency));
+            Money(amount, Currency.fromSymbol(widget.initialWallet.currencySymbol));
         amountController.text = money.amountFormatted;
       }
     });
@@ -252,7 +252,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       autofocus: true,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).addTransactionAmount,
-        suffixText: wallet.currency,
+        suffixText: wallet.currencySymbol,
         helperText: getBalanceAfter(),
       ),
       textAlign: TextAlign.end,
@@ -279,7 +279,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           ? wallet.balance.amount - amount
           : wallet.balance.amount + amount;
       final balanceAfterMoney =
-          Money(balanceAfter, Currency.fromSymbol(wallet.currency));
+          Money(balanceAfter, Currency.fromSymbol(wallet.currencySymbol));
       return AppLocalizations.of(context)
           .addTransactionBalanceAfter(balanceAfterMoney);
     }

@@ -89,7 +89,7 @@ class _WalletPageContent extends StatelessWidget {
   }
 
   Widget buildCurrency(BuildContext context) {
-    final currency = Currency.fromSymbol(wallet.currency);
+    final currency = Currency.fromSymbol(wallet.currencySymbol);
     return _DetailsItem(
       title: Text(AppLocalizations.of(context).walletCurrency),
       value: Text("${currency.symbol} - ${currency.name}"),

@@ -7,17 +7,18 @@ import 'package:qwallet/utils.dart';
 class Wallet extends Model {
   final String name;
   final List<String> ownersUid;
-  final String currency;
+  final String currencySymbol;
   final double totalExpense;
   final double totalIncome;
 
-  Money get balance =>
-      Money(totalIncome - totalExpense, Currency.fromSymbol(currency));
+  Currency get currency => Currency.fromSymbol(currencySymbol);
+
+  Money get balance => Money(totalIncome - totalExpense, currency);
 
   Wallet(DocumentSnapshot snapshot)
       : this.name = snapshot.data["name"],
         this.ownersUid = snapshot.data["ownersUid"].cast<String>(),
-        this.currency = snapshot.data["currency"],
+        this.currencySymbol = snapshot.data["currency"],
         this.totalExpense = toDouble(snapshot.data["totalExpense"]),
         this.totalIncome = toDouble(snapshot.data["totalIncome"]),
         super(snapshot);

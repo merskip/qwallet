@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
-import 'package:qwallet/Currency.dart';
 import 'package:qwallet/LocalPreferences.dart';
-import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/Api.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
+import 'package:qwallet/widget/TransactionsSilverList.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
 import 'package:qwallet/widget/vector_image.dart';
@@ -161,23 +160,9 @@ class _TransactionsList extends StatelessWidget {
       BuildContext context, List<Transaction> transactions) {
     return SliverPadding(
       padding: EdgeInsets.only(bottom: 88), // Padding for FAB
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            final transaction = transactions[index];
-            final color = transaction is Income ? Colors.green : Colors.red;
-            final amountText =
-                Money(transaction.amount, Currency.fromSymbol(wallet.currency))
-                    .formatted;
-            return ListTile(
-              title: Text(transaction.title),
-              subtitle: Text(transaction.date.toDate().toString()),
-              trailing: Text(amountText, style: TextStyle(color: color)),
-              onTap: () {},
-            );
-          },
-          childCount: transactions.length,
-        ),
+      sliver: TransactionsSilverList(
+        wallet: wallet,
+        transactions: transactions,
       ),
     );
   }
