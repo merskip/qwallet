@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:qwallet/AppLocalizations.dart';
-import 'package:qwallet/api/Api.dart';
+import 'package:qwallet/api/DataSource.dart';
 
 class User {
   final String uid;
@@ -32,7 +32,7 @@ class User {
     );
   }
 
-  factory User.currentUser() => Api.instance.currentUser;
+  factory User.currentUser() => DataSource.instance.currentUser;
 
   factory User.fromFirebase(FirebaseUser firebaseUser) {
     return User(

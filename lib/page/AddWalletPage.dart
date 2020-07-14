@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/AppLocalizations.dart';
-import 'package:qwallet/api/Api.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
@@ -56,7 +56,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   _initOwners() async {
     final users = await FirebaseService.instance.fetchUsers();
     final currentUser =
-        users.firstWhere((user) => user.uid == Api.instance.currentUser.uid);
+        users.firstWhere((user) => user.uid == DataSource.instance.currentUser.uid);
     setState(() {
       allUsers = users;
       ownersController.value = [currentUser];
@@ -106,7 +106,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
 
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState.validate()) {
-      final walletRef = await Api.instance.addWallet(
+      final walletRef = await DataSource.instance.addWallet(
         nameController.text,
         ownersController.value.map((user) => user.uid).toList(),
         currency.symbol,

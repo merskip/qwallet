@@ -9,13 +9,13 @@ import 'Model.dart';
 import 'Transaction.dart';
 import 'Wallet.dart';
 
-class Api {
-  static final Api instance = Api._privateConstructor();
+class DataSource {
+  static final DataSource instance = DataSource._privateConstructor();
 
   Could.Firestore firestore = Could.Firestore.instance;
   User currentUser;
 
-  Api._privateConstructor();
+  DataSource._privateConstructor();
 
   Stream<List<Wallet>> getWallets() {
     return firestore

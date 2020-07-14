@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Api.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/model/user.dart';
@@ -17,7 +17,7 @@ class WalletPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: Api.instance.getWallet(walletRef),
+      stream: DataSource.instance.getWallet(walletRef),
       builder: (context, wallet) => _WalletPageContent(wallet: wallet),
     );
   }
@@ -36,7 +36,7 @@ class _WalletPageContent extends StatelessWidget {
           .walletRemoveConfirmationContent(wallet.name)),
       isDestructive: true,
       onConfirm: () {
-        Api.instance.removeWallet(Reference(wallet.reference));
+        DataSource.instance.removeWallet(Reference(wallet.reference));
         Navigator.of(context)
             .popUntil((route) => route.settings.name == "/settings/wallets");
       },
@@ -78,7 +78,7 @@ class _WalletPageContent extends StatelessWidget {
     return _DetailsItem(
       title: Text(AppLocalizations.of(context).walletOwners),
       value: FutureBuilder(
-        future: Api.instance.getUsersByUids(wallet.ownersUid),
+        future: DataSource.instance.getUsersByUids(wallet.ownersUid),
         builder: (context, AsyncSnapshot<List<User>> snapshot) {
           final users = snapshot.data ?? [User.currentUser()];
           final text = users.map((user) => user.displayName).join(", ");

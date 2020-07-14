@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
-import 'package:qwallet/api/Api.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/dialog/UserDialog.dart';
 import 'package:qwallet/widget/vector_image.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -34,7 +34,7 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget buildUserPanel(BuildContext context) {
-    final user = Api.instance.currentUser;
+    final user = DataSource.instance.currentUser;
     return ListTile(
       leading: CircleAvatar(
         backgroundImage:

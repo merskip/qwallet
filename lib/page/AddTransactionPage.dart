@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/Money.dart';
-import 'package:qwallet/api/Api.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
@@ -22,7 +22,7 @@ class AddTransactionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: Api.instance.getWallet(initialWalletRef),
+      stream: DataSource.instance.getWallet(initialWalletRef),
       builder: (context, wallet) =>
           _AddTransactionPageContent(initialWallet: wallet),
     );
@@ -154,7 +154,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   onSelectedWallet(BuildContext context) async {
     final wallets =
-        await LocalPreferences.orderedWallets(Api.instance.getWallets()).first;
+        await LocalPreferences.orderedWallets(DataSource.instance.getWallets()).first;
     final selectedWallet = await showDialog(
       context: context,
       builder: (context) => _SelectWalletDialog(wallets: wallets),
@@ -172,14 +172,14 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       Reference<Transaction> transactionRef;
 
       if (type == _TransactionType.expense) {
-        transactionRef = await Api.instance.addExpense(
+        transactionRef = await DataSource.instance.addExpense(
           walletRef,
           title: titleController.text.trim(),
           amount: amount,
           date: date,
         );
       } else {
-        transactionRef = await Api.instance.addIncome(
+        transactionRef = await DataSource.instance.addIncome(
           walletRef,
           title: titleController.text.trim(),
           amount: amount,

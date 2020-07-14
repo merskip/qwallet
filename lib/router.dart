@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Api.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/expense.dart';
 import 'package:qwallet/page/AddTransactionPage.dart';
@@ -59,7 +59,7 @@ void defineRoutes(Router router) {
     handler: Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
       final walletId = params["walletId"][0];
-      return WalletPage(walletRef: Api.instance.getWalletReference(walletId));
+      return WalletPage(walletRef: DataSource.instance.getWalletReference(walletId));
     }),
   );
 
@@ -70,7 +70,7 @@ void defineRoutes(Router router) {
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
       final walletId = params["walletId"][0];
       return AddTransactionPage(
-        initialWalletRef: Api.instance.getWalletReference(walletId),
+        initialWalletRef: DataSource.instance.getWalletReference(walletId),
       );
     }),
   );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
-import 'package:qwallet/api/Api.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
@@ -32,7 +32,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: LocalPreferences.orderedWallets(Api.instance.getWallets()),
+      stream: LocalPreferences.orderedWallets(DataSource.instance.getWallets()),
       builder: (context, List<Wallet> wallets) =>
           buildContent(context, wallets),
     );
@@ -134,7 +134,7 @@ class _TransactionsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: Api.instance.getTransactions(Reference(wallet.reference)),
+      stream: DataSource.instance.getTransactions(Reference(wallet.reference)),
       builder: (context, AsyncSnapshot<List<Transaction>> snapshot) {
         if (snapshot.connectionState != ConnectionState.waiting) {
           final transactions = snapshot.data;
