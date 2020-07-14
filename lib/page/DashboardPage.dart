@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/widget/DashboardTransactionsSilverList.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
-import 'package:qwallet/widget/TransactionsSilverList.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
 import 'package:qwallet/widget/vector_image.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adapter.dart';
 
 import '../router.dart';
+import '../widget_utils.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -61,9 +60,9 @@ class _DashboardPageState extends State<DashboardPage> {
           stream: _selectedWallet.stream,
           builder: (context, AsyncSnapshot<Wallet> snapshot) {
             if (snapshot.hasData) {
-              return _TransactionsList(wallet: snapshot.data);
+              return DashboardTransactionsSilverList(wallet: snapshot.data);
             } else {
-              return _silverProgressIndicator();
+              return silverProgressIndicator();
             }
           },
         )
@@ -123,58 +122,4 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
-}
-
-class _TransactionsList extends StatelessWidget {
-  final Wallet wallet;
-
-  const _TransactionsList({Key key, this.wallet}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: DataSource.instance.getTransactions(
-        wallet: wallet.reference,
-        range: getTodayDateTimeRange(),
-      ),
-      builder: (context, AsyncSnapshot<List<Transaction>> snapshot) {
-        if (snapshot.connectionState != ConnectionState.waiting) {
-          final transactions = snapshot.data;
-          if (transactions.isNotEmpty)
-            return buildTransactions(context, transactions);
-          else
-            return buildEmptyTransactions(context);
-        } else
-          return _silverProgressIndicator();
-      },
-    );
-  }
-
-  Widget buildEmptyTransactions(BuildContext context) {
-    return SliverFillRemainingBoxAdapter(
-        child: EmptyStateWidget(
-      icon: "assets/ic-wallet.svg",
-      text: AppLocalizations.of(context).dashboardTransactionsEmpty,
-    ));
-  }
-
-  Widget buildTransactions(
-      BuildContext context, List<Transaction> transactions) {
-    return SliverPadding(
-      padding: EdgeInsets.only(bottom: 88), // Padding for FAB
-      sliver: TransactionsSilverList(
-        wallet: wallet,
-        transactions: transactions,
-      ),
-    );
-  }
-}
-
-Widget _silverProgressIndicator() {
-  return SliverPadding(
-    padding: EdgeInsets.all(8),
-    sliver: SliverFillRemainingBoxAdapter(
-      child: Center(child: CircularProgressIndicator()),
-    ),
-  );
 }
