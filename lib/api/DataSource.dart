@@ -16,7 +16,9 @@ class DataSource {
   User currentUser;
 
   DataSource._privateConstructor();
+}
 
+extension WalletsDataSource on DataSource {
   Stream<List<Wallet>> getWallets() {
     return firestore
         .collection("wallets")
@@ -51,16 +53,19 @@ class DataSource {
   Future<void> removeWallet(Reference<Wallet> wallet) {
     return firestore.collection("wallets").document(wallet.id).delete();
   }
+}
+
+extension TransactionsDataSource on DataSource {
 
   Stream<List<Transaction>> getTransactions(Reference<Wallet> wallet) {
     final expenses = getExpenses(wallet);
     final incomes = getIncomes(wallet);
 
     return CombineLatestStream([expenses, incomes],
-        (List<List<Transaction>> streams) {
-      return streams.expand((e) => e).toList()
-        ..sort((lhs, rhs) => rhs.date.compareTo(lhs.date));
-    });
+            (List<List<Transaction>> streams) {
+          return streams.expand((e) => e).toList()
+            ..sort((lhs, rhs) => rhs.date.compareTo(lhs.date));
+        });
   }
 
   Stream<List<Expense>> getExpenses(Reference<Wallet> wallet) {
@@ -71,11 +76,11 @@ class DataSource {
   }
 
   Future<Reference<Expense>> addExpense(
-    Reference<Wallet> wallet, {
-    String title,
-    double amount,
-    DateTime date,
-  }) {
+      Reference<Wallet> wallet, {
+        String title,
+        double amount,
+        DateTime date,
+      }) {
     final expenseRef = wallet.reference.collection("expenses").document();
     return firestore.runTransaction((transaction) async {
       transaction.set(expenseRef, {
@@ -98,11 +103,11 @@ class DataSource {
   }
 
   Future<Reference<Income>> addIncome(
-    Reference<Wallet> wallet, {
-    String title,
-    double amount,
-    DateTime date,
-  }) {
+      Reference<Wallet> wallet, {
+        String title,
+        double amount,
+        DateTime date,
+      }) {
     final incomeRef = wallet.reference.collection("incomes").document();
     return firestore.runTransaction((transaction) async {
       transaction.set(incomeRef, {
@@ -116,6 +121,9 @@ class DataSource {
       });
     }).then((_) => Reference<Income>(incomeRef));
   }
+}
+
+extension UsersDataSource on DataSource {
 
   Future<List<User>> getUsersByUids(List<String> usersUids) async {
     // TODO: Optimize
