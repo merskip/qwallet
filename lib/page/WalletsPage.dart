@@ -92,7 +92,7 @@ class _WalletsPageState extends State<WalletsPage> {
 
   Widget buildReorderableWallet(BuildContext context, Wallet wallet) {
     return ListTile(
-      key: Key(wallet.reference.documentID),
+      key: Key(wallet.id),
       title: Text(wallet.name),
       trailing: Icon(Icons.drag_handle),
     );

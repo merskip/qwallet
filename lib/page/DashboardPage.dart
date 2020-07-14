@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
@@ -134,7 +133,10 @@ class _TransactionsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: DataSource.instance.getTransactions(Reference(wallet.reference)),
+      stream: DataSource.instance.getTransactions(
+        wallet: wallet.reference,
+        range: getTodayDateTimeRange(),
+      ),
       builder: (context, AsyncSnapshot<List<Transaction>> snapshot) {
         if (snapshot.connectionState != ConnectionState.waiting) {
           final transactions = snapshot.data;

@@ -36,7 +36,7 @@ class _WalletPageContent extends StatelessWidget {
           .walletRemoveConfirmationContent(wallet.name)),
       isDestructive: true,
       onConfirm: () {
-        DataSource.instance.removeWallet(Reference(wallet.reference));
+        DataSource.instance.removeWallet(wallet.reference);
         Navigator.of(context)
             .popUntil((route) => route.settings.name == "/settings/wallets");
       },

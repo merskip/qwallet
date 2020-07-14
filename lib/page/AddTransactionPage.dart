@@ -168,19 +168,18 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     _setAmountFormatted();
 
     if (_formKey.currentState.validate()) {
-      final walletRef = Reference<Wallet>(wallet.reference);
       Reference<Transaction> transactionRef;
 
       if (type == _TransactionType.expense) {
         transactionRef = await DataSource.instance.addExpense(
-          walletRef,
+          wallet.reference,
           title: titleController.text.trim(),
           amount: amount,
           date: date,
         );
       } else {
         transactionRef = await DataSource.instance.addIncome(
-          walletRef,
+          wallet.reference,
           title: titleController.text.trim(),
           amount: amount,
           date: date,

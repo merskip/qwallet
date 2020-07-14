@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart' as Could;
+import 'package:flutter/material.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:rxdart/rxdart.dart';
@@ -34,7 +35,7 @@ extension WalletsDataSource on DataSource {
   Stream<Wallet> getWallet(Reference<Wallet> walletRef) {
     return firestore
         .collection("wallets")
-        .document(walletRef.reference.documentID)
+        .document(walletRef.documentReference.documentID)
         .snapshots()
         .map((s) => Wallet(s));
   }
@@ -56,32 +57,31 @@ extension WalletsDataSource on DataSource {
 }
 
 extension TransactionsDataSource on DataSource {
-
-  Stream<List<Transaction>> getTransactions(Reference<Wallet> wallet) {
+  Stream<List<Transaction>> getTransactions({@required Reference<Wallet> wallet, @required DateTimeRange range}) {
     final expenses = getExpenses(wallet);
-    final incomes = getIncomes(wallet);
+    final incomes = getIncomes(wallet: wallet, range: range);
 
     return CombineLatestStream([expenses, incomes],
-            (List<List<Transaction>> streams) {
-          return streams.expand((e) => e).toList()
-            ..sort((lhs, rhs) => rhs.date.compareTo(lhs.date));
-        });
+        (List<List<Transaction>> streams) {
+      return streams.expand((e) => e).toList()
+        ..sort((lhs, rhs) => rhs.date.compareTo(lhs.date));
+    });
   }
 
   Stream<List<Expense>> getExpenses(Reference<Wallet> wallet) {
-    return wallet.reference
+    return wallet.documentReference
         .collection("expenses")
         .snapshots()
         .map((snapshot) => snapshot.documents.map((s) => Expense(s)).toList());
   }
 
   Future<Reference<Expense>> addExpense(
-      Reference<Wallet> wallet, {
-        String title,
-        double amount,
-        DateTime date,
-      }) {
-    final expenseRef = wallet.reference.collection("expenses").document();
+    Reference<Wallet> wallet, {
+    String title,
+    double amount,
+    DateTime date,
+  }) {
+    final expenseRef = wallet.documentReference.collection("expenses").document();
     return firestore.runTransaction((transaction) async {
       transaction.set(expenseRef, {
         "title": title,
@@ -89,26 +89,31 @@ extension TransactionsDataSource on DataSource {
         "date": Could.Timestamp.fromDate(date),
       });
 
-      transaction.update(wallet.reference, {
+      transaction.update(wallet.documentReference, {
         "totalExpense": Could.FieldValue.increment(amount),
       });
     }).then((_) => Reference<Expense>(expenseRef));
   }
 
-  Stream<List<Income>> getIncomes(Reference<Wallet> wallet) {
-    return wallet.reference
+  Stream<List<Income>> getIncomes({
+    @required Reference<Wallet> wallet,
+    @required DateTimeRange range,
+  }) {
+    return wallet.documentReference
         .collection("incomes")
+        .where("date", isGreaterThanOrEqualTo: range.start.toTimestamp())
+        .where("date", isLessThanOrEqualTo: range.end.toTimestamp())
         .snapshots()
         .map((snapshot) => snapshot.documents.map((s) => Income(s)).toList());
   }
 
   Future<Reference<Income>> addIncome(
-      Reference<Wallet> wallet, {
-        String title,
-        double amount,
-        DateTime date,
-      }) {
-    final incomeRef = wallet.reference.collection("incomes").document();
+    Reference<Wallet> wallet, {
+    String title,
+    double amount,
+    DateTime date,
+  }) {
+    final incomeRef = wallet.documentReference.collection("incomes").document();
     return firestore.runTransaction((transaction) async {
       transaction.set(incomeRef, {
         "title": title,
@@ -116,7 +121,7 @@ extension TransactionsDataSource on DataSource {
         "date": Could.Timestamp.fromDate(date),
       });
 
-      transaction.update(wallet.reference, {
+      transaction.update(wallet.documentReference, {
         "totalIncome": Could.FieldValue.increment(amount),
       });
     }).then((_) => Reference<Income>(incomeRef));
@@ -124,7 +129,6 @@ extension TransactionsDataSource on DataSource {
 }
 
 extension UsersDataSource on DataSource {
-
   Future<List<User>> getUsersByUids(List<String> usersUids) async {
     // TODO: Optimize
     final users = await FirebaseService.instance.fetchUsers();
@@ -132,4 +136,16 @@ extension UsersDataSource on DataSource {
         .map((userUid) => users.firstWhere((user) => user.uid == userUid))
         .toList();
   }
+}
+
+extension DateTimeUtils on DateTime {
+
+  Could.Timestamp toTimestamp() => Could.Timestamp.fromDate(this);
+}
+
+DateTimeRange getTodayDateTimeRange() {
+  final now = DateTime.now();
+  final startDay = DateTime(now.year, now.month, now.day);
+  final endDay = DateTime(now.year, now.month, now.day, 23, 59, 59, 999, 999);
+  return DateTimeRange(start: startDay, end: endDay);
 }

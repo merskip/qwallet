@@ -3,16 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../utils.dart';
 import 'Model.dart';
 
-abstract class Transaction extends Model {
+abstract class Transaction {
 
   String get title;
   double get amount;
   Timestamp get date;
-
-  Transaction(DocumentSnapshot snapshot) : super(snapshot);
 }
 
-class Income extends Transaction {
+class Income extends Model<Income> with Transaction {
   final String title;
   final double amount;
   final Timestamp date;
@@ -24,7 +22,7 @@ class Income extends Transaction {
         super(snapshot);
 }
 
-class Expense extends Transaction {
+class Expense extends Model<Expense> with Transaction {
   final String title;
   final double amount;
   final Timestamp date;

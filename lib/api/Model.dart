@@ -1,19 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Reference<T> {
-  DocumentReference reference;
+  DocumentReference documentReference;
 
-  DocumentReference get parentReference => reference.parent().parent();
+  String get id => documentReference.documentID;
 
-  String get id => reference.documentID;
-
-  Reference(this.reference);
+  Reference(this.documentReference);
 }
 
-abstract class Model extends Reference {
-  final DocumentSnapshot snapshot;
+abstract class Model<T> {
+  final Reference<T> reference;
+  final DocumentSnapshot documentSnapshot;
 
-  Model(this.snapshot) : super(snapshot.reference);
+  String get id => reference.id;
+
+  Model(this.documentSnapshot)
+      : this.reference = Reference<T>(documentSnapshot.reference);
 
   @override
   bool operator ==(Object other) =>

@@ -10,7 +10,7 @@ class LocalPreferences {
 
   static Future<void> orderWallets(List<Wallet> wallets) async {
     final preferences = await SharedPreferences.getInstance();
-    final walletsOrderIds = wallets.map((wallet) => wallet.reference.documentID).toList();
+    final walletsOrderIds = wallets.map((wallet) => wallet.id).toList();
     preferences.setStringList("walletsOrder", walletsOrderIds);
     _walletsOrder.add(wallets);
   }
@@ -26,7 +26,7 @@ class LocalPreferences {
       final result = List<Wallet>();
       for (final walletId in walletsOrderIds) {
         final foundWallet = remainingWallets.firstWhere(
-            (wallet) => wallet.reference.documentID == walletId,
+            (wallet) => wallet.id == walletId,
             orElse: () => null);
         if (foundWallet != null) {
           result.add(foundWallet);

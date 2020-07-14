@@ -4,7 +4,7 @@ import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/utils.dart';
 
-class Wallet extends Model {
+class Wallet extends Model<Wallet> {
   final String name;
   final List<String> ownersUid;
   final String currencySymbol;
