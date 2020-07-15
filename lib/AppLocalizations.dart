@@ -413,4 +413,14 @@ extension TransactionsCardLocalizations on AppLocalizations {
       en: "Income",
       pl: "Przychód",
     );
+
+  String get transactionsCardTodayHint => _locale(
+    en: "today",
+    pl: "dzisiaj",
+  );
+
+  String get transactionsCardYesterdayHint => _locale(
+    en: "yesterday",
+    pl: "wczoraj",
+  );
 }

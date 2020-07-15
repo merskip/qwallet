@@ -1,7 +1,11 @@
+import 'package:collection/collection.dart';
+import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
 
@@ -17,9 +21,7 @@ class TransactionsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverPadding(
       padding: EdgeInsets.only(bottom: 88), // Padding for FAB
-      sliver: SliverToBoxAdapter(
-        child: _TransactionsCard(wallet: wallet)
-      ),
+      sliver: SliverToBoxAdapter(child: _TransactionsCard(wallet: wallet)),
     );
   }
 }
@@ -113,13 +115,19 @@ class _TransactionsCardState extends State<_TransactionsCard> {
       ),
       builder: (context, List<Transaction> transactions) {
         if (transactions.isNotEmpty) {
-          return ListView.builder(
+          return ListView(
             shrinkWrap: true,
             primary: false,
             padding: EdgeInsets.only(bottom: 8),
-            itemCount: transactions.length,
-            itemBuilder: (context, index) =>
-                _TransactionListItem(widget.wallet, transactions[index]),
+            children: [
+              if (timeRange == _TimeRange.today ||
+                  timeRange == _TimeRange.yesterday)
+                ...transactions.map((transaction) =>
+                    _TransactionListItem(widget.wallet, transaction))
+              else
+                ...buildGroupedTransactions(
+                    context, widget.wallet, transactions)
+            ],
           );
         } else {
           return buildEmptyTransactions(context);
@@ -142,16 +150,58 @@ class _TransactionsCardState extends State<_TransactionsCard> {
     return null;
   }
 
-  Widget buildEmptyTransactions(BuildContext context) {
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: EmptyStateWidget(
-          icon: "assets/ic-wallet.svg",
-          text: AppLocalizations.of(context).transactionsCardTransactionsEmpty,
+  List<Widget> buildGroupedTransactions(
+    BuildContext context,
+    Wallet wallet,
+    List<Transaction> transactions,
+  ) {
+    final transactionsByDate = groupBy(
+      transactions,
+      (Transaction transaction) =>
+          getDateWithoutTime(transaction.date.toDate()),
+    );
+    final dates = transactionsByDate.keys.toList()
+      ..sort((lhs, rhs) => rhs.compareTo(lhs));
+
+    final result = List<Widget>();
+    for (final date in dates) {
+      result.add(Padding(
+        padding: const EdgeInsets.only(left: 12, right: 12, top: 8, bottom: 2),
+        child: Text(
+          getDateSectionTitle(date),
+          style: Theme.of(context).textTheme.subtitle2,
         ),
-      );
+      ));
+      final transactions = transactionsByDate[date];
+      result.addAll(transactions
+          .map((transaction) => _TransactionListItem(wallet, transaction)));
+    }
+
+    return result;
   }
 
+  String getDateSectionTitle(DateTime date) {
+    final locale = AppLocalizations.of(context).locale.toString();
+    String dateText = DateFormat("EEEE, d MMMM", locale).format(date);
+    if (Utils.isSameDay(date, DateTime.now()))
+      dateText +=
+          " (${AppLocalizations.of(context).transactionsCardTodayHint})";
+    if (Utils.isSameDay(date, DateTime.now().subtract(Duration(days: 1))))
+      dateText +=
+          " (${AppLocalizations.of(context).transactionsCardYesterdayHint})";
+    return dateText[0].toUpperCase() +
+        dateText.substring(1); // Uppercase first letter
+  }
+
+  Widget buildEmptyTransactions(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: EmptyStateWidget(
+        icon: "assets/ic-wallet.svg",
+        text: AppLocalizations.of(context).transactionsCardTransactionsEmpty,
+      ),
+    );
+  }
 }
 
 class _TransactionListItem extends StatelessWidget {
