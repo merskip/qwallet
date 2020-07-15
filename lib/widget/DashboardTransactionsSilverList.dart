@@ -82,6 +82,7 @@ enum _TransactionRange {
   yesterday,
   lastWeek,
   lastMonth,
+  all
 }
 
 class _FilterChipsListItem extends _ListItem {
@@ -102,6 +103,7 @@ class _FilterChipsListItem extends _ListItem {
           buildChip(context, "#Yesterday", _TransactionRange.yesterday),
           buildChip(context, "#Last week", _TransactionRange.lastWeek),
           buildChip(context, "#Last month", _TransactionRange.lastMonth),
+          buildChip(context, "#All", _TransactionRange.all),
         ],
       ),
     );
