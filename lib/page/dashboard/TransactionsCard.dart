@@ -3,6 +3,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
+import 'package:qwallet/widget/empty_state_widget.dart';
 
 import '../../AppLocalizations.dart';
 import '../../Money.dart';
@@ -111,14 +112,18 @@ class _TransactionsCardState extends State<_TransactionsCard> {
         range: _getDateTimeRange(timeRange),
       ),
       builder: (context, List<Transaction> transactions) {
-        return ListView.builder(
-          shrinkWrap: true,
-          primary: false,
-          padding: EdgeInsets.only(bottom: 8),
-          itemCount: transactions.length,
-          itemBuilder: (context, index) =>
-              _TransactionListItem(widget.wallet, transactions[index]),
-        );
+        if (transactions.isNotEmpty) {
+          return ListView.builder(
+            shrinkWrap: true,
+            primary: false,
+            padding: EdgeInsets.only(bottom: 8),
+            itemCount: transactions.length,
+            itemBuilder: (context, index) =>
+                _TransactionListItem(widget.wallet, transactions[index]),
+          );
+        } else {
+          return buildEmptyTransactions(context);
+        }
       },
     );
   }
@@ -136,6 +141,17 @@ class _TransactionsCardState extends State<_TransactionsCard> {
     }
     return null;
   }
+
+  Widget buildEmptyTransactions(BuildContext context) {
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: EmptyStateWidget(
+          icon: "assets/ic-wallet.svg",
+          text: AppLocalizations.of(context).transactionsCardTransactionsEmpty,
+        ),
+      );
+  }
+
 }
 
 class _TransactionListItem extends StatelessWidget {

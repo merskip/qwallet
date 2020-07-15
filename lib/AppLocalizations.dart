@@ -62,11 +62,6 @@ extension DashbaordLocalizations on AppLocalizations {
     en: "Add expense or income",
     pl: "Dodaj wydatek lub przychód",
   );
-
-  String get dashboardTransactionsEmpty => _locale(
-    en: "There are no expenses or incomes",
-    pl: "Nie ma żadnych wydatków ani dochodów",
-  );
 }
 
 extension SettingsLocalizations on AppLocalizations {
@@ -383,7 +378,12 @@ extension AddTransactionLocalizations on AppLocalizations {
 }
 
 extension TransactionsCardLocalizations on AppLocalizations {
-  
+
+  String get transactionsCardTransactionsEmpty => _locale(
+    en: "There are no expenses or incomes",
+    pl: "Nie ma żadnych wydatków ani dochodów",
+  );
+
   String get transactionsCardToday => _locale(
       en: "Today",
       pl: "Dzisiaj",
