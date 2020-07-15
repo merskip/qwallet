@@ -3,12 +3,13 @@ import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
-class WalletCategoriesPage extends StatelessWidget {
+class CategoriesPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
 
-  const WalletCategoriesPage({Key key, this.walletRef}) : super(key: key);
+  const CategoriesPage({Key key, this.walletRef}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,7 @@ class _WalletCategoriesPageContent extends StatelessWidget {
       body: buildCategories(context),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () => router.navigateTo(context, "/wallet/${wallet.id}/categories/add"),
       ),
     );
   }

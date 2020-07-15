@@ -5,11 +5,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/page/AddTransactionPage.dart';
-import 'package:qwallet/page/WalletCategoriesPage.dart';
 import 'package:qwallet/page/WalletPage.dart';
 import 'package:qwallet/page/WalletsPage.dart';
 
+import 'page/AddCategoryPage.dart';
 import 'page/AddWalletPage.dart';
+import 'page/CategoriesPage.dart';
 import 'page/SettingsPage.dart';
 import 'page/landing_page.dart';
 
@@ -79,7 +80,19 @@ void defineRoutes(Router router) {
     handler: Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
           final walletId = params["walletId"][0];
-          return WalletCategoriesPage(
+          return CategoriesPage(
+            walletRef: DataSource.instance.getWalletReference(walletId),
+          );
+        }),
+  );
+
+  router.define(
+    "/wallet/:walletId/categories/add",
+    transitionType: TransitionType.nativeModal,
+    handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+          final walletId = params["walletId"][0];
+          return AddCategoryPage(
             walletRef: DataSource.instance.getWalletReference(walletId),
           );
         }),
