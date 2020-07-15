@@ -3,14 +3,13 @@ import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/page/dashboard/DashboardTransactionsWidget.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
 import 'package:qwallet/widget/vector_image.dart';
 import 'package:rxdart/rxdart.dart';
-
-import 'file:///C:/Users/Piotr%20Merski/Workspace/qwallet/lib/page/dashboard/DashboardTransactionsSilverList.dart';
 
 import '../../router.dart';
 import '../../widget_utils.dart';
@@ -61,7 +60,7 @@ class _DashboardPageState extends State<DashboardPage> {
           stream: _selectedWallet.stream,
           builder: (context, AsyncSnapshot<Wallet> snapshot) {
             if (snapshot.hasData) {
-              return DashboardTransactionsSilverList(wallet: snapshot.data);
+              return DashboardTransactionsWidget(wallet: snapshot.data);
             } else {
               return silverProgressIndicator();
             }

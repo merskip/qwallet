@@ -2,116 +2,79 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adapter.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
-import '../../AppLocalizations.dart';
 import '../../Money.dart';
-import '../../widget/empty_state_widget.dart';
-import '../../widget_utils.dart';
 
-class DashboardTransactionsSilverList extends StatelessWidget {
+class DashboardTransactionsWidget extends StatelessWidget {
   final Wallet wallet;
 
-  const DashboardTransactionsSilverList({Key key, this.wallet})
-      : super(key: key);
+  const DashboardTransactionsWidget({Key key, this.wallet}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: DataSource.instance.getTransactions(
-        wallet: wallet.reference,
-        range: getTodayDateTimeRange(),
-      ),
-      builder: (context, AsyncSnapshot<List<Transaction>> snapshot) {
-        if (snapshot.connectionState != ConnectionState.waiting) {
-          final transactions = snapshot.data;
-          if (transactions.isNotEmpty)
-            return buildTransactions(context, transactions);
-          else
-            return buildEmptyTransactions(context);
-        } else
-          return silverProgressIndicator();
-      },
-    );
-  }
-
-  Widget buildEmptyTransactions(BuildContext context) {
-    return SliverFillRemainingBoxAdapter(
-        child: EmptyStateWidget(
-      icon: "assets/ic-wallet.svg",
-      text: AppLocalizations.of(context).dashboardTransactionsEmpty,
-    ));
-  }
-
-  Widget buildTransactions(
-      BuildContext context, List<Transaction> transactions) {
-    final listItems = prepareListItems(transactions);
-
     return SliverPadding(
       padding: EdgeInsets.only(bottom: 88), // Padding for FAB
       sliver: SliverToBoxAdapter(
-        child: Card(
-          margin: const EdgeInsets.all(16),
-          child: ListView.builder(
-            primary: false,
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            itemCount: listItems.length,
-            itemBuilder: (context, index) => listItems[index].build(context),
-          ),
-        ),
+        child: _TransactionsCard(wallet: wallet)
       ),
     );
   }
-
-  List<_ListItem> prepareListItems(List<Transaction> transactions) {
-    return <_ListItem>[
-      _FilterChipsListItem(range: _TransactionRange.today, onSelected: (_) {}),
-      ...transactions
-          .map((transaction) => _TransactionListItem(wallet, transaction)),
-    ];
-  }
 }
 
-abstract class _ListItem {
-  Widget build(BuildContext context);
-}
-
-enum _TransactionRange {
+enum _TimeRange {
   today,
   yesterday,
   lastWeek,
   lastMonth,
-  all
 }
 
-class _FilterChipsListItem extends _ListItem {
-  final _TransactionRange range;
-  final void Function(_TransactionRange) onSelected;
+class _TransactionsCard extends StatefulWidget {
+  final Wallet wallet;
 
-  _FilterChipsListItem({this.range, this.onSelected});
+  const _TransactionsCard({Key key, this.wallet}) : super(key: key);
+
+  @override
+  _TransactionsCardState createState() => _TransactionsCardState();
+}
+
+class _TransactionsCardState extends State<_TransactionsCard> {
+  _TimeRange timeRange = _TimeRange.today;
+
+  onSelectedTimeRange(BuildContext context, _TimeRange timeRange) {
+    setState(() => this.timeRange = timeRange);
+  }
 
   @override
   Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.all(16),
+      child: Column(children: [
+        buildTimeRangeSelection(context),
+        buildTransactionsList(context),
+      ]),
+    );
+  }
+
+  Widget buildTimeRangeSelection(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Wrap(
         spacing: 8,
         children: [
-          buildChip(context, "#Today", _TransactionRange.today),
-          buildChip(context, "#Yesterday", _TransactionRange.yesterday),
-          buildChip(context, "#Last week", _TransactionRange.lastWeek),
-          buildChip(context, "#Last month", _TransactionRange.lastMonth),
-          buildChip(context, "#All", _TransactionRange.all),
+          buildTimeRangeChip(context, "#Today", _TimeRange.today),
+          buildTimeRangeChip(context, "#Yesterday", _TimeRange.yesterday),
+          buildTimeRangeChip(context, "#Last week", _TimeRange.lastWeek),
+          buildTimeRangeChip(context, "#Last month", _TimeRange.lastMonth),
         ],
       ),
     );
   }
 
-  Widget buildChip(
-      BuildContext context, String title, _TransactionRange range) {
-    final isSelected = (this.range == range);
+  Widget buildTimeRangeChip(
+      BuildContext context, String title, _TimeRange timeRange) {
+    final isSelected = (this.timeRange == timeRange);
     return ChoiceChip(
       label: Text(
         title,
@@ -120,12 +83,45 @@ class _FilterChipsListItem extends _ListItem {
       selected: isSelected,
       selectedColor: Theme.of(context).primaryColor,
       visualDensity: VisualDensity.compact,
-      onSelected: (_) => onSelected(range),
+      onSelected: (_) => onSelectedTimeRange(context, timeRange),
     );
+  }
+
+  Widget buildTransactionsList(BuildContext context) {
+    return SimpleStreamWidget(
+      stream: DataSource.instance.getTransactions(
+        wallet: widget.wallet.reference,
+        range: _getDateTimeRange(timeRange),
+      ),
+      builder: (context, List<Transaction> transactions) {
+        return ListView.builder(
+          shrinkWrap: true,
+          primary: false,
+          padding: EdgeInsets.only(bottom: 8),
+          itemCount: transactions.length,
+          itemBuilder: (context, index) =>
+              _TransactionListItem(widget.wallet, transactions[index]),
+        );
+      },
+    );
+  }
+
+  DateTimeRange _getDateTimeRange(_TimeRange timeRange) {
+    switch (timeRange) {
+      case _TimeRange.today:
+        return getTodayDateTimeRange();
+      case _TimeRange.yesterday:
+        return getYesterdayDateTimeRange();
+      case _TimeRange.lastWeek:
+        return getLastWeekDateTimeRange();
+      case _TimeRange.lastMonth:
+        return getLastMonthDateTimeRange();
+    }
+    return null;
   }
 }
 
-class _TransactionListItem extends _ListItem {
+class _TransactionListItem extends StatelessWidget {
   final Wallet wallet;
   final Transaction transaction;
 
@@ -145,6 +141,7 @@ class _TransactionListItem extends _ListItem {
         : null;
 
     return ListTile(
+      key: Key(transaction.id),
       leading: buildCategoryIcon(context, transaction),
       title: Text(title),
       subtitle: subTitle != null ? Text(subTitle) : null,

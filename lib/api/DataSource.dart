@@ -157,3 +157,24 @@ DateTimeRange getTodayDateTimeRange() {
   final endDay = DateTime(now.year, now.month, now.day, 23, 59, 59, 999, 999);
   return DateTimeRange(start: startDay, end: endDay);
 }
+
+DateTimeRange getYesterdayDateTimeRange() {
+  final now = DateTime.now();
+  final startDay = DateTime(now.year, now.month, now.day - 1);
+  final endDay = DateTime(now.year, now.month, now.day - 1, 23, 59, 59, 999, 999);
+  return DateTimeRange(start: startDay, end: endDay);
+}
+
+DateTimeRange getLastWeekDateTimeRange() {
+  final now = DateTime.now();
+  final startDay = DateTime(now.year, now.month, now.day);
+  final endDay = DateTime(now.year, now.month, now.day - 6, 23, 59, 59, 999, 999);
+  return DateTimeRange(start: startDay, end: endDay);
+}
+
+DateTimeRange getLastMonthDateTimeRange() {
+  final now = DateTime.now();
+  final startDay = DateTime(now.year, now.month, now.day);
+  final endDay = DateTime(now.year, now.month - 1, now.day, 23, 59, 59, 999, 999);
+  return DateTimeRange(start: startDay, end: endDay);
+}
