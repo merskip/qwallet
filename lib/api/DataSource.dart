@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart' as Could;
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:rxdart/rxdart.dart';
@@ -134,6 +135,18 @@ extension TransactionsDataSource on DataSource {
         "totalIncome": Could.FieldValue.increment(amount),
       });
     }).then((_) => Reference<Income>(incomeRef));
+  }
+}
+
+extension CategoriesDataSource on DataSource {
+
+  Stream<List<Category>> getCategories({
+    @required Reference<Wallet> wallet,
+  }) {
+    return wallet.documentReference
+        .collection("categories")
+        .snapshots()
+        .map((snapshot) => snapshot.documents.map((s) => Category(s)).toList());
   }
 }
 
