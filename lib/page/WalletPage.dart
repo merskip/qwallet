@@ -3,6 +3,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/model/user.dart';
+import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
@@ -61,7 +62,9 @@ class _WalletPageContent extends StatelessWidget {
           buildName(context),
           buildOwners(context),
           buildCurrency(context),
-          buildBalance(context)
+          buildBalance(context),
+          Divider(),
+          buildCategories(context)
         ],
       ),
     );
@@ -100,6 +103,15 @@ class _WalletPageContent extends StatelessWidget {
     return _DetailsItem(
       title: Text(AppLocalizations.of(context).walletBalance),
       value: Text(wallet.balance.formatted),
+    );
+  }
+
+  Widget buildCategories(BuildContext context) {
+    return ListTile(
+      leading: Icon(Icons.category),
+      title: Text("#Categories"),
+      onTap: () =>
+          router.navigateTo(context, "/wallet/${wallet.id}/categories"),
     );
   }
 }
