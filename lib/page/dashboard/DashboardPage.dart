@@ -3,7 +3,6 @@ import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/widget/DashboardTransactionsSilverList.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
@@ -11,8 +10,10 @@ import 'package:qwallet/widget/empty_state_widget.dart';
 import 'package:qwallet/widget/vector_image.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../router.dart';
-import '../widget_utils.dart';
+import 'file:///C:/Users/Piotr%20Merski/Workspace/qwallet/lib/page/dashboard/DashboardTransactionsSilverList.dart';
+
+import '../../router.dart';
+import '../../widget_utils.dart';
 
 class DashboardPage extends StatefulWidget {
   @override

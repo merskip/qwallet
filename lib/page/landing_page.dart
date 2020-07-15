@@ -4,7 +4,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/model/user.dart';
 
 import '../firebase_service.dart';
-import 'DashboardPage.dart';
+import 'dashboard/DashboardPage.dart';
 import 'sign_in_page.dart';
 
 class LandingPage extends StatefulWidget {

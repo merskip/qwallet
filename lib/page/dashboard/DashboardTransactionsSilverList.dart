@@ -4,10 +4,10 @@ import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adapter.dart';
 
-import '../AppLocalizations.dart';
-import '../Money.dart';
-import '../widget_utils.dart';
-import 'empty_state_widget.dart';
+import '../../AppLocalizations.dart';
+import '../../Money.dart';
+import '../../widget/empty_state_widget.dart';
+import '../../widget_utils.dart';
 
 class DashboardTransactionsSilverList extends StatelessWidget {
   final Wallet wallet;
