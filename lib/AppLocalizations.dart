@@ -371,11 +371,6 @@ extension AddTransactionLocalizations on AppLocalizations {
     pl: "Tytuł",
   );
 
-  String get addTransactionTitleErrorIsEmpty => _locale(
-    en: "Enter some title",
-    pl: "Wprowadź jakiś tytuł",
-  );
-
   String get addTransactionDate => _locale(
     en: "Date",
     pl: "Data",

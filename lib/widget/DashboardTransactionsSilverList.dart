@@ -51,9 +51,11 @@ class DashboardTransactionsSilverList extends StatelessWidget {
       padding: EdgeInsets.only(bottom: 88), // Padding for FAB
       sliver: SliverToBoxAdapter(
         child: Card(
+          margin: const EdgeInsets.all(16),
           child: ListView.builder(
             primary: false,
             shrinkWrap: true,
+            padding: EdgeInsets.zero,
             itemCount: listItems.length,
             itemBuilder: (context, index) => listItems[index].build(context),
           ),
@@ -82,7 +84,7 @@ class _HeaderListItem extends _ListItem {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      padding: const EdgeInsets.all(16),
       child: Text(
         title,
         style: Theme.of(context).textTheme.bodyText1,
@@ -102,10 +104,19 @@ class _TransactionListItem extends _ListItem {
     final color = transaction is Income ? Colors.green : null;
     final amountPrefix = transaction is Income ? "+" : "-";
     final amountText = Money(transaction.amount, wallet.currency).formatted;
+
+    final String title = transaction.title.isNotEmpty
+        ? transaction.title
+        : (transaction is Income ? "#Income" : "#Expense");
+    final String subTitle = transaction.title.isNotEmpty
+        ? (transaction is Income ? "#Income" : "#Expense")
+        : null;
+
     return ListTile(
-      title: Text(transaction.title),
-      subtitle: Text(transaction is Income ? "#Income" : "#Expense"),
+      title: Text(title),
+      subtitle: subTitle != null ? Text(subTitle) : null,
       trailing: Text(amountPrefix + amountText, style: TextStyle(color: color)),
+      dense: true,
       onTap: () {},
     );
   }

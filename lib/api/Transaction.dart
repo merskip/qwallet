@@ -5,6 +5,7 @@ import 'Model.dart';
 
 abstract class Transaction {
 
+  String get id;
   String get title;
   double get amount;
   Timestamp get date;

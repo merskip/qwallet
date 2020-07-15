@@ -296,11 +296,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       maxLength: 50,
       textCapitalization: TextCapitalization.sentences,
       textInputAction: TextInputAction.next,
-      validator: (title) {
-        if (title.trim().isEmpty)
-          return AppLocalizations.of(context).addTransactionTitleErrorIsEmpty;
-        return null;
-      },
       onFieldSubmitted: (value) => titleFocus.nextFocus(),
     );
   }
