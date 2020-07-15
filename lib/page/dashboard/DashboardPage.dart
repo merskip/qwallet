@@ -47,7 +47,8 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       body: CustomScrollView(slivers: [
         SliverAppBar(
-          expandedHeight: 150.0,
+          forceElevated: true,
+          expandedHeight: 128.0,
           flexibleSpace: WalletsSwipeWidget(
             wallets: wallets,
             onSelectedWallet: (wallet) {
