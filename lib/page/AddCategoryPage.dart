@@ -42,6 +42,7 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
         buildTitleField(context),
         buildColorPicker(context),
         buildIconPicker(context),
+        buildIconPreview(context),
       ]),
     );
   }
@@ -128,6 +129,21 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
         );
       }).toList(),
       onChanged: (icon) => setState(() => this.icon = icon),
+    );
+  }
+
+  Widget buildIconPreview(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: CircleAvatar(
+        backgroundColor: primaryColor.shade100,
+        child: Icon(
+          icon,
+          color: primaryColor.shade800,
+        size: 48,
+        ),
+      radius: 48,
+      ),
     );
   }
 
