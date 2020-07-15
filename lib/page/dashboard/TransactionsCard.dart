@@ -4,12 +4,13 @@ import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
+import '../../AppLocalizations.dart';
 import '../../Money.dart';
 
-class DashboardTransactionsWidget extends StatelessWidget {
+class TransactionsCard extends StatelessWidget {
   final Wallet wallet;
 
-  const DashboardTransactionsWidget({Key key, this.wallet}) : super(key: key);
+  const TransactionsCard({Key key, this.wallet}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +64,26 @@ class _TransactionsCardState extends State<_TransactionsCard> {
       child: Wrap(
         spacing: 8,
         children: [
-          buildTimeRangeChip(context, "#Today", _TimeRange.today),
-          buildTimeRangeChip(context, "#Yesterday", _TimeRange.yesterday),
-          buildTimeRangeChip(context, "#Last week", _TimeRange.lastWeek),
-          buildTimeRangeChip(context, "#Last month", _TimeRange.lastMonth),
+          buildTimeRangeChip(
+            context,
+            AppLocalizations.of(context).transactionsCardToday,
+            _TimeRange.today,
+          ),
+          buildTimeRangeChip(
+            context,
+            AppLocalizations.of(context).transactionsCardYesterday,
+            _TimeRange.yesterday,
+          ),
+          buildTimeRangeChip(
+            context,
+            AppLocalizations.of(context).transactionsCardLastWeek,
+            _TimeRange.lastWeek,
+          ),
+          buildTimeRangeChip(
+            context,
+            AppLocalizations.of(context).transactionsCardLastMonth,
+            _TimeRange.lastMonth,
+          ),
         ],
       ),
     );
@@ -135,9 +152,13 @@ class _TransactionListItem extends StatelessWidget {
 
     final String title = transaction.title.isNotEmpty
         ? transaction.title
-        : (transaction is Income ? "#Income" : "#Expense");
+        : (transaction is Income
+            ? AppLocalizations.of(context).transactionsCardIncome
+            : AppLocalizations.of(context).transactionsCardExpense);
     final String subTitle = transaction.title.isNotEmpty
-        ? (transaction is Income ? "#Income" : "#Expense")
+        ? (transaction is Income
+            ? AppLocalizations.of(context).transactionsCardIncome
+            : AppLocalizations.of(context).transactionsCardExpense)
         : null;
 
     return ListTile(

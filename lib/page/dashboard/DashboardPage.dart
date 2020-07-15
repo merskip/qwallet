@@ -3,7 +3,7 @@ import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/page/dashboard/DashboardTransactionsWidget.dart';
+import 'package:qwallet/page/dashboard/TransactionsCard.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
@@ -60,7 +60,7 @@ class _DashboardPageState extends State<DashboardPage> {
           stream: _selectedWallet.stream,
           builder: (context, AsyncSnapshot<Wallet> snapshot) {
             if (snapshot.hasData) {
-              return DashboardTransactionsWidget(wallet: snapshot.data);
+              return TransactionsCard(wallet: snapshot.data);
             } else {
               return silverProgressIndicator();
             }

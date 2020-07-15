@@ -381,3 +381,36 @@ extension AddTransactionLocalizations on AppLocalizations {
     pl: "Dodaj",
   );
 }
+
+extension TransactionsCardLocalizations on AppLocalizations {
+  
+  String get transactionsCardToday => _locale(
+      en: "Today",
+      pl: "Dzisiaj",
+    );
+
+  String get transactionsCardYesterday => _locale(
+      en: "Yesterday",
+      pl: "Wczoraj",
+    );
+
+  String get transactionsCardLastWeek => _locale(
+      en: "Last week",
+      pl: "Ostatni tydzień",
+    );
+
+  String get transactionsCardLastMonth => _locale(
+      en: "Last month",
+      pl: "Ostatni miesiąc",
+    );
+
+  String get transactionsCardExpense => _locale(
+      en: "Expense",
+      pl: "Wydatek",
+    );
+
+  String get transactionsCardIncome => _locale(
+      en: "Income",
+      pl: "Przychód",
+    );
+}
