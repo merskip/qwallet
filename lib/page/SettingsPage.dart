@@ -71,6 +71,7 @@ class SettingsPage extends StatelessWidget {
       title: Text(AppLocalizations.of(context).settingsLanguage),
       subtitle: Text(AppLocalizations.of(context).settingsCurrentLanguage),
       dense: true,
+      visualDensity: VisualDensity.compact,
     );
   }
 
@@ -82,6 +83,7 @@ class SettingsPage extends StatelessWidget {
           title: Text(AppLocalizations.of(context).settingsApplicationVersion),
           subtitle: Text("${info.data?.version} (${info.data?.buildNumber})"),
           dense: true,
+          visualDensity: VisualDensity.compact,
         );
       },
     );
@@ -111,6 +113,7 @@ class SettingsPage extends StatelessWidget {
         ),
       ),
       dense: true,
+      visualDensity: VisualDensity.compact,
       onTap: () async {
         const url = 'http://merskip.pl';
         if (await canLaunch(url)) await launch(url);
@@ -122,6 +125,7 @@ class SettingsPage extends StatelessWidget {
     return ListTile(
       title: Text(AppLocalizations.of(context).settingsPrivacyPolicy),
       dense: true,
+      visualDensity: VisualDensity.compact,
       onTap: () => Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("TODO"), // TODO: Impl
       )),
@@ -132,6 +136,7 @@ class SettingsPage extends StatelessWidget {
     return ListTile(
       title: Text(AppLocalizations.of(context).settingsTermsOfService),
       dense: true,
+      visualDensity: VisualDensity.compact,
       onTap: () => Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("TODO"), // TODO: Impl
       )),
@@ -142,6 +147,7 @@ class SettingsPage extends StatelessWidget {
     return ListTile(
       title: Text(AppLocalizations.of(context).settingsLicenses),
       dense: true,
+      visualDensity: VisualDensity.compact,
       onTap: () async {
         final info = await PackageInfo.fromPlatform();
         showLicensePage(
