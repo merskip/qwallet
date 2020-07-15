@@ -3,6 +3,8 @@ import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/dialog/UserDialog.dart';
+import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/LocalWebsitePage.dart';
 import 'package:qwallet/widget/vector_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -126,9 +128,13 @@ class SettingsPage extends StatelessWidget {
       title: Text(AppLocalizations.of(context).settingsPrivacyPolicy),
       dense: true,
       visualDensity: VisualDensity.compact,
-      onTap: () => Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("TODO"), // TODO: Impl
-      )),
+      onTap: () => pushPage(
+        context,
+        builder: (context) => LocalWebsitePage(
+          title: AppLocalizations.of(context).settingsPrivacyPolicy,
+          htmlFile: "assets/privacy_policy.html",
+        ),
+      ),
     );
   }
 
@@ -137,9 +143,13 @@ class SettingsPage extends StatelessWidget {
       title: Text(AppLocalizations.of(context).settingsTermsOfService),
       dense: true,
       visualDensity: VisualDensity.compact,
-      onTap: () => Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text("TODO"), // TODO: Impl
-      )),
+      onTap: () => pushPage(
+        context,
+        builder: (context) => LocalWebsitePage(
+          title: AppLocalizations.of(context).settingsTermsOfService,
+          htmlFile: "assets/terms_of_service.html",
+        ),
+      ),
     );
   }
 
