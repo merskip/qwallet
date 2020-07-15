@@ -31,7 +31,7 @@ class _AddCategoryForm extends StatefulWidget {
 class _AddCategoryFormState extends State<_AddCategoryForm> {
   final _formKey = GlobalKey<_AddCategoryFormState>();
 
-  MaterialColor primaryColor;
+  MaterialColor primaryColor = Colors.primaries.first;
   IconData icon;
 
   @override
@@ -41,6 +41,7 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
       child: Column(children: [
         buildTitleField(context),
         buildColorPicker(context),
+        buildColorSlider(context),
         buildIconPicker(context),
         buildIconPreview(context),
       ]),
@@ -76,6 +77,16 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
         );
       }).toList(),
       onChanged: (color) => setState(() => this.primaryColor = color),
+    );
+  }
+
+  Widget buildColorSlider(BuildContext context) {
+    return Slider(
+      min: 0.0,
+      max: Colors.primaries.length.toDouble() - 1,
+      value: Colors.primaries.indexOf(primaryColor).toDouble(),
+      divisions: Colors.primaries.length,
+      onChanged: (value) => setState(() => primaryColor = Colors.primaries[value.toInt()]),
     );
   }
 
@@ -136,17 +147,16 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: CircleAvatar(
-        backgroundColor: primaryColor.shade100,
+        backgroundColor: primaryColor?.shade100 ?? Colors.transparent,
         child: Icon(
           icon,
-          color: primaryColor.shade800,
-        size: 48,
+          color: primaryColor?.shade800 ?? Colors.transparent,
+          size: 48,
         ),
-      radius: 48,
+        radius: 48,
       ),
     );
   }
-
 }
 
 
