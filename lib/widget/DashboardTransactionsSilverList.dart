@@ -65,10 +65,11 @@ class DashboardTransactionsSilverList extends StatelessWidget {
   }
 
   List<_ListItem> prepareListItems(List<Transaction> transactions) {
-    final items = List<_ListItem>();
-    items.add(_HeaderListItem(title: "#Today's expenses and incomes"));
-    items.addAll(transactions.map((t) => _TransactionListItem(wallet, t)));
-    return items;
+    return <_ListItem>[
+      _FilterChipsListItem(range: _TransactionRange.today, onSelected: (_) {}),
+      ...transactions
+          .map((transaction) => _TransactionListItem(wallet, transaction)),
+    ];
   }
 }
 
@@ -76,19 +77,48 @@ abstract class _ListItem {
   Widget build(BuildContext context);
 }
 
-class _HeaderListItem extends _ListItem {
-  final String title;
+enum _TransactionRange {
+  today,
+  yesterday,
+  lastWeek,
+  lastMonth,
+}
 
-  _HeaderListItem({this.title});
+class _FilterChipsListItem extends _ListItem {
+  final _TransactionRange range;
+  final void Function(_TransactionRange) onSelected;
+
+  _FilterChipsListItem({this.range, this.onSelected});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.bodyText1,
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Wrap(
+        spacing: 8,
+        children: [
+          buildChip(context, "#Today", _TransactionRange.today),
+          buildChip(context, "#Yesterday", _TransactionRange.yesterday),
+          buildChip(context, "#Last week", _TransactionRange.lastWeek),
+          buildChip(context, "#Last month", _TransactionRange.lastMonth),
+        ],
       ),
+    );
+  }
+
+  Widget buildChip(
+      BuildContext context, String title, _TransactionRange range) {
+    final isSelected = (this.range == range);
+    return ChoiceChip(
+      label: Text(
+        title,
+        style: TextStyle(color: isSelected ? Colors.white : null),
+      ),
+      selected: isSelected,
+      selectedColor: Theme.of(context).primaryColor,
+      visualDensity: VisualDensity.compact,
+      onSelected: (_) => onSelected(range),
     );
   }
 }
@@ -117,6 +147,7 @@ class _TransactionListItem extends _ListItem {
       subtitle: subTitle != null ? Text(subTitle) : null,
       trailing: Text(amountPrefix + amountText, style: TextStyle(color: color)),
       dense: true,
+      visualDensity: VisualDensity.compact,
       onTap: () {},
     );
   }
