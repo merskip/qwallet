@@ -143,6 +143,7 @@ class _TransactionListItem extends _ListItem {
         : null;
 
     return ListTile(
+      leading: buildCategoryIcon(context, transaction),
       title: Text(title),
       subtitle: subTitle != null ? Text(subTitle) : null,
       trailing: Text(amountPrefix + amountText, style: TextStyle(color: color)),
@@ -150,5 +151,49 @@ class _TransactionListItem extends _ListItem {
       visualDensity: VisualDensity.compact,
       onTap: () {},
     );
+  }
+
+  Widget buildCategoryIcon(BuildContext context, Transaction transaction) {
+    if (transaction.category == "party") {
+      return CircleAvatar(
+        backgroundColor: Colors.red.shade100,
+        child: Icon(
+          Icons.people,
+          color: Colors.red.shade800,
+          size: 20,
+        ),
+        radius: 16,
+      );
+    } else if (transaction.category == "grandmother") {
+      return CircleAvatar(
+        backgroundColor: Colors.green.shade100,
+        child: Icon(
+          Icons.tag_faces,
+          color: Colors.green.shade800,
+          size: 20,
+        ),
+        radius: 16,
+      );
+    } else if (transaction.category == "food") {
+      return CircleAvatar(
+        backgroundColor: Colors.orange.shade100,
+        child: Icon(
+          Icons.fastfood,
+          color: Colors.orange.shade800,
+          size: 20,
+        ),
+        radius: 16,
+      );
+    } else {
+      return CircleAvatar(
+        backgroundColor: Colors.black12,
+        child: Icon(
+          Icons.category,
+          color: Colors.black26,
+          size: 20,
+        ),
+        radius: 16,
+      );
+    }
   }
 }
