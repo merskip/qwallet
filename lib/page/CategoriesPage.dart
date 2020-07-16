@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
@@ -35,7 +36,8 @@ class _WalletCategoriesPageContent extends StatelessWidget {
       body: buildCategories(context),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () => router.navigateTo(context, "/wallet/${wallet.id}/categories/add"),
+        onPressed: () =>
+            router.navigateTo(context, "/wallet/${wallet.id}/categories/add"),
       ),
     );
   }
@@ -44,29 +46,50 @@ class _WalletCategoriesPageContent extends StatelessWidget {
     return SimpleStreamWidget(
       stream: DataSource.instance.getCategories(wallet: wallet.reference),
       builder: (context, List<Category> categories) {
-        return GridView.count(
-          crossAxisCount: 2,
-          children: [
-            ...categories
-                .map((category) => buildCategoryTile(context, category))
-          ],
+        return GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 1.05,
+          ),
+          padding: EdgeInsets.all(8),
+          itemCount: categories.length,
+          itemBuilder: (context, index) {
+            return buildCategoryTile(context, categories[index]);
+          },
         );
       },
     );
   }
 
   Widget buildCategoryTile(BuildContext context, Category category) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Material(
-        elevation: 2,
-        child: Column(children: [
-          Text("Title: ${category.title}"),
-          Icon(category.icon),
-          Text("Primary color: ${category.primaryColor}"),
-          Text("Background: ${category.backgroundColor}"),
-        ]),
+    return InkWell(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            CircleAvatar(
+              child: Icon(
+                category.icon,
+                color: category.primaryColor,
+                size: 32,
+              ),
+              backgroundColor: category.backgroundColor,
+              radius: 28,
+            ),
+            SizedBox(height: 8),
+            Text(
+              category.title,
+              style: Theme.of(context).textTheme.bodyText1,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
+      onTap: () {},
     );
   }
 }

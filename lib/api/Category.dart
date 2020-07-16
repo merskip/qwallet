@@ -1,19 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:qwallet/utils.dart';
 
 import 'model.dart';
 
 class Category extends Model {
   final String title;
   final IconData icon;
-  final String primaryColor;
-  final String backgroundColor;
+  final Color primaryColor;
+  final Color backgroundColor;
 
   Category(DocumentSnapshot documentSnapshot)
       : title = documentSnapshot.data["title"],
         icon = _mapToIconData(documentSnapshot.data["icon"]),
-        primaryColor = documentSnapshot.data["primaryColor"],
-        backgroundColor = documentSnapshot.data["backgroundColor"],
+        primaryColor = colorFromHex(documentSnapshot.data["primaryColor"]),
+        backgroundColor = colorFromHex(documentSnapshot.data["backgroundColor"]),
         super(documentSnapshot);
 
   static IconData _mapToIconData(Map<String, dynamic> iconMap) => IconData(
