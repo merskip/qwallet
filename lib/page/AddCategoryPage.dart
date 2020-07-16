@@ -66,8 +66,8 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
       DataSource.instance.addCategory(
         wallet: widget.walletRef,
         title: titleController.text.trim(),
-        primaryColor: primaryColor,
-        backgroundColor: backgroundColor,
+        primaryColor: primaryColor.shade800,
+        backgroundColor: backgroundColor.shade100,
         icon: icon,
       );
       Navigator.of(context).pop();
