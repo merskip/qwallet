@@ -16,7 +16,7 @@ class ColorPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return Wrap(
       spacing: 12,
-      runSpacing: 12,
+      runSpacing: 8,
       children: [
         ...colors.map(
           (color) => _CircleColorButton(
