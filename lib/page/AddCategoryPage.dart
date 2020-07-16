@@ -38,6 +38,8 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
   final titleFocus = FocusNode();
 
   MaterialColor primaryColor = Colors.primaries.first;
+  bool backgroundColorIsPrimary = true;
+  MaterialColor backgroundColor = Colors.primaries.first;
   IconData icon = Icons.category;
 
   @override
@@ -61,7 +63,12 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
       child: Column(children: [
         buildTitleField(context),
         buildIconPreview(context),
-        buildColorPicker(context),
+        buildPrimaryColorPicker(context),
+        Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: Divider(),
+        ),
+        buildBackgroundColorPicker(context),
         buildSubmit(context),
       ]),
     );
@@ -87,10 +94,10 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
       padding: const EdgeInsets.all(16.0),
       child: GestureDetector(
         child: CircleAvatar(
-          backgroundColor: primaryColor?.shade100 ?? Colors.transparent,
+          backgroundColor: backgroundColor.shade100,
           child: Icon(
             icon,
-            color: primaryColor?.shade800 ?? Colors.transparent,
+            color: primaryColor.shade800,
             size: 48,
           ),
           radius: 48,
@@ -100,11 +107,41 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
     );
   }
 
-  Widget buildColorPicker(BuildContext context) {
+  Widget buildPrimaryColorPicker(BuildContext context) {
     return ColorPicker(
       colors: Colors.primaries,
       selectedColor: primaryColor,
-      onChangeColor: (color) => setState(() => this.primaryColor = color),
+      onChangeColor: (color) => setState(() {
+        this.primaryColor = color;
+        if (backgroundColorIsPrimary)
+          this.backgroundColor = color;
+      }),
+    );
+  }
+
+  Widget buildBackgroundColorPicker(BuildContext context) {
+    return Column(
+      children: [
+        SwitchListTile(
+          title: Text("#Background is the same color"),
+          value: backgroundColorIsPrimary,
+          onChanged: (flag) => setState(() {
+            backgroundColorIsPrimary = flag;
+            if (backgroundColorIsPrimary)
+              backgroundColor = primaryColor;
+          })
+        ),
+        if (!backgroundColorIsPrimary)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: ColorPicker(
+              colors: Colors.primaries,
+              selectedColor: backgroundColor,
+              onChangeColor: (color) =>
+                  setState(() => this.backgroundColor = color),
+            ),
+          ),
+      ],
     );
   }
 
