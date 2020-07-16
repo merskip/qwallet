@@ -62,7 +62,7 @@ class _WalletCategoriesPageContent extends StatelessWidget {
         elevation: 2,
         child: Column(children: [
           Text("Title: ${category.title}"),
-          Text("icon: ${category.icon}"),
+          Icon(category.icon),
           Text("Primary color: ${category.primaryColor}"),
           Text("Background: ${category.backgroundColor}"),
         ]),
