@@ -55,6 +55,7 @@ dependencies:
   rxdart: ^0.24.1
   sliver_fill_remaining_box_adapter: ^0.1.1
   flutter_html: ^1.0.0-pre.1
+  flutter_iconpicker: ^2.0.6
 
 dev_dependencies:
   flutter_test:
