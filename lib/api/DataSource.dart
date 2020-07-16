@@ -7,6 +7,7 @@ import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../utils.dart';
 import 'Model.dart';
 import 'Transaction.dart';
 import 'Wallet.dart';
@@ -139,7 +140,6 @@ extension TransactionsDataSource on DataSource {
 }
 
 extension CategoriesDataSource on DataSource {
-
   Stream<List<Category>> getCategories({
     @required Reference<Wallet> wallet,
   }) {
@@ -147,6 +147,24 @@ extension CategoriesDataSource on DataSource {
         .collection("categories")
         .snapshots()
         .map((snapshot) => snapshot.documents.map((s) => Category(s)).toList());
+  }
+
+  Future<void> addCategory(
+      {@required Reference<Wallet> wallet,
+      String title,
+      Color primaryColor,
+      Color backgroundColor,
+      IconData icon}) {
+    return wallet.documentReference.collection("categories").add({
+      "title": title,
+      "primaryColor": primaryColor.toHex(),
+      "backgroundColor": backgroundColor.toHex(),
+      "icon": {
+        "codePoint": icon.codePoint,
+        "fontFamily": icon.fontFamily,
+        "fontPackage": icon.fontPackage
+      },
+    });
   }
 }
 
@@ -174,20 +192,23 @@ DateTimeRange getTodayDateTimeRange() {
 DateTimeRange getYesterdayDateTimeRange() {
   final now = DateTime.now();
   final startDay = DateTime(now.year, now.month, now.day - 1);
-  final endDay = DateTime(now.year, now.month, now.day - 1, 23, 59, 59, 999, 999);
+  final endDay =
+      DateTime(now.year, now.month, now.day - 1, 23, 59, 59, 999, 999);
   return DateTimeRange(start: startDay, end: endDay);
 }
 
 DateTimeRange getLastWeekDateTimeRange() {
   final now = DateTime.now();
-  final startDay = DateTime(now.year, now.month, now.day - 6, 23, 59, 59, 999, 999);
+  final startDay =
+      DateTime(now.year, now.month, now.day - 6, 23, 59, 59, 999, 999);
   final endDay = DateTime(now.year, now.month, now.day);
   return DateTimeRange(start: startDay, end: endDay);
 }
 
 DateTimeRange getLastMonthDateTimeRange() {
   final now = DateTime.now();
-  final startDay = DateTime(now.year, now.month - 1, now.day, 23, 59, 59, 999, 999);
+  final startDay =
+      DateTime(now.year, now.month - 1, now.day, 23, 59, 59, 999, 999);
   final endDay = DateTime(now.year, now.month, now.day);
   return DateTimeRange(start: startDay, end: endDay);
 }

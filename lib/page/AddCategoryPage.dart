@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/ColorPicker.dart';
@@ -19,7 +20,7 @@ class AddCategoryPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16),
-          child: _AddCategoryForm(),
+          child: _AddCategoryForm(walletRef: walletRef),
         ),
       ),
     );
@@ -27,12 +28,16 @@ class AddCategoryPage extends StatelessWidget {
 }
 
 class _AddCategoryForm extends StatefulWidget {
+  final Reference<Wallet> walletRef;
+
+  const _AddCategoryForm({Key key, this.walletRef}) : super(key: key);
+
   @override
   _AddCategoryFormState createState() => _AddCategoryFormState();
 }
 
 class _AddCategoryFormState extends State<_AddCategoryForm> {
-  final _formKey = GlobalKey<_AddCategoryFormState>();
+  final _formKey = GlobalKey<FormState>();
 
   final titleController = TextEditingController();
   final titleFocus = FocusNode();
@@ -53,6 +58,19 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
     IconData icon = await _showIconPicker(context);
     if (icon != null) {
       setState(() => this.icon = icon);
+    }
+  }
+
+  onSelectedSubmit(BuildContext context) async {
+    if (_formKey.currentState.validate()) {
+      DataSource.instance.addCategory(
+        wallet: widget.walletRef,
+        title: titleController.text.trim(),
+        primaryColor: primaryColor,
+        backgroundColor: backgroundColor,
+        icon: icon,
+      );
+      Navigator.of(context).pop();
     }
   }
 
@@ -85,6 +103,12 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
       maxLength: 50,
       textCapitalization: TextCapitalization.sentences,
       textInputAction: TextInputAction.done,
+      validator: (title) {
+        if (title.trim().isEmpty) {
+          return "#Title is required";
+        }
+        return null;
+      },
       onFieldSubmitted: (title) => titleFocus.unfocus(),
     );
   }
@@ -113,8 +137,7 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
       selectedColor: primaryColor,
       onChangeColor: (color) => setState(() {
         this.primaryColor = color;
-        if (backgroundColorIsPrimary)
-          this.backgroundColor = color;
+        if (backgroundColorIsPrimary) this.backgroundColor = color;
       }),
     );
   }
@@ -123,14 +146,12 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
     return Column(
       children: [
         SwitchListTile(
-          title: Text("#Background is the same color"),
-          value: backgroundColorIsPrimary,
-          onChanged: (flag) => setState(() {
-            backgroundColorIsPrimary = flag;
-            if (backgroundColorIsPrimary)
-              backgroundColor = primaryColor;
-          })
-        ),
+            title: Text("#Background is the same color"),
+            value: backgroundColorIsPrimary,
+            onChanged: (flag) => setState(() {
+                  backgroundColorIsPrimary = flag;
+                  if (backgroundColorIsPrimary) backgroundColor = primaryColor;
+                })),
         if (!backgroundColorIsPrimary)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
@@ -150,7 +171,7 @@ class _AddCategoryFormState extends State<_AddCategoryForm> {
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: PrimaryButton(
         child: Text("#Add"),
-        onPressed: () {},
+        onPressed: () => onSelectedSubmit(context),
       ),
     );
   }
