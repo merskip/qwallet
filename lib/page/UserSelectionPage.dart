@@ -66,7 +66,7 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
   Widget buildAvatar(BuildContext context, User user) {
     final isSelected = selectedUsers.contains(user);
     if (isSelected) {
-      return CircleAvatar(child: Icon(Icons.check));
+      return CircleAvatar(child: Icon(Icons.check), backgroundColor: Theme.of(context).primaryColor,);
     } else {
       final avatarImage =
           user.avatarUrl != null ? NetworkImage(user.avatarUrl) : null;

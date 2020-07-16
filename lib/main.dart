@@ -34,7 +34,18 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "QWallet",
       theme: ThemeData(
+        brightness: Brightness.light,
         primarySwatch: Colors.indigo,
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(),
+        ),
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.indigo,
+        primaryColor: Colors.indigo.shade700,
+        accentColor: Colors.indigo.shade700,
+        toggleableActiveColor: Colors.indigo.shade700,
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(),
         ),

@@ -341,7 +341,7 @@ class _TransactionTypeButton extends StatelessWidget {
       icon: icon,
       label: title,
       color: isSelected ? Theme.of(context).primaryColor : null,
-      textColor: isSelected ? Theme.of(context).buttonColor : null,
+      textColor: isSelected ? Colors.white : null,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(44),
       ),
