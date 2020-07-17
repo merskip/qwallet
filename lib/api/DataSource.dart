@@ -146,7 +146,11 @@ extension CategoriesDataSource on DataSource {
     return wallet.documentReference
         .collection("categories")
         .snapshots()
-        .map((snapshot) => snapshot.documents.map((s) => Category(s)).toList());
+        .map((snapshot) {
+      return snapshot.documents.map((s) => Category(s)).toList()
+        ..sort((lhs, rhs) =>
+            lhs.title.toLowerCase().compareTo(rhs.title.toLowerCase()));
+    });
   }
 
   Stream<Category> getCategory({
