@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/Money.dart';
+import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
@@ -77,6 +78,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   final amountController = TextEditingController();
   double amount;
 
+  Category category;
+
   final titleFocus = FocusNode();
   final titleController = TextEditingController();
 
@@ -121,8 +124,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     setState(() {
       amount = parseAmount(amountController.text);
       if (amount != null) {
-        final money =
-            Money(amount, Currency.fromSymbol(widget.initialWallet.currencySymbol));
+        final money = Money(
+            amount, Currency.fromSymbol(widget.initialWallet.currencySymbol));
         amountController.text = money.amountFormatted;
       }
     });
@@ -154,7 +157,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   onSelectedWallet(BuildContext context) async {
     final wallets =
-        await LocalPreferences.orderedWallets(DataSource.instance.getWallets()).first;
+        await LocalPreferences.orderedWallets(DataSource.instance.getWallets())
+            .first;
     final selectedWallet = await showDialog(
       context: context,
       builder: (context) => _SelectWalletDialog(wallets: wallets),
@@ -199,6 +203,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         buildType(context),
         SizedBox(height: 16),
         buildAmount(context),
+        SizedBox(height: 16),
+        buildCategory(context),
         SizedBox(height: 16),
         Divider(),
         SizedBox(height: 16),
@@ -283,6 +289,67 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           .addTransactionBalanceAfter(balanceAfterMoney);
     }
     return null;
+  }
+
+  Widget buildCategory(BuildContext context) {
+    return SimpleStreamWidget(
+      stream: DataSource.instance.getCategories(wallet: wallet.reference),
+      builder: (context, List<Category> categories) =>
+          buildCategoryPicker(context, categories),
+    );
+  }
+
+  Widget buildCategoryPicker(
+      BuildContext context, List<Category> categories) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("#Category", style: Theme.of(context).textTheme.bodyText2,),
+        SizedBox(height: 8),
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.start,
+          spacing: 16,
+          runSpacing: 16,
+          children: [
+            ...categories.map((category) {
+              final isSelected = (this.category == category);
+              return Tooltip(
+                message: category.title,
+                verticalOffset: 36,
+                child: RawMaterialButton(
+                  elevation: isSelected ? 8 : 4,
+                  constraints: BoxConstraints(),
+                  shape: CircleBorder(
+                    side: isSelected
+                        ? BorderSide(
+                            color: category.primaryColor,
+                            width: 3,
+                          )
+                        : BorderSide.none,
+                  ),
+                  fillColor: category.backgroundColor,
+                  child: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: Icon(
+                      category.icon,
+                      color: category.primaryColor
+                          .withOpacity(isSelected ? 1.0 : 0.6),
+                      size: 28,
+                    ),
+                  ),
+                  onPressed: () => setState(() => this.category = category),
+                ),
+              );
+            })
+          ],
+        ),
+        Align(
+          child: Text(category.title ?? ""),
+          alignment: AlignmentDirectional.center,
+        ),
+      ],
+    );
   }
 
   Widget buildTitle(BuildContext context) {
