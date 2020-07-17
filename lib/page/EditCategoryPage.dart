@@ -82,7 +82,14 @@ class _EditCategoryFormState extends State<_EditCategoryForm> {
 
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState.validate()) {
-      // TODO: Impl
+      DataSource.instance.updateCategory(
+        category: widget.category.reference,
+        title: titleController.text.trim(),
+        primaryColor: primaryColor.shade800,
+        backgroundColor: backgroundColor.shade100,
+        icon: icon,
+      );
+      Navigator.of(context).pop();
     }
   }
 

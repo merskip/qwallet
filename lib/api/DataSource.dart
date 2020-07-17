@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart' as Could;
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../utils.dart';
+import 'Category.dart';
 import 'Model.dart';
 import 'Transaction.dart';
 import 'Wallet.dart';
@@ -159,13 +159,33 @@ extension CategoriesDataSource on DataSource {
     return category.documentReference.snapshots().map((s) => Category(s));
   }
 
-  Future<void> addCategory(
-      {@required Reference<Wallet> wallet,
-      String title,
-      Color primaryColor,
-      Color backgroundColor,
-      IconData icon}) {
+  Future<void> addCategory({
+    @required Reference<Wallet> wallet,
+    String title,
+    Color primaryColor,
+    Color backgroundColor,
+    IconData icon,
+  }) {
     return wallet.documentReference.collection("categories").add({
+      "title": title,
+      "primaryColor": primaryColor.toHex(),
+      "backgroundColor": backgroundColor.toHex(),
+      "icon": {
+        "codePoint": icon.codePoint,
+        "fontFamily": icon.fontFamily,
+        "fontPackage": icon.fontPackage
+      },
+    });
+  }
+
+  Future<void> updateCategory({
+    @required Reference<Category> category,
+    String title,
+    Color primaryColor,
+    Color backgroundColor,
+    IconData icon,
+  }) {
+    return category.documentReference.updateData({
       "title": title,
       "primaryColor": primaryColor.toHex(),
       "backgroundColor": backgroundColor.toHex(),

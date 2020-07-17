@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/utils.dart';
 
-import 'model.dart';
+import 'Model.dart';
 
-class Category extends Model {
+class Category extends Model<Category> {
   final String title;
   final IconData icon;
   final Color primaryColor;
