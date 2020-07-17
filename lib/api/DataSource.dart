@@ -196,6 +196,10 @@ extension CategoriesDataSource on DataSource {
       },
     });
   }
+
+  Future<void> removeCategory({@required Reference<Category> category}) {
+    return category.documentReference.delete();
+  }
 }
 
 extension UsersDataSource on DataSource {

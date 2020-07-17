@@ -4,6 +4,7 @@ import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/widget/ColorPicker.dart';
+import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
@@ -12,11 +13,30 @@ class EditCategoryPage extends StatelessWidget {
 
   const EditCategoryPage({Key key, this.categoryRef}) : super(key: key);
 
+  onSelectedRemove(BuildContext context) {
+    ConfirmationDialog(
+      title: Text("#Remove category?"),
+      content: Text("#Are you sure that you want remove this category? This operation cannot be undone."),
+      isDestructive: true,
+      onConfirm: () {
+        DataSource.instance.removeCategory(category: categoryRef);
+        Navigator.of(context)
+            .popUntil((route) => route.settings.name?.endsWith("/categories") ?? false);
+      },
+    ).show(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("#Edit category"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () => onSelectedRemove(context),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
