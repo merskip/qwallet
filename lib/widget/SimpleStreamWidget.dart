@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 typedef WidgetBuilder<T> = Widget Function(BuildContext context, T snapshot);
@@ -27,10 +29,19 @@ class SimpleStreamWidget<T> extends StatelessWidget {
 
   _error(AsyncSnapshot<T> snapshot) {
     return Center(
-      child: Row(children: <Widget>[
-        Icon(Icons.error),
-        Text("Error: ${snapshot.error}"),
-      ]),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(children: <Widget>[
+          Icon(Icons.error, size: 48, color: Colors.red.shade500),
+          Text(
+            "Error: ${snapshot.error}",
+            style: TextStyle(
+              fontFamily: Platform.isIOS ? "Courier" : "monospace",
+              color: Colors.red.shade400,
+            ),
+          ),
+        ]),
+      ),
     );
   }
 
