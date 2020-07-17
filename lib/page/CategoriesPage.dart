@@ -51,7 +51,6 @@ class _WalletCategoriesPageContent extends StatelessWidget {
             crossAxisCount: 3,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            childAspectRatio: 1.05,
           ),
           padding: EdgeInsets.all(8),
           itemCount: categories.length,
