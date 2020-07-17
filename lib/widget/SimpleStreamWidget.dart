@@ -28,13 +28,14 @@ class SimpleStreamWidget<T> extends StatelessWidget {
   }
 
   _error(AsyncSnapshot<T> snapshot) {
+    final error = snapshot.error as Error;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(children: <Widget>[
           Icon(Icons.error, size: 48, color: Colors.red.shade500),
           Text(
-            "Error: ${snapshot.error}",
+            "Error: $error\n\n${error.stackTrace}",
             style: TextStyle(
               fontFamily: Platform.isIOS ? "Courier" : "monospace",
               color: Colors.red.shade400,
