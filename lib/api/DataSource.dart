@@ -101,6 +101,7 @@ extension TransactionsDataSource on DataSource {
     Reference<Wallet> wallet, {
     String title,
     double amount,
+    Reference<Category> category,
     DateTime date,
   }) {
     final expenseRef =
@@ -109,6 +110,7 @@ extension TransactionsDataSource on DataSource {
       transaction.set(expenseRef, {
         "title": title,
         "amount": amount,
+        "category": category.documentReference,
         "date": Could.Timestamp.fromDate(date),
       });
 
@@ -122,6 +124,7 @@ extension TransactionsDataSource on DataSource {
     Reference<Wallet> wallet, {
     String title,
     double amount,
+    Reference<Category> category,
     DateTime date,
   }) {
     final incomeRef = wallet.documentReference.collection("incomes").document();
@@ -129,6 +132,7 @@ extension TransactionsDataSource on DataSource {
       transaction.set(incomeRef, {
         "title": title,
         "amount": amount,
+        "category": category.documentReference,
         "date": Could.Timestamp.fromDate(date),
       });
 

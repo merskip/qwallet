@@ -179,6 +179,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           wallet.reference,
           title: titleController.text.trim(),
           amount: amount,
+          category: category.reference,
           date: date,
         );
       } else {
@@ -186,6 +187,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           wallet.reference,
           title: titleController.text.trim(),
           amount: amount,
+          category: category.reference,
           date: date,
         );
       }
@@ -294,8 +296,12 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   Widget buildCategory(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getCategories(wallet: wallet.reference),
-      builder: (context, List<Category> categories) =>
-          buildCategoryPicker(context, categories),
+      builder: (context, List<Category> categories) {
+        if (category == null && categories.isNotEmpty) {
+          category = categories.first;
+        }
+        return buildCategoryPicker(context, categories);
+      },
     );
   }
 
@@ -345,7 +351,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           ],
         ),
         Align(
-          child: Text(category.title ?? ""),
+          child: Text(category?.title ?? "-"),
           alignment: AlignmentDirectional.center,
         ),
       ],
