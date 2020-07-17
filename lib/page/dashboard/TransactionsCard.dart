@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
@@ -231,7 +232,17 @@ class _TransactionListItem extends StatelessWidget {
       key: Key(transaction.id),
       leading: buildCategoryIcon(context, transaction),
       title: Text(title),
-      subtitle: subTitle != null ? Text(subTitle) : null,
+      subtitle: transaction.category.documentReference != null ? StreamBuilder(
+          stream:
+              DataSource.instance.getCategory(category: transaction.category),
+          builder: (context, AsyncSnapshot<Category> snapshot) {
+            if (snapshot.hasData) {
+              return Text(snapshot.data.title);
+            }
+            else {
+              return Text("");
+            }
+          }) : null,
       trailing: Text(amountPrefix + amountText, style: TextStyle(color: color)),
       dense: true,
       visualDensity: VisualDensity.compact,
@@ -240,46 +251,44 @@ class _TransactionListItem extends StatelessWidget {
   }
 
   Widget buildCategoryIcon(BuildContext context, Transaction transaction) {
-    if (transaction.category == "party") {
-      return CircleAvatar(
-        backgroundColor: Colors.red.shade100,
-        child: Icon(
-          Icons.people,
-          color: Colors.red.shade800,
-          size: 20,
-        ),
-        radius: 16,
-      );
-    } else if (transaction.category == "grandmother") {
-      return CircleAvatar(
-        backgroundColor: Colors.green.shade100,
-        child: Icon(
-          Icons.tag_faces,
-          color: Colors.green.shade800,
-          size: 20,
-        ),
-        radius: 16,
-      );
-    } else if (transaction.category == "food") {
-      return CircleAvatar(
-        backgroundColor: Colors.orange.shade100,
-        child: Icon(
-          Icons.fastfood,
-          color: Colors.orange.shade800,
-          size: 20,
-        ),
-        radius: 16,
-      );
-    } else {
-      return CircleAvatar(
-        backgroundColor: Colors.black12,
-        child: Icon(
-          Icons.category,
-          color: Colors.black26,
-          size: 20,
-        ),
-        radius: 16,
+    if (transaction.category.documentReference != null) {
+      return StreamBuilder(
+        stream: DataSource.instance.getCategory(category: transaction.category),
+        builder: (context, AsyncSnapshot<Category> snapshot) {
+          if (snapshot.hasData) {
+            final category = snapshot.data;
+            return CircleAvatar(
+              key: Key(category.id),
+              backgroundColor: category.backgroundColor,
+              child: Icon(
+                category.icon,
+                color: category.primaryColor,
+                size: 20,
+              ),
+              radius: 18,
+            );
+          }
+          else {
+            return buildDefaultCategory(context);
+          }
+        },
       );
     }
+    else {
+      return buildDefaultCategory(context);
+    }
   }
+
+  Widget buildDefaultCategory(BuildContext context) {
+    return CircleAvatar(
+      backgroundColor: Colors.black12,
+      child: Icon(
+        Icons.category,
+        color: Colors.black26,
+        size: 20,
+      ),
+      radius: 16,
+    );
+  }
+
 }
