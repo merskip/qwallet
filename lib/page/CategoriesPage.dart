@@ -88,7 +88,10 @@ class _WalletCategoriesPageContent extends StatelessWidget {
           ],
         ),
       ),
-      onTap: () {},
+      onTap: () => router.navigateTo(
+        context,
+        "/wallet/${wallet.id}/category/${category.id}",
+      ),
     );
   }
 }

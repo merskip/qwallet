@@ -149,6 +149,12 @@ extension CategoriesDataSource on DataSource {
         .map((snapshot) => snapshot.documents.map((s) => Category(s)).toList());
   }
 
+  Stream<Category> getCategory({
+    @required Reference<Category> category,
+  }) {
+    return category.documentReference.snapshots().map((s) => Category(s));
+  }
+
   Future<void> addCategory(
       {@required Reference<Wallet> wallet,
       String title,

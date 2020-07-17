@@ -3,14 +3,17 @@ import 'dart:async';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/page/AddTransactionPage.dart';
 import 'package:qwallet/page/WalletPage.dart';
 import 'package:qwallet/page/WalletsPage.dart';
 
+import 'api/Model.dart';
 import 'page/AddCategoryPage.dart';
 import 'page/AddWalletPage.dart';
 import 'page/CategoriesPage.dart';
+import 'page/EditCategoryPage.dart';
 import 'page/SettingsPage.dart';
 import 'page/landing_page.dart';
 
@@ -58,7 +61,8 @@ void defineRoutes(Router router) {
     handler: Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
       final walletId = params["walletId"][0];
-      return WalletPage(walletRef: DataSource.instance.getWalletReference(walletId));
+      return WalletPage(
+          walletRef: DataSource.instance.getWalletReference(walletId));
     }),
   );
 
@@ -79,11 +83,11 @@ void defineRoutes(Router router) {
     transitionType: TransitionType.nativeModal,
     handler: Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
-          final walletId = params["walletId"][0];
-          return CategoriesPage(
-            walletRef: DataSource.instance.getWalletReference(walletId),
-          );
-        }),
+      final walletId = params["walletId"][0];
+      return CategoriesPage(
+        walletRef: DataSource.instance.getWalletReference(walletId),
+      );
+    }),
   );
 
   router.define(
@@ -91,11 +95,32 @@ void defineRoutes(Router router) {
     transitionType: TransitionType.nativeModal,
     handler: Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
-          final walletId = params["walletId"][0];
-          return AddCategoryPage(
-            walletRef: DataSource.instance.getWalletReference(walletId),
-          );
-        }),
+      final walletId = params["walletId"][0];
+      return AddCategoryPage(
+        walletRef: DataSource.instance.getWalletReference(walletId),
+      );
+    }),
+  );
+
+  router.define(
+    "/wallet/:walletId/category/:categoryId",
+    transitionType: TransitionType.nativeModal,
+    handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      final walletId = params["walletId"][0];
+      final categoryId = params["categoryId"][0];
+
+      final categoryRef = DataSource.instance.firestore
+          .collection("wallets")
+          .document(walletId)
+          .collection("categories")
+          .document(categoryId)
+          .toReference<Category>();
+
+      return EditCategoryPage(
+        categoryRef: categoryRef,
+      );
+    }),
   );
 }
 

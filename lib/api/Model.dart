@@ -8,6 +8,11 @@ class Reference<T> {
   Reference(this.documentReference);
 }
 
+extension ReferenceConverting on DocumentReference {
+
+  Reference<T> toReference<T>() => Reference(this);
+}
+
 abstract class Model<T> {
   final Reference<T> reference;
   final DocumentSnapshot documentSnapshot;
