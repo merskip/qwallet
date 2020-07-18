@@ -78,11 +78,12 @@ class SettingsPage extends StatelessWidget {
           buildThemeMode(context),
           buildLanguage(context),
           buildApplicationVersion(),
-          buildDeveloper(context),
           Divider(),
           buildPrivacyPolicy(context),
           buildTermsOfService(context),
           buildLicences(context),
+          Divider(),
+          buildDeveloper(context),
         ]),
       ),
     );
@@ -178,38 +179,6 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget buildDeveloper(BuildContext context) {
-    final subtitleStyle = TextStyle(
-      color: Theme.of(context).textTheme.caption.color,
-      fontSize: 12,
-    );
-    final linkStyle = TextStyle(
-      color: Colors.blue,
-      decoration: TextDecoration.underline,
-    );
-    return ListTile(
-      title: Text("Developed by"),
-      subtitle: Padding(
-        padding: const EdgeInsets.only(top: 6.0),
-        child: RichText(
-          text: TextSpan(style: subtitleStyle, children: [
-            TextSpan(text: "Piotr Merski"),
-            TextSpan(text: " <"),
-            TextSpan(text: "merskip@gmail.com", style: linkStyle),
-            TextSpan(text: ">\n"),
-            TextSpan(text: 'merskip.pl', style: linkStyle),
-          ]),
-        ),
-      ),
-      dense: true,
-      visualDensity: VisualDensity.compact,
-      onTap: () async {
-        const url = 'http://merskip.pl';
-        if (await canLaunch(url)) await launch(url);
-      },
-    );
-  }
-
   Widget buildPrivacyPolicy(BuildContext context) {
     return ListTile(
       title: Text(AppLocalizations.of(context).settingsPrivacyPolicy),
@@ -260,6 +229,36 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
         );
+      },
+    );
+  }
+
+  Widget buildDeveloper(BuildContext context) {
+    final subtitleStyle = TextStyle(
+      color: Theme.of(context).textTheme.caption.color,
+      fontSize: 12,
+    );
+    final linkStyle = TextStyle(
+      color: Colors.blue,
+      decoration: TextDecoration.underline,
+    );
+    return ListTile(
+      title: Text("Developed by"),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 6.0),
+        child: RichText(
+          text: TextSpan(style: subtitleStyle, children: [
+            TextSpan(text: "Piotr Merski"),
+            TextSpan(text: " | "),
+            TextSpan(text: 'merskip.pl', style: linkStyle),
+          ]),
+        ),
+      ),
+      dense: true,
+      visualDensity: VisualDensity.compact,
+      onTap: () async {
+        const url = 'http://merskip.pl';
+        if (await canLaunch(url)) await launch(url);
       },
     );
   }
