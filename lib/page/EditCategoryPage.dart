@@ -11,11 +11,11 @@ class EditCategoryPage extends StatelessWidget {
 
   const EditCategoryPage({Key key, this.categoryRef}) : super(key: key);
 
-  onSelectedRemove(BuildContext context) {
+  onSelectedRemove(BuildContext context, Category category) {
     ConfirmationDialog(
-      title: Text("#Remove category?"),
+      title: Text("#Remove \"${category.title}\" category?"),
       content: Text(
-          "#Are you sure that you want remove this category? This operation cannot be undone."),
+          "#Are you sure that you want to remove \"${category.title}\" category? This operation cannot be undone."),
       isDestructive: true,
       onConfirm: () {
         DataSource.instance.removeCategory(category: categoryRef);
@@ -27,35 +27,39 @@ class EditCategoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return SimpleStreamWidget(
+      stream: DataSource.instance.getCategory(category: categoryRef),
+      builder: (context, category) => buildContent(context, category),
+    );
+  }
+
+  Widget buildContent(BuildContext context, Category category) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Edit category"),
+        title: Text("#Edit \"${category.title}\" category"),
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
-            onPressed: () => onSelectedRemove(context),
+            onPressed: () => onSelectedRemove(context, category),
           ),
         ],
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16),
-          child: SimpleStreamWidget(
-            stream: DataSource.instance.getCategory(category: categoryRef),
-            builder: (context, category) => CategoryForm(
-              category: category,
-              submitChild: Text("#Save changes"),
-              onSubmit: (context, title, primaryColor, backgroundColor, icon) {
-                DataSource.instance.updateCategory(
-                  category: categoryRef,
-                  title: title,
-                  primaryColor: primaryColor,
-                  backgroundColor: backgroundColor,
-                  icon: icon,
-                );
-                Navigator.of(context).pop();
-              },
-            ),
+          child: CategoryForm(
+            category: category,
+            submitChild: Text("#Save changes"),
+            onSubmit: (context, title, primaryColor, backgroundColor, icon) {
+              DataSource.instance.updateCategory(
+                category: categoryRef,
+                title: title,
+                primaryColor: primaryColor,
+                backgroundColor: backgroundColor,
+                icon: icon,
+              );
+              Navigator.of(context).pop();
+            },
           ),
         ),
       ),
