@@ -53,6 +53,7 @@ class _TransactionsCardState extends State<_TransactionsCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      key: Key(widget.wallet.id),
       margin: const EdgeInsets.all(16),
       child: Column(children: [
         buildTimeRangeSelection(context),
