@@ -1,16 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
+import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/dialog/UserDialog.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/LocalWebsitePage.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/vector_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../router.dart';
 
 class SettingsPage extends StatelessWidget {
+
+  onSelectedChangeThemeMode(
+      BuildContext context, ThemeMode currentThemeMode) async {
+    final themeMode = await showDialog(
+      context: context,
+      builder: (context) {
+        final buildOption = (ThemeMode themeMode) {
+          return ListTile(
+            title: Text(_getThemeModeText(themeMode)),
+            trailing: currentThemeMode == themeMode ? Icon(Icons.check) : null,
+            onTap: () => Navigator.of(context).pop(themeMode),
+          );
+        };
+        return SimpleDialog(
+          title: Text("#Select theme mode"),
+          children: [
+            buildOption(ThemeMode.system),
+            buildOption(ThemeMode.light),
+            buildOption(ThemeMode.dark),
+          ],
+        );
+      },
+    );
+    if (themeMode != null) LocalPreferences.setUserThemeMode(themeMode);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,6 +51,7 @@ class SettingsPage extends StatelessWidget {
           Divider(),
           buildWallets(context),
           Divider(),
+          buildThemeMode(context),
           buildLanguage(context),
           buildApplicationVersion(),
           buildDeveloper(context),
@@ -68,13 +97,44 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
+  Widget buildThemeMode(BuildContext context) {
+    return SimpleStreamWidget(
+        stream: LocalPreferences.userPreferences(),
+        builder: (context, UserPreferences userPreferences) {
+          return ListTile(
+            title: Text("#Theme mode"),
+            subtitle: Text(_getThemeModeText(userPreferences.themeMode)),
+            dense: true,
+            visualDensity: VisualDensity.compact,
+            onTap: () =>
+                onSelectedChangeThemeMode(context, userPreferences.themeMode),
+          );
+        });
+  }
+
+  String _getThemeModeText(ThemeMode themeMode) {
+    switch (themeMode) {
+      case ThemeMode.light:
+        return "#Light";
+      case ThemeMode.dark:
+        return "#Dark";
+      case ThemeMode.system:
+      default:
+        return "#System";
+    }
+  }
+
   Widget buildLanguage(BuildContext context) {
-    return ListTile(
-      title: Text(AppLocalizations.of(context).settingsLanguage),
-      subtitle: Text(AppLocalizations.of(context).settingsCurrentLanguage),
-      dense: true,
-      visualDensity: VisualDensity.compact,
-    );
+    return SimpleStreamWidget(
+        stream: LocalPreferences.userPreferences(),
+        builder: (context, UserPreferences userPreferences) {
+          return ListTile(
+            title: Text(AppLocalizations.of(context).settingsLanguage),
+            subtitle: Text(AppLocalizations.of(context).locale.toString()),
+            dense: true,
+            visualDensity: VisualDensity.compact,
+          );
+        });
   }
 
   Widget buildApplicationVersion() {
