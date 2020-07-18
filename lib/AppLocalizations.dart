@@ -42,134 +42,182 @@ class AppLocalizations {
 }
 
 extension DashbaordLocalizations on AppLocalizations {
-
   String get dashboardTitle => _locale(
-      en: "QWallet",
-      pl: "QWallet",
-    );
+        en: "QWallet",
+        pl: "QWallet",
+      );
 
   String get dashboardWalletsEmpty => _locale(
-    en: "There are no wallets in your account",
-    pl: "Na twoim koncie nie ma żadnych portfeli",
-  );
+        en: "There are no wallets in your account",
+        pl: "Na twoim koncie nie ma żadnych portfeli",
+      );
 
   String get dashboardAddWalletButton => _locale(
-      en: "Add a new wallet",
-      pl: "Dodaj nowy protfel",
-    );
+        en: "Add a new wallet",
+        pl: "Dodaj nowy protfel",
+      );
 
   String get dashboardAddTransactionButton => _locale(
-    en: "Add expense or income",
-    pl: "Dodaj wydatek lub przychód",
-  );
+        en: "Add expense or income",
+        pl: "Dodaj wydatek lub przychód",
+      );
 }
 
 extension SettingsLocalizations on AppLocalizations {
-
   String get settings => _locale(
-    en: "Settings",
-    pl: "Ustawienia",
-  );
+        en: "Settings",
+        pl: "Ustawienia",
+      );
 
   String get settingsWallets => _locale(
-    en: "Wallets",
-    pl: "Portfele",
-  );
+        en: "Wallets",
+        pl: "Portfele",
+      );
 
   String get settingsWalletsHint => _locale(
-    en: "Manage your wallets",
-    pl: "Zarządzaj portflami",
+        en: "Manage your wallets",
+        pl: "Zarządzaj portflami",
+      );
+
+  String get settingsThemeMode => _locale(
+    en: "Theme",
+    pl: "Motyw",
+  );
+
+  String get settingsThemeModeSelect => _locale(
+    en: "Select theme",
+    pl: "Wybierz motyw",
+  );
+
+  String get settingsThemeModeSystem => _locale(
+    en: "System",
+    pl: "Systemowy",
+  );
+
+  String get settingsThemeModeLight => _locale(
+    en: "Light",
+    pl: "Jasny",
+  );
+
+  String get settingsThemeModeDark => _locale(
+    en: "Dark",
+    pl: "Ciemny",
   );
 
   String get settingsLanguage => _locale(
-    en: "Language",
-    pl: "Język",
-  );
+        en: "Language",
+        pl: "Język",
+      );
 
-  String get settingsCurrentLanguage => _locale(
-    en: "English",
-    pl: "Polski",
-  );
+  String get settingsLocaleSelect => _locale(
+      en: "Select language",
+      pl: "Wybierz język",
+    );
+
+  String Function(Locale locale) get settingsLocale => (locale) {
+        switch (locale.toString()) {
+          case "en_US":
+            return _locale(
+              en: "English (United States)",
+              pl: "Angielski (Stany zjednoczone)",
+            );
+          case "pl_PL":
+            return _locale(
+              en: "Polish",
+              pl: "Polski",
+            );
+          default:
+            return locale.toString();
+        }
+      };
+
+  String Function(Locale locale) get settingsLocaleNative => (locale) {
+        switch (locale.toString()) {
+          case "en_US":
+            return "English (United States)";
+          case "pl_PL":
+            return "Polski";
+          default:
+            return locale.toString();
+        }
+      };
 
   String get settingsApplicationVersion => _locale(
-    en: "Application version",
-    pl: "Wersja aplikacji",
-  );
-  
+        en: "Application version",
+        pl: "Wersja aplikacji",
+      );
+
   String get settingsPrivacyPolicy => _locale(
-      en: "Privacy policy",
-      pl: "Polityka prywatności",
-    );
-  
+        en: "Privacy policy",
+        pl: "Polityka prywatności",
+      );
+
   String get settingsTermsOfService => _locale(
-      en: "Terms of service",
-      pl: "Warunki usługi",
-    );
-  
+        en: "Terms of service",
+        pl: "Warunki usługi",
+      );
+
   String get settingsLicenses => _locale(
-      en: "Third-party licenses",
-      pl: "Licencje",
-    );
+        en: "Third-party licenses",
+        pl: "Licencje",
+      );
 }
 
 extension UserLocalizations on AppLocalizations {
-
   String get userAnonymous => _locale(
-    en: "Anonymous",
-    pl: "Anonimowy",
-  );
+        en: "Anonymous",
+        pl: "Anonimowy",
+      );
 
   String get userLoggedHint => _locale(
-    en: "Logged with",
-    pl: "Zalogowano przez",
-  );
+        en: "Logged with",
+        pl: "Zalogowano przez",
+      );
 
   String get userRemoveAccount => _locale(
-    en: "Remove account",
-    pl: "Usuń konto",
-  );
+        en: "Remove account",
+        pl: "Usuń konto",
+      );
 
   String get userRemoveAccountConfirmation => _locale(
-    en: "Are sure you want to remove account?",
-    pl: "Czy na pewno chcesz usunąć konto?",
-  );
+        en: "Are sure you want to remove account?",
+        pl: "Czy na pewno chcesz usunąć konto?",
+      );
 
   String get userRemoveAccountConfirmationHint => _locale(
-    en: "Tap here again to confirm",
-    pl: "Naciśnij ponownie tutaj, aby potwiedzić",
-  );
+        en: "Tap here again to confirm",
+        pl: "Naciśnij ponownie tutaj, aby potwiedzić",
+      );
 
   String get userLogout => _locale(
-    en: "Logout",
-    pl: "Wyloguj",
-  );
+        en: "Logout",
+        pl: "Wyloguj",
+      );
 }
 
 extension WalletsLocalizations on AppLocalizations {
-
   String get wallets => _locale(
-      en: "Wallets",
-      pl: "Portfele",
-    );
+        en: "Wallets",
+        pl: "Portfele",
+      );
 
   String get walletsChangeOrder => _locale(
-    en: "Change wallets order",
-    pl: "Zmień kolejność portfeli",
-  );
+        en: "Change wallets order",
+        pl: "Zmień kolejność portfeli",
+      );
 
   String get walletsChangeOrderHint => _locale(
-    en: "Drag and drop to change the order of wallets",
-    pl: "Przeciągnij i upuść, aby zmienić kolejność portfeli",
-  );
+        en: "Drag and drop to change the order of wallets",
+        pl: "Przeciągnij i upuść, aby zmienić kolejność portfeli",
+      );
 
   String get walletsAdd => _locale(
-    en: "Add wallet",
-    pl: "Dodaj portfel",
-  );
+        en: "Add wallet",
+        pl: "Dodaj portfel",
+      );
 }
 
 extension WalletLocalizations on AppLocalizations {
-  
   String get walletName => _locale(
         en: "Name",
         pl: "Nazwa",
@@ -184,11 +232,11 @@ extension WalletLocalizations on AppLocalizations {
         en: "Currency",
         pl: "Waluta",
       );
-  
+
   String get walletBalance => _locale(
-      en: "Balance",
-      pl: "Saldo",
-    );
+        en: "Balance",
+        pl: "Saldo",
+      );
 
   String get walletRemove => _locale(
         en: "Remove wallet",
@@ -209,326 +257,316 @@ extension WalletLocalizations on AppLocalizations {
 }
 
 extension ConfirmationLocalizations on AppLocalizations {
-
   String get confirmationCancel => _locale(
-      en: "Cancel",
-      pl: "Anuluj",
-    );
-
-  String get confirmationConfirm => _locale(
-    en: "Confirm",
-    pl: "Potwierdź",
-  );
-}
-
-
-extension AddWalletLocalizations on AppLocalizations {
-
-  String get addWalletNew => _locale(
-      en: "New wallet",
-      pl: "Nowy portfel",
-    );
-
-  String get addWalletName => _locale(
-    en: "Wallet name",
-    pl: "Nazwa portfela",
-  );
-
-  String get addWalletOwners => _locale(
-    en: "Owners",
-    pl: "Właściciele",
-  );
-
-  String get addWalletOwnersHint => _locale(
-    en: "Wallet's owners can fully manage of that wallet like adding expenses and incomes. They can also add other owners.",
-    pl: "Właściciele portfela mogą w pełni zarządzać tym portfelem, na przykład dodając wydatki i dochody. Mogą także dodawać innych właścicieli.",
-  );
-
-  String get addWalletOwnersErrorIsEmpty => _locale(
-    en: "Assign at least one person to this wallet",
-    pl: "Przypisz co najmniej jedną osobę do tego portfela",
-  );
-
-  String get addWalletOwnersErrorNoYou => _locale(
-    en: "You must be the owner of a new wallet",
-    pl: "Musisz być właścicielem nowego portfela",
-  );
-
-  String get addWalletCurrency => _locale(
-    en: "Currency",
-    pl: "Waluta",
-  );
-
-  String get addWalletCurrencyErrorIsEmpty => _locale(
-    en: "Enter some wallet name",
-    pl: "Wprowadź nazwę portfela",
-  );
-
-  String Function(String) get addWalletCurrencyExample =>
-          (String example) => _locale(
-        en: "Eg. $example",
-        pl: "Np. $example",
+        en: "Cancel",
+        pl: "Anuluj",
       );
 
+  String get confirmationConfirm => _locale(
+        en: "Confirm",
+        pl: "Potwierdź",
+      );
+}
+
+extension AddWalletLocalizations on AppLocalizations {
+  String get addWalletNew => _locale(
+        en: "New wallet",
+        pl: "Nowy portfel",
+      );
+
+  String get addWalletName => _locale(
+        en: "Wallet name",
+        pl: "Nazwa portfela",
+      );
+
+  String get addWalletOwners => _locale(
+        en: "Owners",
+        pl: "Właściciele",
+      );
+
+  String get addWalletOwnersHint => _locale(
+        en: "Wallet's owners can fully manage of that wallet like adding expenses and incomes. They can also add other owners.",
+        pl: "Właściciele portfela mogą w pełni zarządzać tym portfelem, na przykład dodając wydatki i dochody. Mogą także dodawać innych właścicieli.",
+      );
+
+  String get addWalletOwnersErrorIsEmpty => _locale(
+        en: "Assign at least one person to this wallet",
+        pl: "Przypisz co najmniej jedną osobę do tego portfela",
+      );
+
+  String get addWalletOwnersErrorNoYou => _locale(
+        en: "You must be the owner of a new wallet",
+        pl: "Musisz być właścicielem nowego portfela",
+      );
+
+  String get addWalletCurrency => _locale(
+        en: "Currency",
+        pl: "Waluta",
+      );
+
+  String get addWalletCurrencyErrorIsEmpty => _locale(
+        en: "Enter some wallet name",
+        pl: "Wprowadź nazwę portfela",
+      );
+
+  String Function(String) get addWalletCurrencyExample =>
+      (String example) => _locale(
+            en: "Eg. $example",
+            pl: "Np. $example",
+          );
+
   String get addWalletSubmit => _locale(
-    en: "Add",
-    pl: "Dodaj",
-  );
+        en: "Add",
+        pl: "Dodaj",
+      );
 }
 
 extension SelectCurrencyLocalizations on AppLocalizations {
-
   String get selectCurrency => _locale(
-    en: "Select currency",
-    pl: "Wybierz walutę",
-  );
+        en: "Select currency",
+        pl: "Wybierz walutę",
+      );
 
   String get selectCurrencySymbol => _locale(
-    en: "Currency symbol",
-    pl: "Symbol waluty",
-  );
+        en: "Currency symbol",
+        pl: "Symbol waluty",
+      );
 
   String get selectCurrencyName => _locale(
-    en: "Currency Name",
-    pl: "Nazwa waluty",
-  );
+        en: "Currency Name",
+        pl: "Nazwa waluty",
+      );
 
   String get selectCurrencyDecimalPlaces => _locale(
-    en: "Decimal places",
-    pl: "Miejsc dziesiętnych",
-  );
+        en: "Decimal places",
+        pl: "Miejsc dziesiętnych",
+      );
 
   String get selectCurrencyISO4217Number => _locale(
-    en: "ISO 4217 number",
-    pl: "Numer ISO 4217",
-  );
+        en: "ISO 4217 number",
+        pl: "Numer ISO 4217",
+      );
 
   String get selectCurrencyWiki => _locale(
-    en: "Wikipedia",
-    pl: "Wikipedia",
-  );
+        en: "Wikipedia",
+        pl: "Wikipedia",
+      );
 
   String get selectCurrencyExamples => _locale(
-    en: "Examples",
-    pl: "Przykłady",
-  );
+        en: "Examples",
+        pl: "Przykłady",
+      );
 }
 
 extension AddTransactionLocalizations on AppLocalizations {
-
   String get addTransaction => _locale(
-      en: "Add expense or income",
-      pl: "Dodaj wydatek lub przychód",
-    );
+        en: "Add expense or income",
+        pl: "Dodaj wydatek lub przychód",
+      );
 
   String get addTransactionSelectWallet => _locale(
-      en: "Select wallet",
-      pl: "Wybierz portfel",
-    );
+        en: "Select wallet",
+        pl: "Wybierz portfel",
+      );
 
   String get addTransactionExpense => _locale(
-    en: "Expense",
-    pl: "Wydatek",
-  );
+        en: "Expense",
+        pl: "Wydatek",
+      );
 
   String get addTransactionIncome => _locale(
-    en: "Income",
-    pl: "Przychód",
-  );
+        en: "Income",
+        pl: "Przychód",
+      );
 
   String get addTransactionAmount => _locale(
-    en: "Amount",
-    pl: "Kwota",
-  );
+        en: "Amount",
+        pl: "Kwota",
+      );
 
   String get addTransactionAmountErrorIsEmpty => _locale(
-    en: "Enter some amount",
-    pl: "Wprowadź jakąś kwotę",
-  );
+        en: "Enter some amount",
+        pl: "Wprowadź jakąś kwotę",
+      );
 
   String get addTransactionAmountErrorNonNumber => _locale(
-    en: "Enter amount in valid format",
-    pl: "Wprowadź kwotę w poprawnym formacie",
-  );
+        en: "Enter amount in valid format",
+        pl: "Wprowadź kwotę w poprawnym formacie",
+      );
 
   String get addTransactionAmountErrorZeroOrNegative => _locale(
-    en: "Amount must be greater then zero",
-    pl: "Kwota musi być większa niż zero",
-  );
+        en: "Amount must be greater then zero",
+        pl: "Kwota musi być większa niż zero",
+      );
 
   String Function(Money) get addTransactionBalanceAfter => (money) => _locale(
-    en: "Balance after: ${money.formatted}",
-    pl: "Saldo po: ${money.formatted}",
-  );
+        en: "Balance after: ${money.formatted}",
+        pl: "Saldo po: ${money.formatted}",
+      );
 
   String get addTransactionTitle => _locale(
-    en: "Title",
-    pl: "Tytuł",
-  );
+        en: "Title",
+        pl: "Tytuł",
+      );
 
   String get addTransactionDate => _locale(
-    en: "Date",
-    pl: "Data",
-  );
+        en: "Date",
+        pl: "Data",
+      );
 
   String get addTransactionSubmit => _locale(
-    en: "Add",
-    pl: "Dodaj",
-  );
+        en: "Add",
+        pl: "Dodaj",
+      );
 }
 
 extension TransactionsCardLocalizations on AppLocalizations {
-
   String get transactionsCardTransactionsEmpty => _locale(
-    en: "There are no expenses or incomes",
-    pl: "Nie ma żadnych wydatków ani dochodów",
-  );
+        en: "There are no expenses or incomes",
+        pl: "Nie ma żadnych wydatków ani dochodów",
+      );
 
   String get transactionsCardToday => _locale(
-      en: "Today",
-      pl: "Dzisiaj",
-    );
+        en: "Today",
+        pl: "Dzisiaj",
+      );
 
   String get transactionsCardYesterday => _locale(
-      en: "Yesterday",
-      pl: "Wczoraj",
-    );
+        en: "Yesterday",
+        pl: "Wczoraj",
+      );
 
   String get transactionsCardLastWeek => _locale(
-      en: "Last week",
-      pl: "Ostatni tydzień",
-    );
+        en: "Last week",
+        pl: "Ostatni tydzień",
+      );
 
   String get transactionsCardLastMonth => _locale(
-      en: "Last month",
-      pl: "Ostatni miesiąc",
-    );
+        en: "Last month",
+        pl: "Ostatni miesiąc",
+      );
 
   String get transactionsCardExpense => _locale(
-      en: "Expense",
-      pl: "Wydatek",
-    );
+        en: "Expense",
+        pl: "Wydatek",
+      );
 
   String get transactionsCardIncome => _locale(
-      en: "Income",
-      pl: "Przychód",
-    );
+        en: "Income",
+        pl: "Przychód",
+      );
 
   String get transactionsCardTodayHint => _locale(
-    en: "today",
-    pl: "dzisiaj",
-  );
+        en: "today",
+        pl: "dzisiaj",
+      );
 
   String get transactionsCardYesterdayHint => _locale(
-    en: "yesterday",
-    pl: "wczoraj",
-  );
+        en: "yesterday",
+        pl: "wczoraj",
+      );
 }
 
 extension CategoriesLocalizations on AppLocalizations {
-
   String get categories => _locale(
-    en: "Categories",
-    pl: "Kategorie",
-  );
+        en: "Categories",
+        pl: "Kategorie",
+      );
 
   String get categoriesEmpty => _locale(
-    en: "There is no categories",
-    pl: "Nie ma żadnych kategorii",
-  );
+        en: "There is no categories",
+        pl: "Nie ma żadnych kategorii",
+      );
 
   String get addCategory => _locale(
-      en: "Add category",
-      pl: "Dodaj kategorię",
-    );
+        en: "Add category",
+        pl: "Dodaj kategorię",
+      );
 
   String get addCategorySubmit => _locale(
-    en: "Add",
-    pl: "Dodaj",
-  );
+        en: "Add",
+        pl: "Dodaj",
+      );
 
-  String Function(String) get categoryEdit =>
-          (String category) => _locale(
+  String Function(String) get categoryEdit => (String category) => _locale(
         en: "Edit \"$category\" category",
         pl: "Edycja kategorii \"$category\"",
       );
 
   String Function(String) get categoryRemoveConfirmation =>
-          (String category) => _locale(
-        en: "Remove \"$category\" category?",
-        pl: "Czy usunąć portfel \"$category\"?",
-      );
+      (String category) => _locale(
+            en: "Remove \"$category\" category?",
+            pl: "Czy usunąć portfel \"$category\"?",
+          );
 
   String Function(String) get categoryRemoveConfirmationContent =>
-          (String category) => _locale(
-        en: "Are you sure remove the \"$category\" category? This operation cannot be undone.",
-        pl: "Czy jesteś pewny, że chcesz usunąć kategorię \"$category\"? Tej operacji nie można cofnąć.",
-      );
+      (String category) => _locale(
+            en: "Are you sure remove the \"$category\" category? This operation cannot be undone.",
+            pl: "Czy jesteś pewny, że chcesz usunąć kategorię \"$category\"? Tej operacji nie można cofnąć.",
+          );
 
   String get categoryEditSubmit => _locale(
-    en: "Save changes",
-    pl: "Zapisz zmiany",
-  );
+        en: "Save changes",
+        pl: "Zapisz zmiany",
+      );
 
   String get categoryTitle => _locale(
-      en: "Title",
-      pl: "Tytuł",
-    );
+        en: "Title",
+        pl: "Tytuł",
+      );
 
   String get categoryTitleErrorEmpty => _locale(
-    en: "Title is required",
-    pl: "Tytuł jest wymagany",
-  );
+        en: "Title is required",
+        pl: "Tytuł jest wymagany",
+      );
 
   String get categoryIconHint => _locale(
-      en: "Change icon",
-      pl: "Zmień ikonkę",
-    );
+        en: "Change icon",
+        pl: "Zmień ikonkę",
+      );
 
   String get categoryBackgroundColorIsPrimary => _locale(
-    en: "Background is the same color",
-    pl: "Tło ma ten sam kolor",
-  );
+        en: "Background is the same color",
+        pl: "Tło ma ten sam kolor",
+      );
 
   String get categoryIconPackSelect => _locale(
-      en: "Select icon pack",
-      pl: "Wybierz zestaw ikon",
-    );
+        en: "Select icon pack",
+        pl: "Wybierz zestaw ikon",
+      );
 
   String get categoryIconPackSearch => _locale(
-    en: "Search",
-    pl: "Wyszukaj",
-  );
+        en: "Search",
+        pl: "Wyszukaj",
+      );
 
   String get categoryIconPackSearchEmpty => _locale(
-    en: "No results for:",
-    pl: "Brak wyników dla:",
-  );
+        en: "No results for:",
+        pl: "Brak wyników dla:",
+      );
 
   String get categoryIconPackMaterial => _locale(
-      en: "Material Design icons",
-      pl: "Ikony Material Design",
-    );
+        en: "Material Design icons",
+        pl: "Ikony Material Design",
+      );
 
   String get categoryIconPackMaterialOutline => _locale(
-    en: "Outlined Material Design icons",
-    pl: "Obramowane ikony Material Design",
-  );
+        en: "Outlined Material Design icons",
+        pl: "Obramowane ikony Material Design",
+      );
 
   String get categoryIconPackCupertino => _locale(
-    en: "Cupertino icons",
-    pl: "Ikony Cupertino",
-  );
+        en: "Cupertino icons",
+        pl: "Ikony Cupertino",
+      );
 
   String get categoryIconPackFontAwesome => _locale(
-    en: "Font Awesome icons",
-    pl: "Ikony Font Awesome",
-  );
+        en: "Font Awesome icons",
+        pl: "Ikony Font Awesome",
+      );
 
   String get categoryIconPackLineAwesome => _locale(
-    en: "Line Awesome icons",
-    pl: "Ikony Line Awesome",
-  );
-
-
+        en: "Line Awesome icons",
+        pl: "Ikony Line Awesome",
+      );
 }

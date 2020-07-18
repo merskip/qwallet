@@ -13,7 +13,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../router.dart';
 
 class SettingsPage extends StatelessWidget {
-
   onSelectedChangeThemeMode(
       BuildContext context, ThemeMode currentThemeMode) async {
     final themeMode = await showDialog(
@@ -21,13 +20,13 @@ class SettingsPage extends StatelessWidget {
       builder: (context) {
         final buildOption = (ThemeMode themeMode) {
           return ListTile(
-            title: Text(_getThemeModeText(themeMode)),
+            title: Text(_getThemeModeText(context, themeMode)),
             trailing: currentThemeMode == themeMode ? Icon(Icons.check) : null,
             onTap: () => Navigator.of(context).pop(themeMode),
           );
         };
         return SimpleDialog(
-          title: Text("#Select theme mode"),
+          title: Text(AppLocalizations.of(context).settingsThemeModeSelect),
           children: [
             buildOption(ThemeMode.system),
             buildOption(ThemeMode.light),
@@ -37,6 +36,31 @@ class SettingsPage extends StatelessWidget {
       },
     );
     if (themeMode != null) LocalPreferences.setUserThemeMode(themeMode);
+  }
+
+  onSelectedChangeLanguage(BuildContext context, Locale currentLocale) async {
+    final locale = await showDialog(
+      context: context,
+      builder: (context) {
+        final buildOption = (Locale locale) {
+          return ListTile(
+            title:
+                Text(AppLocalizations.of(context).settingsLocaleNative(locale)),
+            subtitle: Text(AppLocalizations.of(context).settingsLocale(locale)),
+            trailing: currentLocale == locale ? Icon(Icons.check) : null,
+            onTap: () => Navigator.of(context).pop(locale),
+          );
+        };
+        return SimpleDialog(
+          title: Text(AppLocalizations.of(context).settingsLocaleSelect),
+          children: [
+            buildOption(Locale("en", "US")),
+            buildOption(Locale("pl", "PL")),
+          ],
+        );
+      },
+    );
+    if (locale != null) LocalPreferences.setUserLocale(locale);
   }
 
   @override
@@ -102,8 +126,8 @@ class SettingsPage extends StatelessWidget {
         stream: LocalPreferences.userPreferences(),
         builder: (context, UserPreferences userPreferences) {
           return ListTile(
-            title: Text("#Theme mode"),
-            subtitle: Text(_getThemeModeText(userPreferences.themeMode)),
+            title: Text(AppLocalizations.of(context).settingsThemeMode),
+            subtitle: Text(_getThemeModeText(context, userPreferences.themeMode)),
             dense: true,
             visualDensity: VisualDensity.compact,
             onTap: () =>
@@ -112,15 +136,15 @@ class SettingsPage extends StatelessWidget {
         });
   }
 
-  String _getThemeModeText(ThemeMode themeMode) {
+  String _getThemeModeText(BuildContext context, ThemeMode themeMode) {
     switch (themeMode) {
       case ThemeMode.light:
-        return "#Light";
+        return AppLocalizations.of(context).settingsThemeModeLight;
       case ThemeMode.dark:
-        return "#Dark";
+        return AppLocalizations.of(context).settingsThemeModeDark;
       case ThemeMode.system:
       default:
-        return "#System";
+        return AppLocalizations.of(context).settingsThemeModeSystem;
     }
   }
 
@@ -128,11 +152,14 @@ class SettingsPage extends StatelessWidget {
     return SimpleStreamWidget(
         stream: LocalPreferences.userPreferences(),
         builder: (context, UserPreferences userPreferences) {
+          final currentLocale =
+              userPreferences.locale ?? AppLocalizations.of(context).locale;
           return ListTile(
             title: Text(AppLocalizations.of(context).settingsLanguage),
-            subtitle: Text(AppLocalizations.of(context).locale.toString()),
+            subtitle: Text(AppLocalizations.of(context).settingsLocale(currentLocale)),
             dense: true,
             visualDensity: VisualDensity.compact,
+            onTap: () => onSelectedChangeLanguage(context, currentLocale),
           );
         });
   }

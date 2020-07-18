@@ -68,6 +68,13 @@ class LocalPreferences {
     _userPreferences.add(UserPreferences(themeMode: themeMode, locale: locale));
   }
 
+  static setUserLocale(Locale locale) async {
+    final preferences = await SharedPreferences.getInstance();
+    preferences.setString("user.locale", locale.toString());
+    final themeMode = _userThemeMode(preferences);
+    _userPreferences.add(UserPreferences(themeMode: themeMode, locale: locale));
+  }
+
   static ThemeMode _userThemeMode(SharedPreferences preferences) =>
       preferences.containsKey("user.themeMode")
           ? _parseThemeMode(preferences.getString("user.themeMode"))
@@ -91,8 +98,8 @@ class LocalPreferences {
   }
 
   static Locale _parseLocale(String locale) {
-    if (locale.contains("-")) {
-      final chunks = locale.split("-");
+    if (locale.contains("_")) {
+      final chunks = locale.split("_");
       return Locale(chunks[0], chunks[1]);
     }
     else {
