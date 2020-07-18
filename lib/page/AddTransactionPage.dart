@@ -9,6 +9,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
@@ -207,7 +208,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         buildAmount(context),
         SizedBox(height: 16),
         buildCategory(context),
-        SizedBox(height: 16),
+        SizedBox(height: 4),
         Divider(),
         SizedBox(height: 16),
         buildTitle(context),
@@ -296,65 +297,20 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   Widget buildCategory(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getCategories(wallet: wallet.reference),
-      builder: (context, List<Category> categories) {
-        if (category == null && categories.isNotEmpty) {
-          category = categories.first;
-        }
-        return buildCategoryPicker(context, categories);
-      },
+      builder: (context, List<Category> categories) =>
+          buildCategoryPicker(context, categories),
     );
   }
 
-  Widget buildCategoryPicker(
-      BuildContext context, List<Category> categories) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("#Category", style: Theme.of(context).textTheme.bodyText2,),
-        SizedBox(height: 8),
-        Wrap(
-          crossAxisAlignment: WrapCrossAlignment.start,
-          spacing: 16,
-          runSpacing: 16,
-          children: [
-            ...categories.map((category) {
-              final isSelected = (this.category == category);
-              return Tooltip(
-                message: category.title,
-                verticalOffset: 36,
-                child: RawMaterialButton(
-                  elevation: isSelected ? 8 : 4,
-                  constraints: BoxConstraints(),
-                  shape: CircleBorder(
-                    side: isSelected
-                        ? BorderSide(
-                            color: category.primaryColor,
-                            width: 3,
-                          )
-                        : BorderSide.none,
-                  ),
-                  fillColor: category.backgroundColor,
-                  child: SizedBox(
-                    width: 56,
-                    height: 56,
-                    child: Icon(
-                      category.icon,
-                      color: category.primaryColor
-                          .withOpacity(isSelected ? 1.0 : 0.6),
-                      size: 28,
-                    ),
-                  ),
-                  onPressed: () => setState(() => this.category = category),
-                ),
-              );
-            })
-          ],
-        ),
-        Align(
-          child: Text(category?.title ?? "-"),
-          alignment: AlignmentDirectional.center,
-        ),
-      ],
+  Widget buildCategoryPicker(BuildContext context, List<Category> categories) {
+    return CategoryPicker(
+      categories: categories,
+      selectedCategory: category,
+      title: Text(AppLocalizations.of(context).addTransactionCategory),
+      onChangeCategory: (category) {
+        setState(() =>
+            this.category = (this.category != category ? category : null));
+      },
     );
   }
 
@@ -384,7 +340,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       ),
       textInputAction: TextInputAction.next,
       readOnly: true,
-//      onTap: () => showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(0), lastDate: DateTime(9999)),
       onFieldSubmitted: (value) => dateFocus.nextFocus(),
     );
   }

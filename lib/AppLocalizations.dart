@@ -404,6 +404,11 @@ extension AddTransactionLocalizations on AppLocalizations {
         pl: "Saldo po: ${money.formatted}",
       );
 
+  String get addTransactionCategory => _locale(
+    en: "Category",
+    pl: "Kategoria",
+  );
+
   String get addTransactionTitle => _locale(
         en: "Title",
         pl: "Tytuł",
@@ -569,4 +574,9 @@ extension CategoriesLocalizations on AppLocalizations {
         en: "Line Awesome icons",
         pl: "Ikony Line Awesome",
       );
+
+  String get categoryNoSelected => _locale(
+    en: "No selected category",
+    pl: "Nie wybrano kategorii",
+  );
 }
