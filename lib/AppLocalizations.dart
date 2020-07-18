@@ -447,6 +447,29 @@ extension CategoriesLocalizations on AppLocalizations {
     pl: "Dodaj",
   );
 
+  String Function(String) get categoryEdit =>
+          (String category) => _locale(
+        en: "Edit \"$category\" category",
+        pl: "Edycja kategorii \"$category\"",
+      );
+
+  String Function(String) get categoryRemoveConfirmation =>
+          (String category) => _locale(
+        en: "Remove \"$category\" category?",
+        pl: "Czy usunąć portfel \"$category\"?",
+      );
+
+  String Function(String) get categoryRemoveConfirmationContent =>
+          (String category) => _locale(
+        en: "Are you sure remove the \"$category\" category? This operation cannot be undone.",
+        pl: "Czy jesteś pewny, że chcesz usunąć kategorię \"$category\"? Tej operacji nie można cofnąć.",
+      );
+
+  String get categoryEditSubmit => _locale(
+    en: "Save changes",
+    pl: "Zapisz zmiany",
+  );
+
   String get categoryTitle => _locale(
       en: "Title",
       pl: "Tytuł",
@@ -506,4 +529,6 @@ extension CategoriesLocalizations on AppLocalizations {
     en: "Line Awesome icons",
     pl: "Ikony Line Awesome",
   );
+
+
 }

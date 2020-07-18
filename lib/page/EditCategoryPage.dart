@@ -6,6 +6,8 @@ import 'package:qwallet/widget/CategoryForm.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
+import '../AppLocalizations.dart';
+
 class EditCategoryPage extends StatelessWidget {
   final Reference<Category> categoryRef;
 
@@ -13,9 +15,10 @@ class EditCategoryPage extends StatelessWidget {
 
   onSelectedRemove(BuildContext context, Category category) {
     ConfirmationDialog(
-      title: Text("#Remove \"${category.title}\" category?"),
-      content: Text(
-          "#Are you sure that you want to remove \"${category.title}\" category? This operation cannot be undone."),
+      title: Text(AppLocalizations.of(context)
+          .categoryRemoveConfirmation(category.title)),
+      content: Text(AppLocalizations.of(context)
+          .categoryRemoveConfirmationContent(category.title)),
       isDestructive: true,
       onConfirm: () {
         DataSource.instance.removeCategory(category: categoryRef);
@@ -36,7 +39,7 @@ class EditCategoryPage extends StatelessWidget {
   Widget buildContent(BuildContext context, Category category) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Edit \"${category.title}\" category"),
+        title: Text(AppLocalizations.of(context).categoryEdit(category.title)),
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
@@ -49,7 +52,7 @@ class EditCategoryPage extends StatelessWidget {
           padding: EdgeInsets.all(16),
           child: CategoryForm(
             category: category,
-            submitChild: Text("#Save changes"),
+            submitChild: Text(AppLocalizations.of(context).categoryEditSubmit),
             onSubmit: (context, title, primaryColor, backgroundColor, icon) {
               DataSource.instance.updateCategory(
                 category: categoryRef,
