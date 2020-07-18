@@ -10,6 +10,7 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/vector_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../EsterEgg.dart';
 import '../router.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -61,6 +62,38 @@ class SettingsPage extends StatelessWidget {
       },
     );
     if (locale != null) LocalPreferences.setUserLocale(locale);
+  }
+
+  onSelectedApplicationVersion(BuildContext context) {
+    if (EasterEgg.waiting) return;
+    final message = EasterEgg.nextMessage();
+    if (message != null) {
+      EasterEgg.waiting = true;
+
+      Widget content;
+      var duration = Duration(seconds: 2);
+      if (!message.startsWith("assets/")) {
+        content = Text(message);
+      } else {
+        final chunks = message.split("|");
+        final assetName = chunks[0];
+        final title = chunks[1];
+        content = Column(
+          mainAxisSize: MainAxisSize.min,
+            children: [
+          Text(title, style: Theme.of(context).primaryTextTheme.headline6),
+          SizedBox(height: 8),
+          Image(image: AssetImage(assetName)),
+        ]);
+        duration = Duration(seconds: 6);
+      }
+
+      final snackBar = Scaffold.of(context).showSnackBar(SnackBar(
+        content: content,
+        duration: duration,
+      ));
+      snackBar.closed.then((value) => EasterEgg.waiting = false);
+    }
   }
 
   @override
@@ -128,7 +161,8 @@ class SettingsPage extends StatelessWidget {
         builder: (context, UserPreferences userPreferences) {
           return ListTile(
             title: Text(AppLocalizations.of(context).settingsThemeMode),
-            subtitle: Text(_getThemeModeText(context, userPreferences.themeMode)),
+            subtitle:
+                Text(_getThemeModeText(context, userPreferences.themeMode)),
             dense: true,
             visualDensity: VisualDensity.compact,
             onTap: () =>
@@ -157,7 +191,8 @@ class SettingsPage extends StatelessWidget {
               userPreferences.locale ?? AppLocalizations.of(context).locale;
           return ListTile(
             title: Text(AppLocalizations.of(context).settingsLanguage),
-            subtitle: Text(AppLocalizations.of(context).settingsLocale(currentLocale)),
+            subtitle: Text(
+                AppLocalizations.of(context).settingsLocale(currentLocale)),
             dense: true,
             visualDensity: VisualDensity.compact,
             onTap: () => onSelectedChangeLanguage(context, currentLocale),
@@ -169,11 +204,15 @@ class SettingsPage extends StatelessWidget {
     return FutureBuilder(
       future: PackageInfo.fromPlatform(),
       builder: (context, AsyncSnapshot<PackageInfo> info) {
-        return ListTile(
-          title: Text(AppLocalizations.of(context).settingsApplicationVersion),
-          subtitle: Text("${info.data?.version} (${info.data?.buildNumber})"),
-          dense: true,
-          visualDensity: VisualDensity.compact,
+        return GestureDetector(
+          child: ListTile(
+            title:
+                Text(AppLocalizations.of(context).settingsApplicationVersion),
+            subtitle: Text("${info.data?.version} (${info.data?.buildNumber})"),
+            dense: true,
+            visualDensity: VisualDensity.compact,
+          ),
+          onDoubleTap: () => onSelectedApplicationVersion(context),
         );
       },
     );
