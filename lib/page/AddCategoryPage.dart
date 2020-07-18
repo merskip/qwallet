@@ -4,6 +4,8 @@ import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/CategoryForm.dart';
 
+import '../AppLocalizations.dart';
+
 class AddCategoryPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
 
@@ -13,13 +15,13 @@ class AddCategoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Add category"),
+        title: Text(AppLocalizations.of(context).addCategory),
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16),
           child: CategoryForm(
-            submitChild: Text("#Add"),
+            submitChild: Text(AppLocalizations.of(context).addCategorySubmit),
             onSubmit: (context, title, primaryColor, backgroundColor, icon) {
               DataSource.instance.addCategory(
                 wallet: walletRef,

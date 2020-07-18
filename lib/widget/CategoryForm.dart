@@ -5,11 +5,11 @@ import 'package:flutter_iconpicker/Models/IconPack.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:qwallet/api/Category.dart';
 
+import '../AppLocalizations.dart';
 import 'ColorPicker.dart';
 import 'PrimaryButton.dart';
 
 class CategoryForm extends StatefulWidget {
-
   final Category category;
 
   final Function(
@@ -46,7 +46,7 @@ class _CategoryFormState extends State<CategoryForm> {
             Colors.primaries.first,
         backgroundColor = _findMaterialColor(category?.backgroundColor, 100) ??
             Colors.primaries.first,
-        icon = category?.icon {
+        icon = category?.icon ?? Icons.category {
     backgroundColorIsPrimary = (primaryColor == backgroundColor);
   }
 
@@ -108,7 +108,7 @@ class _CategoryFormState extends State<CategoryForm> {
       controller: titleController,
       focusNode: titleFocus,
       decoration: InputDecoration(
-        labelText: "#Title",
+        labelText: AppLocalizations.of(context).categoryTitle,
       ),
       autofocus: true,
       maxLength: 50,
@@ -116,7 +116,7 @@ class _CategoryFormState extends State<CategoryForm> {
       textInputAction: TextInputAction.done,
       validator: (title) {
         if (title.trim().isEmpty) {
-          return "#Title is required";
+          return AppLocalizations.of(context).categoryTitleErrorEmpty;
         }
         return null;
       },
@@ -127,17 +127,20 @@ class _CategoryFormState extends State<CategoryForm> {
   Widget buildIconPreview(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: GestureDetector(
-        child: CircleAvatar(
-          backgroundColor: backgroundColor.shade100,
-          child: Icon(
-            icon,
-            color: primaryColor.shade800,
-            size: 48,
+      child: Tooltip(
+        message: AppLocalizations.of(context).categoryIconHint,
+        child: GestureDetector(
+          child: CircleAvatar(
+            backgroundColor: backgroundColor.shade100,
+            child: Icon(
+              icon,
+              color: primaryColor.shade800,
+              size: 48,
+            ),
+            radius: 48,
           ),
-          radius: 48,
+          onTap: () => onSelectedIcon(context),
         ),
-        onTap: () => onSelectedIcon(context),
       ),
     );
   }
@@ -157,7 +160,8 @@ class _CategoryFormState extends State<CategoryForm> {
     return Column(
       children: [
         SwitchListTile(
-            title: Text("#Background is the same color"),
+            title: Text(
+                AppLocalizations.of(context).categoryBackgroundColorIsPrimary),
             value: backgroundColorIsPrimary,
             onChanged: (flag) => setState(() {
                   backgroundColorIsPrimary = flag;
@@ -191,7 +195,7 @@ class _CategoryFormState extends State<CategoryForm> {
     final IconPack iconPack = await showDialog(
       context: context,
       builder: (context) => SimpleDialog(
-        title: Text("#Select icon pack"),
+        title: Text(AppLocalizations.of(context).categoryIconPackSelect),
         children: [
           buildIconPackItem(context, IconPack.material),
           buildIconPackItem(context, IconPack.materialOutline),
@@ -208,8 +212,8 @@ class _CategoryFormState extends State<CategoryForm> {
       showTooltips: true,
       adaptiveDialog: true,
       title: Text(_getIconPackTitle(iconPack)),
-      searchHintText: "#Search",
-      noResultsText: "#No results for:",
+      searchHintText: AppLocalizations.of(context).categoryIconPackSearch,
+      noResultsText: AppLocalizations.of(context).categoryIconPackSearchEmpty,
       mainAxisSpacing: 8,
       crossAxisSpacing: 8,
       iconPackMode: iconPack,
@@ -227,15 +231,15 @@ class _CategoryFormState extends State<CategoryForm> {
   String _getIconPackTitle(IconPack iconPack) {
     switch (iconPack) {
       case IconPack.material:
-        return "#Material icons";
+        return AppLocalizations.of(context).categoryIconPackMaterial;
       case IconPack.materialOutline:
-        return "#Outlined Material icons";
+        return AppLocalizations.of(context).categoryIconPackMaterialOutline;
       case IconPack.cupertino:
-        return "#Cupertino icons";
+        return AppLocalizations.of(context).categoryIconPackCupertino;
       case IconPack.fontAwesomeIcons:
-        return "#Font Awesome icons";
+        return AppLocalizations.of(context).categoryIconPackFontAwesome;
       case IconPack.lineAwesomeIcons:
-        return "#Line Awesome icons";
+        return AppLocalizations.of(context).categoryIconPackLineAwesome;
     }
     return null;
   }

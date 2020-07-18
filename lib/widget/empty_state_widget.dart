@@ -3,14 +3,17 @@ import 'package:flutter/material.dart';
 import 'vector_image.dart';
 
 class EmptyStateWidget extends StatelessWidget {
-  final String icon;
+  final IconData icon;
+  final String iconAsset;
   final String text;
 
   const EmptyStateWidget({
     Key key,
     this.icon,
+    this.iconAsset,
     this.text,
-  }) : super(key: key);
+  })  : assert(icon != null || iconAsset != null),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +21,18 @@ class EmptyStateWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          VectorImage(
-            icon,
-            size: Size.square(72),
-            color: Colors.grey,
-          ),
+          if (icon != null)
+            Icon(
+              icon,
+              size: 72,
+              color: Colors.grey,
+            )
+          else
+            VectorImage(
+              iconAsset,
+              size: Size.square(72),
+              color: Colors.grey,
+            ),
           SizedBox(height: 16),
           Text(
             text,

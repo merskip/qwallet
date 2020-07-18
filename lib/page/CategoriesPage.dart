@@ -6,6 +6,9 @@ import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
+import 'package:qwallet/widget/empty_state_widget.dart';
+
+import '../AppLocalizations.dart';
 
 class CategoriesPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
@@ -27,17 +30,28 @@ class _WalletCategoriesPageContent extends StatelessWidget {
 
   const _WalletCategoriesPageContent({Key key, this.wallet}) : super(key: key);
 
+  onSelectedAddCategory(BuildContext context) {
+    router.navigateTo(context, "/wallet/${wallet.id}/categories/add");
+  }
+
+  onSelectedCategory(BuildContext context, Category category) {
+    router.navigateTo(
+      context,
+      "/wallet/${wallet.id}/category/${category.id}",
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Wallet categories"),
+        title: Text(AppLocalizations.of(context).categories),
       ),
       body: buildCategories(context),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: () =>
-            router.navigateTo(context, "/wallet/${wallet.id}/categories/add"),
+        onPressed: () => onSelectedAddCategory(context),
+        tooltip: AppLocalizations.of(context).addCategory,
       ),
     );
   }
@@ -46,18 +60,28 @@ class _WalletCategoriesPageContent extends StatelessWidget {
     return SimpleStreamWidget(
       stream: DataSource.instance.getCategories(wallet: wallet.reference),
       builder: (context, List<Category> categories) {
-        return GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-          ),
-          padding: EdgeInsets.all(8),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            return buildCategoryTile(context, categories[index]);
-          },
-        );
+        if (categories.isNotEmpty)
+          return buildCategoriesGrid(context, categories);
+        else
+          return EmptyStateWidget(
+            icon: Icons.category,
+            text: AppLocalizations.of(context).categoriesEmpty,
+          );
+      },
+    );
+  }
+
+  Widget buildCategoriesGrid(BuildContext context, List<Category> categories) {
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      padding: EdgeInsets.all(8),
+      itemCount: categories.length,
+      itemBuilder: (context, index) {
+        return buildCategoryTile(context, categories[index]);
       },
     );
   }
@@ -88,10 +112,7 @@ class _WalletCategoriesPageContent extends StatelessWidget {
           ],
         ),
       ),
-      onTap: () => router.navigateTo(
-        context,
-        "/wallet/${wallet.id}/category/${category.id}",
-      ),
+      onTap: () => onSelectedCategory(context, category),
     );
   }
 }

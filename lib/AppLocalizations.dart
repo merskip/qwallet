@@ -424,3 +424,86 @@ extension TransactionsCardLocalizations on AppLocalizations {
     pl: "wczoraj",
   );
 }
+
+extension CategoriesLocalizations on AppLocalizations {
+
+  String get categories => _locale(
+    en: "Categories",
+    pl: "Kategorie",
+  );
+
+  String get categoriesEmpty => _locale(
+    en: "There is no categories",
+    pl: "Nie ma żadnych kategorii",
+  );
+
+  String get addCategory => _locale(
+      en: "Add category",
+      pl: "Dodaj kategorię",
+    );
+
+  String get addCategorySubmit => _locale(
+    en: "Add",
+    pl: "Dodaj",
+  );
+
+  String get categoryTitle => _locale(
+      en: "Title",
+      pl: "Tytuł",
+    );
+
+  String get categoryTitleErrorEmpty => _locale(
+    en: "Title is required",
+    pl: "Tytuł jest wymagany",
+  );
+
+  String get categoryIconHint => _locale(
+      en: "Change icon",
+      pl: "Zmień ikonkę",
+    );
+
+  String get categoryBackgroundColorIsPrimary => _locale(
+    en: "Background is the same color",
+    pl: "Tło ma ten sam kolor",
+  );
+
+  String get categoryIconPackSelect => _locale(
+      en: "Select icon pack",
+      pl: "Wybierz zestaw ikon",
+    );
+
+  String get categoryIconPackSearch => _locale(
+    en: "Search",
+    pl: "Wyszukaj",
+  );
+
+  String get categoryIconPackSearchEmpty => _locale(
+    en: "No results for:",
+    pl: "Brak wyników dla:",
+  );
+
+  String get categoryIconPackMaterial => _locale(
+      en: "Material Design icons",
+      pl: "Ikony Material Design",
+    );
+
+  String get categoryIconPackMaterialOutline => _locale(
+    en: "Outlined Material Design icons",
+    pl: "Obramowane ikony Material Design",
+  );
+
+  String get categoryIconPackCupertino => _locale(
+    en: "Cupertino icons",
+    pl: "Ikony Cupertino",
+  );
+
+  String get categoryIconPackFontAwesome => _locale(
+    en: "Font Awesome icons",
+    pl: "Ikony Font Awesome",
+  );
+
+  String get categoryIconPackLineAwesome => _locale(
+    en: "Line Awesome icons",
+    pl: "Ikony Line Awesome",
+  );
+}

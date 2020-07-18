@@ -44,6 +44,10 @@ class _WalletPageContent extends StatelessWidget {
     ).show(context);
   }
 
+  onSelectedCategories(BuildContext context) {
+    router.navigateTo(context, "/wallet/${wallet.id}/categories");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,9 +113,9 @@ class _WalletPageContent extends StatelessWidget {
   Widget buildCategories(BuildContext context) {
     return ListTile(
       leading: Icon(Icons.category),
-      title: Text("#Categories"),
-      onTap: () =>
-          router.navigateTo(context, "/wallet/${wallet.id}/categories"),
+      title: Text(AppLocalizations.of(context).categories),
+      trailing: Icon(Icons.chevron_right),
+      onTap: () => onSelectedCategories(context),
     );
   }
 }

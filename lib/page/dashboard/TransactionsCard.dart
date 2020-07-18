@@ -198,7 +198,7 @@ class _TransactionsCardState extends State<_TransactionsCard> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: EmptyStateWidget(
-        icon: "assets/ic-wallet.svg",
+        iconAsset: "assets/ic-wallet.svg",
         text: AppLocalizations.of(context).transactionsCardTransactionsEmpty,
       ),
     );

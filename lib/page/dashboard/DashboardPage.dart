@@ -108,7 +108,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget buildNoWallets(BuildContext context) {
     return EmptyStateWidget(
-      icon: "assets/ic-wallet.svg",
+      iconAsset: "assets/ic-wallet.svg",
       text: AppLocalizations.of(context).dashboardWalletsEmpty,
     );
   }

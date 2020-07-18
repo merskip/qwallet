@@ -70,7 +70,7 @@ class ExpensesListWidget extends StatelessWidget {
               Divider(thickness: 0.75),
               Spacer(),
               EmptyStateWidget(
-                icon: "assets/ic-wallet.svg",
+                iconAsset: "assets/ic-wallet.svg",
                 text:
                     "There are no any expenses in this wallet.\nUse the + button to add them.",
               ),
