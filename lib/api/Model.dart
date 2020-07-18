@@ -6,10 +6,12 @@ class Reference<T> {
   String get id => documentReference.documentID;
 
   Reference(this.documentReference);
+
+  factory Reference.fromNullable(DocumentReference documentReference) =>
+      documentReference != null ? Reference(documentReference) : null;
 }
 
 extension ReferenceConverting on DocumentReference {
-
   Reference<T> toReference<T>() => Reference(this);
 }
 

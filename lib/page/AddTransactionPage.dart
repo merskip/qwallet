@@ -180,7 +180,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           wallet.reference,
           title: titleController.text.trim(),
           amount: amount,
-          category: category.reference,
+          category: category?.reference,
           date: date,
         );
       } else {
@@ -188,7 +188,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           wallet.reference,
           title: titleController.text.trim(),
           amount: amount,
-          category: category.reference,
+          category: category?.reference,
           date: date,
         );
       }

@@ -213,36 +213,35 @@ class _TransactionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (transaction.category != null) {
+      return SimpleStreamWidget(
+        stream: DataSource.instance.getCategory(category: transaction.category),
+        builder: (context, Category category) =>
+            buildListTile(context, transaction, category),
+      );
+    } else {
+      return buildListTile(context, transaction, null);
+    }
+  }
+
+  Widget buildListTile(
+      BuildContext context, Transaction transaction, Category category) {
     final color = transaction is Income ? Colors.green : null;
     final amountPrefix = transaction is Income ? "+" : "-";
     final amountText = Money(transaction.amount, wallet.currency).formatted;
 
-    final String title = transaction.title.isNotEmpty
-        ? transaction.title
-        : (transaction is Income
-            ? AppLocalizations.of(context).transactionsCardIncome
-            : AppLocalizations.of(context).transactionsCardExpense);
-    final String subTitle = transaction.title.isNotEmpty
-        ? (transaction is Income
-            ? AppLocalizations.of(context).transactionsCardIncome
-            : AppLocalizations.of(context).transactionsCardExpense)
-        : null;
+    final String transactionType = (transaction is Income
+        ? AppLocalizations.of(context).transactionsCardIncome
+        : AppLocalizations.of(context).transactionsCardExpense);
+
+    final String title = transaction.title ?? category?.title ?? transactionType;
+    final String subTitle = transaction.title != null ? category?.title : null;
 
     return ListTile(
       key: Key(transaction.id),
-      leading: buildCategoryIcon(context, transaction),
+      leading: buildCategoryIcon(context, category),
       title: Text(title),
-      subtitle: transaction.category.documentReference != null ? StreamBuilder(
-          stream:
-              DataSource.instance.getCategory(category: transaction.category),
-          builder: (context, AsyncSnapshot<Category> snapshot) {
-            if (snapshot.hasData) {
-              return Text(snapshot.data.title);
-            }
-            else {
-              return Text("");
-            }
-          }) : null,
+      subtitle: subTitle != null ? Text(subTitle) : null,
       trailing: Text(amountPrefix + amountText, style: TextStyle(color: color)),
       dense: true,
       visualDensity: VisualDensity.compact,
@@ -250,31 +249,19 @@ class _TransactionListItem extends StatelessWidget {
     );
   }
 
-  Widget buildCategoryIcon(BuildContext context, Transaction transaction) {
-    if (transaction.category.documentReference != null) {
-      return StreamBuilder(
-        stream: DataSource.instance.getCategory(category: transaction.category),
-        builder: (context, AsyncSnapshot<Category> snapshot) {
-          if (snapshot.hasData) {
-            final category = snapshot.data;
-            return CircleAvatar(
-              key: Key(category.id),
-              backgroundColor: category.backgroundColor,
-              child: Icon(
-                category.icon,
-                color: category.primaryColor,
-                size: 20,
-              ),
-              radius: 18,
-            );
-          }
-          else {
-            return buildDefaultCategory(context);
-          }
-        },
+  Widget buildCategoryIcon(BuildContext context, Category category) {
+    if (category != null) {
+      return CircleAvatar(
+        key: Key(category.id),
+        backgroundColor: category.backgroundColor,
+        child: Icon(
+          category.icon,
+          color: category.primaryColor,
+          size: 20,
+        ),
+        radius: 18,
       );
-    }
-    else {
+    } else {
       return buildDefaultCategory(context);
     }
   }
@@ -290,5 +277,4 @@ class _TransactionListItem extends StatelessWidget {
       radius: 16,
     );
   }
-
 }

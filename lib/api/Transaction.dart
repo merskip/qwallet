@@ -20,10 +20,10 @@ class Income extends Model<Income> with Transaction {
   final Reference<Category> category;
 
   Income(DocumentSnapshot snapshot)
-      : title = snapshot.data['title'],
+      : title = toStringOrNull(snapshot.data['title'])?.nullIfEmpty(),
         amount = toDouble(snapshot.data['amount']),
         date = snapshot.data['date'],
-        category = Reference(snapshot.data['category']),
+        category = Reference.fromNullable(snapshot.data['category']),
         super(snapshot);
 }
 
@@ -34,9 +34,9 @@ class Expense extends Model<Expense> with Transaction {
   final Reference<Category> category;
 
   Expense(DocumentSnapshot snapshot)
-      : title = snapshot.data["title"],
+      : title = toStringOrNull(snapshot.data["title"])?.nullIfEmpty(),
         amount = toDouble(snapshot.data["amount"]),
         date = snapshot.data["date"],
-        category = Reference(snapshot.data['category']),
+        category = Reference.fromNullable(snapshot.data['category']),
         super(snapshot);
 }

@@ -108,9 +108,9 @@ extension TransactionsDataSource on DataSource {
         wallet.documentReference.collection("expenses").document();
     return firestore.runTransaction((transaction) async {
       transaction.set(expenseRef, {
-        "title": title,
+        "title": title.nullIfEmpty(),
         "amount": amount,
-        "category": category.documentReference,
+        "category": category?.documentReference,
         "date": Could.Timestamp.fromDate(date),
       });
 
@@ -130,9 +130,9 @@ extension TransactionsDataSource on DataSource {
     final incomeRef = wallet.documentReference.collection("incomes").document();
     return firestore.runTransaction((transaction) async {
       transaction.set(incomeRef, {
-        "title": title,
+        "title": title.nullIfEmpty(),
         "amount": amount,
-        "category": category.documentReference,
+        "category": category?.documentReference,
         "date": Could.Timestamp.fromDate(date),
       });
 

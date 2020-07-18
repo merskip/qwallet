@@ -98,3 +98,15 @@ Color colorFromHex(String hexString) {
   buffer.write(hexString.replaceFirst('#', ''));
   return Color(int.parse(buffer.toString(), radix: 16));
 }
+
+extension StringUtils on String {
+
+  String nullIfEmpty() => isEmpty ? null : this;
+}
+
+String toStringOrNull(dynamic value) {
+  if (value is String) {
+    return value.isNotEmpty ? value : null;
+  }
+  else return null;
+}
