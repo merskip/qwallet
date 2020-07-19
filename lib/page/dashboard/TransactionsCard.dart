@@ -227,15 +227,18 @@ class _TransactionListItem extends StatelessWidget {
 
   Widget buildListTile(
       BuildContext context, Transaction transaction, Category category) {
-    final color = transaction is Income ? Colors.green : null;
-    final amountPrefix = transaction is Income ? "+" : "-";
+
+    final color = transaction.ifType(expense: null, income: Colors.green);
+    final amountPrefix = transaction.ifType(expense: "-", income: "+");
     final amountText = Money(transaction.amount, wallet.currency).formatted;
 
-    final String transactionType = (transaction is Income
-        ? AppLocalizations.of(context).transactionsCardIncome
-        : AppLocalizations.of(context).transactionsCardExpense);
+    final String transactionType = transaction.ifType(
+      expense: AppLocalizations.of(context).transactionsCardExpense,
+      income: AppLocalizations.of(context).transactionsCardIncome,
+    );
 
-    final String title = transaction.title ?? category?.title ?? transactionType;
+    final String title =
+        transaction.title ?? category?.title ?? transactionType;
     final String subTitle = transaction.title != null ? category?.title : null;
 
     return ListTile(

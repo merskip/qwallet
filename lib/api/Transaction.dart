@@ -4,39 +4,59 @@ import 'package:qwallet/api/Category.dart';
 import '../utils.dart';
 import 'Model.dart';
 
-abstract class Transaction {
-
-  String get id;
-  String get title;
-  double get amount;
-  Timestamp get date;
-  Reference<Category> get category;
+enum TransactionType {
+  expense,
+  income,
 }
 
-class Income extends Model<Income> with Transaction {
-  final String title;
-  final double amount;
-  final Timestamp date;
-  final Reference<Category> category;
+class Transaction extends Model<Transaction> {
+  String id;
+  TransactionType type;
+  String title;
+  double amount;
+  Timestamp date;
+  Reference<Category> category;
 
-  Income(DocumentSnapshot snapshot)
-      : title = toStringOrNull(snapshot.data['title'])?.nullIfEmpty(),
+  Transaction(DocumentSnapshot snapshot)
+      : type = TransactionTypeConverting.fromRawValue(snapshot.data['type']),
+        title = toStringOrNull(snapshot.data['title']),
         amount = toDouble(snapshot.data['amount']),
         date = snapshot.data['date'],
         category = Reference.fromNullable(snapshot.data['category']),
         super(snapshot);
+
+  T ifType<T>({T expense, T income}) {
+    switch (type) {
+      case TransactionType.expense:
+        return expense;
+      case TransactionType.income:
+        return income;
+    }
+    return null;
+  }
 }
 
-class Expense extends Model<Expense> with Transaction {
-  final String title;
-  final double amount;
-  final Timestamp date;
-  final Reference<Category> category;
+extension TransactionTypeConverting on TransactionType {
+  String get rawValue {
+    switch (this) {
+      case TransactionType.expense:
+        return "expense";
+      case TransactionType.income:
+        return "income";
+      default:
+        return null;
+    }
+  }
 
-  Expense(DocumentSnapshot snapshot)
-      : title = toStringOrNull(snapshot.data["title"])?.nullIfEmpty(),
-        amount = toDouble(snapshot.data["amount"]),
-        date = snapshot.data["date"],
-        category = Reference.fromNullable(snapshot.data['category']),
-        super(snapshot);
+  static TransactionType fromRawValue(dynamic rawValue) {
+    if (rawValue is String) {
+      switch (rawValue) {
+        case "expense":
+          return TransactionType.expense;
+        case "income":
+          return TransactionType.income;
+      }
+    }
+    return null;
+  }
 }

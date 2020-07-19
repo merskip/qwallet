@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart' as Could;
 import 'package:flutter/material.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../utils.dart';
 import 'Category.dart';
@@ -59,55 +58,38 @@ extension WalletsDataSource on DataSource {
 }
 
 extension TransactionsDataSource on DataSource {
-  Stream<List<Transaction>> getTransactions(
-      {@required Reference<Wallet> wallet, @required DateTimeRange range}) {
-    final Stream<List<Transaction>> expenses =
-        getExpenses(wallet: wallet, range: range);
-    final Stream<List<Transaction>> incomes =
-        getIncomes(wallet: wallet, range: range);
-
-    return CombineLatestStream([expenses, incomes],
-        (List<List<Transaction>> streams) {
-      return streams.expand((e) => e).toList()
-        ..sort((lhs, rhs) => rhs.date.compareTo(lhs.date));
-    });
-  }
-
-  Stream<List<Expense>> getExpenses({
+  Stream<List<Transaction>> getTransactions({
     @required Reference<Wallet> wallet,
     @required DateTimeRange range,
   }) {
     return wallet.documentReference
-        .collection("expenses")
+        .collection("transactions")
         .where("date", isGreaterThanOrEqualTo: range.start.toTimestamp())
         .where("date", isLessThanOrEqualTo: range.end.toTimestamp())
+        .orderBy("date", descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.documents.map((s) => Expense(s)).toList());
+        .map((snapshot) =>
+            snapshot.documents.map((s) => Transaction(s)).toList());
   }
 
-  Stream<List<Income>> getIncomes({
-    @required Reference<Wallet> wallet,
-    @required DateTimeRange range,
-  }) {
-    return wallet.documentReference
-        .collection("incomes")
-        .where("date", isGreaterThanOrEqualTo: range.start.toTimestamp())
-        .where("date", isLessThanOrEqualTo: range.end.toTimestamp())
-        .snapshots()
-        .map((snapshot) => snapshot.documents.map((s) => Income(s)).toList());
-  }
+  Stream<Transaction> getTransaction({
+    @required Reference<Transaction> transaction,
+  }) =>
+      transaction.documentReference.snapshots().map((s) => Transaction(s));
 
-  Future<Reference<Expense>> addExpense(
+  Future<Reference<Transaction>> addTransaction(
     Reference<Wallet> wallet, {
+    TransactionType type,
     String title,
     double amount,
     Reference<Category> category,
     DateTime date,
-  }) {
-    final expenseRef =
-        wallet.documentReference.collection("expenses").document();
-    return firestore.runTransaction((transaction) async {
-      transaction.set(expenseRef, {
+  }) async {
+    final transactionRef =
+        wallet.documentReference.collection("transactions").document();
+    await firestore.runTransaction((transaction) async {
+      transaction.set(transactionRef, {
+        "type": type.rawValue,
         "title": title.nullIfEmpty(),
         "amount": amount,
         "category": category?.documentReference,
@@ -117,29 +99,8 @@ extension TransactionsDataSource on DataSource {
       transaction.update(wallet.documentReference, {
         "totalExpense": Could.FieldValue.increment(amount),
       });
-    }).then((_) => Reference<Expense>(expenseRef));
-  }
-
-  Future<Reference<Income>> addIncome(
-    Reference<Wallet> wallet, {
-    String title,
-    double amount,
-    Reference<Category> category,
-    DateTime date,
-  }) {
-    final incomeRef = wallet.documentReference.collection("incomes").document();
-    return firestore.runTransaction((transaction) async {
-      transaction.set(incomeRef, {
-        "title": title.nullIfEmpty(),
-        "amount": amount,
-        "category": category?.documentReference,
-        "date": Could.Timestamp.fromDate(date),
-      });
-
-      transaction.update(wallet.documentReference, {
-        "totalIncome": Could.FieldValue.increment(amount),
-      });
-    }).then((_) => Reference<Income>(incomeRef));
+    });
+    return Reference<Transaction>(transactionRef);
   }
 }
 
@@ -159,9 +120,8 @@ extension CategoriesDataSource on DataSource {
 
   Stream<Category> getCategory({
     @required Reference<Category> category,
-  }) {
-    return category.documentReference.snapshots().map((s) => Category(s));
-  }
+  }) =>
+      category.documentReference.snapshots().map((s) => Category(s));
 
   Future<void> addCategory({
     @required Reference<Wallet> wallet,

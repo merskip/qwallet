@@ -53,11 +53,6 @@ class _AddTransactionPageContent extends StatelessWidget {
   }
 }
 
-enum _TransactionType {
-  expense,
-  income,
-}
-
 class _AddTransactionForm extends StatefulWidget {
   final Wallet initialWallet;
 
@@ -73,7 +68,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   Wallet wallet;
 
-  _TransactionType type = _TransactionType.expense;
+  TransactionType type = TransactionType.expense;
 
   final amountFocus = FocusNode();
   final amountController = TextEditingController();
@@ -173,25 +168,14 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     _setAmountFormatted();
 
     if (_formKey.currentState.validate()) {
-      Reference<Transaction> transactionRef;
-
-      if (type == _TransactionType.expense) {
-        transactionRef = await DataSource.instance.addExpense(
-          wallet.reference,
-          title: titleController.text.trim(),
-          amount: amount,
-          category: category?.reference,
-          date: date,
-        );
-      } else {
-        transactionRef = await DataSource.instance.addIncome(
-          wallet.reference,
-          title: titleController.text.trim(),
-          amount: amount,
-          category: category?.reference,
-          date: date,
-        );
-      }
+      final transactionRef = await DataSource.instance.addTransaction(
+        wallet.reference,
+        type: type,
+        title: titleController.text.trim(),
+        amount: amount,
+        category: category?.reference,
+        date: date,
+      );
       Navigator.of(context).pop(transactionRef);
     }
   }
@@ -230,14 +214,14 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         _TransactionTypeButton(
           icon: Icon(Icons.arrow_upward),
           title: Text(AppLocalizations.of(context).addTransactionExpense),
-          isSelected: type == _TransactionType.expense,
-          onPressed: () => setState(() => type = _TransactionType.expense),
+          isSelected: type == TransactionType.expense,
+          onPressed: () => setState(() => type = TransactionType.expense),
         ),
         _TransactionTypeButton(
           icon: Icon(Icons.arrow_downward),
           title: Text(AppLocalizations.of(context).addTransactionIncome),
-          isSelected: type == _TransactionType.income,
-          onPressed: () => setState(() => type = _TransactionType.income),
+          isSelected: type == TransactionType.income,
+          onPressed: () => setState(() => type = TransactionType.income),
         ),
       ],
     );
@@ -283,7 +267,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   String getBalanceAfter() {
     if (amount != null) {
-      final balanceAfter = type == _TransactionType.expense
+      final balanceAfter = type == TransactionType.expense
           ? wallet.balance.amount - amount
           : wallet.balance.amount + amount;
       final balanceAfterMoney =
