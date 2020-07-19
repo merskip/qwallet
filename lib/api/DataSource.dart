@@ -72,9 +72,15 @@ extension TransactionsDataSource on DataSource {
             snapshot.documents.map((s) => Transaction(s)).toList());
   }
 
-  Stream<Transaction> getTransaction({
-    @required Reference<Transaction> transaction,
-  }) =>
+  Reference<Transaction> getTransactionReference({
+    @required Reference<Wallet> wallet,
+    @required String id,
+  }) {
+    return Reference(
+        wallet.documentReference.collection("transactions").document(id));
+  }
+
+  Stream<Transaction> getTransaction(Reference<Transaction> transaction) =>
       transaction.documentReference.snapshots().map((s) => Transaction(s));
 
   Future<Reference<Transaction>> addTransaction(

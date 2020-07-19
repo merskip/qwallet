@@ -6,10 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/page/AddTransactionPage.dart';
+import 'package:qwallet/page/TransactionPage.dart';
 import 'package:qwallet/page/WalletPage.dart';
 import 'package:qwallet/page/WalletsPage.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import 'api/Model.dart';
+import 'api/Transaction.dart';
 import 'page/AddCategoryPage.dart';
 import 'page/AddWalletPage.dart';
 import 'page/CategoriesPage.dart';
@@ -74,6 +77,28 @@ void defineRoutes(Router router) {
       final walletId = params["walletId"][0];
       return AddTransactionPage(
         initialWalletRef: DataSource.instance.getWalletReference(walletId),
+      );
+    }),
+  );
+
+  router.define(
+    "/wallet/:walletId/transaction/:transactionId",
+    transitionType: TransitionType.nativeModal,
+    handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      final walletId = params["walletId"][0];
+      final transactionId = params["transactionId"][0];
+
+      final walletRef = DataSource.instance.getWalletReference(walletId);
+      final transactionRef = DataSource.instance
+          .getTransactionReference(wallet: walletRef, id: transactionId);
+
+      return SimpleStreamWidget(
+        stream: DataSource.instance.getTransaction(transactionRef),
+        builder: (context, Transaction transaction) => TransactionPage(
+          walletRef: walletRef,
+          transaction: transaction,
+        ),
       );
     }),
   );

@@ -10,7 +10,6 @@ enum TransactionType {
 }
 
 class Transaction extends Model<Transaction> {
-  String id;
   TransactionType type;
   String title;
   double amount;
