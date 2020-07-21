@@ -17,6 +17,24 @@ class CategoryPicker extends StatelessWidget {
     this.onChangeCategory,
   }) : super(key: key);
 
+  onSwipeLeft() {
+    onChangeCategory(_getCategoryBy(offset: -1));
+  }
+
+  onSwipeRight() {
+    onChangeCategory(_getCategoryBy(offset: 1));
+  }
+
+  Category _getCategoryBy({int offset}) {
+    if (selectedCategory == null)
+      return offset > 0 ? categories.first : categories.last;
+    final targetIndex = categories.indexOf(selectedCategory) + offset;
+    if (targetIndex > 0 && targetIndex < categories.length)
+      return categories[targetIndex];
+    else
+      return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -45,12 +63,22 @@ class CategoryPicker extends StatelessWidget {
   }
 
   Widget buildCategories(BuildContext context) {
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: [
-        ...categories.map((category) => buildCategoryButton(context, category)),
-      ],
+    return Center(
+      child: GestureDetector(
+        child: Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            ...categories
+                .map((category) => buildCategoryButton(context, category)),
+          ],
+        ),
+        onHorizontalDragEnd: (details) {
+          final dx = details.velocity.pixelsPerSecond.dx;
+          if (dx < 0) onSwipeLeft();
+          else if (dx > 0) onSwipeRight();
+        },
+      ),
     );
   }
 
@@ -91,7 +119,8 @@ class CategoryPicker extends StatelessWidget {
         : null;
     return Align(
       child: Text(
-        selectedCategory?.title ?? AppLocalizations.of(context).categoryNoSelected,
+        selectedCategory?.title ??
+            AppLocalizations.of(context).categoryNoSelected,
         style: Theme.of(context).textTheme.subtitle2.copyWith(color: color),
       ),
       alignment: AlignmentDirectional.center,
