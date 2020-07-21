@@ -302,7 +302,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n";
+			shellScript = "\"${PODS_ROOT}/Crashlytics/iOS/Crashlytics.framework/run\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E557AD41A75D5898252818C7 /* [CP] Copy Pods Resources */ = {
