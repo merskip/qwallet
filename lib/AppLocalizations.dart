@@ -358,6 +358,19 @@ extension SelectCurrencyLocalizations on AppLocalizations {
       );
 }
 
+extension TransactionLocalizations on AppLocalizations {
+
+  String get transactionTypeExpense => _locale(
+    en: "Expense",
+    pl: "Wydatek",
+  );
+
+  String get transactionTypeIncome => _locale(
+    en: "Income",
+    pl: "Przychód",
+  );
+}
+
 extension AddTransactionLocalizations on AppLocalizations {
   String get addTransaction => _locale(
         en: "Add expense or income",
@@ -367,16 +380,6 @@ extension AddTransactionLocalizations on AppLocalizations {
   String get addTransactionSelectWallet => _locale(
         en: "Select wallet",
         pl: "Wybierz portfel",
-      );
-
-  String get addTransactionExpense => _locale(
-        en: "Expense",
-        pl: "Wydatek",
-      );
-
-  String get addTransactionIncome => _locale(
-        en: "Income",
-        pl: "Przychód",
       );
 
   String get addTransactionAmount => _locale(

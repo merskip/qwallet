@@ -213,13 +213,13 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       children: [
         _TransactionTypeButton(
           icon: Icon(Icons.arrow_upward),
-          title: Text(AppLocalizations.of(context).addTransactionExpense),
+          title: Text(AppLocalizations.of(context).transactionTypeExpense),
           isSelected: type == TransactionType.expense,
           onPressed: () => setState(() => type = TransactionType.expense),
         ),
         _TransactionTypeButton(
           icon: Icon(Icons.arrow_downward),
-          title: Text(AppLocalizations.of(context).addTransactionIncome),
+          title: Text(AppLocalizations.of(context).transactionTypeIncome),
           isSelected: type == TransactionType.income,
           onPressed: () => setState(() => type = TransactionType.income),
         ),

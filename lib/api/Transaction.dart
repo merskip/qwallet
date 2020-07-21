@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:qwallet/api/Category.dart';
 
+import '../AppLocalizations.dart';
 import '../utils.dart';
 import 'Model.dart';
 
@@ -23,6 +25,11 @@ class Transaction extends Model<Transaction> {
         date = snapshot.data['date'],
         category = Reference.fromNullable(snapshot.data['category']),
         super(snapshot);
+
+  String getTypeLocalizedText(BuildContext context) => ifType(
+        expense: AppLocalizations.of(context).transactionsCardExpense,
+        income: AppLocalizations.of(context).transactionsCardIncome,
+      );
 
   T ifType<T>({T expense, T income}) {
     switch (type) {

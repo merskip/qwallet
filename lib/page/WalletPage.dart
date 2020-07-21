@@ -5,6 +5,7 @@ import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
+import 'package:qwallet/widget/DetailsItem.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../AppLocalizations.dart';
@@ -75,14 +76,14 @@ class _WalletPageContent extends StatelessWidget {
   }
 
   Widget buildName(BuildContext context) {
-    return _DetailsItem(
+    return DetailsItem(
       title: Text(AppLocalizations.of(context).walletName),
       value: Text(wallet.name),
     );
   }
 
   Widget buildOwners(BuildContext context) {
-    return _DetailsItem(
+    return DetailsItem(
       title: Text(AppLocalizations.of(context).walletOwners),
       value: FutureBuilder(
         future: DataSource.instance.getUsersByUids(wallet.ownersUid),
@@ -97,14 +98,14 @@ class _WalletPageContent extends StatelessWidget {
 
   Widget buildCurrency(BuildContext context) {
     final currency = Currency.fromSymbol(wallet.currencySymbol);
-    return _DetailsItem(
+    return DetailsItem(
       title: Text(AppLocalizations.of(context).walletCurrency),
       value: Text("${currency.symbol} - ${currency.name}"),
     );
   }
 
   Widget buildBalance(BuildContext context) {
-    return _DetailsItem(
+    return DetailsItem(
       title: Text(AppLocalizations.of(context).walletBalance),
       value: Text(wallet.balance.formatted),
     );
@@ -116,56 +117,6 @@ class _WalletPageContent extends StatelessWidget {
       title: Text(AppLocalizations.of(context).categories),
       trailing: Icon(Icons.chevron_right),
       onTap: () => onSelectedCategories(context),
-    );
-  }
-}
-
-class _DetailsItem extends StatelessWidget {
-  final Widget title;
-  final Widget value;
-
-  const _DetailsItem({Key key, this.title, this.value}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildTitle(context),
-              SizedBox(height: 4),
-              buildValue(context),
-            ],
-          ),
-          Spacer(),
-          buildEditButton(context)
-        ],
-      ),
-    );
-  }
-
-  DefaultTextStyle buildValue(BuildContext context) {
-    return DefaultTextStyle(
-      child: value,
-      style: Theme.of(context).textTheme.subtitle1,
-    );
-  }
-
-  DefaultTextStyle buildTitle(BuildContext context) {
-    final color = Theme.of(context).textTheme.caption.color;
-    final textStyle =
-        Theme.of(context).textTheme.bodyText2.copyWith(color: color);
-    return DefaultTextStyle(child: title, style: textStyle);
-  }
-
-  IconButton buildEditButton(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.edit),
-      color: Theme.of(context).textTheme.caption.color,
-      onPressed: null,
     );
   }
 }
