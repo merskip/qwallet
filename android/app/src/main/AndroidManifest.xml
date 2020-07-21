@@ -16,11 +16,15 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-2023507573427187~8579587898"/>
+            android:value="ca-app-pub-2023507573427187~8579587898" />
 
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
             android:value="ocr" />
+
+        <meta-data
+            android:name="firebase_performance_logcat_enabled"
+            android:value="true" />
 
         <activity
             android:name=".MainActivity"
