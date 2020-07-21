@@ -55,17 +55,21 @@ class _AddWalletFormState extends State<_AddWalletForm> {
 
   _initOwners() async {
     final users = await FirebaseService.instance.fetchUsers();
-    final currentUser =
-        users.firstWhere((user) => user.uid == DataSource.instance.currentUser.uid);
+    final currentUser = users
+        .firstWhere((user) => user.uid == DataSource.instance.currentUser.uid);
     setState(() {
       allUsers = users;
       ownersController.value = [currentUser];
     });
   }
 
-  _initCurrency() {
+  _initCurrency() async {
     // TODO: Doesn't work, always returns en_US
     final currentLocale = Intl.getCurrentLocale();
+
+    // TODO: Improve matching system locale with supported currencies
+//    final currentLocale = await findSystemLocale();
+
     currency = Currency.all
         .firstWhere((currency) => currency.locales.contains(currentLocale));
   }
@@ -181,6 +185,8 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   Widget buildCurrency(BuildContext context) {
+    if (currency == null) return CircularProgressIndicator();
+
     String locale = currency.locales.first;
     String text = NumberFormat.simpleCurrency(locale: locale).format(1234.456);
     return InkWell(
