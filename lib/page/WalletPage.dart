@@ -5,7 +5,7 @@ import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
-import 'package:qwallet/widget/DetailsItem.dart';
+import 'package:qwallet/widget/EditableDetailsItem.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../AppLocalizations.dart';
@@ -76,14 +76,14 @@ class _WalletPageContent extends StatelessWidget {
   }
 
   Widget buildName(BuildContext context) {
-    return DetailsItem(
+    return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletName),
       value: Text(wallet.name),
     );
   }
 
   Widget buildOwners(BuildContext context) {
-    return DetailsItem(
+    return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletOwners),
       value: FutureBuilder(
         future: DataSource.instance.getUsersByUids(wallet.ownersUid),
@@ -98,14 +98,14 @@ class _WalletPageContent extends StatelessWidget {
 
   Widget buildCurrency(BuildContext context) {
     final currency = Currency.fromSymbol(wallet.currencySymbol);
-    return DetailsItem(
+    return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletCurrency),
       value: Text("${currency.symbol} - ${currency.name}"),
     );
   }
 
   Widget buildBalance(BuildContext context) {
-    return DetailsItem(
+    return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletBalance),
       value: Text(wallet.balance.formatted),
     );

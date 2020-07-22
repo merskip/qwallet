@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/widget/DetailsItem.dart';
+import 'package:qwallet/widget/EditableDetailsItem.dart';
 
-class TransactionPage extends StatelessWidget {
+class TransactionPage extends StatefulWidget {
   final Reference<Wallet> walletRef;
   final Transaction transaction;
 
@@ -12,11 +13,29 @@ class TransactionPage extends StatelessWidget {
       : super(key: key);
 
   @override
+  _TransactionPageState createState() => _TransactionPageState(transaction);
+}
+
+class _TransactionPageState extends State<TransactionPage> {
+  final TextEditingController titleController;
+
+  _TransactionPageState(Transaction transaction)
+      : titleController = TextEditingController(text: transaction.title),
+        super();
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          transaction.title ?? transaction.getTypeLocalizedText(context),
+          widget.transaction.title ??
+              widget.transaction.getTypeLocalizedText(context),
         ),
       ),
       body: ListView(
@@ -33,44 +52,57 @@ class TransactionPage extends StatelessWidget {
   }
 
   Widget buildWallet(BuildContext context) {
-    return DetailsItem(
+    return EditableDetailsItem(
       title: Text("#Wallet"),
-      value: Text(walletRef.id),
+      value: Text(widget.walletRef.id),
     );
   }
 
   Widget buildType(BuildContext context) {
-    return DetailsItem(
+    return EditableDetailsItem(
       title: Text("#Type"),
-      value: Text(transaction.getTypeLocalizedText(context)),
+      value: Text(widget.transaction.getTypeLocalizedText(context)),
     );
   }
 
   Widget buildTitle(BuildContext context) {
-    return DetailsItem(
+    return EditableDetailsItem(
       title: Text("#Title"),
-      value: Text(transaction.title ?? "-"),
+      value: Text(widget.transaction.title ?? "-"),
+      editValue: (context) => TextField(
+        controller: titleController,
+        decoration: InputDecoration(
+          labelText: "#Title",
+        ),
+        autofocus: true,
+        maxLength: 50,
+      ),
+      onSave: () => DataSource.instance.updateTransaction(
+        widget.walletRef,
+        widget.transaction,
+        title: titleController.text.trim(),
+      ),
     );
   }
 
   Widget buildAmount(BuildContext context) {
-    return DetailsItem(
+    return EditableDetailsItem(
       title: Text("#Amount"),
-      value: Text(transaction.amount.toString()),
+      value: Text(widget.transaction.amount.toString()),
     );
   }
 
   Widget buildCategory(BuildContext context) {
-    return DetailsItem(
+    return EditableDetailsItem(
       title: Text("#Category"),
-      value: Text(transaction.category?.id ?? "-"),
+      value: Text(widget.transaction.category?.id ?? "-"),
     );
   }
 
   Widget buildDate(BuildContext context) {
-    return DetailsItem(
+    return EditableDetailsItem(
       title: Text("#Date"),
-      value: Text(transaction.date.toDate().toString()),
+      value: Text(widget.transaction.date.toDate().toString()),
     );
   }
 }

@@ -103,10 +103,40 @@ extension TransactionsDataSource on DataSource {
       });
 
       transaction.update(wallet.documentReference, {
-        "totalExpense": Could.FieldValue.increment(amount),
+        if (type == TransactionType.expense)
+          "totalExpense": Could.FieldValue.increment(amount),
+        if (type == TransactionType.income)
+          "totalIncome": Could.FieldValue.increment(amount),
       });
     });
     return Reference<Transaction>(transactionRef);
+  }
+
+  Future<Reference<Transaction>> updateTransaction(
+    Reference<Wallet> walletRef,
+    Transaction transaction, {
+    String title,
+    double amount,
+    DateTime date,
+  }) async {
+    await firestore.runTransaction((updateTransaction) async {
+      updateTransaction.update(transaction.reference.documentReference, {
+        if (title != null) 'title': title,
+        if (amount != null) 'amount': amount,
+        if (date != null) 'date': Could.Timestamp.fromDate(date),
+      });
+
+      if (amount != null) {
+        final amountDifferent = amount - transaction.amount;
+        updateTransaction.update(walletRef.documentReference, {
+          if (transaction.type == TransactionType.expense)
+            "totalExpense": Could.FieldValue.increment(amountDifferent),
+          if (transaction.type == TransactionType.income)
+            "totalIncome": Could.FieldValue.increment(amountDifferent),
+        });
+      }
+    });
+    return transaction.reference;
   }
 }
 
