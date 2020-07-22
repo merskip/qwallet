@@ -11,7 +11,6 @@ import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/router.dart';
 
 void main() {
-  Crashlytics.instance.enableInDevMode = true;
   FlutterError.onError = (details) {
     FlutterError.dumpErrorToConsole(details);
     Crashlytics.instance.recordFlutterError(details);
