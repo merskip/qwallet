@@ -3,6 +3,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/EditableDetailsItem.dart';
 
 class TransactionPage extends StatefulWidget {
@@ -18,14 +19,18 @@ class TransactionPage extends StatefulWidget {
 
 class _TransactionPageState extends State<TransactionPage> {
   final TextEditingController titleController;
+  final TextEditingController amountController;
 
   _TransactionPageState(Transaction transaction)
       : titleController = TextEditingController(text: transaction.title),
+        amountController = TextEditingController(
+            text: transaction.amount.toString()),
         super();
 
   @override
   void dispose() {
     titleController.dispose();
+    amountController.dispose();
     super.dispose();
   }
 
@@ -89,6 +94,18 @@ class _TransactionPageState extends State<TransactionPage> {
     return EditableDetailsItem(
       title: Text("#Amount"),
       value: Text(widget.transaction.amount.toString()),
+      editValue: (context) => TextField(
+        controller: amountController,
+        decoration: InputDecoration(
+          labelText: "#Amount",
+        ),
+        autofocus: true,
+      ),
+      onSave: () => DataSource.instance.updateTransaction(
+        widget.walletRef,
+        widget.transaction,
+        amount: parseAmount(amountController.text),
+      ),
     );
   }
 
