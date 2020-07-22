@@ -34,6 +34,14 @@ class _TransactionPageState extends State<TransactionPage> {
     super.dispose();
   }
 
+  onSelectedRemove(BuildContext context) {
+    DataSource.instance.removeTransaction(
+      widget.walletRef,
+      widget.transaction,
+    );
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,6 +50,12 @@ class _TransactionPageState extends State<TransactionPage> {
           widget.transaction.title ??
               widget.transaction.getTypeLocalizedText(context),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () => onSelectedRemove(context),
+          ),
+        ],
       ),
       body: ListView(
         children: [
@@ -114,7 +128,9 @@ class _TransactionPageState extends State<TransactionPage> {
   Widget buildCategory(BuildContext context) {
     return EditableDetailsItem(
       title: Text("#Category"),
-      value: widget.transaction.category != null ? Text(widget.transaction.category?.id) : Text("#No category", style: TextStyle(fontStyle: FontStyle.italic)),
+      value: widget.transaction.category != null
+          ? Text(widget.transaction.category?.id)
+          : Text("#No category", style: TextStyle(fontStyle: FontStyle.italic)),
     );
   }
 

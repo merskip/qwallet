@@ -138,6 +138,22 @@ extension TransactionsDataSource on DataSource {
     });
     return transaction.reference;
   }
+
+  Future<void> removeTransaction(
+    Reference<Wallet> walletRef,
+    Transaction transaction,
+  ) async {
+    await firestore.runTransaction((removeTransaction) async {
+      removeTransaction.delete(transaction.reference.documentReference);
+
+      removeTransaction.update(walletRef.documentReference, {
+        if (transaction.type == TransactionType.expense)
+          "totalExpense": Could.FieldValue.increment(-transaction.amount),
+        if (transaction.type == TransactionType.income)
+          "totalIncome": Could.FieldValue.increment(-transaction.amount),
+      });
+    });
+  }
 }
 
 extension CategoriesDataSource on DataSource {
