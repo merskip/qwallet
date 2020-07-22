@@ -114,7 +114,7 @@ class _TransactionPageState extends State<TransactionPage> {
   Widget buildCategory(BuildContext context) {
     return EditableDetailsItem(
       title: Text("#Category"),
-      value: Text(widget.transaction.category?.id ?? "-"),
+      value: widget.transaction.category != null ? Text(widget.transaction.category?.id) : Text("#No category", style: TextStyle(fontStyle: FontStyle.italic)),
     );
   }
 
