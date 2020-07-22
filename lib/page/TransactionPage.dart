@@ -23,8 +23,8 @@ class _TransactionPageState extends State<TransactionPage> {
 
   _TransactionPageState(Transaction transaction)
       : titleController = TextEditingController(text: transaction.title),
-        amountController = TextEditingController(
-            text: transaction.amount.toString()),
+        amountController =
+            TextEditingController(text: transaction.amount.toString()),
         super();
 
   @override
@@ -73,7 +73,9 @@ class _TransactionPageState extends State<TransactionPage> {
   Widget buildTitle(BuildContext context) {
     return EditableDetailsItem(
       title: Text("#Title"),
-      value: Text(widget.transaction.title ?? "-"),
+      value: widget.transaction.title != null
+          ? Text(widget.transaction.title)
+          : Text("#No title", style: TextStyle(fontStyle: FontStyle.italic)),
       editValue: (context) => TextField(
         controller: titleController,
         decoration: InputDecoration(
