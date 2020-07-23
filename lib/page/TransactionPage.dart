@@ -14,6 +14,8 @@ import 'package:qwallet/widget/EditableDetailsItem.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
+import '../AppLocalizations.dart';
+
 class TransactionPage extends StatefulWidget {
   final Reference<Wallet> walletRef;
   final Transaction transaction;
@@ -47,8 +49,10 @@ class _TransactionPageState extends State<TransactionPage> {
 
   void onSelectedRemove(BuildContext context) {
     ConfirmationDialog(
-      title: Text("#Remove transaction"),
-      content: Text("#Removing transaction ${widget.transaction.title}"),
+      title: Text(
+          AppLocalizations.of(context).transactionDetailsRemoveConfirmation),
+      content: Text(AppLocalizations.of(context)
+          .transactionDetailsRemoveConfirmationContent),
       isDestructive: true,
       onConfirm: () {
         DataSource.instance.removeTransaction(
@@ -113,7 +117,7 @@ class _TransactionPageState extends State<TransactionPage> {
       padding: const EdgeInsets.all(8.0),
       child: Card(
         child: EditableDetailsItem(
-          title: Text("#Wallet"),
+          title: Text(AppLocalizations.of(context).transactionDetailsWallet),
           value: Text(wallet.name + " (${wallet.balance.formatted})"),
         ),
       ),
@@ -139,7 +143,7 @@ class _TransactionPageState extends State<TransactionPage> {
         context,
         leading: CategoryIcon(null, size: 20),
         value: Text(
-          "#No category",
+          AppLocalizations.of(context).transactionDetailsCategoryEmpty,
           style: TextStyle(fontStyle: FontStyle.italic),
         ),
         category: null,
@@ -151,14 +155,15 @@ class _TransactionPageState extends State<TransactionPage> {
       {Widget leading, Widget value, Category category}) {
     return EditableDetailsItem(
       leading: leading,
-      title: Text("#Category"),
+      title: Text(AppLocalizations.of(context).transactionDetailsCategory),
       value: value,
       editingBegin: () => _selectedCategory = category,
       editingContent: (context) => SimpleStreamWidget(
         stream: DataSource.instance.getCategories(wallet: widget.walletRef),
         builder: (context, List<Category> categories) {
           return CategoryPicker(
-            title: Text("#category"),
+            title:
+                Text(AppLocalizations.of(context).transactionDetailsCategory),
             selectedCategory: _selectedCategory,
             categories: categories,
             onChangeCategory: (category) {
@@ -181,7 +186,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
   Widget buildType(BuildContext context) {
     return EditableDetailsItem(
-      title: Text("#Type"),
+      title: Text(AppLocalizations.of(context).transactionDetailsType),
       value: Text(widget.transaction.getTypeLocalizedText(context)),
       editingBegin: () => _selectedType = widget.transaction.type,
       editingContent: (context) => buildTypeEditing(context),
@@ -202,7 +207,7 @@ class _TransactionPageState extends State<TransactionPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(("#Type")),
+        Text(AppLocalizations.of(context).transactionDetailsType),
         SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -217,14 +222,15 @@ class _TransactionPageState extends State<TransactionPage> {
 
   Widget buildTitle(BuildContext context) {
     return EditableDetailsItem(
-      title: Text("#Title"),
+      title: Text(AppLocalizations.of(context).transactionDetailsTitle),
       value: widget.transaction.title != null
           ? Text(widget.transaction.title)
-          : Text("#No title", style: TextStyle(fontStyle: FontStyle.italic)),
+          : Text(AppLocalizations.of(context).transactionDetailsTitleEmpty,
+              style: TextStyle(fontStyle: FontStyle.italic)),
       editingContent: (context) => TextField(
         controller: titleController,
         decoration: InputDecoration(
-          labelText: "#Title",
+          labelText: AppLocalizations.of(context).transactionDetailsTitle,
         ),
         autofocus: true,
         maxLength: 50,
@@ -240,27 +246,32 @@ class _TransactionPageState extends State<TransactionPage> {
   Widget buildAmount(BuildContext context, Wallet wallet) {
     final amount = Money(widget.transaction.amount, wallet.currency);
     return EditableDetailsItem(
-      title: Text("#Amount"),
+      title: Text(AppLocalizations.of(context).transactionDetailsAmount),
       value: Text(amount.formatted),
       editingContent: (context) => TextField(
         controller: amountController,
         decoration: InputDecoration(
-          labelText: "#Amount",
+          labelText: AppLocalizations.of(context).transactionDetailsAmount,
         ),
         autofocus: true,
       ),
-      editingSave: () => DataSource.instance.updateTransaction(
-        widget.walletRef,
-        widget.transaction,
-        amount: parseAmount(amountController.text),
-      ),
+      editingSave: () {
+        final amount = parseAmount(amountController.text);
+        if (amount != null) {
+          return DataSource.instance.updateTransaction(
+            widget.walletRef,
+            widget.transaction,
+            amount: parseAmount(amountController.text),
+          );
+        }
+      },
     );
   }
 
   Widget buildDate(BuildContext context) {
     final format = DateFormat("d MMMM yyyy");
     return EditableDetailsItem(
-      title: Text("#Date"),
+      title: Text(AppLocalizations.of(context).transactionDetailsDate),
       value: Text(format.format(widget.transaction.date.toDate())),
       onEdit: (context) => onSelectedDate(context),
     );

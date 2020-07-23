@@ -475,6 +475,77 @@ extension TransactionsCardLocalizations on AppLocalizations {
       );
 }
 
+extension TransactionDetailsLocalizations on AppLocalizations {
+  
+  String get transactionDetailsWallet => _locale(
+      en: "Wallet",
+      pl: "Portfel",
+    );
+  
+  String get transactionDetailsCategory => _locale(
+      en: "Category",
+      pl: "Kategoria",
+    );
+
+  String get transactionDetailsCategoryEmpty => _locale(
+    en: "No category",
+    pl: "Brak kategorii",
+  );
+
+  String get transactionDetailsType => _locale(
+    en: "Type",
+    pl: "Typ",
+  );
+  
+  String get transactionDetailsTitle => _locale(
+      en: "Title",
+      pl: "Tytuł",
+    );
+
+  String get transactionDetailsTitleEmpty => _locale(
+    en: "No title",
+    pl: "Brak tytułu",
+  );
+  
+  String get transactionDetailsAmount => _locale(
+      en: "Amount",
+      pl: "Kwota",
+    );
+
+  String get transactionDetailsDate => _locale(
+        en: "Date",
+        pl: "Data",
+      );
+
+  String get transactionDetailsRemoveConfirmation => _locale(
+        en: "Remove this transaction?",
+        pl: "Czy usunąć tę transakcję?",
+      );
+
+  String get transactionDetailsRemoveConfirmationContent => _locale(
+        en: "Are you sure remove this transaction? This operation cannot be undone.",
+        pl: "Czy jesteś pewny, że chcesz usunąć tę transakcję? Tej operacji nie można cofnąć.",
+      );
+}
+
+extension EditableDetailsItemLocalizations on AppLocalizations {
+  String get editableDetailsItemEdit => _locale(
+      en: "Edit",
+      pl: "Edytuj",
+    );
+
+  String get editableDetailsItemCancel => _locale(
+    en: "Cancel",
+    pl: "Anuluj",
+  );
+
+  String get editableDetailsItemSave => _locale(
+    en: "Save",
+    pl: "Zapisz",
+  );
+}
+
+
 extension CategoriesLocalizations on AppLocalizations {
   String get categories => _locale(
         en: "Categories",

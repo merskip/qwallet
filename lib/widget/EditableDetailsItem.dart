@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../AppLocalizations.dart';
+
 class EditableDetailsItem extends StatefulWidget {
   final Widget leading;
   final Widget title;
@@ -114,7 +116,7 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
       color: Theme.of(context).textTheme.caption.color,
       onPressed: () => onSelectedEdit(context),
       visualDensity: VisualDensity.compact,
-      tooltip: "#Edit",
+      tooltip: AppLocalizations.of(context).editableDetailsItemEdit,
     );
   }
 
@@ -126,14 +128,14 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
           color: Theme.of(context).primaryColor,
           onPressed: () => onSelectedEditingSave(context),
           visualDensity: VisualDensity.compact,
-          tooltip: "#Save",
+            tooltip: AppLocalizations.of(context).editableDetailsItemSave,
         ),
         IconButton(
           icon: Icon(Icons.close),
           color: Theme.of(context).textTheme.caption.color,
           onPressed: () => onSelectedEditingCancel(context),
           visualDensity: VisualDensity.compact,
-          tooltip: "#Cancel",
+            tooltip: AppLocalizations.of(context).editableDetailsItemCancel,
         ),
       ],
     );
