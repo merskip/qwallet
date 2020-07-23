@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Wallet.dart';
 
-import '../AppLocalizations.dart';
-
 class SelectWalletDialog extends StatelessWidget {
+  final String title;
   final List<Wallet> wallets;
   final Wallet selectedWallet;
 
-  const SelectWalletDialog({Key key, this.wallets, this.selectedWallet})
+  const SelectWalletDialog({Key key, this.title, this.wallets, this.selectedWallet})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      title: Text(AppLocalizations.of(context).addTransactionSelectWallet),
+      title: Text(title),
       children: [
         for (final wallet in wallets) buildWalletOption(context, wallet)
       ],

@@ -158,7 +158,11 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
             .first;
     final selectedWallet = await showDialog(
       context: context,
-      builder: (context) => SelectWalletDialog(wallets: wallets),
+      builder: (context) => SelectWalletDialog(
+        title: AppLocalizations.of(context).addTransactionSelectWallet,
+        wallets: wallets,
+        selectedWallet: this.wallet,
+      ),
     ) as Wallet;
     if (selectedWallet != null) {
       setState(() => this.wallet = selectedWallet);
@@ -361,4 +365,3 @@ class _TransactionTypeButton extends StatelessWidget {
     );
   }
 }
-

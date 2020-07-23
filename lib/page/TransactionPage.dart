@@ -3,12 +3,9 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/dialog/SelectWalletDialog.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/EditableDetailsItem.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
-
-import '../LocalPreferences.dart';
 
 class TransactionPage extends StatefulWidget {
   final Reference<Wallet> walletRef;
@@ -47,20 +44,6 @@ class _TransactionPageState extends State<TransactionPage> {
     Navigator.of(context).pop();
   }
 
-  onSelectedWallet(BuildContext context, Wallet wallet) async {
-    final wallets =
-        await LocalPreferences.orderedWallets(DataSource.instance.getWallets())
-            .first;
-    final selectedWallet = await showDialog(
-      context: context,
-      builder: (context) => SelectWalletDialog(wallets: wallets, selectedWallet: wallet),
-    ) as Wallet;
-    if (selectedWallet != null) {
-      // TODO: Impl
-      print(selectedWallet);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,7 +79,6 @@ class _TransactionPageState extends State<TransactionPage> {
     return EditableDetailsItem(
       title: Text("#Wallet"),
       value: Text(wallet.name + " (${wallet.balance.formatted})"),
-      onEdit: (context) => onSelectedWallet(context, wallet),
     );
 //    return
   }
