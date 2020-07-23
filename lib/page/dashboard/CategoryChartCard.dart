@@ -83,6 +83,8 @@ class CategoryChartCard extends StatelessWidget {
         transactions.where((t) => t.type == TransactionType.expense);
     final transactionsByCategory =
         groupBy(allExpenses, (Transaction t) => t.category);
+
+    if (allExpenses.isEmpty) return Container();
     return PieChart(
       PieChartData(
         sections: [
