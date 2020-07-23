@@ -13,6 +13,7 @@ import 'package:qwallet/dialog/SelectWalletDialog.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
+import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 import '../AppLocalizations.dart';
 import '../utils.dart';
@@ -216,15 +217,13 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _TransactionTypeButton(
-          icon: Icon(Icons.arrow_upward),
-          title: Text(AppLocalizations.of(context).transactionTypeExpense),
+        TransactionTypeButton(
+          type: TransactionType.expense,
           isSelected: type == TransactionType.expense,
           onPressed: () => setState(() => type = TransactionType.expense),
         ),
-        _TransactionTypeButton(
-          icon: Icon(Icons.arrow_downward),
-          title: Text(AppLocalizations.of(context).transactionTypeIncome),
+        TransactionTypeButton(
+          type: TransactionType.income,
           isSelected: type == TransactionType.income,
           onPressed: () => setState(() => type = TransactionType.income),
         ),
@@ -337,31 +336,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     return PrimaryButton(
       child: Text(AppLocalizations.of(context).addTransactionSubmit),
       onPressed: () => onSelectedSubmit(context),
-    );
-  }
-}
-
-class _TransactionTypeButton extends StatelessWidget {
-  final Widget icon;
-  final Widget title;
-  final bool isSelected;
-  final VoidCallback onPressed;
-
-  const _TransactionTypeButton(
-      {Key key, this.icon, this.title, this.isSelected, this.onPressed})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FlatButton.icon(
-      onPressed: onPressed,
-      icon: icon,
-      label: title,
-      color: isSelected ? Theme.of(context).primaryColor : null,
-      textColor: isSelected ? Colors.white : null,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(44),
-      ),
     );
   }
 }

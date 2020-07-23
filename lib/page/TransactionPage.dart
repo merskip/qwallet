@@ -12,6 +12,7 @@ import 'package:qwallet/widget/CatgegoryIcon.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/EditableDetailsItem.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
+import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 class TransactionPage extends StatefulWidget {
   final Reference<Wallet> walletRef;
@@ -29,6 +30,7 @@ class _TransactionPageState extends State<TransactionPage> {
   final TextEditingController amountController;
 
   Category _selectedCategory;
+  TransactionType _selectedType;
 
   _TransactionPageState(Transaction transaction)
       : titleController = TextEditingController(text: transaction.title),
@@ -161,7 +163,7 @@ class _TransactionPageState extends State<TransactionPage> {
             categories: categories,
             onChangeCategory: (category) {
               final effectiveCategory =
-              category != _selectedCategory ? category : null;
+                  category != _selectedCategory ? category : null;
               setState(() => _selectedCategory = effectiveCategory);
             },
           );
@@ -181,6 +183,30 @@ class _TransactionPageState extends State<TransactionPage> {
     return EditableDetailsItem(
       title: Text("#Type"),
       value: Text(widget.transaction.getTypeLocalizedText(context)),
+      editingBegin: () => _selectedType = widget.transaction.type,
+      editingContent: (context) => buildTypeEditing(context),
+    );
+  }
+
+  Widget buildTypeEditing(BuildContext context) {
+    final buildTypeButton = (TransactionType type) => TransactionTypeButton(
+          type: type,
+          isSelected: _selectedType == type,
+          onPressed: () => setState(() => _selectedType = type),
+        );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(("#Type")),
+        SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            buildTypeButton(TransactionType.expense),
+            buildTypeButton(TransactionType.income),
+          ],
+        ),
+      ],
     );
   }
 
