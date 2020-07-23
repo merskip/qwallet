@@ -185,6 +185,11 @@ class _TransactionPageState extends State<TransactionPage> {
       value: Text(widget.transaction.getTypeLocalizedText(context)),
       editingBegin: () => _selectedType = widget.transaction.type,
       editingContent: (context) => buildTypeEditing(context),
+      editingSave: () => DataSource.instance.updateTransaction(
+        widget.walletRef,
+        widget.transaction,
+        type: _selectedType,
+      ),
     );
   }
 

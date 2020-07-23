@@ -116,6 +116,7 @@ extension TransactionsDataSource on DataSource {
     Reference<Wallet> walletRef,
     Transaction transaction, {
     Reference<Category> category,
+    TransactionType type,
     String title,
     double amount,
     DateTime date,
@@ -123,18 +124,42 @@ extension TransactionsDataSource on DataSource {
     await firestore.runTransaction((updateTransaction) async {
       updateTransaction.update(transaction.reference.documentReference, {
         if (category != null) 'category': category.documentReference,
+        if (type != null) 'type': type.rawValue,
         if (title != null) 'title': title,
         if (amount != null) 'amount': amount,
         if (date != null) 'date': Could.Timestamp.fromDate(date),
       });
 
-      if (amount != null) {
-        final amountDifferent = amount - transaction.amount;
+      if (amount != null || type != null) {
+        assert(amount == null || type == null,
+            "Doesn't support change amount and type at the same time");
+        double expensesIncrement = 0, incomesIncrement = 0;
+
+        if (amount != null) {
+          expensesIncrement = transaction.ifType(
+            expense: amount - transaction.amount,
+            income: 0,
+          );
+          incomesIncrement = transaction.ifType(
+            expense: 0,
+            income: amount - transaction.amount,
+          );
+        }
+        if (type != null && transaction.type != type) {
+          if (type == TransactionType.expense) {
+            // income -> expense
+            expensesIncrement = transaction.amount;
+            incomesIncrement = -transaction.amount;
+          } else if (type == TransactionType.income) {
+            // expense -> income
+            expensesIncrement = -transaction.amount;
+            incomesIncrement = transaction.amount;
+          }
+        }
+
         updateTransaction.update(walletRef.documentReference, {
-          if (transaction.type == TransactionType.expense)
-            "totalExpense": Could.FieldValue.increment(amountDifferent),
-          if (transaction.type == TransactionType.income)
-            "totalIncome": Could.FieldValue.increment(amountDifferent),
+          "totalExpense": Could.FieldValue.increment(expensesIncrement),
+          "totalIncome": Could.FieldValue.increment(incomesIncrement),
         });
       }
     });
