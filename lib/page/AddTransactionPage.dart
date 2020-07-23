@@ -9,6 +9,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/dialog/SelectWalletDialog.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -157,7 +158,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
             .first;
     final selectedWallet = await showDialog(
       context: context,
-      builder: (context) => _SelectWalletDialog(wallets: wallets),
+      builder: (context) => SelectWalletDialog(wallets: wallets),
     ) as Wallet;
     if (selectedWallet != null) {
       setState(() => this.wallet = selectedWallet);
@@ -361,35 +362,3 @@ class _TransactionTypeButton extends StatelessWidget {
   }
 }
 
-class _SelectWalletDialog extends StatelessWidget {
-  final List<Wallet> wallets;
-
-  const _SelectWalletDialog({Key key, this.wallets}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SimpleDialog(
-      title: Text(AppLocalizations.of(context).addTransactionSelectWallet),
-      children: [
-        for (final wallet in wallets) buildWalletOption(context, wallet)
-      ],
-    );
-  }
-
-  Widget buildWalletOption(BuildContext context, Wallet wallet) {
-    return SimpleDialogOption(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(children: [
-          Text(
-            wallet.name,
-            style: Theme.of(context).textTheme.subtitle1,
-          ),
-          Spacer(),
-          Text(wallet.balance.formatted)
-        ]),
-      ),
-      onPressed: () => Navigator.of(context).pop(wallet),
-    );
-  }
-}

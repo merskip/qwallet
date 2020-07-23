@@ -3,15 +3,18 @@ import 'package:flutter/material.dart';
 class EditableDetailsItem extends StatefulWidget {
   final Widget title;
   final Widget value;
-  final WidgetBuilder editValue;
-  final VoidCallback onSave;
+
+  final Function(BuildContext) onEdit;
+  final WidgetBuilder editingContent;
+  final VoidCallback editingSave;
 
   const EditableDetailsItem({
     Key key,
     this.title,
     this.value,
-    this.editValue,
-    this.onSave,
+    this.onEdit,
+    this.editingContent,
+    this.editingSave,
   }) : super(key: key);
 
   @override
@@ -21,7 +24,23 @@ class EditableDetailsItem extends StatefulWidget {
 class _EditableDetailsItemState extends State<EditableDetailsItem> {
   bool isEditing = false;
 
-  bool get isEditable => widget.editValue != null;
+  bool get isEditable => widget.onEdit != null || widget.editingContent != null;
+
+  void onSelectedEdit(BuildContext context) {
+    if (widget.onEdit != null)
+      widget.onEdit(context);
+    else
+      setState(() => isEditing = true);
+  }
+
+  void onSelectedEditingSave(BuildContext context) {
+    if (widget.editingSave != null) widget.editingSave();
+    setState(() => isEditing = false);
+  }
+
+  void onSelectedEditingCancel(BuildContext context) {
+    setState(() => isEditing = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,17 +52,19 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
         children: [
           if (isEditing) buildEditValue(context) else buildValue(context),
           if (!isEditing) Spacer(),
-          if (isEditable) SizedBox(width: 8),
+          if (isEditable) SizedBox(width: 16),
           if (isEditable)
             isEditing ? buildSaveButton(context) : buildEditButton(context),
         ],
       ),
     );
 
-    return isEditing ? Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(child: content),
-    ) : content;
+    return isEditing
+        ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(child: content),
+          )
+        : content;
   }
 
   Widget buildValue(BuildContext context) {
@@ -62,7 +83,10 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
 
   Widget buildEditValue(BuildContext context) {
     return Container(
-        child: Flexible(child: Builder(builder: widget.editValue)));
+      child: Flexible(
+        child: Builder(builder: widget.editingContent),
+      ),
+    );
   }
 
   Widget buildTitle(BuildContext context) {
@@ -76,7 +100,8 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
     return IconButton(
       icon: Icon(Icons.edit),
       color: Theme.of(context).textTheme.caption.color,
-      onPressed: () => setState(() => isEditing = true),
+      onPressed: () => onSelectedEdit(context),
+      visualDensity: VisualDensity.compact,
       tooltip: "#Edit",
     );
   }
@@ -87,16 +112,15 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
         IconButton(
           icon: Icon(Icons.done),
           color: Theme.of(context).primaryColor,
-          onPressed: () {
-            if (widget.onSave != null) widget.onSave();
-            setState(() => isEditing = false);
-          },
+          onPressed: () => onSelectedEditingSave(context),
+          visualDensity: VisualDensity.compact,
           tooltip: "#Save",
         ),
         IconButton(
           icon: Icon(Icons.close),
           color: Theme.of(context).textTheme.caption.color,
-          onPressed: () => setState(() => isEditing = false),
+          onPressed: () => onSelectedEditingCancel(context),
+          visualDensity: VisualDensity.compact,
           tooltip: "#Cancel",
         ),
       ],

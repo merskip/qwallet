@@ -3,8 +3,12 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/dialog/SelectWalletDialog.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/EditableDetailsItem.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
+
+import '../LocalPreferences.dart';
 
 class TransactionPage extends StatefulWidget {
   final Reference<Wallet> walletRef;
@@ -18,6 +22,7 @@ class TransactionPage extends StatefulWidget {
 }
 
 class _TransactionPageState extends State<TransactionPage> {
+
   final TextEditingController titleController;
   final TextEditingController amountController;
 
@@ -42,6 +47,20 @@ class _TransactionPageState extends State<TransactionPage> {
     Navigator.of(context).pop();
   }
 
+  onSelectedWallet(BuildContext context, Wallet wallet) async {
+    final wallets =
+        await LocalPreferences.orderedWallets(DataSource.instance.getWallets())
+            .first;
+    final selectedWallet = await showDialog(
+      context: context,
+      builder: (context) => SelectWalletDialog(wallets: wallets, selectedWallet: wallet),
+    ) as Wallet;
+    if (selectedWallet != null) {
+      // TODO: Impl
+      print(selectedWallet);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,24 +76,29 @@ class _TransactionPageState extends State<TransactionPage> {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          buildWallet(context),
-          buildType(context),
-          buildTitle(context),
-          buildAmount(context),
-          buildCategory(context),
-          buildDate(context),
-        ],
+      body: SimpleStreamWidget(
+        stream: DataSource.instance.getWallet(widget.walletRef),
+        builder: (context, wallet) => ListView(
+          children: [
+            buildWallet(context, wallet),
+            buildType(context),
+            buildTitle(context),
+            buildAmount(context),
+            buildCategory(context),
+            buildDate(context),
+          ],
+        ),
       ),
     );
   }
 
-  Widget buildWallet(BuildContext context) {
+  Widget buildWallet(BuildContext context, Wallet wallet) {
     return EditableDetailsItem(
       title: Text("#Wallet"),
-      value: Text(widget.walletRef.id),
+      value: Text(wallet.name + " (${wallet.balance.formatted})"),
+      onEdit: (context) => onSelectedWallet(context, wallet),
     );
+//    return
   }
 
   Widget buildType(BuildContext context) {
@@ -90,7 +114,7 @@ class _TransactionPageState extends State<TransactionPage> {
       value: widget.transaction.title != null
           ? Text(widget.transaction.title)
           : Text("#No title", style: TextStyle(fontStyle: FontStyle.italic)),
-      editValue: (context) => TextField(
+      editingContent: (context) => TextField(
         controller: titleController,
         decoration: InputDecoration(
           labelText: "#Title",
@@ -98,7 +122,7 @@ class _TransactionPageState extends State<TransactionPage> {
         autofocus: true,
         maxLength: 50,
       ),
-      onSave: () => DataSource.instance.updateTransaction(
+      editingSave: () => DataSource.instance.updateTransaction(
         widget.walletRef,
         widget.transaction,
         title: titleController.text.trim(),
@@ -110,14 +134,14 @@ class _TransactionPageState extends State<TransactionPage> {
     return EditableDetailsItem(
       title: Text("#Amount"),
       value: Text(widget.transaction.amount.toString()),
-      editValue: (context) => TextField(
+      editingContent: (context) => TextField(
         controller: amountController,
         decoration: InputDecoration(
           labelText: "#Amount",
         ),
         autofocus: true,
       ),
-      onSave: () => DataSource.instance.updateTransaction(
+      editingSave: () => DataSource.instance.updateTransaction(
         widget.walletRef,
         widget.transaction,
         amount: parseAmount(amountController.text),
