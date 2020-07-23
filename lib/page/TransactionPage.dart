@@ -5,6 +5,7 @@ import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/EditableDetailsItem.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
@@ -38,11 +39,19 @@ class _TransactionPageState extends State<TransactionPage> {
   }
 
   onSelectedRemove(BuildContext context) {
-    DataSource.instance.removeTransaction(
-      widget.walletRef,
-      widget.transaction,
-    );
-    Navigator.of(context).pop();
+    ConfirmationDialog(
+      title: Text("#Remove transaction"),
+      content: Text("#Removing transaction ${widget.transaction.title}"),
+      isDestructive: true,
+      onConfirm: () {
+        DataSource.instance.removeTransaction(
+          widget.walletRef,
+          widget.transaction,
+        );
+        Navigator.of(context).popUntil((route) =>
+            !(route.settings.name?.contains("transaction") ?? true));
+      },
+    ).show(context);
   }
 
   @override
