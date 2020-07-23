@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class EditableDetailsItem extends StatefulWidget {
+  final Widget leading;
   final Widget title;
   final Widget value;
 
@@ -10,6 +11,7 @@ class EditableDetailsItem extends StatefulWidget {
 
   const EditableDetailsItem({
     Key key,
+    this.leading,
     this.title,
     this.value,
     this.onEdit,
@@ -50,6 +52,11 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (widget.leading != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: widget.leading,
+            ),
           if (isEditing) buildEditValue(context) else buildValue(context),
           if (!isEditing) Spacer(),
           if (isEditable) SizedBox(width: 16),

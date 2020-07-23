@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
+import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/CatgegoryIcon.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/EditableDetailsItem.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -159,12 +161,28 @@ class _TransactionPageState extends State<TransactionPage> {
   }
 
   Widget buildCategory(BuildContext context) {
-    return EditableDetailsItem(
-      title: Text("#Category"),
-      value: widget.transaction.category != null
-          ? Text(widget.transaction.category?.id)
-          : Text("#No category", style: TextStyle(fontStyle: FontStyle.italic)),
-    );
+    if (widget.transaction.category != null) {
+      return SimpleStreamWidget(
+        stream: DataSource.instance
+            .getCategory(category: widget.transaction.category),
+        builder: (context, Category category) {
+          return EditableDetailsItem(
+            leading: CategoryIcon(category, size: 20),
+            title: Text("#Category"),
+            value: Text(category.title),
+          );
+        },
+      );
+    } else {
+      return EditableDetailsItem(
+        leading: CategoryIcon(null, size: 20),
+        title: Text("#Category"),
+        value: Text(
+          "#No category",
+          style: TextStyle(fontStyle: FontStyle.italic),
+        ),
+      );
+    }
   }
 
   Widget buildDate(BuildContext context) {
