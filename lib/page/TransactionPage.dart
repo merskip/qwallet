@@ -95,10 +95,10 @@ class _TransactionPageState extends State<TransactionPage> {
         builder: (context, wallet) => ListView(
           children: [
             buildWallet(context, wallet),
+            buildCategory(context),
             buildType(context),
             buildTitle(context),
             buildAmount(context, wallet),
-            buildCategory(context),
             buildDate(context),
           ],
         ),
@@ -107,11 +107,74 @@ class _TransactionPageState extends State<TransactionPage> {
   }
 
   Widget buildWallet(BuildContext context, Wallet wallet) {
-    return EditableDetailsItem(
-      title: Text("#Wallet"),
-      value: Text(wallet.name + " (${wallet.balance.formatted})"),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        child: EditableDetailsItem(
+          title: Text("#Wallet"),
+          value: Text(wallet.name + " (${wallet.balance.formatted})"),
+        ),
+      ),
     );
-//    return
+  }
+
+  Widget buildCategory(BuildContext context) {
+    if (widget.transaction.category != null) {
+      return SimpleStreamWidget(
+        stream: DataSource.instance
+            .getCategory(category: widget.transaction.category),
+        builder: (context, Category category) {
+          return buildCategoryDetailsItem(
+            context,
+            leading: CategoryIcon(category, size: 20),
+            value: Text(category.title),
+            category: category,
+          );
+        },
+      );
+    } else {
+      return buildCategoryDetailsItem(
+        context,
+        leading: CategoryIcon(null, size: 20),
+        value: Text(
+          "#No category",
+          style: TextStyle(fontStyle: FontStyle.italic),
+        ),
+        category: null,
+      );
+    }
+  }
+
+  Widget buildCategoryDetailsItem(BuildContext context,
+      {Widget leading, Widget value, Category category}) {
+    return EditableDetailsItem(
+      leading: leading,
+      title: Text("#Category"),
+      value: value,
+      editingBegin: () => _selectedCategory = category,
+      editingContent: (context) => SimpleStreamWidget(
+        stream: DataSource.instance.getCategories(wallet: widget.walletRef),
+        builder: (context, List<Category> categories) {
+          return CategoryPicker(
+            title: Text("#category"),
+            selectedCategory: _selectedCategory,
+            categories: categories,
+            onChangeCategory: (category) {
+              final effectiveCategory =
+              category != _selectedCategory ? category : null;
+              setState(() => _selectedCategory = effectiveCategory);
+            },
+          );
+        },
+      ),
+      editingSave: () {
+        DataSource.instance.updateTransaction(
+          widget.walletRef,
+          widget.transaction,
+          category: _selectedCategory.reference,
+        );
+      },
+    );
   }
 
   Widget buildType(BuildContext context) {
@@ -160,65 +223,6 @@ class _TransactionPageState extends State<TransactionPage> {
         widget.transaction,
         amount: parseAmount(amountController.text),
       ),
-    );
-  }
-
-  Widget buildCategory(BuildContext context) {
-    if (widget.transaction.category != null) {
-      return SimpleStreamWidget(
-        stream: DataSource.instance
-            .getCategory(category: widget.transaction.category),
-        builder: (context, Category category) {
-          return buildCategoryDetailsItem(
-            context,
-            leading: CategoryIcon(category, size: 20),
-            value: Text(category.title),
-            category: category,
-          );
-        },
-      );
-    } else {
-      return buildCategoryDetailsItem(
-        context,
-        leading: CategoryIcon(null, size: 20),
-        value: Text(
-          "#No category",
-          style: TextStyle(fontStyle: FontStyle.italic),
-        ),
-        category: null,
-      );
-    }
-  }
-
-  Widget buildCategoryDetailsItem(BuildContext context,
-      {Widget leading, Widget value, Category category}) {
-    return EditableDetailsItem(
-      leading: leading,
-      title: Text("#Category"),
-      value: value,
-      editingBegin: () => _selectedCategory = category,
-      editingContent: (context) => SimpleStreamWidget(
-        stream: DataSource.instance.getCategories(wallet: widget.walletRef),
-        builder: (context, List<Category> categories) {
-          return CategoryPicker(
-            title: Text("#category"),
-            selectedCategory: _selectedCategory,
-            categories: categories,
-            onChangeCategory: (category) {
-              final effectiveCategory =
-                  category != _selectedCategory ? category : null;
-              setState(() => _selectedCategory = effectiveCategory);
-            },
-          );
-        },
-      ),
-      editingSave: () {
-        DataSource.instance.updateTransaction(
-          widget.walletRef,
-          widget.transaction,
-          category: _selectedCategory.reference,
-        );
-      },
     );
   }
 
