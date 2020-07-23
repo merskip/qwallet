@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
@@ -26,7 +27,7 @@ class _TransactionPageState extends State<TransactionPage> {
   _TransactionPageState(Transaction transaction)
       : titleController = TextEditingController(text: transaction.title),
         amountController =
-            TextEditingController(text: transaction.amount.toString()),
+            TextEditingController(text: transaction.amount.toStringAsFixed(2)),
         super();
 
   @override
@@ -66,7 +67,7 @@ class _TransactionPageState extends State<TransactionPage> {
             buildWallet(context, wallet),
             buildType(context),
             buildTitle(context),
-            buildAmount(context),
+            buildAmount(context, wallet),
             buildCategory(context),
             buildDate(context),
           ],
@@ -112,10 +113,11 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  Widget buildAmount(BuildContext context) {
+  Widget buildAmount(BuildContext context, Wallet wallet) {
+    final amount =  Money(widget.transaction.amount, wallet.currency);
     return EditableDetailsItem(
       title: Text("#Amount"),
-      value: Text(widget.transaction.amount.toString()),
+      value: Text(amount.formatted),
       editingContent: (context) => TextField(
         controller: amountController,
         decoration: InputDecoration(
