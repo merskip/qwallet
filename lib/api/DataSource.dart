@@ -115,12 +115,14 @@ extension TransactionsDataSource on DataSource {
   Future<Reference<Transaction>> updateTransaction(
     Reference<Wallet> walletRef,
     Transaction transaction, {
+    Reference<Category> category,
     String title,
     double amount,
     DateTime date,
   }) async {
     await firestore.runTransaction((updateTransaction) async {
       updateTransaction.update(transaction.reference.documentReference, {
+        if (category != null) 'category': category.documentReference,
         if (title != null) 'title': title,
         if (amount != null) 'amount': amount,
         if (date != null) 'date': Could.Timestamp.fromDate(date),

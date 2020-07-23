@@ -6,6 +6,8 @@ class EditableDetailsItem extends StatefulWidget {
   final Widget value;
 
   final Function(BuildContext) onEdit;
+
+  final VoidCallback editingBegin;
   final WidgetBuilder editingContent;
   final VoidCallback editingSave;
 
@@ -15,6 +17,7 @@ class EditableDetailsItem extends StatefulWidget {
     this.title,
     this.value,
     this.onEdit,
+    this.editingBegin,
     this.editingContent,
     this.editingSave,
   }) : super(key: key);
@@ -31,8 +34,10 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
   void onSelectedEdit(BuildContext context) {
     if (widget.onEdit != null)
       widget.onEdit(context);
-    else
+    else {
+      if (widget.editingBegin != null) widget.editingBegin();
       setState(() => isEditing = true);
+    }
   }
 
   void onSelectedEditingSave(BuildContext context) {
@@ -52,7 +57,7 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (widget.leading != null)
+          if (widget.leading != null && !isEditing)
             Padding(
               padding: const EdgeInsets.only(right: 12.0),
               child: widget.leading,

@@ -7,6 +7,7 @@ import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/CatgegoryIcon.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/EditableDetailsItem.dart';
@@ -26,6 +27,8 @@ class TransactionPage extends StatefulWidget {
 class _TransactionPageState extends State<TransactionPage> {
   final TextEditingController titleController;
   final TextEditingController amountController;
+
+  Category _selectedCategory;
 
   _TransactionPageState(Transaction transaction)
       : titleController = TextEditingController(text: transaction.title),
@@ -166,23 +169,57 @@ class _TransactionPageState extends State<TransactionPage> {
         stream: DataSource.instance
             .getCategory(category: widget.transaction.category),
         builder: (context, Category category) {
-          return EditableDetailsItem(
+          return buildCategoryDetailsItem(
+            context,
             leading: CategoryIcon(category, size: 20),
-            title: Text("#Category"),
             value: Text(category.title),
+            category: category,
           );
         },
       );
     } else {
-      return EditableDetailsItem(
+      return buildCategoryDetailsItem(
+        context,
         leading: CategoryIcon(null, size: 20),
-        title: Text("#Category"),
         value: Text(
           "#No category",
           style: TextStyle(fontStyle: FontStyle.italic),
         ),
+        category: null,
       );
     }
+  }
+
+  Widget buildCategoryDetailsItem(BuildContext context,
+      {Widget leading, Widget value, Category category}) {
+    return EditableDetailsItem(
+      leading: leading,
+      title: Text("#Category"),
+      value: value,
+      editingBegin: () => _selectedCategory = category,
+      editingContent: (context) => SimpleStreamWidget(
+        stream: DataSource.instance.getCategories(wallet: widget.walletRef),
+        builder: (context, List<Category> categories) {
+          return CategoryPicker(
+            title: Text("#category"),
+            selectedCategory: _selectedCategory,
+            categories: categories,
+            onChangeCategory: (category) {
+              final effectiveCategory =
+                  category != _selectedCategory ? category : null;
+              setState(() => _selectedCategory = effectiveCategory);
+            },
+          );
+        },
+      ),
+      editingSave: () {
+        DataSource.instance.updateTransaction(
+          widget.walletRef,
+          widget.transaction,
+          category: _selectedCategory.reference,
+        );
+      },
+    );
   }
 
   Widget buildDate(BuildContext context) {
