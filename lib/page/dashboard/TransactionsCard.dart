@@ -21,10 +21,7 @@ class TransactionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: EdgeInsets.only(bottom: 88), // Padding for FAB
-      sliver: SliverToBoxAdapter(child: _TransactionsCard(wallet: wallet)),
-    );
+    return SliverToBoxAdapter(child: _TransactionsCard(wallet: wallet));
   }
 }
 
