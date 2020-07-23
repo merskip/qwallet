@@ -25,18 +25,25 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    final content = Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           if (isEditing) buildEditValue(context) else buildValue(context),
           if (!isEditing) Spacer(),
+          if (isEditable) SizedBox(width: 8),
           if (isEditable)
             isEditing ? buildSaveButton(context) : buildEditButton(context),
         ],
       ),
     );
+
+    return isEditing ? Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(child: content),
+    ) : content;
   }
 
   Widget buildValue(BuildContext context) {
@@ -75,14 +82,24 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
   }
 
   Widget buildSaveButton(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.done),
-      color: Theme.of(context).textTheme.caption.color,
-      onPressed: () {
-        if (widget.onSave != null) widget.onSave();
-        setState(() => isEditing = false);
-      },
-      tooltip: "#Save",
+    return Column(
+      children: [
+        IconButton(
+          icon: Icon(Icons.done),
+          color: Theme.of(context).primaryColor,
+          onPressed: () {
+            if (widget.onSave != null) widget.onSave();
+            setState(() => isEditing = false);
+          },
+          tooltip: "#Save",
+        ),
+        IconButton(
+          icon: Icon(Icons.close),
+          color: Theme.of(context).textTheme.caption.color,
+          onPressed: () => setState(() => isEditing = false),
+          tooltip: "#Cancel",
+        ),
+      ],
     );
   }
 }
