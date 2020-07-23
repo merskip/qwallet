@@ -8,6 +8,8 @@ import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
+import '../../Money.dart';
+
 class CategoryChartCard extends StatelessWidget {
   final Wallet wallet;
 
@@ -27,7 +29,7 @@ class CategoryChartCard extends StatelessWidget {
               stream:
                   DataSource.instance.getCategories(wallet: wallet.reference),
               builder: (context, List<Category> categories) {
-                return buildTransactionChart(context, transactions, categories);
+                return buildContent(context, transactions, categories);
               },
             );
           },
@@ -36,26 +38,62 @@ class CategoryChartCard extends StatelessWidget {
     );
   }
 
-  Widget buildTransactionChart(BuildContext context,
-      List<Transaction> transactions, List<Category> categories) {
+  Widget buildContent(
+    BuildContext context,
+    List<Transaction> transactions,
+    List<Category> categories,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(children: [
+        Align(
+          alignment: Alignment.topLeft,
+          child: Text(
+            "#Expenses by categories",
+            style: Theme.of(context).textTheme.subtitle2,
+          ),
+        ),
+        SizedBox(height: 16),
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            buildPieChart(context, transactions, categories),
+            Column(children: [
+              Text(
+                Money(wallet.totalExpense, wallet.currency).formatted,
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              Text(
+                "Total expenses",
+                style: Theme.of(context).textTheme.caption,
+              ),
+            ]),
+          ],
+        ),
+      ]),
+    );
+  }
+
+  Widget buildPieChart(
+    BuildContext context,
+    List<Transaction> transactions,
+    List<Category> categories,
+  ) {
     final allExpenses =
         transactions.where((t) => t.type == TransactionType.expense);
     final transactionsByCategory =
         groupBy(allExpenses, (Transaction t) => t.category);
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: PieChart(
-        PieChartData(
-          sections: [
-            ...transactionsByCategory.keys.map((categoryRef) => createSection(
-                  context,
-                  transactionsByCategory,
-                  categories,
-                  categoryRef,
-                )),
-          ],
-          borderData: FlBorderData(show: false),
-        ),
+    return PieChart(
+      PieChartData(
+        sections: [
+          ...transactionsByCategory.keys.map((categoryRef) => createSection(
+                context,
+                transactionsByCategory,
+                categories,
+                categoryRef,
+              )),
+        ],
+        borderData: FlBorderData(show: false),
       ),
     );
   }
@@ -79,11 +117,11 @@ class CategoryChartCard extends StatelessWidget {
 
     return PieChartSectionData(
       value: totalAmount,
-      color: category?.primaryColor ?? Colors.black26,
+      color: category?.primaryColor ?? Colors.black12,
       title: (category?.title ?? "#No category") + " ($percentage%)",
       titleStyle: Theme.of(context).textTheme.bodyText1.copyWith(
-          backgroundColor: category?.backgroundColor ?? Colors.black12),
-//              radius: 64,
+          backgroundColor: category?.backgroundColor ?? Colors.grey),
+      radius: 48,
     );
   }
 }

@@ -72,11 +72,15 @@ class _DashboardPageState extends State<DashboardPage> {
           stream: _selectedWallet.stream,
           builder: (context, AsyncSnapshot<Wallet> snapshot) {
             if (snapshot.hasData) {
-              return SliverToBoxAdapter(child: CategoryChartCard(wallet: snapshot.data));
+              return SliverToBoxAdapter(
+                  child: CategoryChartCard(wallet: snapshot.data));
             } else {
               return silverProgressIndicator();
             }
           },
+        ),
+        SliverPadding(
+          padding: EdgeInsets.only(bottom: 88),
         ),
       ]),
       floatingActionButton: FloatingActionButton(
