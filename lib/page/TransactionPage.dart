@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
@@ -21,7 +22,6 @@ class TransactionPage extends StatefulWidget {
 }
 
 class _TransactionPageState extends State<TransactionPage> {
-
   final TextEditingController titleController;
   final TextEditingController amountController;
 
@@ -38,7 +38,7 @@ class _TransactionPageState extends State<TransactionPage> {
     super.dispose();
   }
 
-  onSelectedRemove(BuildContext context) {
+  void onSelectedRemove(BuildContext context) {
     ConfirmationDialog(
       title: Text("#Remove transaction"),
       content: Text("#Removing transaction ${widget.transaction.title}"),
@@ -48,10 +48,26 @@ class _TransactionPageState extends State<TransactionPage> {
           widget.walletRef,
           widget.transaction,
         );
-        Navigator.of(context).popUntil((route) =>
-            !(route.settings.name?.contains("transaction") ?? true));
+        Navigator.of(context).popUntil(
+            (route) => !(route.settings.name?.contains("transaction") ?? true));
       },
     ).show(context);
+  }
+
+  void onSelectedDate(BuildContext context) async {
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: widget.transaction.date.toDate(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (selectedDate != null) {
+      DataSource.instance.updateTransaction(
+        widget.walletRef,
+        widget.transaction,
+        date: selectedDate,
+      );
+    }
   }
 
   @override
@@ -123,7 +139,7 @@ class _TransactionPageState extends State<TransactionPage> {
   }
 
   Widget buildAmount(BuildContext context, Wallet wallet) {
-    final amount =  Money(widget.transaction.amount, wallet.currency);
+    final amount = Money(widget.transaction.amount, wallet.currency);
     return EditableDetailsItem(
       title: Text("#Amount"),
       value: Text(amount.formatted),
@@ -152,9 +168,11 @@ class _TransactionPageState extends State<TransactionPage> {
   }
 
   Widget buildDate(BuildContext context) {
+    final format = DateFormat("d MMMM yyyy");
     return EditableDetailsItem(
       title: Text("#Date"),
-      value: Text(widget.transaction.date.toDate().toString()),
+      value: Text(format.format(widget.transaction.date.toDate())),
+      onEdit: (context) => onSelectedDate(context),
     );
   }
 }
