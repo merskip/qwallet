@@ -5,6 +5,7 @@ import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/widget/CatgegoryIcon.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../../Money.dart';
@@ -98,7 +99,9 @@ class _CategoriesChartWithLegendState
                 setState(() => this.selectedItem = effectiveSelectedItem);
               },
             ),
-            buildSummary(context),
+            selectedItem == null
+                ? buildSummary(context)
+                : buildCategorySummary(context, selectedItem),
           ],
         ),
         buildLegend(context, widget.items),
@@ -119,6 +122,22 @@ class _CategoriesChartWithLegendState
       ),
     ]);
   }
+
+  Widget buildCategorySummary(BuildContext context, _CategoryChartItem item) {
+    return Column(children: [
+      CategoryIcon(item.category, size: 16),
+      SizedBox(height: 8),
+      Text(
+        item.sum.formatted,
+        style: Theme.of(context).textTheme.headline6,
+      ),
+      Text(
+        item.category?.title ?? "#No category",
+        style: Theme.of(context).textTheme.caption,
+      ),
+      ]);
+  }
+
 
   Widget buildLegend(BuildContext context, List<_CategoryChartItem> items) {
     return InkWell(
@@ -145,10 +164,7 @@ class _CategoriesChartWithLegendState
           })
         ],
       ),
-      onTap: () => setState(() {
-        showAllTitles = !showAllTitles;
-        selectedItem = null;
-      }),
+      onTap: () => setState(() => showAllTitles = !showAllTitles),
     );
   }
 }
@@ -207,7 +223,7 @@ class _CategoriesChart extends StatelessWidget {
     return PieChartSectionData(
       value: item.sum.amount,
       color: item.category?.primaryColor ?? Colors.black12,
-      title: (item.category?.title ?? "#No category") + " ($percentage%)",
+      title: "$percentage%",
       titleStyle: titleStyle,
       showTitle: (showAllTitles || this.selectedItem == item),
       radius: (this.selectedItem == item ? 64 : 52),
