@@ -67,6 +67,9 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
       _CategoriesChartWithLegend(
         wallet: widget.wallet,
         items: _getCategoryChartItems(),
+        summaryTitle: transactionType == TransactionType.expense
+            ? "#Total expenses"
+            : "#Total incomes",
       ),
     ]);
   }
@@ -115,9 +118,14 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
 class _CategoriesChartWithLegend extends StatefulWidget {
   final Wallet wallet;
   final List<_CategoryChartItem> items;
+  final String summaryTitle;
 
-  const _CategoriesChartWithLegend({Key key, this.wallet, this.items})
-      : super(key: key);
+  const _CategoriesChartWithLegend({
+    Key key,
+    this.wallet,
+    this.items,
+    this.summaryTitle,
+  }) : super(key: key);
 
   @override
   _CategoriesChartWithLegendState createState() =>
@@ -131,8 +139,10 @@ class _CategoriesChartWithLegendState
 
   @override
   void didUpdateWidget(_CategoriesChartWithLegend oldWidget) {
-    if (!widget.items.contains(selectedItem))
-      selectedItem = null;
+    selectedItem = widget.items.firstWhere(
+      (item) => item == selectedItem,
+      orElse: () => null,
+    );
     super.didUpdateWidget(oldWidget);
   }
 
@@ -165,13 +175,17 @@ class _CategoriesChartWithLegendState
   }
 
   Widget buildSummary(BuildContext context) {
+    final double sum = widget.items.fold(
+      0.0,
+      (value, item) => value + item.sum.amount,
+    );
     return Column(children: [
       Text(
-        Money(widget.wallet.totalExpense, widget.wallet.currency).formatted,
+        Money(sum, widget.wallet.currency).formatted,
         style: Theme.of(context).textTheme.headline6,
       ),
       Text(
-        "#Total expenses",
+        widget.summaryTitle,
         style: Theme.of(context).textTheme.caption,
       ),
     ]);
