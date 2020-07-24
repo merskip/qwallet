@@ -9,6 +9,7 @@ import 'package:qwallet/widget/CatgegoryIcon.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
+import '../../AppLocalizations.dart';
 import '../../Money.dart';
 
 class CategoriesChartCard extends StatelessWidget {
@@ -68,8 +69,8 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
         wallet: widget.wallet,
         items: _getCategoryChartItems(),
         summaryTitle: transactionType == TransactionType.expense
-            ? "#Total expenses"
-            : "#Total incomes",
+            ? AppLocalizations.of(context).categoriesChartCardTotalExpenses
+            : AppLocalizations.of(context).categoriesChartCardTotalIncomes,
       ),
     ]);
   }
@@ -80,7 +81,7 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
       children: [
         TransactionTypeButton(
           type: TransactionType.expense,
-          title: Text("#Expenses"),
+          title: Text(AppLocalizations.of(context).categoriesChartCardExpenses),
           isSelected: transactionType == TransactionType.expense,
           onPressed: () =>
               setState(() => transactionType = TransactionType.expense),
@@ -88,7 +89,7 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
         ),
         TransactionTypeButton(
           type: TransactionType.income,
-          title: Text("#Incomes"),
+          title: Text(AppLocalizations.of(context).categoriesChartCardIncomes),
           isSelected: transactionType == TransactionType.income,
           onPressed: () =>
               setState(() => transactionType = TransactionType.income),
@@ -200,7 +201,8 @@ class _CategoriesChartWithLegendState
         style: Theme.of(context).textTheme.headline6,
       ),
       Text(
-        item.category?.title ?? "#No category",
+        item.category?.title ??
+            AppLocalizations.of(context).categoriesChartCardNoCategory,
         style: Theme.of(context).textTheme.caption,
       ),
     ]);
@@ -226,7 +228,8 @@ class _CategoriesChartWithLegendState
                 ),
               ),
               SizedBox(width: 3),
-              Text(item.category?.title ?? "#No category"),
+              Text(item.category?.title ??
+                  AppLocalizations.of(context).categoriesChartCardNoCategory),
             ]);
           })
         ],

@@ -475,6 +475,35 @@ extension TransactionsCardLocalizations on AppLocalizations {
       );
 }
 
+extension CategoriesChartCardLocalizations on AppLocalizations {
+
+  String get categoriesChartCardExpenses => _locale(
+    en: "Expenses",
+    pl: "Wydatki",
+  );
+
+  String get categoriesChartCardIncomes => _locale(
+    en: "Incomes",
+    pl: "przychody",
+  );
+
+  String get categoriesChartCardTotalExpenses => _locale(
+      en: "Total expenses",
+      pl: "Łączne wydatki",
+    );
+
+  String get categoriesChartCardTotalIncomes => _locale(
+    en: "Total incomes",
+    pl: "Łączne przychody",
+  );
+
+  String get categoriesChartCardNoCategory => _locale(
+    en: "Without category",
+    pl: "Bez kategorii",
+  );
+}
+
+
 extension TransactionDetailsLocalizations on AppLocalizations {
   
   String get transactionDetailsWallet => _locale(
