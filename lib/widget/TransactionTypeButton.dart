@@ -24,14 +24,14 @@ class TransactionTypeButton extends StatelessWidget {
     return FlatButton(
       child: Row(
         children: [
-          Icon(type == TransactionType.expense
-              ? Icons.arrow_upward
-              : Icons.arrow_downward),
+          Icon(
+            type == TransactionType.expense
+                ? Icons.arrow_upward
+                : Icons.arrow_downward,
+            size: visualDensity == VisualDensity.compact ? 18 : null,
+          ),
           SizedBox(width: 4),
-          title ??
-              Text(type == TransactionType.expense
-                  ? AppLocalizations.of(context).transactionTypeExpense
-                  : AppLocalizations.of(context).transactionTypeIncome),
+          title ?? buildDefaultTitle(context),
         ],
       ),
       onPressed: onPressed,
@@ -45,5 +45,11 @@ class TransactionTypeButton extends StatelessWidget {
           : null,
       visualDensity: visualDensity,
     );
+  }
+
+  Widget buildDefaultTitle(BuildContext context) {
+    return Text(type == TransactionType.expense
+        ? AppLocalizations.of(context).transactionTypeExpense
+        : AppLocalizations.of(context).transactionTypeIncome);
   }
 }
