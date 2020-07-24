@@ -9,6 +9,14 @@ class Reference<T> {
 
   factory Reference.fromNullable(DocumentReference documentReference) =>
       documentReference != null ? Reference(documentReference) : null;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Reference && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 extension ReferenceConverting on DocumentReference {
