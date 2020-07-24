@@ -46,16 +46,7 @@ class CategoryChartCard extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         buildChart(context, transactions, categories),
-        Column(children: [
-          Text(
-            Money(wallet.totalExpense, wallet.currency).formatted,
-            style: Theme.of(context).textTheme.headline6,
-          ),
-          Text(
-            "Total expenses",
-            style: Theme.of(context).textTheme.caption,
-          ),
-        ]),
+        buildSummary(context),
       ],
     );
   }
@@ -78,6 +69,19 @@ class CategoryChartCard extends StatelessWidget {
     }).toList();
 
     return _CategoriesChart(items: categoryChartItems);
+  }
+
+  Widget buildSummary(BuildContext context) {
+    return Column(children: [
+      Text(
+        Money(wallet.totalExpense, wallet.currency).formatted,
+        style: Theme.of(context).textTheme.headline6,
+      ),
+      Text(
+        "Total expenses",
+        style: Theme.of(context).textTheme.caption,
+      ),
+    ]);
   }
 
 }
