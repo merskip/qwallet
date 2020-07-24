@@ -7,6 +7,7 @@ import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/CatgegoryIcon.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
+import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 import '../../Money.dart';
 
@@ -24,44 +25,90 @@ class CategoryChartCard extends StatelessWidget {
         child: SimpleStreamWidget(
           stream: DataSource.instance.getTransactions(
               wallet: wallet.reference, range: getLastMonthDateTimeRange()),
-          builder: (context, List<Transaction> transactions) {
-            return SimpleStreamWidget(
-              stream:
-                  DataSource.instance.getCategories(wallet: wallet.reference),
-              builder: (context, List<Category> categories) {
-                return buildContent(context, transactions, categories);
-              },
-            );
-          },
+          builder: (context, List<Transaction> transactions) =>
+              SimpleStreamWidget(
+            stream: DataSource.instance.getCategories(wallet: wallet.reference),
+            builder: (context, List<Category> categories) =>
+                _CategoriesChartContent(
+              wallet: wallet,
+              transactions: transactions,
+              categories: categories,
+            ),
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget buildContent(
-    BuildContext context,
-    List<Transaction> transactions,
-    List<Category> categories,
-  ) {
-    final allExpenses =
-        transactions.where((t) => t.type == TransactionType.expense);
+class _CategoriesChartContent extends StatefulWidget {
+  final Wallet wallet;
+  final List<Transaction> transactions;
+  final List<Category> categories;
+
+  const _CategoriesChartContent(
+      {Key key, this.wallet, this.transactions, this.categories})
+      : super(key: key);
+
+  @override
+  _CategoriesChartContentState createState() => _CategoriesChartContentState();
+}
+
+class _CategoriesChartContentState extends State<_CategoriesChartContent> {
+  TransactionType transactionType = TransactionType.expense;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Padding(
+        padding: const EdgeInsets.only(top: 12.0),
+        child: buildTransactionSelection(context),
+      ),
+      _CategoriesChartWithLegend(
+        wallet: widget.wallet,
+        items: _getCategoryChartItems(),
+      ),
+    ]);
+  }
+
+  Widget buildTransactionSelection(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        TransactionTypeButton(
+          type: TransactionType.expense,
+          title: Text("#Expenses"),
+          isSelected: transactionType == TransactionType.expense,
+          onPressed: () =>
+              setState(() => transactionType = TransactionType.expense),
+          visualDensity: VisualDensity.compact,
+        ),
+        TransactionTypeButton(
+          type: TransactionType.income,
+          title: Text("#Incomes"),
+          isSelected: transactionType == TransactionType.income,
+          onPressed: () =>
+              setState(() => transactionType = TransactionType.income),
+          visualDensity: VisualDensity.compact,
+        ),
+      ],
+    );
+  }
+
+  List<_CategoryChartItem> _getCategoryChartItems() {
+    final transactionInType =
+        widget.transactions.where((t) => t.type == transactionType);
     final transactionsByCategory =
-        groupBy(allExpenses, (Transaction t) => t.category);
+        groupBy(transactionInType, (Transaction t) => t.category);
 
-    final categoryChartItems = transactionsByCategory.keys.map((categoryRef) {
-      final category = categories.firstWhere(
+    return transactionsByCategory.keys.map((categoryRef) {
+      final category = widget.categories.firstWhere(
         (c) => c.reference.id == categoryRef?.id,
         orElse: () => null,
       );
       final transactions = transactionsByCategory[categoryRef];
-
-      return _CategoryChartItem(wallet, category, transactions);
+      return _CategoryChartItem(widget.wallet, category, transactions);
     }).toList();
-
-    return _CategoriesChartWithLegend(
-      wallet: wallet,
-      items: categoryChartItems,
-    );
   }
 }
 
@@ -81,6 +128,13 @@ class _CategoriesChartWithLegendState
     extends State<_CategoriesChartWithLegend> {
   _CategoryChartItem selectedItem;
   bool showAllTitles = false;
+
+  @override
+  void didUpdateWidget(_CategoriesChartWithLegend oldWidget) {
+    if (!widget.items.contains(selectedItem))
+      selectedItem = null;
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,9 +189,8 @@ class _CategoriesChartWithLegendState
         item.category?.title ?? "#No category",
         style: Theme.of(context).textTheme.caption,
       ),
-      ]);
+    ]);
   }
-
 
   Widget buildLegend(BuildContext context, List<_CategoryChartItem> items) {
     return InkWell(
@@ -241,4 +294,14 @@ class _CategoryChartItem {
       wallet.currency);
 
   _CategoryChartItem(this.wallet, this.category, this.transactions);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _CategoryChartItem &&
+          runtimeType == other.runtimeType &&
+          category == other.category;
+
+  @override
+  int get hashCode => category.hashCode;
 }
