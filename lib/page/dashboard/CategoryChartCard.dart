@@ -57,16 +57,52 @@ class CategoryChartCard extends StatelessWidget {
       return _CategoryChartItem(wallet, category, transactions);
     }).toList();
 
-    return Column(children: [
+    return _CategoriesChartWithLegend(
+      wallet: wallet,
+      items: categoryChartItems,
+    );
+  }
+}
+
+class _CategoriesChartWithLegend extends StatefulWidget {
+  final Wallet wallet;
+  final List<_CategoryChartItem> items;
+
+  const _CategoriesChartWithLegend({Key key, this.wallet, this.items})
+      : super(key: key);
+
+  @override
+  _CategoriesChartWithLegendState createState() =>
+      _CategoriesChartWithLegendState();
+}
+
+class _CategoriesChartWithLegendState
+    extends State<_CategoriesChartWithLegend> {
+  _CategoryChartItem selectedItem;
+  bool showAllTitles = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
         Stack(
           alignment: Alignment.center,
           children: [
-            _CategoriesChart(items: categoryChartItems),
+            _CategoriesChart(
+              items: widget.items,
+              showAllTitles: showAllTitles,
+              selectedItem: selectedItem,
+              onSelectedItem: (selectedItem) {
+                final effectiveSelectedItem =
+                    this.selectedItem != selectedItem ? selectedItem : null;
+                setState(() => this.selectedItem = effectiveSelectedItem);
+              },
+            ),
             buildSummary(context),
           ],
         ),
-      buildLegend(context, categoryChartItems),
-      SizedBox(height: 16),
+        buildLegend(context, widget.items),
+        SizedBox(height: 16),
       ],
     );
   }
@@ -74,77 +110,83 @@ class CategoryChartCard extends StatelessWidget {
   Widget buildSummary(BuildContext context) {
     return Column(children: [
       Text(
-        Money(wallet.totalExpense, wallet.currency).formatted,
+        Money(widget.wallet.totalExpense, widget.wallet.currency).formatted,
         style: Theme.of(context).textTheme.headline6,
       ),
       Text(
-        "Total expenses",
+        "#Total expenses",
         style: Theme.of(context).textTheme.caption,
       ),
     ]);
   }
 
   Widget buildLegend(BuildContext context, List<_CategoryChartItem> items) {
-    return Wrap(
-      alignment: WrapAlignment.center,
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        ...items.map((item) {
-          return Row(mainAxisSize: MainAxisSize.min, children: [
-            SizedBox(
-              width: 12,
-              height: 12,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: item.category?.primaryColor ?? Colors.black12,
-                  borderRadius: BorderRadius.all(Radius.circular(3)),
+    return InkWell(
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          ...items.map((item) {
+            return Row(mainAxisSize: MainAxisSize.min, children: [
+              SizedBox(
+                width: 12,
+                height: 12,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: item.category?.primaryColor ?? Colors.black12,
+                    borderRadius: BorderRadius.all(Radius.circular(3)),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(width: 3),
-            Text(item.category?.title ?? "#No category"),
-          ]);
-        })
-      ],
+              SizedBox(width: 3),
+              Text(item.category?.title ?? "#No category"),
+            ]);
+          })
+        ],
+      ),
+      onTap: () => setState(() {
+        showAllTitles = !showAllTitles;
+        selectedItem = null;
+      }),
     );
   }
 }
 
-class _CategoriesChart extends StatefulWidget {
+class _CategoriesChart extends StatelessWidget {
   final List<_CategoryChartItem> items;
+  final bool showAllTitles;
+  final _CategoryChartItem selectedItem;
+  final Function(_CategoryChartItem) onSelectedItem;
 
   final double totalAmount;
 
-  _CategoriesChart({Key key, this.items})
-      : totalAmount = items.fold(0.0, (acc, i) => acc + i.sum.amount),
+  _CategoriesChart({
+    Key key,
+    this.items,
+    this.showAllTitles,
+    this.selectedItem,
+    this.onSelectedItem,
+  })  : totalAmount = items.fold(0.0, (acc, i) => acc + i.sum.amount),
         super(key: key);
 
   @override
-  _CategoriesChartState createState() => _CategoriesChartState();
-}
-
-class _CategoriesChartState extends State<_CategoriesChart> {
-  _CategoryChartItem selectedItem;
-
-  @override
   Widget build(BuildContext context) {
-    if (widget.items.isEmpty)
+    if (items.isEmpty)
       return Container();
     else
       return PieChart(
         PieChartData(
           sections: [
-            ...widget.items.map((item) => createSection(context, item)),
+            ...items.map((item) => createSection(context, item)),
           ],
           borderData: FlBorderData(show: false),
           pieTouchData: PieTouchData(
+            enabled: !showAllTitles,
             touchCallback: (touch) {
               if (touch.touchedSectionIndex != null) {
-                final selectedItem = widget.items[touch.touchedSectionIndex];
-                final effectiveSelectedItem =
-                    this.selectedItem != selectedItem ? selectedItem : null;
-                setState(() => this.selectedItem = effectiveSelectedItem);
+                final selectedItem = items[touch.touchedSectionIndex];
+                onSelectedItem(selectedItem);
               }
             },
           ),
@@ -157,7 +199,7 @@ class _CategoriesChartState extends State<_CategoriesChart> {
     BuildContext context,
     _CategoryChartItem item,
   ) {
-    final percentage = (item.sum.amount / widget.totalAmount * 100).round();
+    final percentage = (item.sum.amount / totalAmount * 100).round();
     final titleStyle = Theme.of(context).textTheme.bodyText1.copyWith(
           backgroundColor: item.category?.backgroundColor ?? Colors.grey,
         );
@@ -167,7 +209,7 @@ class _CategoriesChartState extends State<_CategoriesChart> {
       color: item.category?.primaryColor ?? Colors.black12,
       title: (item.category?.title ?? "#No category") + " ($percentage%)",
       titleStyle: titleStyle,
-      showTitle: (this.selectedItem == item),
+      showTitle: (showAllTitles || this.selectedItem == item),
       radius: (this.selectedItem == item ? 64 : 52),
     );
   }
