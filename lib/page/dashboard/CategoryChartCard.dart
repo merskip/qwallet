@@ -42,21 +42,10 @@ class CategoryChartCard extends StatelessWidget {
     List<Transaction> transactions,
     List<Category> categories,
   ) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        buildChart(context, transactions, categories),
-        buildSummary(context),
-      ],
-    );
-  }
-
-  Widget buildChart(
-      BuildContext context,
-      List<Transaction> transactions,
-      List<Category> categories,) {
-    final allExpenses = transactions.where((t) => t.type == TransactionType.expense);
-    final transactionsByCategory = groupBy(allExpenses, (Transaction t) => t.category);
+    final allExpenses =
+        transactions.where((t) => t.type == TransactionType.expense);
+    final transactionsByCategory =
+        groupBy(allExpenses, (Transaction t) => t.category);
 
     final categoryChartItems = transactionsByCategory.keys.map((categoryRef) {
       final category = categories.firstWhere(
@@ -68,7 +57,18 @@ class CategoryChartCard extends StatelessWidget {
       return _CategoryChartItem(wallet, category, transactions);
     }).toList();
 
-    return _CategoriesChart(items: categoryChartItems);
+    return Column(children: [
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            _CategoriesChart(items: categoryChartItems),
+            buildSummary(context),
+          ],
+        ),
+      buildLegend(context, categoryChartItems),
+      SizedBox(height: 16),
+      ],
+    );
   }
 
   Widget buildSummary(BuildContext context) {
@@ -84,6 +84,31 @@ class CategoryChartCard extends StatelessWidget {
     ]);
   }
 
+  Widget buildLegend(BuildContext context, List<_CategoryChartItem> items) {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        ...items.map((item) {
+          return Row(mainAxisSize: MainAxisSize.min, children: [
+            SizedBox(
+              width: 12,
+              height: 12,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: item.category?.primaryColor ?? Colors.black12,
+                  borderRadius: BorderRadius.all(Radius.circular(3)),
+                ),
+              ),
+            ),
+            SizedBox(width: 3),
+            Text(item.category?.title ?? "#No category"),
+          ]);
+        })
+      ],
+    );
+  }
 }
 
 class _CategoriesChart extends StatefulWidget {
@@ -100,7 +125,6 @@ class _CategoriesChart extends StatefulWidget {
 }
 
 class _CategoriesChartState extends State<_CategoriesChart> {
-
   _CategoryChartItem selectedItem;
 
   @override
