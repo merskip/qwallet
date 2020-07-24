@@ -11,10 +11,10 @@ import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 import '../../Money.dart';
 
-class CategoryChartCard extends StatelessWidget {
+class CategoriesChartCard extends StatelessWidget {
   final Wallet wallet;
 
-  const CategoryChartCard({Key key, this.wallet}) : super(key: key);
+  const CategoriesChartCard({Key key, this.wallet}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

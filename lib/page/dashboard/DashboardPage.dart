@@ -3,7 +3,7 @@ import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/page/dashboard/CategoryChartCard.dart';
+import 'package:qwallet/page/dashboard/CategoriesChartCard.dart';
 import 'package:qwallet/page/dashboard/TransactionsCard.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -73,7 +73,8 @@ class _DashboardPageState extends State<DashboardPage> {
           builder: (context, AsyncSnapshot<Wallet> snapshot) {
             if (snapshot.hasData) {
               return SliverToBoxAdapter(
-                  child: CategoryChartCard(wallet: snapshot.data));
+                child: CategoriesChartCard(wallet: snapshot.data),
+              );
             } else {
               return silverProgressIndicator();
             }
