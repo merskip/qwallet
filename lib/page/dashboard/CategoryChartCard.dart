@@ -42,34 +42,21 @@ class CategoryChartCard extends StatelessWidget {
     List<Transaction> transactions,
     List<Category> categories,
   ) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(children: [
-        Align(
-          alignment: Alignment.topLeft,
-          child: Text(
-            "#Expenses by categories",
-            style: Theme.of(context).textTheme.subtitle2,
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        buildChart(context, transactions, categories),
+        Column(children: [
+          Text(
+            Money(wallet.totalExpense, wallet.currency).formatted,
+            style: Theme.of(context).textTheme.headline6,
           ),
-        ),
-        SizedBox(height: 16),
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            buildChart(context, transactions, categories),
-            Column(children: [
-              Text(
-                Money(wallet.totalExpense, wallet.currency).formatted,
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              Text(
-                "Total expenses",
-                style: Theme.of(context).textTheme.caption,
-              ),
-            ]),
-          ],
-        ),
-      ]),
+          Text(
+            "Total expenses",
+            style: Theme.of(context).textTheme.caption,
+          ),
+        ]),
+      ],
     );
   }
 
@@ -109,6 +96,9 @@ class _CategoriesChart extends StatefulWidget {
 }
 
 class _CategoriesChartState extends State<_CategoriesChart> {
+
+  _CategoryChartItem selectedItem;
+
   @override
   Widget build(BuildContext context) {
     if (widget.items.isEmpty)
@@ -120,6 +110,17 @@ class _CategoriesChartState extends State<_CategoriesChart> {
             ...widget.items.map((item) => createSection(context, item)),
           ],
           borderData: FlBorderData(show: false),
+          pieTouchData: PieTouchData(
+            touchCallback: (touch) {
+              if (touch.touchedSectionIndex != null) {
+                final selectedItem = widget.items[touch.touchedSectionIndex];
+                final effectiveSelectedItem =
+                    this.selectedItem != selectedItem ? selectedItem : null;
+                setState(() => this.selectedItem = effectiveSelectedItem);
+              }
+            },
+          ),
+          centerSpaceRadius: 72,
         ),
       );
   }
@@ -138,7 +139,8 @@ class _CategoriesChartState extends State<_CategoriesChart> {
       color: item.category?.primaryColor ?? Colors.black12,
       title: (item.category?.title ?? "#No category") + " ($percentage%)",
       titleStyle: titleStyle,
-      radius: 48,
+      showTitle: (this.selectedItem == item),
+      radius: (this.selectedItem == item ? 64 : 52),
     );
   }
 }
