@@ -51,6 +51,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
 
   _error(AsyncSnapshot<T> snapshot) {
     final error = snapshot.error as Error;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -61,6 +62,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
             style: TextStyle(
               fontFamily: Platform.isIOS ? "Courier" : "monospace",
               color: Colors.red.shade400,
+              fontSize: 24,
             ),
           ),
         ]),

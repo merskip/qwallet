@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
@@ -183,10 +182,9 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   }
 
   Widget buildCurrency(BuildContext context) {
-    final currency = Currency.fromSymbol(widget.wallet.currencySymbol);
     return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletCurrency),
-      value: Text("${currency.symbol} - ${currency.name}"),
+      value: Text("${widget.wallet.currency.symbol} - ${widget.wallet..name}"),
       onEdit: (context) => onSelectedCurrency(context),
     );
   }
@@ -196,8 +194,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       title: Text(AppLocalizations.of(context).walletTotalExpense),
       value: isBalanceRefreshing
           ? CircularProgressIndicator()
-          : Text(
-          Money(widget.wallet.totalExpense, widget.wallet.currency).formatted),
+          : Text(widget.wallet.totalExpense.formatted),
     );
   }
 
@@ -206,8 +203,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       title: Text(AppLocalizations.of(context).walletTotalIncome),
       value: isBalanceRefreshing
           ? CircularProgressIndicator()
-          : Text(
-          Money(widget.wallet.totalIncome, widget.wallet.currency).formatted),
+          : Text(widget.wallet.totalIncome.formatted),
     );
   }
 

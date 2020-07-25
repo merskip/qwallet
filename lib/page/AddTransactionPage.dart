@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/Currency.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/Category.dart';
@@ -122,8 +121,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     setState(() {
       amount = parseAmount(amountController.text);
       if (amount != null) {
-        final money = Money(
-            amount, Currency.fromSymbol(widget.initialWallet.currencySymbol));
+        final money = Money(amount, widget.initialWallet.currency);
         amountController.text = money.amountFormatted;
       }
     });
@@ -248,7 +246,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       autofocus: true,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).addTransactionAmount,
-        suffixText: wallet.currencySymbol,
+        suffixText: wallet.currency.symbol,
         helperText: getBalanceAfter(),
       ),
       textAlign: TextAlign.end,
@@ -274,8 +272,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       final balanceAfter = type == TransactionType.expense
           ? wallet.balance.amount - amount
           : wallet.balance.amount + amount;
-      final balanceAfterMoney =
-          Money(balanceAfter, Currency.fromSymbol(wallet.currencySymbol));
+      final balanceAfterMoney = Money(balanceAfter, wallet.currency);
       return AppLocalizations.of(context)
           .addTransactionBalanceAfter(balanceAfterMoney);
     }
