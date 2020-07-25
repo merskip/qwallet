@@ -52,4 +52,12 @@ class User {
   String getSubtitle() {
     return displayName != null ? email : null;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is User && runtimeType == other.runtimeType && uid == other.uid;
+
+  @override
+  int get hashCode => uid.hashCode;
 }

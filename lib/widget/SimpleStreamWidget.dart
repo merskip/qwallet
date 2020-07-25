@@ -3,15 +3,19 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-typedef WidgetBuilder<T> = Widget Function(BuildContext context, T snapshot);
+typedef ValueWidgetBuilder<T> = Widget Function(BuildContext context, T value);
 
 class SimpleStreamWidget<T> extends StatelessWidget {
   final Stream<T> stream;
-  final WidgetBuilder<T> builder;
+  final ValueWidgetBuilder<T> builder;
+  final WidgetBuilder loadingBuilder;
 
-  const SimpleStreamWidget(
-      {Key key, @required this.stream, @required this.builder})
-      : super(key: key);
+  const SimpleStreamWidget({
+    Key key,
+    @required this.stream,
+    @required this.builder,
+    this.loadingBuilder,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +28,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
         else if (snapshot.hasData)
           return builder(context, snapshot.data);
         else
-          return _loading(snapshot);
+          return buildLoading(context);
       },
     );
   }
@@ -64,9 +68,14 @@ class SimpleStreamWidget<T> extends StatelessWidget {
     );
   }
 
-  _loading(snapshot) {
-    return Center(
-      child: CircularProgressIndicator(),
-    );
+  Widget buildLoading(BuildContext context) {
+    if (loadingBuilder != null) {
+      return loadingBuilder(context);
+    }
+    else {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
   }
 }

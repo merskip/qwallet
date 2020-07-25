@@ -55,10 +55,12 @@ extension WalletsDataSource on DataSource {
   Future<Reference<Wallet>> updateWallet(
     Wallet wallet, {
     String name,
+    List<String> ownersUid,
   }) async {
     await firestore.runTransaction((transaction) async {
       transaction.update(wallet.reference.documentReference, {
         if (name != null) 'name': name,
+        if (ownersUid != null) 'ownersUid': ownersUid,
       });
     });
     return wallet.reference;

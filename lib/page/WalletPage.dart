@@ -3,13 +3,16 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/model/user.dart';
+import 'package:qwallet/page/UserSelectionPage.dart';
 import 'package:qwallet/router.dart';
+import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/EditableDetailsItem.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../AppLocalizations.dart';
 import '../Currency.dart';
+import '../firebase_service.dart';
 
 class WalletPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
@@ -56,6 +59,23 @@ class _WalletPageContentState extends State<_WalletPageContent> {
             .popUntil((route) => route.settings.name == "/settings/wallets");
       },
     ).show(context);
+  }
+
+  void onSelectedOwners(BuildContext context) async {
+    final currentOwners = await DataSource.instance.getUsersByUids(widget.wallet.ownersUid);
+    final userSelectionPage = UserSelectionPage(
+      title: AppLocalizations.of(context).walletOwners,
+      selectedUsers: currentOwners,
+      allUsers: await FirebaseService.instance.fetchUsers(),
+    );
+    final owners = await pushPage<List<User>>(context,
+        builder: (context) => userSelectionPage);
+    if (owners != null && owners.contains(DataSource.instance.currentUser)) {
+      DataSource.instance.updateWallet(
+        widget.wallet,
+        ownersUid: owners.map((user) => user.uid).toList(),
+      );
+    }
   }
 
   onSelectedCategories(BuildContext context) {
@@ -118,14 +138,17 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   Widget buildOwners(BuildContext context) {
     return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletOwners),
-      value: FutureBuilder(
-        future: DataSource.instance.getUsersByUids(widget.wallet.ownersUid),
-        builder: (context, AsyncSnapshot<List<User>> snapshot) {
-          final users = snapshot.data ?? [User.currentUser()];
+      value: SimpleStreamWidget(
+        stream: DataSource.instance
+            .getUsersByUids(widget.wallet.ownersUid)
+            .asStream(),
+        builder: (context, List<User> users) {
           final text = users.map((user) => user.displayName).join(", ");
           return Text(text);
         },
+        loadingBuilder: (context) => Text("..."),
       ),
+      onEdit: (context) => onSelectedOwners(context),
     );
   }
 
