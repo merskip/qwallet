@@ -7,6 +7,8 @@ class EditableDetailsItem extends StatefulWidget {
   final Widget title;
   final Widget value;
 
+  final IconData editIcon;
+  final String editTooltip;
   final Function(BuildContext) onEdit;
 
   final VoidCallback editingBegin;
@@ -18,6 +20,8 @@ class EditableDetailsItem extends StatefulWidget {
     this.leading,
     this.title,
     this.value,
+    this.editIcon,
+    this.editTooltip,
     this.onEdit,
     this.editingBegin,
     this.editingContent,
@@ -112,11 +116,12 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
 
   Widget buildEditButton(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.edit),
+      icon: Icon(widget.editIcon ?? Icons.edit),
       color: Theme.of(context).textTheme.caption.color,
       onPressed: () => onSelectedEdit(context),
       visualDensity: VisualDensity.compact,
-      tooltip: AppLocalizations.of(context).editableDetailsItemEdit,
+      tooltip: widget.editTooltip ??
+          AppLocalizations.of(context).editableDetailsItemEdit,
     );
   }
 
@@ -128,14 +133,14 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
           color: Theme.of(context).primaryColor,
           onPressed: () => onSelectedEditingSave(context),
           visualDensity: VisualDensity.compact,
-            tooltip: AppLocalizations.of(context).editableDetailsItemSave,
+          tooltip: AppLocalizations.of(context).editableDetailsItemSave,
         ),
         IconButton(
           icon: Icon(Icons.close),
           color: Theme.of(context).textTheme.caption.color,
           onPressed: () => onSelectedEditingCancel(context),
           visualDensity: VisualDensity.compact,
-            tooltip: AppLocalizations.of(context).editableDetailsItemCancel,
+          tooltip: AppLocalizations.of(context).editableDetailsItemCancel,
         ),
       ],
     );

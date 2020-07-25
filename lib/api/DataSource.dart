@@ -69,6 +69,27 @@ extension WalletsDataSource on DataSource {
     return wallet.reference;
   }
 
+  Future<void> refreshWalletBalance(
+    Wallet wallet,
+  ) async {
+    final transactions = await getTransactions(
+      wallet: wallet.reference,
+      range: getLastMonthDateTimeRange(),
+    ).first;
+
+    double totalExpense = 0.0, totalIncome = 0.0;
+    for (final transaction in transactions) {
+      transaction.ifType(
+        expense: () => totalExpense += transaction.amount,
+        income: () => totalIncome += transaction.amount,
+      )();
+    }
+    wallet.reference.documentReference.updateData({
+      'totalExpense': totalExpense,
+      'totalIncome': totalIncome,
+    });
+  }
+
   Future<void> removeWallet(Reference<Wallet> wallet) {
     return firestore.collection("wallets").document(wallet.id).delete();
   }

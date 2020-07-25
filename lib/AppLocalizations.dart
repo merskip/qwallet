@@ -233,9 +233,24 @@ extension WalletLocalizations on AppLocalizations {
         pl: "Waluta",
       );
 
+  String get walletTotalExpense => _locale(
+        en: "Total expenses",
+        pl: "Łączne wydatki",
+      );
+
+  String get walletTotalIncome => _locale(
+        en: "Total expense",
+        pl: "Łączne przychody",
+      );
+
   String get walletBalance => _locale(
         en: "Balance",
         pl: "Saldo",
+      );
+
+  String get walletBalanceRefresh => _locale(
+        en: "Refresh",
+        pl: "Odśwież",
       );
 
   String get walletRemove => _locale(

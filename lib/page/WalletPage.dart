@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
@@ -40,6 +42,7 @@ class _WalletPageContent extends StatefulWidget {
 
 class _WalletPageContentState extends State<_WalletPageContent> {
   final nameController = TextEditingController();
+  bool isBalanceRefreshing = false;
 
   @override
   void dispose() {
@@ -97,6 +100,12 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     }
   }
 
+  void onSelectedRefreshBalance(BuildContext context) async {
+    setState(() => isBalanceRefreshing = true);
+    await DataSource.instance.refreshWalletBalance(widget.wallet);
+    setState(() => isBalanceRefreshing = false);
+  }
+
   onSelectedCategories(BuildContext context) {
     router.navigateTo(context, "/wallet/${widget.wallet.id}/categories");
   }
@@ -119,6 +128,8 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           buildName(context),
           buildOwners(context),
           buildCurrency(context),
+          buildTotalExpense(context),
+          buildTotalIncome(context),
           buildBalance(context),
           Divider(),
           buildCategories(context)
@@ -180,10 +191,36 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     );
   }
 
+  Widget buildTotalExpense(BuildContext context) {
+    return EditableDetailsItem(
+      title: Text(AppLocalizations.of(context).walletTotalExpense),
+      value: isBalanceRefreshing
+          ? CircularProgressIndicator()
+          : Text(
+          Money(widget.wallet.totalExpense, widget.wallet.currency).formatted),
+    );
+  }
+
+  Widget buildTotalIncome(BuildContext context) {
+    return EditableDetailsItem(
+      title: Text(AppLocalizations.of(context).walletTotalIncome),
+      value: isBalanceRefreshing
+          ? CircularProgressIndicator()
+          : Text(
+          Money(widget.wallet.totalIncome, widget.wallet.currency).formatted),
+    );
+  }
+
+
   Widget buildBalance(BuildContext context) {
     return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletBalance),
-      value: Text(widget.wallet.balance.formatted),
+      value: isBalanceRefreshing
+          ? CircularProgressIndicator()
+          : Text(widget.wallet.balance.formatted),
+      editIcon: Icons.refresh,
+      editTooltip: AppLocalizations.of(context).walletBalanceRefresh,
+      onEdit: (context) => onSelectedRefreshBalance(context),
     );
   }
 
