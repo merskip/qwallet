@@ -112,7 +112,7 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
       );
       final transactions = transactionsByCategory[categoryRef];
       return _CategoryChartItem(widget.wallet, category, transactions);
-    }).toList();
+    }).toList()..sort((lhs, rhs) => rhs.sum.amount.compareTo(lhs.sum.amount));
   }
 }
 
@@ -277,6 +277,7 @@ class _CategoriesChart extends StatelessWidget {
             },
           ),
           centerSpaceRadius: 72,
+          startDegreeOffset: -90
         ),
       );
   }
