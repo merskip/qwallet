@@ -52,6 +52,18 @@ extension WalletsDataSource on DataSource {
     }).then((reference) => Reference(reference));
   }
 
+  Future<Reference<Wallet>> updateWallet(
+    Wallet wallet, {
+    String name,
+  }) async {
+    await firestore.runTransaction((transaction) async {
+      transaction.update(wallet.reference.documentReference, {
+        if (name != null) 'name': name,
+      });
+    });
+    return wallet.reference;
+  }
+
   Future<void> removeWallet(Reference<Wallet> wallet) {
     return firestore.collection("wallets").document(wallet.id).delete();
   }

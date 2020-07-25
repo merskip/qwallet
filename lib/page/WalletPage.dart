@@ -25,20 +25,33 @@ class WalletPage extends StatelessWidget {
   }
 }
 
-class _WalletPageContent extends StatelessWidget {
+class _WalletPageContent extends StatefulWidget {
   final Wallet wallet;
 
-  const _WalletPageContent({Key key, this.wallet}) : super(key: key);
+  _WalletPageContent({Key key, this.wallet}) : super(key: key);
+
+  @override
+  _WalletPageContentState createState() => _WalletPageContentState();
+}
+
+class _WalletPageContentState extends State<_WalletPageContent> {
+  final nameController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
+  }
 
   onSelectedDelete(BuildContext context) async {
     ConfirmationDialog(
-      title: Text(
-          AppLocalizations.of(context).walletRemoveConfirmation(wallet.name)),
+      title: Text(AppLocalizations.of(context)
+          .walletRemoveConfirmation(widget.wallet.name)),
       content: Text(AppLocalizations.of(context)
-          .walletRemoveConfirmationContent(wallet.name)),
+          .walletRemoveConfirmationContent(widget.wallet.name)),
       isDestructive: true,
       onConfirm: () {
-        DataSource.instance.removeWallet(wallet.reference);
+        DataSource.instance.removeWallet(widget.wallet.reference);
         Navigator.of(context)
             .popUntil((route) => route.settings.name == "/settings/wallets");
       },
@@ -46,14 +59,14 @@ class _WalletPageContent extends StatelessWidget {
   }
 
   onSelectedCategories(BuildContext context) {
-    router.navigateTo(context, "/wallet/${wallet.id}/categories");
+    router.navigateTo(context, "/wallet/${widget.wallet.id}/categories");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(wallet.name),
+        title: Text(widget.wallet.name),
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
@@ -78,7 +91,27 @@ class _WalletPageContent extends StatelessWidget {
   Widget buildName(BuildContext context) {
     return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletName),
-      value: Text(wallet.name),
+      value: Text(widget.wallet.name),
+      editingBegin: () => nameController.text = widget.wallet.name,
+      editingContent: (context) {
+        return TextFormField(
+          controller: nameController,
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(context).walletName,
+          ),
+          autofocus: true,
+          maxLength: 50,
+        );
+      },
+      editingSave: () {
+        final name = nameController.text.trim();
+        if (name.isNotEmpty) {
+          DataSource.instance.updateWallet(
+            widget.wallet,
+            name: name,
+          );
+        }
+      },
     );
   }
 
@@ -86,7 +119,7 @@ class _WalletPageContent extends StatelessWidget {
     return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletOwners),
       value: FutureBuilder(
-        future: DataSource.instance.getUsersByUids(wallet.ownersUid),
+        future: DataSource.instance.getUsersByUids(widget.wallet.ownersUid),
         builder: (context, AsyncSnapshot<List<User>> snapshot) {
           final users = snapshot.data ?? [User.currentUser()];
           final text = users.map((user) => user.displayName).join(", ");
@@ -97,7 +130,7 @@ class _WalletPageContent extends StatelessWidget {
   }
 
   Widget buildCurrency(BuildContext context) {
-    final currency = Currency.fromSymbol(wallet.currencySymbol);
+    final currency = Currency.fromSymbol(widget.wallet.currencySymbol);
     return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletCurrency),
       value: Text("${currency.symbol} - ${currency.name}"),
@@ -107,7 +140,7 @@ class _WalletPageContent extends StatelessWidget {
   Widget buildBalance(BuildContext context) {
     return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletBalance),
-      value: Text(wallet.balance.formatted),
+      value: Text(widget.wallet.balance.formatted),
     );
   }
 
