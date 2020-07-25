@@ -3,6 +3,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/model/user.dart';
+import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/page/UserSelectionPage.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
@@ -62,18 +63,36 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   }
 
   void onSelectedOwners(BuildContext context) async {
-    final currentOwners = await DataSource.instance.getUsersByUids(widget.wallet.ownersUid);
-    final userSelectionPage = UserSelectionPage(
+    final currentOwners =
+        await DataSource.instance.getUsersByUids(widget.wallet.ownersUid);
+    final page = UserSelectionPage(
       title: AppLocalizations.of(context).walletOwners,
       selectedUsers: currentOwners,
       allUsers: await FirebaseService.instance.fetchUsers(),
     );
-    final owners = await pushPage<List<User>>(context,
-        builder: (context) => userSelectionPage);
+    final owners = await pushPage<List<User>>(
+      context,
+      builder: (context) => page,
+    );
     if (owners != null && owners.contains(DataSource.instance.currentUser)) {
       DataSource.instance.updateWallet(
         widget.wallet,
         ownersUid: owners.map((user) => user.uid).toList(),
+      );
+    }
+  }
+
+  void onSelectedCurrency(BuildContext context) async {
+    final page =
+        CurrencySelectionPage(selectedCurrency: widget.wallet.currency);
+    final currency = await pushPage<Currency>(
+      context,
+      builder: (context) => page,
+    );
+    if (currency != null) {
+      DataSource.instance.updateWallet(
+        widget.wallet,
+        currency: currency,
       );
     }
   }
@@ -157,6 +176,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletCurrency),
       value: Text("${currency.symbol} - ${currency.name}"),
+      onEdit: (context) => onSelectedCurrency(context),
     );
   }
 

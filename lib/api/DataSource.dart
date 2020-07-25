@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 
+import '../Currency.dart';
 import '../utils.dart';
 import 'Category.dart';
 import 'Model.dart';
@@ -55,11 +56,13 @@ extension WalletsDataSource on DataSource {
   Future<Reference<Wallet>> updateWallet(
     Wallet wallet, {
     String name,
+    Currency currency,
     List<String> ownersUid,
   }) async {
     await firestore.runTransaction((transaction) async {
       transaction.update(wallet.reference.documentReference, {
         if (name != null) 'name': name,
+        if (currency != null) 'currency': currency.symbol,
         if (ownersUid != null) 'ownersUid': ownersUid,
       });
     });
