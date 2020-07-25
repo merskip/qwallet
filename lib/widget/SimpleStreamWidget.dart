@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
     return StreamBuilder(
       stream: stream,
       builder: (context, AsyncSnapshot<T> snapshot) {
+        _debugSnapshot(snapshot);
         if (snapshot.hasError)
           return _error(snapshot);
         else if (snapshot.hasData)
@@ -25,6 +27,22 @@ class SimpleStreamWidget<T> extends StatelessWidget {
           return _loading(snapshot);
       },
     );
+  }
+
+  _debugSnapshot(AsyncSnapshot<T> snapshot) {
+    final state =
+        snapshot.connectionState.toString().replaceFirst("ConnectionState", "");
+    String stateIcon = HashMap.of({
+      ConnectionState.none: "⛔",
+      ConnectionState.waiting: "⏳",
+      ConnectionState.active: "🔁",
+      ConnectionState.done: "✅",
+    })[snapshot.connectionState];
+
+    print("[Snapshot $T] "
+        "state=($stateIcon $state) "
+        "hasData=${snapshot.hasData} "
+        "hasError=${snapshot.hasError}");
   }
 
   _error(AsyncSnapshot<T> snapshot) {

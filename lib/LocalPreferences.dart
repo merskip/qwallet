@@ -11,16 +11,18 @@ class UserPreferences {
 
   UserPreferences({@required this.themeMode, this.locale});
 
-  factory UserPreferences.empty() => UserPreferences(
-    themeMode: ThemeMode.system,
-    locale: null
-  );
+  factory UserPreferences.empty() =>
+      UserPreferences(themeMode: ThemeMode.system, locale: null);
 }
 
 class LocalPreferences {
-
   static final _walletsOrder = StreamController<List<Wallet>>.broadcast();
-  static final _userPreferences = StreamController<UserPreferences>.broadcast();
+
+  static final _userPreferences = BehaviorSubject<UserPreferences>(
+    onListen: () => emitUserPreferences(),
+  );
+
+  static Stream<UserPreferences> get userPreferences => _userPreferences.stream;
 
   static Future<void> orderWallets(List<Wallet> wallets) async {
     final preferences = await SharedPreferences.getInstance();
@@ -32,16 +34,17 @@ class LocalPreferences {
   static Stream<List<Wallet>> orderedWallets(Stream<List<Wallet>> wallets) {
     return MergeStream([_walletsOrder.stream, wallets])
         .asyncMap((wallets) async {
-          final remainingWallets = List.of(wallets);
+      final remainingWallets = List.of(wallets);
 
       final preferences = await SharedPreferences.getInstance();
-      final walletsOrderIds = preferences.containsKey("walletsOrder") ? preferences.getStringList("walletsOrder") : [];
+      final walletsOrderIds = preferences.containsKey("walletsOrder")
+          ? preferences.getStringList("walletsOrder")
+          : [];
 
       final result = List<Wallet>();
       for (final walletId in walletsOrderIds) {
-        final foundWallet = remainingWallets.firstWhere(
-            (wallet) => wallet.id == walletId,
-            orElse: () => null);
+        final foundWallet = remainingWallets
+            .firstWhere((wallet) => wallet.id == walletId, orElse: () => null);
         if (foundWallet != null) {
           result.add(foundWallet);
           remainingWallets.remove(foundWallet);
@@ -52,13 +55,11 @@ class LocalPreferences {
     });
   }
 
-  static Stream<UserPreferences> userPreferences() {
-    SharedPreferences.getInstance().then((preferences) {
-      final themeMode = _userThemeMode(preferences);
-      final locale = _userLocaleOrNull(preferences);
-      _userPreferences.add(UserPreferences(themeMode: themeMode, locale: locale));
-    });
-    return _userPreferences.stream;
+  static void emitUserPreferences() async {
+    final preferences = await SharedPreferences.getInstance();
+    final themeMode = _userThemeMode(preferences);
+    final locale = _userLocaleOrNull(preferences);
+    _userPreferences.add(UserPreferences(themeMode: themeMode, locale: locale));
   }
 
   static setUserThemeMode(ThemeMode themeMode) async {
@@ -101,10 +102,8 @@ class LocalPreferences {
     if (locale.contains("_")) {
       final chunks = locale.split("_");
       return Locale(chunks[0], chunks[1]);
-    }
-    else {
+    } else {
       return Locale(locale);
     }
   }
 }
-

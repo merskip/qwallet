@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
     }
 
     return StreamBuilder(
-        stream: LocalPreferences.userPreferences(),
+        stream: LocalPreferences.userPreferences,
         initialData: UserPreferences.empty(),
         builder: (context, AsyncSnapshot<UserPreferences> snapshot) {
           final userPreferences = snapshot.data;
