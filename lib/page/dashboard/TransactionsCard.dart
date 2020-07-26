@@ -3,7 +3,6 @@ import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/router.dart';
@@ -12,13 +11,6 @@ import 'package:qwallet/widget/empty_state_widget.dart';
 
 import '../../AppLocalizations.dart';
 import '../../Money.dart';
-
-enum _TimeRange {
-  today,
-  yesterday,
-  lastWeek,
-  lastMonth,
-}
 
 class TransactionsCard extends StatefulWidget {
   final Wallet wallet;
@@ -37,68 +29,14 @@ class TransactionsCard extends StatefulWidget {
 }
 
 class _TransactionsCardState extends State<TransactionsCard> {
-  _TimeRange timeRange = _TimeRange.today;
-
-  onSelectedTimeRange(BuildContext context, _TimeRange timeRange) {
-    setState(() => this.timeRange = timeRange);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Card(
       key: Key(widget.wallet.id),
       margin: const EdgeInsets.all(16),
       child: Column(children: [
-        buildTimeRangeSelection(context),
         buildTransactionsList(context),
       ]),
-    );
-  }
-
-  Widget buildTimeRangeSelection(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Wrap(
-        spacing: 8,
-        children: [
-          buildTimeRangeChip(
-            context,
-            AppLocalizations.of(context).transactionsCardToday,
-            _TimeRange.today,
-          ),
-          buildTimeRangeChip(
-            context,
-            AppLocalizations.of(context).transactionsCardYesterday,
-            _TimeRange.yesterday,
-          ),
-          buildTimeRangeChip(
-            context,
-            AppLocalizations.of(context).transactionsCardLastWeek,
-            _TimeRange.lastWeek,
-          ),
-          buildTimeRangeChip(
-            context,
-            AppLocalizations.of(context).transactionsCardLastMonth,
-            _TimeRange.lastMonth,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildTimeRangeChip(
-      BuildContext context, String title, _TimeRange timeRange) {
-    final isSelected = (this.timeRange == timeRange);
-    return ChoiceChip(
-      label: Text(
-        title,
-        style: TextStyle(color: isSelected ? Colors.white : null),
-      ),
-      selected: isSelected,
-      selectedColor: Theme.of(context).primaryColor,
-      visualDensity: VisualDensity.compact,
-      onSelected: (_) => onSelectedTimeRange(context, timeRange),
     );
   }
 
@@ -109,32 +47,16 @@ class _TransactionsCardState extends State<TransactionsCard> {
         primary: false,
         padding: EdgeInsets.only(bottom: 8),
         children: [
-          if (timeRange == _TimeRange.today ||
-              timeRange == _TimeRange.yesterday)
-            ...widget.transactions.map(
-                (transaction) => buildTransactionListItem(context, transaction))
-          else
-            ...buildGroupedTransactions(
-                context, widget.wallet, widget.transactions)
+          ...buildGroupedTransactions(
+            context,
+            widget.wallet,
+            widget.transactions,
+          )
         ],
       );
     } else {
       return buildEmptyTransactions(context);
     }
-  }
-
-  DateTimeRange _getDateTimeRange(_TimeRange timeRange) {
-    switch (timeRange) {
-      case _TimeRange.today:
-        return getTodayDateTimeRange();
-      case _TimeRange.yesterday:
-        return getYesterdayDateTimeRange();
-      case _TimeRange.lastWeek:
-        return getLastWeekDateTimeRange();
-      case _TimeRange.lastMonth:
-        return getLastMonthDateTimeRange();
-    }
-    return null;
   }
 
   List<Widget> buildGroupedTransactions(
@@ -152,13 +74,8 @@ class _TransactionsCardState extends State<TransactionsCard> {
 
     final result = List<Widget>();
     for (final date in dates) {
-      result.add(Padding(
-        padding: const EdgeInsets.only(left: 12, right: 12, top: 8, bottom: 2),
-        child: Text(
-          getDateSectionTitle(date),
-          style: Theme.of(context).textTheme.subtitle2,
-        ),
-      ));
+      result.add(buildSectionHeader(context, date));
+
       final transactions = transactionsByDate[date];
       result.addAll(transactions.map(
           (transaction) => buildTransactionListItem(context, transaction)));
@@ -167,14 +84,14 @@ class _TransactionsCardState extends State<TransactionsCard> {
     return result;
   }
 
-  Widget buildTransactionListItem(
-      BuildContext context, Transaction transaction) {
-    final category = transaction.category != null
-        ? widget.categories.firstWhere(
-            (category) => category.reference == transaction.category,
-            orElse: () => null)
-        : null;
-    return _TransactionListItem(widget.wallet, transaction, category);
+  Widget buildSectionHeader(BuildContext context, DateTime date) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 4),
+      child: Text(
+        getDateSectionTitle(date),
+        style: Theme.of(context).textTheme.subtitle2,
+      ),
+    );
   }
 
   String getDateSectionTitle(DateTime date) {
@@ -188,6 +105,16 @@ class _TransactionsCardState extends State<TransactionsCard> {
           " (${AppLocalizations.of(context).transactionsCardYesterdayHint})";
     return dateText[0].toUpperCase() +
         dateText.substring(1); // Uppercase first letter
+  }
+
+  Widget buildTransactionListItem(
+      BuildContext context, Transaction transaction) {
+    final category = transaction.category != null
+        ? widget.categories.firstWhere(
+            (category) => category.reference == transaction.category,
+        orElse: () => null)
+        : null;
+    return _TransactionListItem(widget.wallet, transaction, category);
   }
 
   Widget buildEmptyTransactions(BuildContext context) {
