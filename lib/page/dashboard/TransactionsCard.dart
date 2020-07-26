@@ -14,17 +14,6 @@ import 'package:qwallet/widget/empty_state_widget.dart';
 import '../../AppLocalizations.dart';
 import '../../Money.dart';
 
-class TransactionsCard extends StatelessWidget {
-  final Wallet wallet;
-
-  const TransactionsCard({Key key, this.wallet}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(child: _TransactionsCard(wallet: wallet));
-  }
-}
-
 enum _TimeRange {
   today,
   yesterday,
@@ -32,16 +21,16 @@ enum _TimeRange {
   lastMonth,
 }
 
-class _TransactionsCard extends StatefulWidget {
+class TransactionsCard extends StatefulWidget {
   final Wallet wallet;
 
-  const _TransactionsCard({Key key, this.wallet}) : super(key: key);
+  const TransactionsCard({Key key, this.wallet}) : super(key: key);
 
   @override
   _TransactionsCardState createState() => _TransactionsCardState();
 }
 
-class _TransactionsCardState extends State<_TransactionsCard> {
+class _TransactionsCardState extends State<TransactionsCard> {
   _TimeRange timeRange = _TimeRange.today;
 
   onSelectedTimeRange(BuildContext context, _TimeRange timeRange) {

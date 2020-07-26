@@ -6,6 +6,7 @@ import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 
 import '../Currency.dart';
+import '../LocalPreferences.dart';
 import '../utils.dart';
 import 'Category.dart';
 import 'Model.dart';
@@ -22,6 +23,8 @@ class DataSource {
 }
 
 extension WalletsDataSource on DataSource {
+  Stream<List<Wallet>> getOrderedWallets() => LocalPreferences.orderedWallets(getWallets());
+
   Stream<List<Wallet>> getWallets() {
     return firestore
         .collection("wallets")
