@@ -120,7 +120,11 @@ class _DashboardPageState extends State<DashboardPage> {
         return SliverToBoxAdapter(
           child: Column(
             children: [
-              TransactionsCard(wallet: wallet),
+              TransactionsCard(
+                wallet: wallet,
+                categories: categories,
+                transactions: transactions,
+              ),
               CategoriesChartCard(wallet: wallet),
             ],
           ),

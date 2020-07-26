@@ -8,7 +8,6 @@ import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
-import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
 
 import '../../AppLocalizations.dart';
@@ -23,8 +22,15 @@ enum _TimeRange {
 
 class TransactionsCard extends StatefulWidget {
   final Wallet wallet;
+  final List<Category> categories;
+  final List<Transaction> transactions;
 
-  const TransactionsCard({Key key, this.wallet}) : super(key: key);
+  const TransactionsCard({
+    Key key,
+    this.wallet,
+    this.categories,
+    this.transactions,
+  }) : super(key: key);
 
   @override
   _TransactionsCardState createState() => _TransactionsCardState();
@@ -97,32 +103,24 @@ class _TransactionsCardState extends State<TransactionsCard> {
   }
 
   Widget buildTransactionsList(BuildContext context) {
-    return SimpleStreamWidget(
-      stream: DataSource.instance.getTransactions(
-        wallet: widget.wallet.reference,
-        range: _getDateTimeRange(timeRange),
-      ),
-      builder: (context, List<Transaction> transactions) {
-        if (transactions.isNotEmpty) {
-          return ListView(
-            shrinkWrap: true,
-            primary: false,
-            padding: EdgeInsets.only(bottom: 8),
-            children: [
-              if (timeRange == _TimeRange.today ||
-                  timeRange == _TimeRange.yesterday)
-                ...transactions.map((transaction) =>
-                    _TransactionListItem(widget.wallet, transaction))
-              else
-                ...buildGroupedTransactions(
-                    context, widget.wallet, transactions)
-            ],
-          );
-        } else {
-          return buildEmptyTransactions(context);
-        }
-      },
-    );
+    if (widget.transactions.isNotEmpty) {
+      return ListView(
+        shrinkWrap: true,
+        primary: false,
+        padding: EdgeInsets.only(bottom: 8),
+        children: [
+          if (timeRange == _TimeRange.today ||
+              timeRange == _TimeRange.yesterday)
+            ...widget.transactions.map(
+                (transaction) => buildTransactionListItem(context, transaction))
+          else
+            ...buildGroupedTransactions(
+                context, widget.wallet, widget.transactions)
+        ],
+      );
+    } else {
+      return buildEmptyTransactions(context);
+    }
   }
 
   DateTimeRange _getDateTimeRange(_TimeRange timeRange) {
@@ -162,11 +160,21 @@ class _TransactionsCardState extends State<TransactionsCard> {
         ),
       ));
       final transactions = transactionsByDate[date];
-      result.addAll(transactions
-          .map((transaction) => _TransactionListItem(wallet, transaction)));
+      result.addAll(transactions.map(
+          (transaction) => buildTransactionListItem(context, transaction)));
     }
 
     return result;
+  }
+
+  Widget buildTransactionListItem(
+      BuildContext context, Transaction transaction) {
+    final category = transaction.category != null
+        ? widget.categories.firstWhere(
+            (category) => category.reference == transaction.category,
+            orElse: () => null)
+        : null;
+    return _TransactionListItem(widget.wallet, transaction, category);
   }
 
   String getDateSectionTitle(DateTime date) {
@@ -196,17 +204,14 @@ class _TransactionsCardState extends State<TransactionsCard> {
 class _TransactionListItem extends StatelessWidget {
   final Wallet wallet;
   final Transaction transaction;
+  final Category category;
 
-  _TransactionListItem(this.wallet, this.transaction);
+  _TransactionListItem(this.wallet, this.transaction, this.category);
 
   @override
   Widget build(BuildContext context) {
-    if (transaction.category != null) {
-      return SimpleStreamWidget(
-        stream: DataSource.instance.getCategory(category: transaction.category),
-        builder: (context, Category category) =>
-            buildListTile(context, transaction, category),
-      );
+    if (category != null) {
+      return buildListTile(context, transaction, category);
     } else {
       return buildListTile(context, transaction, null);
     }
