@@ -2,11 +2,9 @@ import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/CatgegoryIcon.dart';
-import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 import '../../AppLocalizations.dart';
@@ -14,29 +12,25 @@ import '../../Money.dart';
 
 class CategoriesChartCard extends StatelessWidget {
   final Wallet wallet;
+  final List<Category> categories;
+  final List<Transaction> transactions;
 
-  const CategoriesChartCard({Key key, this.wallet}) : super(key: key);
+  const CategoriesChartCard({
+    Key key,
+    this.wallet,
+    this.categories,
+    this.transactions,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Card(
       key: Key(wallet.id),
-      padding: const EdgeInsets.all(12.0),
-      child: Card(
-        child: SimpleStreamWidget(
-          stream: DataSource.instance.getTransactions(
-              wallet: wallet.reference, range: getLastMonthDateTimeRange()),
-          builder: (context, List<Transaction> transactions) =>
-              SimpleStreamWidget(
-            stream: DataSource.instance.getCategories(wallet: wallet.reference),
-            builder: (context, List<Category> categories) =>
-                _CategoriesChartContent(
-              wallet: wallet,
-              transactions: transactions,
-              categories: categories,
-            ),
-          ),
-        ),
+      margin: const EdgeInsets.all(16),
+      child: _CategoriesChartContent(
+        wallet: wallet,
+        transactions: transactions,
+        categories: categories,
       ),
     );
   }
@@ -112,7 +106,8 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
       );
       final transactions = transactionsByCategory[categoryRef];
       return _CategoryChartItem(widget.wallet, category, transactions);
-    }).toList()..sort((lhs, rhs) => rhs.sum.amount.compareTo(lhs.sum.amount));
+    }).toList()
+      ..sort((lhs, rhs) => rhs.sum.amount.compareTo(lhs.sum.amount));
   }
 }
 
@@ -263,22 +258,21 @@ class _CategoriesChart extends StatelessWidget {
     else
       return PieChart(
         PieChartData(
-          sections: [
-            ...items.map((item) => createSection(context, item)),
-          ],
-          borderData: FlBorderData(show: false),
-          pieTouchData: PieTouchData(
-            enabled: !showAllTitles,
-            touchCallback: (touch) {
-              if (touch.touchedSectionIndex != null) {
-                final selectedItem = items[touch.touchedSectionIndex];
-                onSelectedItem(selectedItem);
-              }
-            },
-          ),
-          centerSpaceRadius: 72,
-          startDegreeOffset: -90
-        ),
+            sections: [
+              ...items.map((item) => createSection(context, item)),
+            ],
+            borderData: FlBorderData(show: false),
+            pieTouchData: PieTouchData(
+              enabled: !showAllTitles,
+              touchCallback: (touch) {
+                if (touch.touchedSectionIndex != null) {
+                  final selectedItem = items[touch.touchedSectionIndex];
+                  onSelectedItem(selectedItem);
+                }
+              },
+            ),
+            centerSpaceRadius: 72,
+            startDegreeOffset: -90),
       );
   }
 

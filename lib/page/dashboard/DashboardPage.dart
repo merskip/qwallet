@@ -74,31 +74,9 @@ class _DashboardPageState extends State<DashboardPage> {
           actions: buildAppBarActions(context),
         ),
         buildWalletCards(context),
-//        StreamBuilder(
-//          stream: _selectedWallet.stream,
-//          builder: (context, AsyncSnapshot<Wallet> snapshot) {
-//            if (snapshot.hasData) {
-//              return TransactionsCard(wallet: snapshot.data);
-//            } else {
-//              return silverProgressIndicator();
-//            }
-//          },
-//        ),
-//        StreamBuilder(
-//          stream: _selectedWallet.stream,
-//          builder: (context, AsyncSnapshot<Wallet> snapshot) {
-//            if (snapshot.hasData) {
-//              return SliverToBoxAdapter(
-//                child: CategoriesChartCard(wallet: snapshot.data),
-//              );
-//            } else {
-//              return silverProgressIndicator();
-//            }
-//          },
-//        ),
-//        SliverPadding(
-//          padding: EdgeInsets.only(bottom: 88),
-//        ),
+        SliverPadding(
+          padding: EdgeInsets.only(bottom: 88),
+        ),
       ]),
       floatingActionButton: buildAddTransactionButton(context),
     );
@@ -125,7 +103,11 @@ class _DashboardPageState extends State<DashboardPage> {
                 categories: categories,
                 transactions: transactions,
               ),
-              CategoriesChartCard(wallet: wallet),
+              CategoriesChartCard(
+                wallet: wallet,
+                categories: categories,
+                transactions: transactions,
+              ),
             ],
           ),
         );
