@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/CatgegoryIcon.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
 
 import '../../AppLocalizations.dart';
@@ -29,13 +32,28 @@ class TransactionsCard extends StatefulWidget {
 }
 
 class _TransactionsCardState extends State<TransactionsCard> {
+  bool _isCollapsed = true;
+
   @override
   Widget build(BuildContext context) {
     return Card(
-      key: Key(widget.wallet.id),
       margin: const EdgeInsets.all(16),
       child: Column(children: [
         buildTransactionsList(context),
+        if (_isCollapsed)
+          FlatButton(
+            child: Text("#Show more"),
+            textColor: Theme.of(context).primaryColor,
+            onPressed: () => setState(() => _isCollapsed = false),
+            visualDensity: VisualDensity.compact,
+          ),
+        if (!_isCollapsed)
+          FlatButton(
+            child: Text("#Show all"),
+            textColor: Theme.of(context).primaryColor,
+            onPressed: null,
+            visualDensity: VisualDensity.compact,
+          ),
       ]),
     );
   }
@@ -71,9 +89,13 @@ class _TransactionsCardState extends State<TransactionsCard> {
     );
     final dates = transactionsByDate.keys.toList()
       ..sort((lhs, rhs) => rhs.compareTo(lhs));
+    final effectiveDates = dates.sublist(
+      0,
+      _isCollapsed ? min(2, dates.length) : null,
+    );
 
     final result = List<Widget>();
-    for (final date in dates) {
+    for (final date in effectiveDates) {
       result.add(buildSectionHeader(context, date));
 
       final transactions = transactionsByDate[date];
@@ -86,7 +108,7 @@ class _TransactionsCardState extends State<TransactionsCard> {
 
   Widget buildSectionHeader(BuildContext context, DateTime date) {
     return Padding(
-      padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 4),
+      padding: const EdgeInsets.only(left: 12, right: 12, top: 16, bottom: 8),
       child: Text(
         getDateSectionTitle(date),
         style: Theme.of(context).textTheme.subtitle2,
@@ -112,7 +134,7 @@ class _TransactionsCardState extends State<TransactionsCard> {
     final category = transaction.category != null
         ? widget.categories.firstWhere(
             (category) => category.reference == transaction.category,
-        orElse: () => null)
+            orElse: () => null)
         : null;
     return _TransactionListItem(widget.wallet, transaction, category);
   }
@@ -137,15 +159,6 @@ class _TransactionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (category != null) {
-      return buildListTile(context, transaction, category);
-    } else {
-      return buildListTile(context, transaction, null);
-    }
-  }
-
-  Widget buildListTile(
-      BuildContext context, Transaction transaction, Category category) {
     final color = transaction.ifType(expense: null, income: Colors.green);
     final amountPrefix = transaction.ifType(expense: "-", income: "+");
     final amountText = Money(transaction.amount, wallet.currency).formatted;
@@ -157,7 +170,7 @@ class _TransactionListItem extends StatelessWidget {
 
     return ListTile(
       key: Key(transaction.id),
-      leading: buildCategoryIcon(context, category),
+      leading: CategoryIcon(category, size: 17),
       title: Text(title),
       subtitle: subTitle != null ? Text(subTitle) : null,
       trailing: Text(amountPrefix + amountText, style: TextStyle(color: color)),

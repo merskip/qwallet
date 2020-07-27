@@ -86,6 +86,7 @@ class _DashboardPageState extends State<DashboardPage> {
     if (_walletCategories == null || _walletTransactions == null)
       return silverProgressIndicator();
     return SimpleStreamWidget(
+      key: Key(_selectedWallet.value?.id),
       stream: CombineLatestStream.list([
         _walletCategories,
         _walletTransactions,
