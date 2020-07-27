@@ -33,7 +33,7 @@ class _DashboardPageState extends State<DashboardPage> {
       _walletCategories = DataSource.instance.getCategories(
         wallet: wallet.reference,
       );
-      _walletTransactions = DataSource.instance.getTransactions(
+      _walletTransactions = DataSource.instance.getTransactionsInTimeRange(
         wallet: wallet.reference,
         range: getLastMonthDateTimeRange(),
       );

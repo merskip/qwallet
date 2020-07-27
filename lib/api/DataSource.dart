@@ -75,7 +75,7 @@ extension WalletsDataSource on DataSource {
   Future<void> refreshWalletBalance(
     Wallet wallet,
   ) async {
-    final transactions = await getTransactions(
+    final transactions = await getTransactionsInTimeRange(
       wallet: wallet.reference,
       range: getLastMonthDateTimeRange(),
     ).first;
@@ -99,7 +99,7 @@ extension WalletsDataSource on DataSource {
 }
 
 extension TransactionsDataSource on DataSource {
-  Stream<List<Transaction>> getTransactions({
+  Stream<List<Transaction>> getTransactionsInTimeRange({
     @required Reference<Wallet> wallet,
     @required DateTimeRange range,
   }) {
@@ -111,6 +111,20 @@ extension TransactionsDataSource on DataSource {
         .snapshots()
         .map((snapshot) =>
             snapshot.documents.map((s) => Transaction(s)).toList());
+  }
+
+  Stream<List<Transaction>> getTransactions({
+    @required Reference<Wallet> wallet,
+    Transaction after,
+  }) {
+    return wallet.documentReference
+        .collection("transactions")
+        .orderBy("date", descending: true)
+        .limit(50)
+        .startAfterDocument(after.documentSnapshot)
+        .snapshots()
+        .map((snapshot) =>
+        snapshot.documents.map((s) => Transaction(s)).toList());
   }
 
   Reference<Transaction> getTransactionReference({

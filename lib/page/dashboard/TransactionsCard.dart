@@ -51,7 +51,8 @@ class _TransactionsCardState extends State<TransactionsCard> {
           FlatButton(
             child: Text("#Show all"),
             textColor: Theme.of(context).primaryColor,
-            onPressed: null,
+            onPressed: () => router.navigateTo(
+                context, "/wallet/${widget.wallet.id}/transactions"),
             visualDensity: VisualDensity.compact,
           ),
       ]),

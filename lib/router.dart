@@ -18,6 +18,7 @@ import 'page/AddWalletPage.dart';
 import 'page/CategoriesPage.dart';
 import 'page/EditCategoryPage.dart';
 import 'page/SettingsPage.dart';
+import 'page/TransactionsListPage.dart';
 import 'page/landing_page.dart';
 
 final router = Router();
@@ -144,6 +145,18 @@ void defineRoutes(Router router) {
 
       return EditCategoryPage(
         categoryRef: categoryRef,
+      );
+    }),
+  );
+
+  router.define(
+    "/wallet/:walletId/transactions",
+    transitionType: TransitionType.nativeModal,
+    handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      final walletId = params["walletId"][0];
+      return TransactionsListPage(
+        walletRef: DataSource.instance.getWalletReference(walletId),
       );
     }),
   );
