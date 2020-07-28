@@ -102,6 +102,9 @@ Color colorFromHex(String hexString) {
 extension StringUtils on String {
 
   String nullIfEmpty() => isEmpty ? null : this;
+
+  String firstUppercase() =>
+    this[0].toUpperCase() + this.substring(1);
 }
 
 String toStringOrNull(dynamic value) {

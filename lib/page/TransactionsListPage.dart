@@ -1,4 +1,8 @@
+import 'package:collection/collection.dart';
+import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
@@ -7,6 +11,8 @@ import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
 import 'package:rxdart/streams.dart';
+
+import '../utils.dart';
 
 class TransactionsListPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
@@ -81,10 +87,11 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
 
   @override
   Widget build(BuildContext context) {
-    final transactions = CombineLatestStream(transactionsPages,
-        (List<List<Transaction>> transactions) {
-      return transactions.expand((i) => i).toList();
-    });
+    final transactions = CombineLatestStream(
+      transactionsPages,
+      (List<List<Transaction>> transactions) =>
+          transactions.expand((i) => i).toList(),
+    );
 
     return SimpleStreamWidget(
       stream: transactions,
@@ -102,29 +109,120 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
 
   Widget buildTransactionsList(
       BuildContext context, List<Transaction> transactions) {
+    final transactionsByDate = groupBy(
+      transactions,
+      (Transaction transaction) =>
+          getDateWithoutTime(transaction.date.toDate()),
+    );
+    final dates = transactionsByDate.keys.toList()
+      ..sort((lhs, rhs) => rhs.compareTo(lhs));
+
+    List<_ListItem> listItems = [];
+    int lastMonth;
+    for (final date in dates) {
+      if (date.month != lastMonth) {
+        listItems.add(MonthListItem(date.month));
+      }
+
+      listItems.add(SectionHeaderListItem(date));
+      listItems.addAll([
+        ...transactionsByDate[date].map((transaction) => TransactionListItem(
+            widget.wallet,
+            transaction,
+            transaction.getCategory(widget.categories)))
+      ]);
+      lastMonth = date.month;
+    }
+    if (isMorePages) {
+      listItems.add(ShowMoreListItem(
+        onSelected: () => onSelectedMore(context, transactions.last),
+      ));
+    }
+
     return ListView.builder(
-      itemCount: transactions.length + (isMorePages ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index < transactions.length) {
-          final transaction = transactions[index];
-          return buildTransaction(context, transaction);
-        } else {
-          return FlatButton(
-            child: Text("#Dej wincyj"),
-            textColor: Theme.of(context).primaryColor,
-            onPressed: () => onSelectedMore(context, transactions.last),
-          );
-        }
-      },
+      itemCount: listItems.length,
+      itemBuilder: (context, index) => listItems[index].build(context),
+    );
+  }
+}
+
+abstract class _ListItem {
+  Widget build(BuildContext context);
+}
+
+class MonthListItem extends _ListItem {
+  int month;
+
+  MonthListItem(this.month);
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context).locale.toString();
+    final date = DateTime(DateTime.now().year, month);
+    return Column(children: [
+      Divider(),
+      Text(
+        DateFormat("MMMM yyyy", locale).format(date).firstUppercase(),
+        style: Theme.of(context).textTheme.subtitle1,
+      ),
+    ]);
+  }
+}
+
+class SectionHeaderListItem extends _ListItem {
+  final DateTime date;
+
+  SectionHeaderListItem(this.date);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 12, right: 12, top: 16, bottom: 8),
+      child: Text(
+        getDateSectionTitle(context, date),
+        style: Theme.of(context).textTheme.subtitle2,
+      ),
     );
   }
 
-  Widget buildTransaction(BuildContext context, Transaction transaction) {
-    final category = transaction.getCategory(widget.categories);
-    return TransactionListTile(
-      wallet: widget.wallet,
-      transaction: transaction,
-      category: category,
-    );
+  String getDateSectionTitle(BuildContext context, DateTime date) {
+    final locale = AppLocalizations.of(context).locale.toString();
+    String dateText = DateFormat("EEEE, d MMMM", locale).format(date);
+    if (Utils.isSameDay(date, DateTime.now()))
+      dateText +=
+          " (${AppLocalizations.of(context).transactionsCardTodayHint})";
+    if (Utils.isSameDay(date, DateTime.now().subtract(Duration(days: 1))))
+      dateText +=
+          " (${AppLocalizations.of(context).transactionsCardYesterdayHint})";
+    return dateText[0].toUpperCase() +
+        dateText.substring(1); // Uppercase first letter
   }
+}
+
+class TransactionListItem extends _ListItem {
+  final Wallet wallet;
+  final Transaction transaction;
+  final Category category;
+
+  TransactionListItem(this.wallet, this.transaction, this.category);
+
+  @override
+  Widget build(BuildContext context) => TransactionListTile(
+        wallet: wallet,
+        transaction: transaction,
+        category: category,
+      );
+}
+
+class ShowMoreListItem extends _ListItem {
+  final VoidCallback onSelected;
+
+  ShowMoreListItem({this.onSelected});
+
+  @override
+  Widget build(BuildContext context) => FlatButton(
+        child: Text("#Dej wincyj"),
+        textColor: Theme.of(context).primaryColor,
+        onPressed: onSelected,
+      );
 }
