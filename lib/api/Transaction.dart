@@ -40,6 +40,18 @@ class Transaction extends Model<Transaction> {
     }
     return null;
   }
+
+  Category getCategory(List<Category> categories) => category != null
+      ? categories.firstWhere(
+          (category) => category.reference == this.category,
+          orElse: () => null,
+        )
+      : null;
+
+  @override
+  String toString() {
+    return 'Transaction{type: $type, title: $title, amount: $amount}';
+  }
 }
 
 extension TransactionTypeConverting on TransactionType {

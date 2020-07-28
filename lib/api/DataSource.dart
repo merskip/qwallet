@@ -23,7 +23,8 @@ class DataSource {
 }
 
 extension WalletsDataSource on DataSource {
-  Stream<List<Wallet>> getOrderedWallets() => LocalPreferences.orderedWallets(getWallets());
+  Stream<List<Wallet>> getOrderedWallets() =>
+      LocalPreferences.orderedWallets(getWallets());
 
   Stream<List<Wallet>> getWallets() {
     return firestore
@@ -115,16 +116,19 @@ extension TransactionsDataSource on DataSource {
 
   Stream<List<Transaction>> getTransactions({
     @required Reference<Wallet> wallet,
-    Transaction after,
+    @required int limit,
+    Transaction afterTransaction,
   }) {
-    return wallet.documentReference
+    var query = wallet.documentReference
         .collection("transactions")
         .orderBy("date", descending: true)
-        .limit(50)
-        .startAfterDocument(after.documentSnapshot)
-        .snapshots()
-        .map((snapshot) =>
-        snapshot.documents.map((s) => Transaction(s)).toList());
+        .limit(limit);
+    if (afterTransaction != null)
+      query = query.startAfterDocument(afterTransaction.documentSnapshot);
+
+    return query.snapshots().map((snapshot) {
+      return snapshot.documents.map((s) => Transaction(s)).toList();
+    });
   }
 
   Reference<Transaction> getTransactionReference({

@@ -9,11 +9,10 @@ import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
-import 'package:qwallet/widget/CatgegoryIcon.dart';
+import 'package:qwallet/widget/TransactionListTile.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
 
 import '../../AppLocalizations.dart';
-import '../../Money.dart';
 
 class TransactionsCard extends StatefulWidget {
   final Wallet wallet;
@@ -132,12 +131,13 @@ class _TransactionsCardState extends State<TransactionsCard> {
 
   Widget buildTransactionListItem(
       BuildContext context, Transaction transaction) {
-    final category = transaction.category != null
-        ? widget.categories.firstWhere(
-            (category) => category.reference == transaction.category,
-            orElse: () => null)
-        : null;
-    return _TransactionListItem(widget.wallet, transaction, category);
+    final category = transaction.getCategory(widget.categories);
+    return TransactionListTile(
+      wallet: widget.wallet,
+      transaction: transaction,
+      category: category,
+      visualDensity: VisualDensity.compact,
+    );
   }
 
   Widget buildEmptyTransactions(BuildContext context) {
@@ -147,67 +147,6 @@ class _TransactionsCardState extends State<TransactionsCard> {
         iconAsset: "assets/ic-wallet.svg",
         text: AppLocalizations.of(context).transactionsCardTransactionsEmpty,
       ),
-    );
-  }
-}
-
-class _TransactionListItem extends StatelessWidget {
-  final Wallet wallet;
-  final Transaction transaction;
-  final Category category;
-
-  _TransactionListItem(this.wallet, this.transaction, this.category);
-
-  @override
-  Widget build(BuildContext context) {
-    final color = transaction.ifType(expense: null, income: Colors.green);
-    final amountPrefix = transaction.ifType(expense: "-", income: "+");
-    final amountText = Money(transaction.amount, wallet.currency).formatted;
-
-    final String title = transaction.title ??
-        category?.title ??
-        transaction.getTypeLocalizedText(context);
-    final String subTitle = transaction.title != null ? category?.title : null;
-
-    return ListTile(
-      key: Key(transaction.id),
-      leading: CategoryIcon(category, size: 17),
-      title: Text(title),
-      subtitle: subTitle != null ? Text(subTitle) : null,
-      trailing: Text(amountPrefix + amountText, style: TextStyle(color: color)),
-      dense: true,
-      visualDensity: VisualDensity.compact,
-      onTap: () => router.navigateTo(
-          context, "/wallet/${wallet.id}/transaction/${transaction.id}"),
-    );
-  }
-
-  Widget buildCategoryIcon(BuildContext context, Category category) {
-    if (category != null) {
-      return CircleAvatar(
-        key: Key(category.id),
-        backgroundColor: category.backgroundColor,
-        child: Icon(
-          category.icon,
-          color: category.primaryColor,
-          size: 20,
-        ),
-        radius: 18,
-      );
-    } else {
-      return buildDefaultCategory(context);
-    }
-  }
-
-  Widget buildDefaultCategory(BuildContext context) {
-    return CircleAvatar(
-      backgroundColor: Colors.black12,
-      child: Icon(
-        Icons.category,
-        color: Colors.black26,
-        size: 20,
-      ),
-      radius: 16,
     );
   }
 }
