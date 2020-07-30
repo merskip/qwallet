@@ -24,23 +24,26 @@ class TransactionsListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Transactions"),
-      ),
-      body: SimpleStreamWidget(
-        stream: CombineLatestStream.list([
-          DataSource.instance.getWallet(walletRef),
-          DataSource.instance.getCategories(wallet: walletRef),
-        ]),
-        builder: (context, values) {
-          final wallet = values[0] as Wallet;
-          final categories = values[1] as List<Category>;
-          return _TransactionsContentPage(
-            wallet: wallet,
-            categories: categories,
-          );
-        },
+    return SimpleStreamWidget(
+      stream: DataSource.instance.getWallet(walletRef),
+      builder: (context, Wallet wallet) => Scaffold(
+        appBar: AppBar(
+          title: Text(wallet.name),
+        ),
+        body: SimpleStreamWidget(
+          stream: CombineLatestStream.list([
+            DataSource.instance.getWallet(walletRef),
+            DataSource.instance.getCategories(wallet: walletRef),
+          ]),
+          builder: (context, values) {
+            final wallet = values[0] as Wallet;
+            final categories = values[1] as List<Category>;
+            return _TransactionsContentPage(
+              wallet: wallet,
+              categories: categories,
+            );
+          },
+        ),
       ),
     );
   }
