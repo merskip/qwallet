@@ -104,11 +104,12 @@ class _DashboardPageState extends State<DashboardPage> {
                 categories: categories,
                 transactions: transactions,
               ),
-              CategoriesChartCard(
-                wallet: wallet,
-                categories: categories,
-                transactions: transactions,
-              ),
+              if (transactions.isNotEmpty)
+                CategoriesChartCard(
+                  wallet: wallet,
+                  categories: categories,
+                  transactions: transactions,
+                ),
             ],
           ),
         );
