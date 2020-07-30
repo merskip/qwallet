@@ -505,7 +505,7 @@ extension TransactionsListLocalizations on AppLocalizations {
         pl: "Pokaż więcej",
       );
 
-  String get transactionsListTransactionsEmpty => _locale(
+  String get transactionsListEmpty => _locale(
         en: "There are no expenses or incomes",
         pl: "Nie ma żadnych wydatków ani dochodów",
       );
