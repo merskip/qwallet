@@ -232,7 +232,7 @@ class ShowMoreListItem extends _ListItem {
 
   @override
   Widget build(BuildContext context) => FlatButton(
-        child: Text("#Dej wincyj"),
+        child: Text(AppLocalizations.of(context).transactionsListShowMore),
         textColor: Theme.of(context).primaryColor,
         onPressed: onSelected,
       );

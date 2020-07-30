@@ -80,29 +80,29 @@ extension SettingsLocalizations on AppLocalizations {
       );
 
   String get settingsThemeMode => _locale(
-    en: "Theme",
-    pl: "Motyw",
-  );
+        en: "Theme",
+        pl: "Motyw",
+      );
 
   String get settingsThemeModeSelect => _locale(
-    en: "Select theme",
-    pl: "Wybierz motyw",
-  );
+        en: "Select theme",
+        pl: "Wybierz motyw",
+      );
 
   String get settingsThemeModeSystem => _locale(
-    en: "System",
-    pl: "Systemowy",
-  );
+        en: "System",
+        pl: "Systemowy",
+      );
 
   String get settingsThemeModeLight => _locale(
-    en: "Light",
-    pl: "Jasny",
-  );
+        en: "Light",
+        pl: "Jasny",
+      );
 
   String get settingsThemeModeDark => _locale(
-    en: "Dark",
-    pl: "Ciemny",
-  );
+        en: "Dark",
+        pl: "Ciemny",
+      );
 
   String get settingsLanguage => _locale(
         en: "Language",
@@ -110,9 +110,9 @@ extension SettingsLocalizations on AppLocalizations {
       );
 
   String get settingsLocaleSelect => _locale(
-      en: "Select language",
-      pl: "Wybierz język",
-    );
+        en: "Select language",
+        pl: "Wybierz język",
+      );
 
   String Function(Locale locale) get settingsLocale => (locale) {
         switch (locale.toString()) {
@@ -374,16 +374,15 @@ extension SelectCurrencyLocalizations on AppLocalizations {
 }
 
 extension TransactionLocalizations on AppLocalizations {
-
   String get transactionTypeExpense => _locale(
-    en: "Expense",
-    pl: "Wydatek",
-  );
+        en: "Expense",
+        pl: "Wydatek",
+      );
 
   String get transactionTypeIncome => _locale(
-    en: "Income",
-    pl: "Przychód",
-  );
+        en: "Income",
+        pl: "Przychód",
+      );
 }
 
 extension AddTransactionLocalizations on AppLocalizations {
@@ -423,9 +422,9 @@ extension AddTransactionLocalizations on AppLocalizations {
       );
 
   String get addTransactionCategory => _locale(
-    en: "Category",
-    pl: "Kategoria",
-  );
+        en: "Category",
+        pl: "Kategoria",
+      );
 
   String get addTransactionTitle => _locale(
         en: "Title",
@@ -488,73 +487,92 @@ extension TransactionsCardLocalizations on AppLocalizations {
         en: "yesterday",
         pl: "wczoraj",
       );
+
+  String get transactionsCardShowMore => _locale(
+        en: "Show more",
+        pl: "Pokaż więcej",
+      );
+
+  String get transactionsCardShowAll => _locale(
+        en: "Show all",
+        pl: "Pokaż wszystkie",
+      );
+}
+
+extension TransactionsListLocalizations on AppLocalizations {
+  String get transactionsListShowMore => _locale(
+        en: "Show more",
+        pl: "Pokaż więcej",
+      );
+
+  String get transactionsListTransactionsEmpty => _locale(
+        en: "There are no expenses or incomes",
+        pl: "Nie ma żadnych wydatków ani dochodów",
+      );
 }
 
 extension CategoriesChartCardLocalizations on AppLocalizations {
-
   String get categoriesChartCardExpenses => _locale(
-    en: "Expenses",
-    pl: "Wydatki",
-  );
+        en: "Expenses",
+        pl: "Wydatki",
+      );
 
   String get categoriesChartCardIncomes => _locale(
-    en: "Incomes",
-    pl: "przychody",
-  );
+        en: "Incomes",
+        pl: "przychody",
+      );
 
   String get categoriesChartCardTotalExpenses => _locale(
-      en: "Total expenses",
-      pl: "Łączne wydatki",
-    );
+        en: "Total expenses",
+        pl: "Łączne wydatki",
+      );
 
   String get categoriesChartCardTotalIncomes => _locale(
-    en: "Total incomes",
-    pl: "Łączne przychody",
-  );
+        en: "Total incomes",
+        pl: "Łączne przychody",
+      );
 
   String get categoriesChartCardNoCategory => _locale(
-    en: "Without category",
-    pl: "Bez kategorii",
-  );
+        en: "Without category",
+        pl: "Bez kategorii",
+      );
 }
 
-
 extension TransactionDetailsLocalizations on AppLocalizations {
-  
   String get transactionDetailsWallet => _locale(
-      en: "Wallet",
-      pl: "Portfel",
-    );
-  
+        en: "Wallet",
+        pl: "Portfel",
+      );
+
   String get transactionDetailsCategory => _locale(
-      en: "Category",
-      pl: "Kategoria",
-    );
+        en: "Category",
+        pl: "Kategoria",
+      );
 
   String get transactionDetailsCategoryEmpty => _locale(
-    en: "No category",
-    pl: "Brak kategorii",
-  );
+        en: "No category",
+        pl: "Brak kategorii",
+      );
 
   String get transactionDetailsType => _locale(
-    en: "Type",
-    pl: "Typ",
-  );
-  
+        en: "Type",
+        pl: "Typ",
+      );
+
   String get transactionDetailsTitle => _locale(
-      en: "Title",
-      pl: "Tytuł",
-    );
+        en: "Title",
+        pl: "Tytuł",
+      );
 
   String get transactionDetailsTitleEmpty => _locale(
-    en: "No title",
-    pl: "Brak tytułu",
-  );
-  
+        en: "No title",
+        pl: "Brak tytułu",
+      );
+
   String get transactionDetailsAmount => _locale(
-      en: "Amount",
-      pl: "Kwota",
-    );
+        en: "Amount",
+        pl: "Kwota",
+      );
 
   String get transactionDetailsDate => _locale(
         en: "Date",
@@ -574,21 +592,20 @@ extension TransactionDetailsLocalizations on AppLocalizations {
 
 extension EditableDetailsItemLocalizations on AppLocalizations {
   String get editableDetailsItemEdit => _locale(
-      en: "Edit",
-      pl: "Edytuj",
-    );
+        en: "Edit",
+        pl: "Edytuj",
+      );
 
   String get editableDetailsItemCancel => _locale(
-    en: "Cancel",
-    pl: "Anuluj",
-  );
+        en: "Cancel",
+        pl: "Anuluj",
+      );
 
   String get editableDetailsItemSave => _locale(
-    en: "Save",
-    pl: "Zapisz",
-  );
+        en: "Save",
+        pl: "Zapisz",
+      );
 }
-
 
 extension CategoriesLocalizations on AppLocalizations {
   String get categories => _locale(
@@ -694,7 +711,7 @@ extension CategoriesLocalizations on AppLocalizations {
       );
 
   String get categoryNoSelected => _locale(
-    en: "No selected category",
-    pl: "Nie wybrano kategorii",
-  );
+        en: "No selected category",
+        pl: "Nie wybrano kategorii",
+      );
 }
