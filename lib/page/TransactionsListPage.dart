@@ -121,7 +121,10 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
     int lastMonth;
     for (final date in dates) {
       if (date.month != lastMonth) {
-        listItems.add(MonthListItem(date.month));
+        listItems.add(MonthListItem(
+          month: date.month,
+          separated: lastMonth != null, // No separator for first month
+        ));
       }
 
       listItems.add(SectionHeaderListItem(date));
@@ -152,20 +155,25 @@ abstract class _ListItem {
 
 class MonthListItem extends _ListItem {
   int month;
+  bool separated;
 
-  MonthListItem(this.month);
+  MonthListItem({this.month, this.separated});
 
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context).locale.toString();
     final date = DateTime(DateTime.now().year, month);
-    return Column(children: [
-      Divider(),
-      Text(
-        DateFormat("MMMM yyyy", locale).format(date).firstUppercase(),
-        style: Theme.of(context).textTheme.subtitle1,
-      ),
-    ]);
+    return Padding(
+        padding: const EdgeInsets.only(left: 12.0, top: 12.0, right: 12.0),
+        child: Column(
+          children: [
+            if (separated) Divider(),
+            Text(
+              DateFormat("LLLL yyyy", locale).format(date).firstUppercase(),
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+          ],
+        ));
   }
 }
 
