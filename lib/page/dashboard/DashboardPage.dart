@@ -67,9 +67,12 @@ class _DashboardPageState extends State<DashboardPage> {
         SliverAppBar(
           forceElevated: true,
           expandedHeight: 128.0,
-          flexibleSpace: WalletsSwipeWidget(
-            wallets: wallets,
-            onSelectedWallet: (wallet) => onSelectedWallet(context, wallet),
+          flexibleSpace: buildGradientBackground(
+            context,
+            child: (context) => WalletsSwipeWidget(
+              wallets: wallets,
+              onSelectedWallet: (wallet) => onSelectedWallet(context, wallet),
+            ),
           ),
           actions: buildAppBarActions(context),
         ),
@@ -126,6 +129,22 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       tooltip: AppLocalizations.of(context).dashboardAddTransactionButton,
       onPressed: () => onSelectedAddTransaction(context),
+    );
+  }
+
+  Widget buildGradientBackground(BuildContext context, {WidgetBuilder child}) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: RadialGradient(
+            center: Alignment.topLeft,
+            focal: Alignment.bottomCenter,
+            focalRadius: 1.3,
+            colors: [
+              (Theme.of(context).primaryColor as MaterialColor).shade700,
+              (Theme.of(context).primaryColor as MaterialColor).shade500,
+            ]),
+      ),
+      child: child(context),
     );
   }
 
