@@ -31,7 +31,34 @@ class TransactionsCard extends StatefulWidget {
 }
 
 class _TransactionsCardState extends State<TransactionsCard> {
-  bool _isCollapsed = true;
+  Map<DateTime, List<Transaction>> transactionsByDate;
+  List<DateTime> dates;
+
+  bool isCollapsable = true;
+  bool isCollapsed = true;
+
+  @override
+  void initState() {
+    _prepareTransactions();
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(TransactionsCard oldWidget) {
+    _prepareTransactions();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  _prepareTransactions() {
+    transactionsByDate = groupBy(
+      widget.transactions,
+      (Transaction transaction) =>
+          getDateWithoutTime(transaction.date.toDate()),
+    );
+    dates = transactionsByDate.keys.toList()
+      ..sort((lhs, rhs) => rhs.compareTo(lhs));
+    isCollapsable = dates.length > 2;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +66,14 @@ class _TransactionsCardState extends State<TransactionsCard> {
       margin: const EdgeInsets.all(16),
       child: Column(children: [
         buildTransactionsList(context),
-        if (_isCollapsed)
+        if (isCollapsable && isCollapsed)
           FlatButton(
             child: Text(AppLocalizations.of(context).transactionsCardShowMore),
             textColor: Theme.of(context).primaryColor,
-            onPressed: () => setState(() => _isCollapsed = false),
+            onPressed: () => setState(() => isCollapsed = false),
             visualDensity: VisualDensity.compact,
           ),
-        if (!_isCollapsed)
+        if (!isCollapsable || !isCollapsed)
           FlatButton(
             child: Text(AppLocalizations.of(context).transactionsCardShowAll),
             textColor: Theme.of(context).primaryColor,
@@ -82,16 +109,9 @@ class _TransactionsCardState extends State<TransactionsCard> {
     Wallet wallet,
     List<Transaction> transactions,
   ) {
-    final transactionsByDate = groupBy(
-      transactions,
-      (Transaction transaction) =>
-          getDateWithoutTime(transaction.date.toDate()),
-    );
-    final dates = transactionsByDate.keys.toList()
-      ..sort((lhs, rhs) => rhs.compareTo(lhs));
     final effectiveDates = dates.sublist(
       0,
-      _isCollapsed ? min(2, dates.length) : null,
+      isCollapsed ? min(2, dates.length) : null,
     );
 
     final result = List<Widget>();
