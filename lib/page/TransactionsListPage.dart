@@ -8,6 +8,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
@@ -23,6 +24,13 @@ class TransactionsListPage extends StatelessWidget {
     this.walletRef,
   }) : super(key: key);
 
+  void onSelectedFilter(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => _TransactionsListFilter(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
@@ -30,6 +38,13 @@ class TransactionsListPage extends StatelessWidget {
       builder: (context, Wallet wallet) => Scaffold(
         appBar: AppBar(
           title: Text(wallet.name),
+          actions: [
+            Builder(
+                builder: (context) => IconButton(
+                      icon: Icon(Icons.filter_list),
+                      onPressed: () => onSelectedFilter(context),
+                    )),
+          ],
         ),
         body: SimpleStreamWidget(
           stream: CombineLatestStream.list([
@@ -280,4 +295,43 @@ class ShowMoreListItem extends _ListItem {
         textColor: Theme.of(context).primaryColor,
         onPressed: onSelected,
       );
+}
+
+class _TransactionsListFilter extends StatefulWidget {
+  @override
+  _TransactionsListFilterState createState() => _TransactionsListFilterState();
+}
+
+class _TransactionsListFilterState extends State<_TransactionsListFilter> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            "#Filters",
+            style: Theme.of(context).textTheme.headline6,
+          ),
+        ),
+        ListTile(
+          title: Text("#Transactrion type"),
+          subtitle: Row(children: [
+            Chip(label: Text("#Income")),
+            SizedBox(width: 8),
+            Chip(label: Text("#Expense")),
+          ]),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: PrimaryButton(
+            child: Text("#Apply"),
+            onPressed: () {},
+          ),
+        ),
+      ],
+    );
+  }
 }
