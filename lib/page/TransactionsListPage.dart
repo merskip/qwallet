@@ -27,7 +27,9 @@ class TransactionsListPage extends StatelessWidget {
   void onSelectedFilter(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => _TransactionsListFilter(),
+      builder: (context) => _TransactionsListFilter(
+        initialFilter: _TransactionsFilter(type: null),
+      ),
     );
   }
 
@@ -68,7 +70,7 @@ class TransactionsListPage extends StatelessWidget {
 class _TransactionsFilter {
   final TransactionType type;
 
-  _TransactionsFilter(this.type);
+  _TransactionsFilter({this.type});
 
   bool isEmpty() => type == null;
 }
@@ -97,7 +99,7 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
   @override
   void initState() {
     transactionsPages = [getNextTransactions()];
-    filter = _TransactionsFilter(null);
+    filter = _TransactionsFilter(type: null);
     super.initState();
   }
 
@@ -298,11 +300,24 @@ class ShowMoreListItem extends _ListItem {
 }
 
 class _TransactionsListFilter extends StatefulWidget {
+  final _TransactionsFilter initialFilter;
+
+  const _TransactionsListFilter({Key key, this.initialFilter})
+      : super(key: key);
+
   @override
   _TransactionsListFilterState createState() => _TransactionsListFilterState();
 }
 
 class _TransactionsListFilterState extends State<_TransactionsListFilter> {
+  TransactionType type;
+
+  @override
+  void initState() {
+    type = widget.initialFilter.type;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -319,9 +334,25 @@ class _TransactionsListFilterState extends State<_TransactionsListFilter> {
         ListTile(
           title: Text("#Transactrion type"),
           subtitle: Row(children: [
-            Chip(label: Text("#Income")),
+            FilterChip(
+              label: Text("#All"),
+              onSelected: (bool value) => setState(() => type = null),
+              selected: type == null,
+            ),
             SizedBox(width: 8),
-            Chip(label: Text("#Expense")),
+            FilterChip(
+              label: Text("#Income"),
+              onSelected: (bool value) =>
+                  setState(() => type = TransactionType.expense),
+              selected: type == TransactionType.expense,
+            ),
+            SizedBox(width: 8),
+            FilterChip(
+              label: Text("#Income"),
+              onSelected: (bool value) =>
+                  setState(() => type = TransactionType.income),
+              selected: type == TransactionType.income,
+            ),
           ]),
         ),
         Padding(
