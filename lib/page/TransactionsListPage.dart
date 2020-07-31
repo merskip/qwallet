@@ -50,6 +50,14 @@ class TransactionsListPage extends StatelessWidget {
   }
 }
 
+class _TransactionsFilter {
+  final TransactionType type;
+
+  _TransactionsFilter(this.type);
+
+  bool isEmpty() => type == null;
+}
+
 class _TransactionsContentPage extends StatefulWidget {
   final Wallet wallet;
   final List<Category> categories;
@@ -69,10 +77,12 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
   final itemsPerPage = 20;
   bool isMorePages;
   List<Stream<List<Transaction>>> transactionsPages;
+  _TransactionsFilter filter;
 
   @override
   void initState() {
     transactionsPages = [getNextTransactions()];
+    filter = _TransactionsFilter(null);
     super.initState();
   }
 
@@ -131,12 +141,12 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
       ..sort((lhs, rhs) => rhs.compareTo(lhs));
 
     List<_ListItem> listItems = [];
+    listItems.add(FiltersListItem(filter));
     int lastMonth;
     for (final date in dates) {
       if (date.month != lastMonth) {
         listItems.add(MonthListItem(
           month: date.month,
-          separated: lastMonth != null, // No separator for first month
         ));
       }
 
@@ -166,11 +176,35 @@ abstract class _ListItem {
   Widget build(BuildContext context);
 }
 
+class FiltersListItem extends _ListItem {
+  final _TransactionsFilter filter;
+
+  FiltersListItem(this.filter);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0).copyWith(bottom: 0),
+      child: Wrap(
+        spacing: 4,
+        runSpacing: 4,
+        children: [
+          if (filter.isEmpty())
+            Chip(
+              label: Text("#No filter"),
+              visualDensity: VisualDensity.compact,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class MonthListItem extends _ListItem {
   int month;
-  bool separated;
 
-  MonthListItem({this.month, this.separated});
+  MonthListItem({this.month});
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +214,7 @@ class MonthListItem extends _ListItem {
         padding: const EdgeInsets.only(left: 12.0, top: 12.0, right: 12.0),
         child: Column(
           children: [
-            if (separated) Divider(),
+            Divider(),
             Text(
               DateFormat("LLLL yyyy", locale).format(date).firstUppercase(),
               style: Theme.of(context).textTheme.subtitle1,
