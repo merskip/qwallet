@@ -255,7 +255,7 @@ class FiltersListItem extends _ListItem {
         children: [
           if (filter.isEmpty())
             Chip(
-              label: Text("#No filter"),
+              label: Text("#No filters"),
               visualDensity: VisualDensity.compact,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
@@ -277,9 +277,39 @@ class FiltersListItem extends _ListItem {
               backgroundColor: Theme.of(context).backgroundColor,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
+          if (filter.amountType != null)
+            Chip(
+              label: RichText(
+                text: TextSpan(
+                  style: TextStyle(color: Theme.of(context).primaryColorDark),
+                  children: [
+                    TextSpan(text: "#Amount "),
+                    TextSpan(
+                      text: formatAmountFilter(filter),
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+              ),
+              visualDensity: VisualDensity.compact,
+              backgroundColor: Theme.of(context).backgroundColor,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
         ],
       ),
     );
+  }
+
+  String formatAmountFilter(_TransactionsFilter filter) {
+    String text = _amountTypeToString(filter.amountType);
+    text += " " + filter.amount.toStringAsFixed(2);
+    if (filter.amountType == _TransactionsFilterAmountType.isEqual ||
+        filter.amountType == _TransactionsFilterAmountType.isNotEqual) {
+      if (filter.amountAccuracy != null && filter.amountAccuracy != 0.0) {
+        text += " ±" + filter.amountAccuracy.toStringAsFixed(2);
+      }
+    }
+    return text;
   }
 }
 
@@ -403,10 +433,11 @@ class _TransactionsListFilterState extends State<_TransactionsListFilter> {
   }
 
   void onSelectedApply(BuildContext context) {
+    final amount = parseAmount(amountController.text);
     Navigator.of(context).pop(_TransactionsFilter(
       transactionType: transactionType,
-      amountType: amountType,
-      amount: parseAmount(amountController.text),
+      amountType: amount != null ? amountType : null,
+      amount: amount,
       amountAccuracy: parseAmount(amountAccuracyController.text),
     ));
   }
@@ -527,23 +558,10 @@ class _TransactionsListFilterState extends State<_TransactionsListFilter> {
   Widget buildAmountTypeChip(
       BuildContext context, _TransactionsFilterAmountType type) {
     final isSelected = this.amountType == type;
-    final toText = (_TransactionsFilterAmountType type) {
-      switch (type) {
-        case _TransactionsFilterAmountType.isLessOrEqual:
-          return "⩽";
-        case _TransactionsFilterAmountType.isEqual:
-          return "=";
-        case _TransactionsFilterAmountType.isNotEqual:
-          return "≠";
-        case _TransactionsFilterAmountType.isGreaterOrEqual:
-          return "⩾";
-        default:
-          return "#Any";
-      }
-    };
+
     return FilterChip(
       label: Text(
-        toText(type),
+        _amountTypeToString(type),
         style: TextStyle(
             color: isSelected ? Theme.of(context).primaryColorDark : null),
       ),
@@ -562,5 +580,20 @@ class _TransactionsListFilterState extends State<_TransactionsListFilter> {
         onPressed: () => onSelectedApply(context),
       ),
     );
+  }
+}
+
+String _amountTypeToString(_TransactionsFilterAmountType type) {
+  switch (type) {
+    case _TransactionsFilterAmountType.isLessOrEqual:
+      return "⩽";
+    case _TransactionsFilterAmountType.isEqual:
+      return "=";
+    case _TransactionsFilterAmountType.isNotEqual:
+      return "≠";
+    case _TransactionsFilterAmountType.isGreaterOrEqual:
+      return "⩾";
+    default:
+      return "#Any";
   }
 }
