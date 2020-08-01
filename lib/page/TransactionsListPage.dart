@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
@@ -12,46 +14,57 @@ import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
-import 'package:rxdart/streams.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../utils.dart';
 
-class TransactionsListPage extends StatelessWidget {
+class TransactionsListPage extends StatefulWidget {
   final Reference<Wallet> walletRef;
 
-  const TransactionsListPage({
+  TransactionsListPage({
     Key key,
     this.walletRef,
   }) : super(key: key);
 
-  void onSelectedFilter(BuildContext context) {
-    showModalBottomSheet(
+  @override
+  _TransactionsListPageState createState() => _TransactionsListPageState();
+}
+
+class _TransactionsListPageState extends State<TransactionsListPage> {
+  _TransactionsFilter filter = _TransactionsFilter();
+
+  void onSelectedFilter(BuildContext context) async {
+    final filter = await showModalBottomSheet(
       context: context,
       builder: (context) => _TransactionsListFilter(
-        initialFilter: _TransactionsFilter(type: null),
+        initialFilter: this.filter,
       ),
-    );
+    ) as _TransactionsFilter;
+    if (filter != null) {
+      setState(() => this.filter = filter);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: DataSource.instance.getWallet(walletRef),
+      stream: DataSource.instance.getWallet(widget.walletRef),
       builder: (context, Wallet wallet) => Scaffold(
         appBar: AppBar(
           title: Text(wallet.name),
           actions: [
             Builder(
-                builder: (context) => IconButton(
-                      icon: Icon(Icons.filter_list),
-                      onPressed: () => onSelectedFilter(context),
-                    )),
+              builder: (context) => IconButton(
+                icon: Icon(Icons.filter_list),
+                onPressed: () => onSelectedFilter(context),
+              ),
+            ),
           ],
         ),
         body: SimpleStreamWidget(
           stream: CombineLatestStream.list([
-            DataSource.instance.getWallet(walletRef),
-            DataSource.instance.getCategories(wallet: walletRef),
+            DataSource.instance.getWallet(widget.walletRef),
+            DataSource.instance.getCategories(wallet: widget.walletRef),
           ]),
           builder: (context, values) {
             final wallet = values[0] as Wallet;
@@ -59,6 +72,7 @@ class TransactionsListPage extends StatelessWidget {
             return _TransactionsContentPage(
               wallet: wallet,
               categories: categories,
+              filter: filter,
             );
           },
         ),
@@ -78,11 +92,13 @@ class _TransactionsFilter {
 class _TransactionsContentPage extends StatefulWidget {
   final Wallet wallet;
   final List<Category> categories;
+  final _TransactionsFilter filter;
 
   _TransactionsContentPage({
     Key key,
     this.wallet,
     this.categories,
+    this.filter,
   }) : super(key: key);
 
   @override
@@ -94,12 +110,10 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
   final itemsPerPage = 20;
   bool isMorePages;
   List<Stream<List<Transaction>>> transactionsPages;
-  _TransactionsFilter filter;
 
   @override
   void initState() {
     transactionsPages = [getNextTransactions()];
-    filter = _TransactionsFilter(type: null);
     super.initState();
   }
 
@@ -158,7 +172,7 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
       ..sort((lhs, rhs) => rhs.compareTo(lhs));
 
     List<_ListItem> listItems = [];
-    listItems.add(FiltersListItem(filter));
+    listItems.add(FiltersListItem(widget.filter));
     int lastMonth;
     for (final date in dates) {
       if (date.month != lastMonth) {
@@ -209,6 +223,12 @@ class FiltersListItem extends _ListItem {
           if (filter.isEmpty())
             Chip(
               label: Text("#No filter"),
+              visualDensity: VisualDensity.compact,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          if (filter.type != null)
+            Chip(
+              label: Text("#Type: " + filter.type.rawValue),
               visualDensity: VisualDensity.compact,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
@@ -302,8 +322,10 @@ class ShowMoreListItem extends _ListItem {
 class _TransactionsListFilter extends StatefulWidget {
   final _TransactionsFilter initialFilter;
 
-  const _TransactionsListFilter({Key key, this.initialFilter})
-      : super(key: key);
+  const _TransactionsListFilter({
+    Key key,
+    this.initialFilter,
+  }) : super(key: key);
 
   @override
   _TransactionsListFilterState createState() => _TransactionsListFilterState();
@@ -318,51 +340,69 @@ class _TransactionsListFilterState extends State<_TransactionsListFilter> {
     super.initState();
   }
 
+  void onSelectedApply(BuildContext context) {
+    Navigator.of(context).pop(_TransactionsFilter(
+      type: type,
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            "#Filters",
-            style: Theme.of(context).textTheme.headline6,
-          ),
-        ),
-        ListTile(
-          title: Text("#Transactrion type"),
-          subtitle: Row(children: [
-            FilterChip(
-              label: Text("#All"),
-              onSelected: (bool value) => setState(() => type = null),
-              selected: type == null,
-            ),
-            SizedBox(width: 8),
-            FilterChip(
-              label: Text("#Income"),
-              onSelected: (bool value) =>
-                  setState(() => type = TransactionType.expense),
-              selected: type == TransactionType.expense,
-            ),
-            SizedBox(width: 8),
-            FilterChip(
-              label: Text("#Income"),
-              onSelected: (bool value) =>
-                  setState(() => type = TransactionType.income),
-              selected: type == TransactionType.income,
-            ),
-          ]),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: PrimaryButton(
-            child: Text("#Apply"),
-            onPressed: () {},
-          ),
-        ),
+        buildTitle(context),
+        buildTransactionType(context),
+        buildSubmit(context),
       ],
+    );
+  }
+
+  Widget buildTitle(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Text(
+        "#Filters",
+        style: Theme.of(context).textTheme.headline6,
+      ),
+    );
+  }
+
+  Widget buildTransactionType(BuildContext context) {
+    return ListTile(
+      title: Text("#Transactrion type"),
+      subtitle: Row(children: [
+        FilterChip(
+          label: Text("#All"),
+          onSelected: (bool value) => setState(() => type = null),
+          selected: type == null,
+        ),
+        SizedBox(width: 8),
+        FilterChip(
+          label: Text("#Expense"),
+          onSelected: (bool value) =>
+              setState(() => type = TransactionType.expense),
+          selected: type == TransactionType.expense,
+        ),
+        SizedBox(width: 8),
+        FilterChip(
+          label: Text("#Income"),
+          onSelected: (bool value) =>
+              setState(() => type = TransactionType.income),
+          selected: type == TransactionType.income,
+        ),
+      ]),
+    );
+  }
+
+  Widget buildSubmit(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: PrimaryButton(
+        child: Text("#Apply"),
+        onPressed: () => onSelectedApply(context),
+      ),
     );
   }
 }

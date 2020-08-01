@@ -2,8 +2,10 @@ import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-Future<T> pushPage<T>(BuildContext context, {@required WidgetBuilder builder}) async {
-  final Route route = MaterialPageRoute<T>(builder: (context) => builder(context));
+Future<T> pushPage<T>(BuildContext context,
+    {@required WidgetBuilder builder}) async {
+  final Route route =
+      MaterialPageRoute<T>(builder: (context) => builder(context));
   return await Navigator.of(context).push(route);
 }
 
@@ -83,7 +85,6 @@ double parseAmount(String text) {
 }
 
 extension HexColor on Color {
-
   /// Prefixes a hash sign if [leadingHashSign] is set to `true` (default is `true`).
   String toHex({bool leadingHashSign = true}) => '${leadingHashSign ? '#' : ''}'
       '${alpha.toRadixString(16).padLeft(2, '0')}'
@@ -100,16 +101,14 @@ Color colorFromHex(String hexString) {
 }
 
 extension StringUtils on String {
-
   String nullIfEmpty() => isEmpty ? null : this;
 
-  String firstUppercase() =>
-    this[0].toUpperCase() + this.substring(1);
+  String firstUppercase() => this[0].toUpperCase() + this.substring(1);
 }
 
 String toStringOrNull(dynamic value) {
   if (value is String) {
     return value.isNotEmpty ? value : null;
-  }
-  else return null;
+  } else
+    return null;
 }
