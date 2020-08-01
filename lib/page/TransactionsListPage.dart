@@ -33,10 +33,15 @@ class TransactionsListPage extends StatefulWidget {
 class _TransactionsListPageState extends State<TransactionsListPage> {
   _TransactionsFilter filter = _TransactionsFilter();
 
-  void onSelectedFilter(BuildContext context) async {
+  void onSelectedFilter(BuildContext context, Wallet wallet) async {
     final filter = await showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+      ),
       builder: (context) => _TransactionsListFilter(
+        wallet: wallet,
         initialFilter: this.filter,
       ),
     ) as _TransactionsFilter;
@@ -56,7 +61,7 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
             Builder(
               builder: (context) => IconButton(
                 icon: Icon(Icons.filter_list),
-                onPressed: () => onSelectedFilter(context),
+                onPressed: () => onSelectedFilter(context, wallet),
               ),
             ),
           ],
@@ -82,11 +87,26 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
 }
 
 class _TransactionsFilter {
-  final TransactionType type;
+  final TransactionType transactionType;
+  final _TransactionsFilterAmountType amountType;
+  final double amount;
+  final double amountAccuracy;
 
-  _TransactionsFilter({this.type});
+  _TransactionsFilter({
+    this.transactionType,
+    this.amountType,
+    this.amount,
+    this.amountAccuracy,
+  });
 
-  bool isEmpty() => type == null;
+  bool isEmpty() => transactionType == null && amountType == null;
+}
+
+enum _TransactionsFilterAmountType {
+  isLessOrEqual,
+  isEqual,
+  isNotEqual,
+  isGreaterOrEqual
 }
 
 class _TransactionsContentPage extends StatefulWidget {
@@ -162,8 +182,8 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
     _TransactionsFilter filter,
   ) =>
       transactions.where((transaction) {
-        if (filter.type != null && transaction.type != filter.type)
-          return false;
+        if (filter.transactionType != null &&
+            transaction.type != filter.transactionType) return false;
         return true;
       }).toList();
 
@@ -239,7 +259,7 @@ class FiltersListItem extends _ListItem {
               visualDensity: VisualDensity.compact,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-          if (filter.type != null)
+          if (filter.transactionType != null)
             Chip(
               label: RichText(
                 text: TextSpan(
@@ -247,7 +267,7 @@ class FiltersListItem extends _ListItem {
                   children: [
                     TextSpan(text: "#Type: "),
                     TextSpan(
-                      text: filter.type.rawValue,
+                      text: filter.transactionType.rawValue,
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                   ],
@@ -345,10 +365,12 @@ class ShowMoreListItem extends _ListItem {
 }
 
 class _TransactionsListFilter extends StatefulWidget {
+  final Wallet wallet;
   final _TransactionsFilter initialFilter;
 
   const _TransactionsListFilter({
     Key key,
+    this.wallet,
     this.initialFilter,
   }) : super(key: key);
 
@@ -357,30 +379,52 @@ class _TransactionsListFilter extends StatefulWidget {
 }
 
 class _TransactionsListFilterState extends State<_TransactionsListFilter> {
-  TransactionType type;
+  TransactionType transactionType;
+  _TransactionsFilterAmountType amountType;
+
+  final amountController = TextEditingController();
+  final amountAccuracyController = TextEditingController();
 
   @override
   void initState() {
-    type = widget.initialFilter.type;
+    transactionType = widget.initialFilter.transactionType;
+    amountType = widget.initialFilter.amountType;
+    amountController.text = widget.initialFilter.amount?.toStringAsFixed(2);
+    amountAccuracyController.text =
+        widget.initialFilter.amountAccuracy?.toStringAsFixed(2);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    amountController.dispose();
+    amountAccuracyController.dispose();
+    super.dispose();
   }
 
   void onSelectedApply(BuildContext context) {
     Navigator.of(context).pop(_TransactionsFilter(
-      type: type,
+      transactionType: transactionType,
+      amountType: amountType,
+      amount: parseAmount(amountController.text),
+      amountAccuracy: parseAmount(amountAccuracyController.text),
     ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        buildTitle(context),
-        buildTransactionType(context),
-        buildSubmit(context),
-      ],
+    return Padding(
+      padding: MediaQuery.of(context).viewInsets,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          buildTitle(context),
+          buildTransactionType(context),
+          buildAmount(context),
+          buildSubmit(context),
+        ],
+      ),
     );
   }
 
@@ -406,7 +450,7 @@ class _TransactionsListFilterState extends State<_TransactionsListFilter> {
   }
 
   Widget buildTransactionTypeChip(BuildContext context, TransactionType type) {
-    final isSelected = this.type == type;
+    final isSelected = this.transactionType == type;
     return FilterChip(
       label: Text(
         type?.rawValue ?? "#All",
@@ -415,7 +459,97 @@ class _TransactionsListFilterState extends State<_TransactionsListFilter> {
       ),
       selectedColor: Theme.of(context).backgroundColor,
       checkmarkColor: Theme.of(context).primaryColor,
-      onSelected: (bool value) => setState(() => this.type = type),
+      onSelected: (bool value) => setState(() => this.transactionType = type),
+      selected: isSelected,
+    );
+  }
+
+  Widget buildAmount(BuildContext context) {
+    return ListTile(
+      title: Text("#Amount"),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Wrap(spacing: 8, children: [
+            buildAmountTypeChip(context, null),
+            buildAmountTypeChip(context, _TransactionsFilterAmountType.isEqual),
+            buildAmountTypeChip(
+                context, _TransactionsFilterAmountType.isNotEqual),
+            buildAmountTypeChip(
+                context, _TransactionsFilterAmountType.isLessOrEqual),
+            buildAmountTypeChip(
+                context, _TransactionsFilterAmountType.isGreaterOrEqual),
+          ]),
+          SizedBox(width: 16),
+          Row(
+            children: [
+              if (amountType != null)
+                SizedBox(
+                  width: 128,
+                  child: TextField(
+                    controller: amountController,
+                    decoration: InputDecoration(
+                      hintText: "0.00",
+                      suffixText: widget.wallet.currency.symbol,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                    autofocus: true,
+                    textAlign: TextAlign.end,
+                  ),
+                ),
+              if (amountType == _TransactionsFilterAmountType.isEqual ||
+                  amountType == _TransactionsFilterAmountType.isNotEqual)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text("±"),
+                ),
+              if (amountType == _TransactionsFilterAmountType.isEqual ||
+                  amountType == _TransactionsFilterAmountType.isNotEqual)
+                SizedBox(
+                  width: 64,
+                  child: TextField(
+                    controller: amountAccuracyController,
+                    decoration: InputDecoration(
+                      hintText: "0.00",
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                    textAlign: TextAlign.end,
+                  ),
+                ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildAmountTypeChip(
+      BuildContext context, _TransactionsFilterAmountType type) {
+    final isSelected = this.amountType == type;
+    final toText = (_TransactionsFilterAmountType type) {
+      switch (type) {
+        case _TransactionsFilterAmountType.isLessOrEqual:
+          return "⩽";
+        case _TransactionsFilterAmountType.isEqual:
+          return "=";
+        case _TransactionsFilterAmountType.isNotEqual:
+          return "≠";
+        case _TransactionsFilterAmountType.isGreaterOrEqual:
+          return "⩾";
+        default:
+          return "#Any";
+      }
+    };
+    return FilterChip(
+      label: Text(
+        toText(type),
+        style: TextStyle(
+            color: isSelected ? Theme.of(context).primaryColorDark : null),
+      ),
+      selectedColor: Theme.of(context).backgroundColor,
+      checkmarkColor: Theme.of(context).primaryColor,
+      onSelected: (bool value) => setState(() => this.amountType = type),
       selected: isSelected,
     );
   }
