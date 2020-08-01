@@ -34,10 +34,13 @@ class EmptyStateWidget extends StatelessWidget {
               color: Colors.grey,
             ),
           SizedBox(height: 16),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 15, color: Colors.grey),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, color: Colors.grey),
+            ),
           ),
         ],
       ),

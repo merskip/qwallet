@@ -506,8 +506,13 @@ extension TransactionsListLocalizations on AppLocalizations {
       );
 
   String get transactionsListEmpty => _locale(
-        en: "There are no expenses or incomes",
-        pl: "Nie ma żadnych wydatków ani dochodów",
+        en: "There are no expenses or incomes.",
+        pl: "Nie ma żadnych wydatków ani dochodów.",
+      );
+
+  String get transactionsListEmptyWithFilter => _locale(
+        en: "There are no expenses or incomes using that filter.",
+        pl: "Nie ma żadnych wydatków ani dochodów spełniających powyższe kryteria.",
       );
 }
 

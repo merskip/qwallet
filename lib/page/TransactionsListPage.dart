@@ -172,7 +172,11 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
 
         return filteredTransactions.isEmpty
             ? buildTransactionsEmpty(context)
-            : buildTransactionsList(context, filteredTransactions);
+            : buildTransactionsList(
+                context,
+                filteredTransactions,
+                lastTransaction: transactions.last,
+              );
       },
     );
   }
@@ -203,14 +207,27 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
       }).toList();
 
   Widget buildTransactionsEmpty(BuildContext context) {
-    return EmptyStateWidget(
-      iconAsset: "assets/ic-wallet.svg",
-      text: AppLocalizations.of(context).transactionsListEmpty,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FiltersListItem(widget.filter).build(context),
+        SizedBox(height: 8),
+        Divider(),
+        Expanded(
+          child: EmptyStateWidget(
+            iconAsset: "assets/ic-wallet.svg",
+            text: widget.filter.isEmpty()
+                ? AppLocalizations.of(context).transactionsListEmpty
+                : AppLocalizations.of(context).transactionsListEmptyWithFilter,
+          ),
+        ),
+      ],
     );
   }
 
   Widget buildTransactionsList(
-      BuildContext context, List<Transaction> transactions) {
+      BuildContext context, List<Transaction> transactions,
+      {Transaction lastTransaction}) {
     final transactionsByDate = groupBy(
       transactions,
       (Transaction transaction) =>
@@ -240,7 +257,7 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
     }
     if (isMorePages) {
       listItems.add(ShowMoreListItem(
-        onSelected: () => onSelectedMore(context, transactions.last),
+        onSelected: () => onSelectedMore(context, lastTransaction),
       ));
     }
 
@@ -553,7 +570,7 @@ class _TransactionsListFilterState extends State<_TransactionsListFilter> {
               if (amountType == _TransactionsFilterAmountType.isEqual ||
                   amountType == _TransactionsFilterAmountType.isNotEqual)
                 SizedBox(
-                  width: 64,
+                  width: 96,
                   child: TextField(
                     controller: amountAccuracyController,
                     decoration: InputDecoration(
