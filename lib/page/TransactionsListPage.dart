@@ -228,8 +228,20 @@ class FiltersListItem extends _ListItem {
             ),
           if (filter.type != null)
             Chip(
-              label: Text("#Type: " + filter.type.rawValue),
+              label: RichText(
+                text: TextSpan(
+                  style: TextStyle(color: Theme.of(context).primaryColorDark),
+                  children: [
+                    TextSpan(text: "#Type: "),
+                    TextSpan(
+                      text: filter.type.rawValue,
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+              ),
               visualDensity: VisualDensity.compact,
+              backgroundColor: Theme.of(context).backgroundColor,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
         ],
