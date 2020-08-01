@@ -147,12 +147,25 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
         isMorePages =
             transactions.length == transactionsPages.length * itemsPerPage;
 
-        return transactions.isEmpty
+        final filteredTransactions =
+            getFilteredTransactions(transactions, widget.filter);
+
+        return filteredTransactions.isEmpty
             ? buildTransactionsEmpty(context)
-            : buildTransactionsList(context, transactions);
+            : buildTransactionsList(context, filteredTransactions);
       },
     );
   }
+
+  List<Transaction> getFilteredTransactions(
+    List<Transaction> transactions,
+    _TransactionsFilter filter,
+  ) =>
+      transactions.where((transaction) {
+        if (filter.type != null && transaction.type != filter.type)
+          return false;
+        return true;
+      }).toList();
 
   Widget buildTransactionsEmpty(BuildContext context) {
     return EmptyStateWidget(
