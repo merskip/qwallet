@@ -8,8 +8,13 @@ class PrimaryButton extends StatelessWidget {
   final Color color;
   final bool shrinkWrap;
 
-  const PrimaryButton({Key key, @required this.onPressed, this.child, this.color, this.shrinkWrap = false})
-      : super(key: key);
+  const PrimaryButton({
+    Key key,
+    @required this.onPressed,
+    this.child,
+    this.color,
+    this.shrinkWrap = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

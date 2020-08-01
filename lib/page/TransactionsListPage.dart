@@ -371,28 +371,27 @@ class _TransactionsListFilterState extends State<_TransactionsListFilter> {
 
   Widget buildTransactionType(BuildContext context) {
     return ListTile(
-      title: Text("#Transactrion type"),
-      subtitle: Row(children: [
-        FilterChip(
-          label: Text("#All"),
-          onSelected: (bool value) => setState(() => type = null),
-          selected: type == null,
-        ),
-        SizedBox(width: 8),
-        FilterChip(
-          label: Text("#Expense"),
-          onSelected: (bool value) =>
-              setState(() => type = TransactionType.expense),
-          selected: type == TransactionType.expense,
-        ),
-        SizedBox(width: 8),
-        FilterChip(
-          label: Text("#Income"),
-          onSelected: (bool value) =>
-              setState(() => type = TransactionType.income),
-          selected: type == TransactionType.income,
-        ),
+      title: Text("#Type"),
+      subtitle: Wrap(spacing: 8, children: [
+        buildTransactionTypeChip(context, null),
+        buildTransactionTypeChip(context, TransactionType.expense),
+        buildTransactionTypeChip(context, TransactionType.income),
       ]),
+    );
+  }
+
+  Widget buildTransactionTypeChip(BuildContext context, TransactionType type) {
+    final isSelected = this.type == type;
+    return FilterChip(
+      label: Text(
+        type?.rawValue ?? "#All",
+        style: TextStyle(
+            color: isSelected ? Theme.of(context).primaryColorDark : null),
+      ),
+      selectedColor: Theme.of(context).backgroundColor,
+      checkmarkColor: Theme.of(context).primaryColor,
+      onSelected: (bool value) => setState(() => this.type = type),
+      selected: isSelected,
     );
   }
 
