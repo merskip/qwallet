@@ -112,3 +112,8 @@ String toStringOrNull(dynamic value) {
   } else
     return null;
 }
+
+extension CompareWithAccuracy on double {
+  bool isEqual(double value, {double accuracy}) =>
+      (this - value).abs() <= (accuracy ?? 0.0);
+}

@@ -184,6 +184,21 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
       transactions.where((transaction) {
         if (filter.transactionType != null &&
             transaction.type != filter.transactionType) return false;
+        if (filter.amountType == _TransactionsFilterAmountType.isEqual) {
+          if (!transaction.amount.isEqual(filter.amount,
+              accuracy: filter.amountAccuracy)) return false;
+        }
+        if (filter.amountType == _TransactionsFilterAmountType.isNotEqual) {
+          if (transaction.amount.isEqual(filter.amount,
+              accuracy: filter.amountAccuracy)) return false;
+        }
+        if (filter.amountType == _TransactionsFilterAmountType.isLessOrEqual) {
+          if (transaction.amount > filter.amount) return false;
+        }
+        if (filter.amountType ==
+            _TransactionsFilterAmountType.isGreaterOrEqual) {
+          if (transaction.amount < filter.amount) return false;
+        }
         return true;
       }).toList();
 
@@ -248,10 +263,10 @@ class FiltersListItem extends _ListItem {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12.0).copyWith(bottom: 0),
+      padding: const EdgeInsets.all(16.0).copyWith(bottom: 0),
       child: Wrap(
-        spacing: 4,
-        runSpacing: 4,
+        spacing: 8,
+        runSpacing: 8,
         children: [
           if (filter.isEmpty())
             Chip(
