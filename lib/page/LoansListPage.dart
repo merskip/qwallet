@@ -14,7 +14,7 @@ class LoansListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Private loans"),
+        title: Text(AppLocalizations.of(context).privateLoansTitle),
       ),
       body: SimpleStreamWidget(
         stream: CombineLatestStream.list([
@@ -79,7 +79,7 @@ class LoansListPage extends StatelessWidget {
         child: buildNameWithCaption(
           context,
           name: _getLender(context, loan, users),
-          caption: "#Lender",
+          caption: AppLocalizations.of(context).privateLoansLender,
         ),
       ),
       Padding(
@@ -93,7 +93,7 @@ class LoansListPage extends StatelessWidget {
         child: buildNameWithCaption(
           context,
           name: _getBorrower(context, loan, users),
-          caption: "#Borrower",
+          caption: AppLocalizations.of(context).privateLoanBorrower,
         ),
       ),
     ]);

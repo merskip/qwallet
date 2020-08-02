@@ -772,3 +772,20 @@ extension CategoriesLocalizations on AppLocalizations {
         pl: "Nie wybrano kategorii",
       );
 }
+
+extension PrivateLoansLocalizations on AppLocalizations {
+  String get privateLoansTitle => _locale(
+        en: "Loans",
+        pl: "Pożyczki",
+      );
+
+  String get privateLoansLender => _locale(
+        en: "Lender",
+        pl: "Pożyczkodawca",
+      );
+
+  String get privateLoanBorrower => _locale(
+        en: "Borrower",
+        pl: "Pożyczkobiorca",
+      );
+}
