@@ -7,6 +7,7 @@ import 'package:qwallet/utils.dart';
 class PrivateLoan extends Model<PrivateLoan> {
   final String title;
   final String lenderUid;
+  final String lenderName;
   final String borrowerUid;
   final String borrowerName;
   final Money amount;
@@ -14,6 +15,7 @@ class PrivateLoan extends Model<PrivateLoan> {
   PrivateLoan(DocumentSnapshot snapshot)
       : this.title = snapshot.data["title"],
         this.lenderUid = snapshot.data["lenderUid"],
+        this.lenderName = snapshot.data["lenderName"],
         this.borrowerUid = snapshot.data["borrowerUid"],
         this.borrowerName = snapshot.data["borrowerName"],
         this.amount = Money(
