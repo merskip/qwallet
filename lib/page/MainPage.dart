@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/page/LoansListPage.dart';
 import 'package:qwallet/page/SettingsPage.dart';
 import 'package:qwallet/page/dashboard/DashboardPage.dart';
 
@@ -44,7 +45,10 @@ class _MainPageState extends State<MainPage> {
       case 0:
         return DashboardPage();
       case 1:
-        return Center(child: Text("Private loans"));
+        return Theme(
+          data: Theme.of(context).copyWith(primaryColor: Colors.orange),
+          child: LoansListPage(),
+        );
       case 2:
         return Theme(
           data: Theme.of(context).copyWith(primaryColor: Colors.blueGrey),
