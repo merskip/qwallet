@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart' as Could;
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 
@@ -301,6 +302,13 @@ extension CategoriesDataSource on DataSource {
 
   Future<void> removeCategory({@required Reference<Category> category}) {
     return category.documentReference.delete();
+  }
+}
+
+extension PrivateLoansDataSource on DataSource {
+  Stream<List<PrivateLoan>> getPrivateLoans() {
+    return firestore.collection("privateLoans").snapshots().map(
+        (snapshot) => snapshot.documents.map((s) => PrivateLoan(s)).toList());
   }
 }
 
