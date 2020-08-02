@@ -41,6 +41,23 @@ class AppLocalizations {
   }
 }
 
+extension BottomNavigationLocalizations on AppLocalizations {
+  String get bottomNavigationDashboard => _locale(
+        en: "Dashboard",
+        pl: "Dashboard",
+      );
+
+  String get bottomNavigationLoans => _locale(
+        en: "Loans",
+        pl: "Pożyczki",
+      );
+
+  String get bottomNavigationSettings => _locale(
+        en: "Settings",
+        pl: "Ustawienia",
+      );
+}
+
 extension DashbaordLocalizations on AppLocalizations {
   String get dashboardTitle => _locale(
         en: "QWallet",

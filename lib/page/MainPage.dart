@@ -3,6 +3,8 @@ import 'package:qwallet/page/LoansListPage.dart';
 import 'package:qwallet/page/SettingsPage.dart';
 import 'package:qwallet/page/dashboard/DashboardPage.dart';
 
+import '../AppLocalizations.dart';
+
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
@@ -20,17 +22,17 @@ class _MainPageState extends State<MainPage> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            title: Text("#Dashboard"),
+            title: Text(AppLocalizations.of(context).bottomNavigationDashboard),
             backgroundColor: Theme.of(context).primaryColor,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.attach_money),
-            title: Text("#Loans"),
+            title: Text(AppLocalizations.of(context).bottomNavigationLoans),
             backgroundColor: Colors.teal,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            title: Text("#Settings"),
+            title: Text(AppLocalizations.of(context).bottomNavigationSettings),
             backgroundColor: Colors.blueGrey,
           ),
         ],
