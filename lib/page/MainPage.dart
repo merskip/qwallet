@@ -26,7 +26,7 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.attach_money),
             title: Text("#Loans"),
-            backgroundColor: Colors.orange,
+            backgroundColor: Colors.teal,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
@@ -46,7 +46,7 @@ class _MainPageState extends State<MainPage> {
         return DashboardPage();
       case 1:
         return Theme(
-          data: Theme.of(context).copyWith(primaryColor: Colors.orange),
+          data: Theme.of(context).copyWith(primaryColor: Colors.teal),
           child: LoansListPage(),
         );
       case 2:
