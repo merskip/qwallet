@@ -52,6 +52,7 @@ class LoansListPage extends StatelessWidget {
               padding: const EdgeInsets.all(12.0),
               child: buildLenderAndBorrower(context, loan, users),
             ),
+            buildAmount(context, loan),
             Text(
               loan.title,
               style: Theme.of(context).textTheme.subtitle1,
@@ -131,4 +132,11 @@ class LoansListPage extends StatelessWidget {
       users
           .firstWhere((user) => user.uid == loan.borrowerUid)
           .getCommonName(context);
+
+  Widget buildAmount(BuildContext context, PrivateLoan loan) {
+    return Text(
+      loan.amount.formatted,
+      style: Theme.of(context).textTheme.headline6,
+    );
+  }
 }
