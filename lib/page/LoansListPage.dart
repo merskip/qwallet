@@ -35,30 +35,24 @@ class LoansListPage extends StatelessWidget {
     return ListView(
       children: [
         ...loans.map((loan) => buildLoan(context, loan, users)),
+        SizedBox(height: 16),
       ],
     );
   }
 
   Widget buildLoan(BuildContext context, PrivateLoan loan, List<User> users) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Material(
-        type: MaterialType.card,
-        elevation: 4,
-        child: Column(
-          children: [
-            buildDate(context, loan),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: buildLenderAndBorrower(context, loan, users),
-            ),
-            buildAmount(context, loan),
-            Text(
-              loan.title,
-              style: Theme.of(context).textTheme.subtitle1,
-            )
-          ],
-        ),
+    return Card(
+      margin: EdgeInsets.all(16).copyWith(bottom: 0),
+      child: Column(
+        children: [
+          buildDate(context, loan),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: buildLenderAndBorrower(context, loan, users),
+          ),
+          buildAmount(context, loan),
+          buildTitle(context, loan),
+        ],
       ),
     );
   }
@@ -137,6 +131,16 @@ class LoansListPage extends StatelessWidget {
     return Text(
       loan.amount.formatted,
       style: Theme.of(context).textTheme.headline6,
+    );
+  }
+
+  Widget buildTitle(BuildContext context, PrivateLoan loan) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0).copyWith(top: 4),
+      child: Text(
+        loan.title,
+        style: Theme.of(context).textTheme.bodyText2,
+      ),
     );
   }
 }
