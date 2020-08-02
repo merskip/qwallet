@@ -48,7 +48,7 @@ class LoansListPage extends StatelessWidget {
           buildDate(context, loan),
           Padding(
             padding: const EdgeInsets.all(12.0),
-            child: buildLenderAndBorrower(context, loan, users),
+            child: buildBorrowerAndLender(context, loan, users),
           ),
           buildAmount(context, loan),
           buildTitle(context, loan),
@@ -72,14 +72,14 @@ class LoansListPage extends StatelessWidget {
     );
   }
 
-  Widget buildLenderAndBorrower(
+  Widget buildBorrowerAndLender(
       BuildContext context, PrivateLoan loan, List<User> users) {
     return Row(children: [
       Expanded(
         child: buildNameWithCaption(
           context,
-          name: _getLender(context, loan, users),
-          caption: AppLocalizations.of(context).privateLoansLender,
+          name: _getBorrower(context, loan, users),
+          caption: AppLocalizations.of(context).privateLoanBorrower,
         ),
       ),
       Padding(
@@ -92,8 +92,8 @@ class LoansListPage extends StatelessWidget {
       Expanded(
         child: buildNameWithCaption(
           context,
-          name: _getBorrower(context, loan, users),
-          caption: AppLocalizations.of(context).privateLoanBorrower,
+          name: _getLender(context, loan, users),
+          caption: AppLocalizations.of(context).privateLoansLender,
         ),
       ),
     ]);
