@@ -184,7 +184,8 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   Widget buildCurrency(BuildContext context) {
     return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletCurrency),
-      value: Text("${widget.wallet.currency.symbol} - ${widget.wallet..name}"),
+      value: Text(
+          "${widget.wallet.currency.symbol} - ${widget.wallet.currency.name}"),
       onEdit: (context) => onSelectedCurrency(context),
     );
   }
@@ -206,7 +207,6 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           : Text(widget.wallet.totalIncome.formatted),
     );
   }
-
 
   Widget buildBalance(BuildContext context) {
     return EditableDetailsItem(
