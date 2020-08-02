@@ -514,6 +514,53 @@ extension TransactionsListLocalizations on AppLocalizations {
         en: "There are no expenses or incomes using that filter.",
         pl: "Nie ma żadnych wydatków ani dochodów spełniających powyższe kryteria.",
       );
+
+  String get transactionsListNoFilters => _locale(
+        en: "No filters",
+        pl: "Bez filtrów",
+      );
+
+  String get transactionsListChipFilterType => _locale(
+        en: "Type: ",
+        pl: "Typ: ",
+      );
+
+  String get transactionsListChipFilterAmount => _locale(
+        en: "Amount ",
+        pl: "Kwota ",
+      );
+}
+
+extension TransactionsListFilterLocalizations on AppLocalizations {
+  String get transactionsListFilterTitle => _locale(
+        en: "Filters",
+        pl: "Filtry",
+      );
+
+  String get transactionsListFilterType => _locale(
+        en: "Type",
+        pl: "Typ",
+      );
+
+  String get transactionsListFilterTypeAny => _locale(
+        en: "Any",
+        pl: "Dowolny",
+      );
+
+  String get transactionsListFilterAmount => _locale(
+        en: "Amount",
+        pl: "Kwota",
+      );
+
+  String get transactionsListFilterAmountAny => _locale(
+        en: "Any",
+        pl: "Dowolna",
+      );
+
+  String get transactionsListFilterSubmit => _locale(
+        en: "Apply",
+        pl: "Zastosuj",
+      );
 }
 
 extension CategoriesChartCardLocalizations on AppLocalizations {

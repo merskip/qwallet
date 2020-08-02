@@ -3,6 +3,7 @@ import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
+import '../AppLocalizations.dart';
 import '../utils.dart';
 
 class TransactionsFilter {
@@ -30,6 +31,10 @@ enum TransactionsFilterAmountType {
 
 extension TransactionsFilterAmountTypeConverting
     on TransactionsFilterAmountType {
+  bool get isEqualOrNot =>
+      this == TransactionsFilterAmountType.isEqual ||
+      this == TransactionsFilterAmountType.isNotEqual;
+
   String toSymbol() {
     switch (this) {
       case TransactionsFilterAmountType.isLessOrEqual:
@@ -113,9 +118,9 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
 
   Widget buildTitle(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(24.0),
       child: Text(
-        "#Filters",
+        AppLocalizations.of(context).transactionsListFilterTitle,
         style: Theme.of(context).textTheme.headline6,
       ),
     );
@@ -123,7 +128,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
 
   Widget buildTransactionType(BuildContext context) {
     return ListTile(
-      title: Text("#Type"),
+      title: Text(AppLocalizations.of(context).transactionsListFilterType),
       subtitle: Wrap(spacing: 8, children: [
         buildTransactionTypeChip(context, null),
         buildTransactionTypeChip(context, TransactionType.expense),
@@ -134,9 +139,17 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
 
   Widget buildTransactionTypeChip(BuildContext context, TransactionType type) {
     final isSelected = this.transactionType == type;
+    String text;
+    if (type == TransactionType.expense)
+      text = AppLocalizations.of(context).transactionTypeExpense;
+    else if (type == TransactionType.income)
+      text = AppLocalizations.of(context).transactionTypeIncome;
+    if (type == null)
+      text = AppLocalizations.of(context).transactionsListFilterTypeAny;
+
     return FilterChip(
       label: Text(
-        type?.rawValue ?? "#All",
+        text,
         style: TextStyle(
             color: isSelected ? Theme.of(context).primaryColorDark : null),
       ),
@@ -149,7 +162,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
 
   Widget buildAmount(BuildContext context) {
     return ListTile(
-      title: Text("#Amount"),
+      title: Text(AppLocalizations.of(context).transactionsListFilterAmount),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -165,43 +178,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
                 context, TransactionsFilterAmountType.isGreaterOrEqual),
           ]),
           SizedBox(width: 16),
-          Row(
-            children: [
-              if (amountType != null)
-                SizedBox(
-                  width: 128,
-                  child: TextField(
-                    controller: amountController,
-                    decoration: InputDecoration(
-                      hintText: "0.00",
-                      suffixText: widget.wallet.currency.symbol,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                    ),
-                    autofocus: true,
-                    textAlign: TextAlign.end,
-                  ),
-                ),
-              if (amountType == TransactionsFilterAmountType.isEqual ||
-                  amountType == TransactionsFilterAmountType.isNotEqual)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text("±"),
-                ),
-              if (amountType == TransactionsFilterAmountType.isEqual ||
-                  amountType == TransactionsFilterAmountType.isNotEqual)
-                SizedBox(
-                  width: 96,
-                  child: TextField(
-                    controller: amountAccuracyController,
-                    decoration: InputDecoration(
-                      hintText: "0.00",
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                    ),
-                    textAlign: TextAlign.end,
-                  ),
-                ),
-            ],
-          )
+          buildAmountTextFields(context),
         ],
       ),
     );
@@ -213,9 +190,11 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
 
     return FilterChip(
       label: Text(
-        type.toSymbol() ?? "#Any",
+        type.toSymbol() ??
+            AppLocalizations.of(context).transactionsListFilterAmountAny,
         style: TextStyle(
-            color: isSelected ? Theme.of(context).primaryColorDark : null),
+          color: isSelected ? Theme.of(context).primaryColorDark : null,
+        ),
       ),
       selectedColor: Theme.of(context).backgroundColor,
       checkmarkColor: Theme.of(context).primaryColor,
@@ -224,11 +203,55 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
     );
   }
 
+  Widget buildAmountTextFields(BuildContext context) {
+    return Row(
+      children: [
+        if (amountType != null) buildAmountValueTextField(context),
+        if (amountType.isEqualOrNot)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text("±"),
+          ),
+        if (amountType.isEqualOrNot) buildAmountAccuracyTextField(context),
+      ],
+    );
+  }
+
+  Widget buildAmountValueTextField(BuildContext context) {
+    return SizedBox(
+      width: 128,
+      child: TextField(
+        controller: amountController,
+        decoration: InputDecoration(
+          hintText: "0.00",
+          suffixText: widget.wallet.currency.symbol,
+          contentPadding: EdgeInsets.symmetric(horizontal: 8),
+        ),
+        autofocus: true,
+        textAlign: TextAlign.end,
+      ),
+    );
+  }
+
+  Widget buildAmountAccuracyTextField(BuildContext context) {
+    return SizedBox(
+      width: 96,
+      child: TextField(
+        controller: amountAccuracyController,
+        decoration: InputDecoration(
+          hintText: "0.00",
+          contentPadding: EdgeInsets.symmetric(horizontal: 8),
+        ),
+        textAlign: TextAlign.end,
+      ),
+    );
+  }
+
   Widget buildSubmit(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: PrimaryButton(
-        child: Text("#Apply"),
+        child: Text(AppLocalizations.of(context).transactionsListFilterSubmit),
         onPressed: () => onSelectedApply(context),
       ),
     );

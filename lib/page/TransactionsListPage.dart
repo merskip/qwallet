@@ -147,13 +147,15 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
         final filteredTransactions =
             getFilteredTransactions(transactions, widget.filter);
 
-        return filteredTransactions.isEmpty
-            ? buildTransactionsEmpty(context)
-            : buildTransactionsList(
-                context,
-                filteredTransactions,
-                lastTransaction: transactions.last,
-              );
+        if (filteredTransactions.isEmpty) {
+          return buildTransactionsEmpty(context);
+        } else {
+          return buildTransactionsList(
+            context,
+            filteredTransactions,
+            lastTransaction: transactions.last,
+          );
+        }
       },
     );
   }
@@ -163,8 +165,9 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
     TransactionsFilter filter,
   ) =>
       transactions.where((transaction) {
-        if (filter.transactionType != null &&
-            transaction.type != filter.transactionType) return false;
+        if (filter.transactionType != null) {
+          if (transaction.type != filter.transactionType) return false;
+        }
         if (filter.amountType == TransactionsFilterAmountType.isEqual) {
           if (!transaction.amount.isEqual(filter.amount,
               accuracy: filter.amountAccuracy)) return false;
@@ -262,55 +265,71 @@ class FiltersListItem extends _ListItem {
         spacing: 8,
         runSpacing: 8,
         children: [
-          if (filter.isEmpty())
-            Chip(
-              label: Text("#No filters"),
-              visualDensity: VisualDensity.compact,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-          if (filter.transactionType != null)
-            Chip(
-              label: RichText(
-                text: TextSpan(
-                  style: TextStyle(color: Theme.of(context).primaryColorDark),
-                  children: [
-                    TextSpan(text: "#Type: "),
-                    TextSpan(
-                      text: filter.transactionType.rawValue,
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-              ),
-              visualDensity: VisualDensity.compact,
-              backgroundColor: Theme.of(context).backgroundColor,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-          if (filter.amountType != null)
-            Chip(
-              label: RichText(
-                text: TextSpan(
-                  style: TextStyle(color: Theme.of(context).primaryColorDark),
-                  children: [
-                    TextSpan(text: "#Amount "),
-                    TextSpan(
-                      text: formatAmountFilter(filter),
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-              ),
-              visualDensity: VisualDensity.compact,
-              backgroundColor: Theme.of(context).backgroundColor,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
+          if (filter.isEmpty()) buildNoFilersChip(context),
+          if (filter.transactionType != null) buildTypeFilterChip(context),
+          if (filter.amountType != null) buildAmountFilterChip(context),
         ],
       ),
     );
   }
 
+  Widget buildNoFilersChip(BuildContext context) {
+    return Chip(
+      label: Text(AppLocalizations.of(context).transactionsListNoFilters),
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    );
+  }
+
+  Widget buildTypeFilterChip(BuildContext context) {
+    return Chip(
+      label: RichText(
+        text: TextSpan(
+          style: TextStyle(color: Theme.of(context).primaryColorDark),
+          children: [
+            TextSpan(
+              text: AppLocalizations.of(context).transactionsListChipFilterType,
+            ),
+            TextSpan(
+              text: filter.transactionType == TransactionType.expense
+                  ? AppLocalizations.of(context).transactionTypeExpense
+                  : AppLocalizations.of(context).transactionTypeIncome,
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+      ),
+      visualDensity: VisualDensity.compact,
+      backgroundColor: Theme.of(context).backgroundColor,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    );
+  }
+
+  Widget buildAmountFilterChip(BuildContext context) {
+    return Chip(
+      label: RichText(
+        text: TextSpan(
+          style: TextStyle(color: Theme.of(context).primaryColorDark),
+          children: [
+            TextSpan(
+              text:
+                  AppLocalizations.of(context).transactionsListChipFilterAmount,
+            ),
+            TextSpan(
+              text: formatAmountFilter(filter),
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+      ),
+      visualDensity: VisualDensity.compact,
+      backgroundColor: Theme.of(context).backgroundColor,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    );
+  }
+
   String formatAmountFilter(TransactionsFilter filter) {
-    String text = filter.amountType.toSymbol() ?? "#Any";
+    String text = filter.amountType.toSymbol();
     text += " " + filter.amount.toStringAsFixed(2);
     if (filter.amountType == TransactionsFilterAmountType.isEqual ||
         filter.amountType == TransactionsFilterAmountType.isNotEqual) {
