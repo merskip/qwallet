@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../AppLocalizations.dart';
 
 class LoansListPage extends StatelessWidget {
   @override
@@ -44,6 +47,7 @@ class LoansListPage extends StatelessWidget {
         elevation: 4,
         child: Column(
           children: [
+            buildDate(context, loan),
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: buildLenderAndBorrower(context, loan, users),
@@ -56,12 +60,20 @@ class LoansListPage extends StatelessWidget {
         ),
       ),
     );
-    return ListTile(
-      title: Text(loan.title),
-      subtitle: Text(
-          "${_getLender(context, loan, users)}\n⬇\n${_getBorrower(context, loan, users)}"),
-      trailing: Text(loan.amount.formatted),
-      isThreeLine: true,
+  }
+
+  Widget buildDate(BuildContext context, PrivateLoan loan) {
+    final locale = AppLocalizations.of(context).locale.toString();
+    final format = DateFormat("d MMMM yyyy", locale);
+    return Padding(
+      padding: const EdgeInsets.all(12.0).copyWith(bottom: 0),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Text(
+          format.format(loan.date),
+          style: Theme.of(context).textTheme.caption,
+        ),
+      ),
     );
   }
 
