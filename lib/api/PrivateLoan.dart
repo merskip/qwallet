@@ -6,6 +6,7 @@ import 'package:qwallet/utils.dart';
 
 class PrivateLoan extends Model<PrivateLoan> {
   final String title;
+  final DateTime date;
   final String lenderUid;
   final String lenderName;
   final String borrowerUid;
@@ -14,6 +15,7 @@ class PrivateLoan extends Model<PrivateLoan> {
 
   PrivateLoan(DocumentSnapshot snapshot)
       : this.title = snapshot.data["title"],
+        this.date = (snapshot.data["date"] as Timestamp).toDate(),
         this.lenderUid = snapshot.data["lenderUid"],
         this.lenderName = snapshot.data["lenderName"],
         this.borrowerUid = snapshot.data["borrowerUid"],

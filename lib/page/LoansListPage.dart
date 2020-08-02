@@ -37,12 +37,73 @@ class LoansListPage extends StatelessWidget {
   }
 
   Widget buildLoan(BuildContext context, PrivateLoan loan, List<User> users) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Material(
+        type: MaterialType.card,
+        elevation: 4,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: buildLenderAndBorrower(context, loan, users),
+            ),
+            Text(
+              loan.title,
+              style: Theme.of(context).textTheme.subtitle1,
+            )
+          ],
+        ),
+      ),
+    );
     return ListTile(
       title: Text(loan.title),
       subtitle: Text(
           "${_getLender(context, loan, users)}\n⬇\n${_getBorrower(context, loan, users)}"),
       trailing: Text(loan.amount.formatted),
       isThreeLine: true,
+    );
+  }
+
+  Widget buildLenderAndBorrower(
+      BuildContext context, PrivateLoan loan, List<User> users) {
+    return Row(children: [
+      Expanded(
+        child: buildNameWithCaption(
+          context,
+          name: _getLender(context, loan, users),
+          caption: "#Lender",
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Icon(
+          Icons.arrow_forward,
+          color: Theme.of(context).textTheme.caption.color,
+        ),
+      ),
+      Expanded(
+        child: buildNameWithCaption(
+          context,
+          name: _getBorrower(context, loan, users),
+          caption: "#Borrower",
+        ),
+      ),
+    ]);
+  }
+
+  Widget buildNameWithCaption(BuildContext context,
+      {String name, String caption}) {
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(children: [
+        TextSpan(text: name, style: Theme.of(context).textTheme.subtitle2),
+        TextSpan(text: "\n"),
+        TextSpan(
+          text: caption,
+          style: Theme.of(context).textTheme.caption,
+        ),
+      ]),
     );
   }
 
