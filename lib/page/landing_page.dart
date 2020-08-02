@@ -4,7 +4,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/model/user.dart';
 
 import '../firebase_service.dart';
-import 'dashboard/DashboardPage.dart';
+import 'MainPage.dart';
 import 'sign_in_page.dart';
 
 class LandingPage extends StatefulWidget {
@@ -79,6 +79,6 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Widget _homePage(BuildContext context) {
-    return DashboardPage();
+    return MainPage();
   }
 }
