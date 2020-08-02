@@ -47,6 +47,11 @@ extension DashbaordLocalizations on AppLocalizations {
         pl: "QWallet",
       );
 
+  String get dashboardEditWallet => _locale(
+        en: "Edit wallet",
+        pl: "Edytuj portfel",
+      );
+
   String get dashboardWalletsEmpty => _locale(
         en: "There are no wallets in your account",
         pl: "Na twoim koncie nie ma żadnych portfeli",
