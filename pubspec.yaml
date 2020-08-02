@@ -14,12 +14,14 @@ description: Managing your personal wallet
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.2.2 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
+  flutter_localizations:
+    sdk: flutter
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -46,6 +48,16 @@ dependencies:
   fluro: ^1.6.3
   firebase_admob: ^0.9.3+2
   universal_html: ^1.2.1
+  dots_indicator: ^1.0.0
+  fl_chart: ^0.10.0
+  package_info: ^0.4.1
+  shared_preferences: ^0.5.7+3
+  rxdart: ^0.24.1
+  sliver_fill_remaining_box_adapter: ^0.1.1
+  flutter_html: ^1.0.0-pre.1
+  flutter_iconpicker: ^2.0.6
+  firebase_crashlytics: ^0.1.3+3
+  firebase_performance: ^0.3.2
 
 dev_dependencies:
   flutter_test:
@@ -64,12 +76,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/app-logo-black.svg
-    - assets/ic-add-wallet.svg
-    - assets/ic-google.svg
-    - assets/ic-wallet.svg
-    - assets/ic-add-expense.svg
-    - assets/ic-edit-income.svg
+    - assets/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

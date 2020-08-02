@@ -2,6 +2,13 @@ import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+Future<T> pushPage<T>(BuildContext context,
+    {@required WidgetBuilder builder}) async {
+  final Route route =
+      MaterialPageRoute<T>(builder: (context) => builder(context));
+  return await Navigator.of(context).push(route);
+}
+
 DateTime getBeginOfCurrentMonth() {
   DateTime now = DateTime.now();
   return getBeginOfMonth(now);
@@ -34,6 +41,16 @@ double toDouble(dynamic value, {double defaultValue = 0.0}) {
     return defaultValue;
 }
 
+String formatMoney(double amount, String currency, {bool showCurrency = true}) {
+  if (amount == null) return null;
+  if (showCurrency)
+    return NumberFormat.simpleCurrency(locale: "pl_PL").format(amount);
+  else
+    return NumberFormat.currency(locale: "pl_PL", symbol: "")
+        .format(amount)
+        .trimRight();
+}
+
 String formatAmount(double amount, {bool currency = true}) {
   if (amount == null) return null;
   if (currency)
@@ -63,6 +80,40 @@ FormFieldValidator<String> amountValidator() {
 }
 
 double parseAmount(String text) {
-  final pureText = text.replaceAll(",", ".").replaceAll(RegExp("[^0-9\.]"), "");
+  final pureText = text.replaceAll(",", "").replaceAll(RegExp("[^-0-9\.]"), "");
   return double.tryParse(pureText) ?? null;
+}
+
+extension HexColor on Color {
+  /// Prefixes a hash sign if [leadingHashSign] is set to `true` (default is `true`).
+  String toHex({bool leadingHashSign = true}) => '${leadingHashSign ? '#' : ''}'
+      '${alpha.toRadixString(16).padLeft(2, '0')}'
+      '${red.toRadixString(16).padLeft(2, '0')}'
+      '${green.toRadixString(16).padLeft(2, '0')}'
+      '${blue.toRadixString(16).padLeft(2, '0')}';
+}
+
+Color colorFromHex(String hexString) {
+  final buffer = StringBuffer();
+  if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+  buffer.write(hexString.replaceFirst('#', ''));
+  return Color(int.parse(buffer.toString(), radix: 16));
+}
+
+extension StringUtils on String {
+  String nullIfEmpty() => isEmpty ? null : this;
+
+  String firstUppercase() => this[0].toUpperCase() + this.substring(1);
+}
+
+String toStringOrNull(dynamic value) {
+  if (value is String) {
+    return value.isNotEmpty ? value : null;
+  } else
+    return null;
+}
+
+extension CompareWithAccuracy on double {
+  bool isEqual(double value, {double accuracy}) =>
+      (this - value).abs() <= (accuracy ?? 0.0);
 }

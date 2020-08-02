@@ -11,6 +11,7 @@ export const getUsers = functions.https.onCall((data, context) => {
             uid: user.uid,
             isAnonymous: user.email === undefined,
             displayName: user.displayName,
+            avatarUrl: user.photoURL,
             email: user.email
         }));
     }).catch((error) => {

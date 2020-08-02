@@ -157,6 +157,7 @@
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				880E478CFDD2AB1563592C3E /* [CP] Embed Pods Frameworks */,
 				E557AD41A75D5898252818C7 /* [CP] Copy Pods Resources */,
+				CC22E1F024C70B0E00FB7494 /* Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -282,6 +283,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
+		};
+		CC22E1F024C70B0E00FB7494 /* Crashlytics */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}\n",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)\n",
+			);
+			name = Crashlytics;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Crashlytics/iOS/Crashlytics.framework/run\"\n";
+			showEnvVarsInLog = 0;
 		};
 		E557AD41A75D5898252818C7 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

@@ -16,7 +16,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-2023507573427187~8579587898"/>
+            android:value="ca-app-pub-2023507573427187~8579587898" />
 
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"

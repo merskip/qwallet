@@ -25,7 +25,7 @@ class FirebaseService {
 
   FirebaseService._privateConstructor();
 
-  Future<List<User>> fetchUsers({bool includeAnonymous = true}) async {
+  Future<List<User>> fetchUsers({bool includeAnonymous = false}) async {
     final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
       functionName: "getUsers",
     );

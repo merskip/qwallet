@@ -71,7 +71,7 @@ class WalletList extends StatelessWidget {
           });
         } else {
           return EmptyStateWidget(
-            icon: "assets/ic-wallet.svg",
+            iconAsset: "assets/ic-wallet.svg",
             text:
                 "There are no any wallets in your account.\nUse the + button to add them.",
           );

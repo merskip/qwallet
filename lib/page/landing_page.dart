@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/DataSource.dart';
+import 'package:qwallet/model/user.dart';
 
 import '../firebase_service.dart';
-import 'home_page.dart';
+import 'dashboard/DashboardPage.dart';
 import 'sign_in_page.dart';
 
 class LandingPage extends StatefulWidget {
@@ -44,11 +46,14 @@ class _LandingPageState extends State<LandingPage> {
 
   _setSignInState(FirebaseUser user) {
     debugPrint("Sign in state: uid=${user?.uid}");
-    setState(() {
-      FirebaseService.instance.currentUser = user;
-      isLogged = (user != null);
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        FirebaseService.instance.currentUser = user;
+        DataSource.instance.currentUser = User.fromFirebase(user);
+        isLogged = (user != null);
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -74,6 +79,6 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Widget _homePage(BuildContext context) {
-    return HomePage();
+    return DashboardPage();
   }
 }
