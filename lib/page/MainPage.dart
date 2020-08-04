@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/page/LoansListPage.dart';
 import 'package:qwallet/page/SettingsPage.dart';
 import 'package:qwallet/page/dashboard/DashboardPage.dart';
 
 import '../AppLocalizations.dart';
+import 'loans/LoansListPage.dart';
 
 class MainPage extends StatefulWidget {
   @override

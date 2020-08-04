@@ -7,7 +7,7 @@ import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../AppLocalizations.dart';
+import '../../AppLocalizations.dart';
 
 class LoansListPage extends StatelessWidget {
   @override
