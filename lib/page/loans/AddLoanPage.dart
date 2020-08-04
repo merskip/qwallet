@@ -8,7 +8,12 @@ class AddLoanPage extends StatelessWidget {
       appBar: AppBar(
         title: Text("#Add loans"),
       ),
-      body: LoanForm(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: LoanForm(),
+        ),
+      ),
     );
   }
 }
