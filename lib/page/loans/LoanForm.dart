@@ -54,6 +54,14 @@ class _LoanFormState extends State<LoanForm> {
         SizedBox(height: 16),
         buildBorrowerField(context),
         SizedBox(height: 16),
+        Divider(),
+        SizedBox(height: 16),
+        buildAmount(context),
+        SizedBox(height: 16),
+        buildTitle(context),
+        SizedBox(height: 16),
+        buildDate(context),
+        SizedBox(height: 24),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: buildSubmitButton(context),
@@ -137,6 +145,32 @@ class _LoanFormState extends State<LoanForm> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildAmount(BuildContext context) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: "#Amount",
+      ),
+    );
+  }
+
+  Widget buildTitle(BuildContext context) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: "#Title",
+        isDense: true,
+      ),
+    );
+  }
+
+  Widget buildDate(BuildContext context) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: "#Date",
+        isDense: true,
       ),
     );
   }
