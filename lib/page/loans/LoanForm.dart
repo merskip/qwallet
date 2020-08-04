@@ -24,6 +24,8 @@ class _LoanFormState extends State<LoanForm> {
 
   @override
   void initState() {
+    lenderUser = User.currentUser();
+    lenderTextController.text = lenderUser.getCommonName(null);
     initUsers();
     super.initState();
   }
