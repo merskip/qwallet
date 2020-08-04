@@ -4,6 +4,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
+import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -26,6 +27,10 @@ class LoansListPage extends StatelessWidget {
           values[0] as List<PrivateLoan>,
           values[1] as List<User>,
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => router.navigateTo(context, "/privateLoans/add"),
       ),
     );
   }

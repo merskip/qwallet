@@ -9,6 +9,7 @@ import 'package:qwallet/page/AddTransactionPage.dart';
 import 'package:qwallet/page/TransactionPage.dart';
 import 'package:qwallet/page/WalletPage.dart';
 import 'package:qwallet/page/WalletsPage.dart';
+import 'package:qwallet/page/loans/AddLoanPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import 'api/Model.dart';
@@ -158,6 +159,15 @@ void defineRoutes(Router router) {
       return TransactionsListPage(
         walletRef: DataSource.instance.getWalletReference(walletId),
       );
+    }),
+  );
+
+  router.define(
+    "/privateLoans/add",
+    transitionType: TransitionType.nativeModal,
+    handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      return AddLoanPage();
     }),
   );
 }
