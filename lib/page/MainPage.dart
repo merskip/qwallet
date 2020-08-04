@@ -48,13 +48,19 @@ class _MainPageState extends State<MainPage> {
         return DashboardPage();
       case 1:
         return Theme(
-          data: Theme.of(context).copyWith(primaryColor: Colors.teal),
-          child: LoansListPage(),
+          data: ThemeData(
+            primarySwatch: Colors.teal,
+          ),
+          child: Builder(builder: (context) => LoansListPage()),
         );
       case 2:
         return Theme(
-          data: Theme.of(context).copyWith(primaryColor: Colors.blueGrey),
-          child: SettingsPage(),
+          data: ThemeData(
+            primarySwatch: Colors.blueGrey,
+          ),
+          isMaterialAppTheme: true,
+          child: Builder(builder: (context) => SettingsPage()),
+//          child: SettingsPage(),
         );
       default:
         return Container();
