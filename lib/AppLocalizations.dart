@@ -191,6 +191,11 @@ extension UserLocalizations on AppLocalizations {
         pl: "Anonimowy",
       );
 
+  String get userMe => _locale(
+        en: "Me",
+        pl: "Ja",
+      );
+
   String get userLoggedHint => _locale(
         en: "Logged with",
         pl: "Zalogowano przez",

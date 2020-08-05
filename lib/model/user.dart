@@ -12,41 +12,43 @@ class User {
 
   final FirebaseUser firebaseUser;
 
-  User({
-    this.uid,
-    this.isAnonymous,
-    this.displayName,
-    this.email,
-    this.avatarUrl,
-    this.firebaseUser
-  });
+  User(
+      {this.uid,
+      this.isAnonymous,
+      this.displayName,
+      this.email,
+      this.avatarUrl,
+      this.firebaseUser});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      uid: json['uid'] as String,
-      isAnonymous: json['isAnonymous'] as bool,
-      displayName: json['displayName'] as String,
-      email: json['email'] as String,
-      avatarUrl: json['avatarUrl'] as String,
-      firebaseUser: null
-    );
+        uid: json['uid'] as String,
+        isAnonymous: json['isAnonymous'] as bool,
+        displayName: json['displayName'] as String,
+        email: json['email'] as String,
+        avatarUrl: json['avatarUrl'] as String,
+        firebaseUser: null);
   }
 
   factory User.currentUser() => DataSource.instance.currentUser;
 
   factory User.fromFirebase(FirebaseUser firebaseUser) {
     return User(
-        uid: firebaseUser.uid,
-        isAnonymous: firebaseUser.isAnonymous,
-        displayName: firebaseUser.displayName,
-        email: firebaseUser.email,
-        avatarUrl: firebaseUser.photoUrl,
-        firebaseUser: firebaseUser,
+      uid: firebaseUser.uid,
+      isAnonymous: firebaseUser.isAnonymous,
+      displayName: firebaseUser.displayName,
+      email: firebaseUser.email,
+      avatarUrl: firebaseUser.photoUrl,
+      firebaseUser: firebaseUser,
     );
   }
 
   String getCommonName(BuildContext context) {
-    return displayName ?? email ?? AppLocalizations.of(context).userAnonymous;
+    var commonName =
+        displayName ?? email ?? AppLocalizations.of(context).userAnonymous;
+    if (this == User.currentUser())
+      commonName += " (${AppLocalizations.of(context).userMe})";
+    return commonName;
   }
 
   String getSubtitle() {
