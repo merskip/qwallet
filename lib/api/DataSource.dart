@@ -310,6 +310,28 @@ extension PrivateLoansDataSource on DataSource {
     return firestore.collection("privateLoans").snapshots().map(
         (snapshot) => snapshot.documents.map((s) => PrivateLoan(s)).toList());
   }
+
+  Future<void> addPrivateLoan({
+    String lenderUid,
+    String lenderName,
+    String borrowerUid,
+    String borrowerName,
+    Currency currency,
+    double amount,
+    String title,
+    DateTime date,
+  }) {
+    return firestore.collection("privateLoans").add({
+      "lenderUid": lenderUid,
+      "lenderName": lenderName,
+      "borrowerUid": borrowerUid,
+      "borrowerName": borrowerName,
+      "currency": currency.symbol,
+      "amount": amount,
+      "title": title,
+      "date": date.toTimestamp(),
+    });
+  }
 }
 
 extension UsersDataSource on DataSource {

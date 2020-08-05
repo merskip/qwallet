@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Currency.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
@@ -30,6 +31,9 @@ class _LoanFormState extends State<LoanForm> {
   String personsValidationMessage;
 
   Currency currency;
+  final amountTextController = TextEditingController();
+
+  final titleTextController = TextEditingController();
 
   final dateFocus = FocusNode();
   final dateController = TextEditingController();
@@ -108,6 +112,8 @@ class _LoanFormState extends State<LoanForm> {
     lenderFocus.dispose();
     borrowerTextController.dispose();
     borrowerFocus.dispose();
+    amountTextController.dispose();
+    titleTextController.dispose();
     dateController.dispose();
     dateFocus.dispose();
     super.dispose();
@@ -128,7 +134,17 @@ class _LoanFormState extends State<LoanForm> {
   void onSelectedSubmit(BuildContext context) async {
     setState(() => personsValidationMessage = null);
     if (_formKey.currentState.validate() && _validPersons()) {
-      // TODO: Impl
+      DataSource.instance.addPrivateLoan(
+        lenderUid: lenderUser?.uid,
+        lenderName: lenderUser == null ? lenderTextController.text : null,
+        borrowerUid: borrowerUser?.uid,
+        borrowerName: borrowerUser == null ? borrowerTextController.text : null,
+        amount: parseAmount(amountTextController.text),
+        currency: currency,
+        title: titleTextController.text.trim().nullIfEmpty(),
+        date: date,
+      );
+      Navigator.of(context).pop();
     }
   }
 
@@ -268,6 +284,7 @@ class _LoanFormState extends State<LoanForm> {
 
   Widget buildAmount(BuildContext context) {
     return TextFormField(
+      controller: amountTextController,
       decoration: InputDecoration(
         labelText: "#Amount",
         suffixIcon: FlatButton(
@@ -289,10 +306,15 @@ class _LoanFormState extends State<LoanForm> {
 
   Widget buildTitle(BuildContext context) {
     return TextFormField(
+      controller: titleTextController,
       decoration: InputDecoration(
         labelText: "#Title",
         isDense: true,
       ),
+      validator: (value) {
+        if (value.trim().isEmpty) return "#This field cannot be empty";
+        return null;
+      },
       maxLength: 50,
     );
   }
