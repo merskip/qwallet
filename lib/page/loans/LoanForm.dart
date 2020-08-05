@@ -20,13 +20,13 @@ class _LoanFormState extends State<LoanForm> {
 
   List<User> users;
 
-  final lenderTextController = TextEditingController();
-  final lenderFocus = FocusNode();
-  User lenderUser;
-
   final borrowerTextController = TextEditingController();
   final borrowerFocus = FocusNode();
   User borrowerUser;
+
+  final lenderTextController = TextEditingController();
+  final lenderFocus = FocusNode();
+  User lenderUser;
 
   String personsValidationMessage;
 
@@ -45,14 +45,14 @@ class _LoanFormState extends State<LoanForm> {
     initCurrency();
     _configureDate();
     _formatUserCommonName(
-      lenderTextController,
-      lenderFocus,
-      () => lenderUser,
-    );
-    _formatUserCommonName(
       borrowerTextController,
       borrowerFocus,
       () => borrowerUser,
+    );
+    _formatUserCommonName(
+      lenderTextController,
+      lenderFocus,
+      () => lenderUser,
     );
     super.initState();
   }
@@ -169,19 +169,12 @@ class _LoanFormState extends State<LoanForm> {
     return Form(
       key: _formKey,
       child: Column(children: [
-        buildLenderField(context),
+        buildBorrowerField(context),
         SizedBox(height: 16),
         Icon(Icons.arrow_downward, color: Theme.of(context).primaryColor),
         SizedBox(height: 16),
-        buildBorrowerField(context),
-        if (personsValidationMessage != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 16.0),
-            child: Text(
-              personsValidationMessage,
-              style: TextStyle(color: Theme.of(context).errorColor),
-            ),
-          ),
+        buildLenderField(context),
+        if (personsValidationMessage != null) buildValidationMessage(context),
         SizedBox(height: 16),
         Divider(),
         SizedBox(height: 16),
@@ -199,18 +192,6 @@ class _LoanFormState extends State<LoanForm> {
     );
   }
 
-  Widget buildLenderField(BuildContext context) {
-    return buildUserTextField(
-      context: context,
-      title: "#Lender",
-      selectTitle: "#Select lender",
-      controller: lenderTextController,
-      focusNode: lenderFocus,
-      user: lenderUser,
-      onSelectedUser: (user) => setState(() => this.lenderUser = user),
-    );
-  }
-
   Widget buildBorrowerField(BuildContext context) {
     return buildUserTextField(
       context: context,
@@ -220,6 +201,18 @@ class _LoanFormState extends State<LoanForm> {
       focusNode: borrowerFocus,
       user: borrowerUser,
       onSelectedUser: (user) => setState(() => this.borrowerUser = user),
+    );
+  }
+
+  Widget buildLenderField(BuildContext context) {
+    return buildUserTextField(
+      context: context,
+      title: "#Lender",
+      selectTitle: "#Select lender",
+      controller: lenderTextController,
+      focusNode: lenderFocus,
+      user: lenderUser,
+      onSelectedUser: (user) => setState(() => this.lenderUser = user),
     );
   }
 
@@ -281,6 +274,16 @@ class _LoanFormState extends State<LoanForm> {
             user.getCommonName(context).toLowerCase() == text.toLowerCase(),
         orElse: () => null,
       );
+
+  Widget buildValidationMessage(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: Text(
+        personsValidationMessage,
+        style: TextStyle(color: Theme.of(context).errorColor),
+      ),
+    );
+  }
 
   Widget buildAmount(BuildContext context) {
     return TextFormField(
