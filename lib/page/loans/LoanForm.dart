@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:qwallet/Currency.dart';
 import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
+import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/page/UserChoicePage.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
@@ -22,9 +25,12 @@ class _LoanFormState extends State<LoanForm> {
   final borrowerTextController = TextEditingController();
   User borrowerUser;
 
+  Currency currency;
+
   @override
   void initState() {
     initUsers();
+    initCurrency();
     super.initState();
   }
 
@@ -33,10 +39,29 @@ class _LoanFormState extends State<LoanForm> {
     setState(() => this.users = users);
   }
 
+  initCurrency() {
+    final currentLocale = Intl.getCurrentLocale();
+
+    currency = Currency.all
+        .firstWhere((currency) => currency.locales.contains(currentLocale));
+  }
+
   @override
   void dispose() {
     lenderTextController.dispose();
     super.dispose();
+  }
+
+  void onSelectedCurrency(BuildContext context) async {
+    final selectedCurrency = await pushPage(
+      context,
+      builder: (context) => CurrencySelectionPage(
+        selectedCurrency: currency,
+      ),
+    );
+    if (selectedCurrency != null) {
+      setState(() => this.currency = selectedCurrency);
+    }
   }
 
   void onSelectedSubmit(BuildContext context) async {
@@ -142,7 +167,14 @@ class _LoanFormState extends State<LoanForm> {
     return TextFormField(
       decoration: InputDecoration(
         labelText: "#Amount",
+        suffixIcon: FlatButton(
+          child: Text(currency?.symbol),
+          textColor: Theme.of(context).primaryColor,
+          onPressed: () => onSelectedCurrency(context),
+        ),
       ),
+      textAlign: TextAlign.end,
+      keyboardType: TextInputType.number,
     );
   }
 
@@ -152,6 +184,7 @@ class _LoanFormState extends State<LoanForm> {
         labelText: "#Title",
         isDense: true,
       ),
+      maxLength: 50,
     );
   }
 
