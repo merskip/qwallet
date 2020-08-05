@@ -27,10 +27,15 @@ class _LoanFormState extends State<LoanForm> {
 
   Currency currency;
 
+  final dateFocus = FocusNode();
+  final dateController = TextEditingController();
+  DateTime date = getDateWithoutTime(DateTime.now());
+
   @override
   void initState() {
     initUsers();
     initCurrency();
+    _configureDate();
     super.initState();
   }
 
@@ -46,9 +51,36 @@ class _LoanFormState extends State<LoanForm> {
         .firstWhere((currency) => currency.locales.contains(currentLocale));
   }
 
+  _configureDate() {
+    dateController.text = getFormattedDate(date);
+
+    dateFocus.addListener(() async {
+      if (dateFocus.hasFocus) {
+        final date = await showDatePicker(
+          context: context,
+          initialDate: this.date,
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2100),
+        );
+        dateFocus.nextFocus();
+        if (date != null) {
+          dateController.text = getFormattedDate(date);
+          setState(() => this.date = date);
+        }
+      }
+    });
+  }
+
+  String getFormattedDate(DateTime date) {
+    return DateFormat("d MMMM yyyy").format(date);
+  }
+
   @override
   void dispose() {
     lenderTextController.dispose();
+    borrowerTextController.dispose();
+    dateController.dispose();
+    dateFocus.dispose();
     super.dispose();
   }
 
@@ -190,6 +222,8 @@ class _LoanFormState extends State<LoanForm> {
 
   Widget buildDate(BuildContext context) {
     return TextFormField(
+      controller: dateController,
+      focusNode: dateFocus,
       decoration: InputDecoration(
         labelText: "#Date",
         isDense: true,
