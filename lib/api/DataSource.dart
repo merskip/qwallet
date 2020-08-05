@@ -307,8 +307,12 @@ extension CategoriesDataSource on DataSource {
 
 extension PrivateLoansDataSource on DataSource {
   Stream<List<PrivateLoan>> getPrivateLoans() {
-    return firestore.collection("privateLoans").snapshots().map(
-        (snapshot) => snapshot.documents.map((s) => PrivateLoan(s)).toList());
+    return firestore
+        .collection("privateLoans")
+        .orderBy("date", descending: false)
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.documents.map((s) => PrivateLoan(s)).toList());
   }
 
   Future<void> addPrivateLoan({
