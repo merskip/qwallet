@@ -126,7 +126,7 @@ class _LoanFormState extends State<LoanForm> {
   }
 
   void onSelectedSubmit(BuildContext context) async {
-    personsValidationMessage = null;
+    setState(() => personsValidationMessage = null);
     if (_formKey.currentState.validate() && _validPersons()) {
       // TODO: Impl
     }
@@ -135,7 +135,14 @@ class _LoanFormState extends State<LoanForm> {
   bool _validPersons() {
     if (lenderUser != User.currentUser() &&
         borrowerUser != User.currentUser()) {
-      personsValidationMessage = "You yourself must be lender or borrower";
+      setState(() => personsValidationMessage =
+          "#You yourself must be lender or borrower");
+      return false;
+    }
+
+    if (lenderUser == borrowerUser) {
+      setState(() => personsValidationMessage =
+          "#Lender and borrower cannot be the same person");
       return false;
     }
     return true;
