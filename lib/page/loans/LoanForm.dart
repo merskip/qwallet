@@ -24,8 +24,6 @@ class _LoanFormState extends State<LoanForm> {
 
   @override
   void initState() {
-    lenderUser = User.currentUser();
-    lenderTextController.text = lenderUser.getCommonName(null);
     initUsers();
     super.initState();
   }
@@ -129,25 +127,14 @@ class _LoanFormState extends State<LoanForm> {
                 child: UserAvatar(user: user),
               )
             : null,
-        suffixIcon: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (user != null)
-              IconButton(
-                icon: Icon(
-                  Icons.cancel,
-                  color: Colors.grey,
-                ),
-                onPressed: () => onSelectedUser(null),
-                visualDensity: VisualDensity.compact,
-              ),
-            IconButton(
-              icon: Icon(Icons.person),
-              onPressed: onSelectedSelectUser,
-            ),
-          ],
+        suffixIcon: IconButton(
+          icon: Icon(Icons.person),
+          onPressed: () => users != null ? onSelectedSelectUser() : null,
         ),
       ),
+      onChanged: (value) {
+        if (value != null) onSelectedUser(null);
+      },
     );
   }
 
