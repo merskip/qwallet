@@ -20,10 +20,14 @@ class _LoanFormState extends State<LoanForm> {
   List<User> users;
 
   final lenderTextController = TextEditingController();
+  final lenderFocus = FocusNode();
   User lenderUser;
 
   final borrowerTextController = TextEditingController();
+  final borrowerFocus = FocusNode();
   User borrowerUser;
+
+  String personsValidationMessage;
 
   Currency currency;
 
@@ -36,6 +40,16 @@ class _LoanFormState extends State<LoanForm> {
     initUsers();
     initCurrency();
     _configureDate();
+    _formatUserCommonName(
+      lenderTextController,
+      lenderFocus,
+      () => lenderUser,
+    );
+    _formatUserCommonName(
+      borrowerTextController,
+      borrowerFocus,
+      () => borrowerUser,
+    );
     super.initState();
   }
 
@@ -75,10 +89,25 @@ class _LoanFormState extends State<LoanForm> {
     return DateFormat("d MMMM yyyy").format(date);
   }
 
+  void _formatUserCommonName(
+    TextEditingController controller,
+    FocusNode focusNode,
+    User getUser(),
+  ) {
+    focusNode.addListener(() {
+      final user = getUser();
+      if (!focusNode.hasFocus && user != null) {
+        controller.text = user.getCommonName(null);
+      }
+    });
+  }
+
   @override
   void dispose() {
     lenderTextController.dispose();
+    lenderFocus.dispose();
     borrowerTextController.dispose();
+    borrowerFocus.dispose();
     dateController.dispose();
     dateFocus.dispose();
     super.dispose();
@@ -97,7 +126,19 @@ class _LoanFormState extends State<LoanForm> {
   }
 
   void onSelectedSubmit(BuildContext context) async {
-    // TODO: Impl
+    personsValidationMessage = null;
+    if (_formKey.currentState.validate() && _validPersons()) {
+      // TODO: Impl
+    }
+  }
+
+  bool _validPersons() {
+    if (lenderUser != User.currentUser() &&
+        borrowerUser != User.currentUser()) {
+      personsValidationMessage = "You yourself must be lender or borrower";
+      return false;
+    }
+    return true;
   }
 
   @override
@@ -110,6 +151,14 @@ class _LoanFormState extends State<LoanForm> {
         Icon(Icons.arrow_downward, color: Theme.of(context).primaryColor),
         SizedBox(height: 16),
         buildBorrowerField(context),
+        if (personsValidationMessage != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: Text(
+              personsValidationMessage,
+              style: TextStyle(color: Theme.of(context).errorColor),
+            ),
+          ),
         SizedBox(height: 16),
         Divider(),
         SizedBox(height: 16),
@@ -133,6 +182,7 @@ class _LoanFormState extends State<LoanForm> {
       title: "#Lender",
       selectTitle: "#Select lender",
       controller: lenderTextController,
+      focusNode: lenderFocus,
       user: lenderUser,
       onSelectedUser: (user) => setState(() => this.lenderUser = user),
     );
@@ -144,6 +194,7 @@ class _LoanFormState extends State<LoanForm> {
       title: "#Borrower",
       selectTitle: "#Select borrower",
       controller: borrowerTextController,
+      focusNode: borrowerFocus,
       user: borrowerUser,
       onSelectedUser: (user) => setState(() => this.borrowerUser = user),
     );
@@ -152,6 +203,7 @@ class _LoanFormState extends State<LoanForm> {
   Widget buildUserTextField({
     BuildContext context,
     TextEditingController controller,
+    FocusNode focusNode,
     String title,
     String selectTitle,
     User user,
@@ -176,6 +228,7 @@ class _LoanFormState extends State<LoanForm> {
 
     return TextFormField(
       controller: controller,
+      focusNode: focusNode,
       decoration: InputDecoration(
         labelText: title,
         prefixIcon: user != null
@@ -189,11 +242,22 @@ class _LoanFormState extends State<LoanForm> {
           onPressed: () => users != null ? onSelectedSelectUser() : null,
         ),
       ),
-      onChanged: (value) {
-        if (value != null) onSelectedUser(null);
+      onChanged: (text) {
+        final matchedUser = getMatchedUser(text);
+        if (user != matchedUser) onSelectedUser(matchedUser);
+      },
+      validator: (value) {
+        if (value.trim().isEmpty) return "#This field cannot be empty";
+        return null;
       },
     );
   }
+
+  User getMatchedUser(String text) => users?.firstWhere(
+        (user) =>
+            user.getCommonName(context).toLowerCase() == text.toLowerCase(),
+        orElse: () => null,
+      );
 
   Widget buildAmount(BuildContext context) {
     return TextFormField(
@@ -207,6 +271,12 @@ class _LoanFormState extends State<LoanForm> {
       ),
       textAlign: TextAlign.end,
       keyboardType: TextInputType.number,
+      validator: (value) {
+        final amount = parseAmount(value);
+        if (amount == null) return "#Enter a amount";
+        if (amount <= 0) return "#Amount must be greater then zero";
+        return null;
+      },
     );
   }
 
