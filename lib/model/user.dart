@@ -63,3 +63,10 @@ class User {
   @override
   int get hashCode => uid.hashCode;
 }
+
+extension UsersList on List<User> {
+  User getByUid(String uid) => firstWhere(
+        (user) => user.uid == uid,
+        orElse: () => null,
+      );
+}

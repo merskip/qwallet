@@ -348,17 +348,31 @@ extension PrivateLoansDataSource on DataSource {
 
   Future<void> updatePrivateLoan({
     @required Reference<PrivateLoan> loanRef,
+    String lenderUid,
+    String lenderName,
+    String borrowerUid,
+    String borrowerName,
     double amount,
     Currency currency,
     String title,
     DateTime date,
   }) {
     return loanRef.documentReference.update({
+      "lenderUid": lenderUid,
+      "lenderName": lenderName,
+      "borrowerUid": borrowerUid,
+      "borrowerName": borrowerName,
       "amount": amount,
       "currency": currency.symbol,
       "title": title,
       "date": date.toTimestamp(),
     });
+  }
+
+  Future<void> removePrivateLoan({
+    @required Reference<PrivateLoan> loanRef,
+  }) {
+    return loanRef.documentReference.delete();
   }
 }
 
