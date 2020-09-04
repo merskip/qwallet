@@ -53,7 +53,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   _initOwners() async {
-    final users = await DataSource.instance.fetchUsers();
+    final users = await DataSource.instance.getUsers();
     final currentUser = users
         .firstWhere((user) => user.uid == DataSource.instance.currentUser.uid);
     setState(() {

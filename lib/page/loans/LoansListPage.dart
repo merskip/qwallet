@@ -10,13 +10,17 @@ import 'package:rxdart/rxdart.dart';
 import '../../AppLocalizations.dart';
 
 class LoansListPage extends StatelessWidget {
+  void onSelectedLoan(BuildContext context, PrivateLoan loan) {
+    router.navigateTo(context, "/privateLoans/${loan.id}/edit");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SimpleStreamWidget(
         stream: CombineLatestStream.list([
           DataSource.instance.getPrivateLoans(),
-          DataSource.instance.fetchUsers().asStream(),
+          DataSource.instance.getUsers().asStream(),
         ]),
         builder: (context, values) => buildLoansList(
           context,
@@ -44,16 +48,19 @@ class LoansListPage extends StatelessWidget {
   Widget buildLoan(BuildContext context, PrivateLoan loan, List<User> users) {
     return Card(
       margin: EdgeInsets.all(16).copyWith(bottom: 0),
-      child: Column(
-        children: [
-          buildDate(context, loan),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: buildBorrowerAndLender(context, loan, users),
-          ),
-          buildAmount(context, loan),
-          buildTitle(context, loan),
-        ],
+      child: InkWell(
+        onTap: () => onSelectedLoan(context, loan),
+        child: Column(
+          children: [
+            buildDate(context, loan),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: buildBorrowerAndLender(context, loan, users),
+            ),
+            buildAmount(context, loan),
+            buildTitle(context, loan),
+          ],
+        ),
       ),
     );
   }

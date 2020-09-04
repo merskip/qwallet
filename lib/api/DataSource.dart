@@ -20,6 +20,8 @@ class DataSource {
   final firestore = Firestore.FirebaseFirestore.instance;
   User currentUser;
 
+  List<User> _cachedUsers;
+
   DataSource._privateConstructor();
 }
 
@@ -313,6 +315,15 @@ extension PrivateLoansDataSource on DataSource {
         .map((snapshot) => snapshot.docs.map((s) => PrivateLoan(s)).toList());
   }
 
+  Reference<PrivateLoan> getPrivateLoanReference(String id) {
+    return Reference(firestore.collection("privateLoans").doc(id));
+  }
+
+  Stream<PrivateLoan> getPrivateLoan({
+    @required Reference<PrivateLoan> privateLoan,
+  }) =>
+      privateLoan.documentReference.snapshots().map((s) => PrivateLoan(s));
+
   Future<void> addPrivateLoan({
     String lenderUid,
     String lenderName,
@@ -328,8 +339,23 @@ extension PrivateLoansDataSource on DataSource {
       "lenderName": lenderName,
       "borrowerUid": borrowerUid,
       "borrowerName": borrowerName,
-      "currency": currency.symbol,
       "amount": amount,
+      "currency": currency.symbol,
+      "title": title,
+      "date": date.toTimestamp(),
+    });
+  }
+
+  Future<void> updatePrivateLoan({
+    @required Reference<PrivateLoan> loanRef,
+    double amount,
+    Currency currency,
+    String title,
+    DateTime date,
+  }) {
+    return loanRef.documentReference.update({
+      "amount": amount,
+      "currency": currency.symbol,
       "title": title,
       "date": date.toTimestamp(),
     });
@@ -337,7 +363,14 @@ extension PrivateLoansDataSource on DataSource {
 }
 
 extension UsersDataSource on DataSource {
-  Future<List<User>> fetchUsers({bool includeAnonymous = false}) async {
+  Future<List<User>> getUsers() async {
+    if (_cachedUsers != null) return _cachedUsers;
+    final users = await _fetchUsers();
+    _cachedUsers = users;
+    return users;
+  }
+
+  Future<List<User>> _fetchUsers() async {
     final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
       functionName: "getUsers",
     );
@@ -346,13 +379,19 @@ extension UsersDataSource on DataSource {
 
     return content
         .map((item) => User.fromJson(item.cast<String, dynamic>()))
-        .where((user) => includeAnonymous ? true : !user.isAnonymous)
+        .where((user) => !user.isAnonymous)
         .toList();
+  }
+
+  Future<User> getUserByUid(String userUid) async {
+    // TODO: Optimize
+    final users = await getUsers();
+    return users.firstWhere((user) => user.uid == userUid);
   }
 
   Future<List<User>> getUsersByUids(List<String> usersUids) async {
     // TODO: Optimize
-    final users = await fetchUsers();
+    final users = await getUsers();
     return usersUids
         .map((userUid) => users.firstWhere((user) => user.uid == userUid))
         .toList();

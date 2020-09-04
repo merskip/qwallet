@@ -8,6 +8,7 @@ import 'package:qwallet/page/TransactionPage.dart';
 import 'package:qwallet/page/WalletPage.dart';
 import 'package:qwallet/page/WalletsPage.dart';
 import 'package:qwallet/page/loans/AddLoanPage.dart';
+import 'package:qwallet/page/loans/EditLoanPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import 'api/Model.dart';
@@ -166,6 +167,18 @@ void initRoutes(Router router) {
     handler: Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
       return AddLoanPage();
+    }),
+  );
+
+  router.define(
+    "/privateLoans/:loanId/edit",
+    transitionType: TransitionType.nativeModal,
+    handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      final loanId = params["loanId"][0];
+      return EditLoanPage(
+        loanRef: DataSource.instance.getPrivateLoanReference(loanId),
+      );
     }),
   );
 }
