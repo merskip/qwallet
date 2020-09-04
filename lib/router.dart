@@ -24,7 +24,7 @@ import 'page/landing_page.dart';
 
 final router = Router();
 
-void defineRoutes(Router router) {
+void initRoutes(Router router) {
   router.define(
     "/",
     handler: Handler(

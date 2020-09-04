@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart' as Could;
+import 'package:cloud_firestore/cloud_firestore.dart' as Firestore;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
@@ -17,7 +17,7 @@ import 'Wallet.dart';
 class DataSource {
   static final DataSource instance = DataSource._privateConstructor();
 
-  Could.Firestore firestore = Could.Firestore.instance;
+  final firestore = Firestore.FirebaseFirestore.instance;
   User currentUser;
 
   DataSource._privateConstructor();
@@ -32,17 +32,17 @@ extension WalletsDataSource on DataSource {
         .collection("wallets")
         .where("ownersUid", arrayContains: currentUser.uid)
         .snapshots()
-        .map((snapshot) => snapshot.documents.map((s) => Wallet(s)).toList());
+        .map((snapshot) => snapshot.docs.map((s) => Wallet(s)).toList());
   }
 
   Reference<Wallet> getWalletReference(String id) {
-    return Reference(firestore.collection("wallets").document(id));
+    return Reference(firestore.collection("wallets").doc(id));
   }
 
   Stream<Wallet> getWallet(Reference<Wallet> walletRef) {
     return firestore
         .collection("wallets")
-        .document(walletRef.documentReference.documentID)
+        .doc(walletRef.documentReference.id)
         .snapshots()
         .map((s) => Wallet(s));
   }
@@ -89,14 +89,14 @@ extension WalletsDataSource on DataSource {
         income: () => totalIncome += transaction.amount,
       )();
     }
-    wallet.reference.documentReference.updateData({
+    wallet.reference.documentReference.update({
       'totalExpense': totalExpense,
       'totalIncome': totalIncome,
     });
   }
 
   Future<void> removeWallet(Reference<Wallet> wallet) {
-    return firestore.collection("wallets").document(wallet.id).delete();
+    return firestore.collection("wallets").doc(wallet.id).delete();
   }
 }
 
@@ -111,8 +111,7 @@ extension TransactionsDataSource on DataSource {
         .where("date", isLessThanOrEqualTo: range.end.toTimestamp())
         .orderBy("date", descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.documents.map((s) => Transaction(s)).toList());
+        .map((snapshot) => snapshot.docs.map((s) => Transaction(s)).toList());
   }
 
   Stream<List<Transaction>> getTransactions({
@@ -128,7 +127,7 @@ extension TransactionsDataSource on DataSource {
       query = query.startAfterDocument(afterTransaction.documentSnapshot);
 
     return query.snapshots().map((snapshot) {
-      return snapshot.documents.map((s) => Transaction(s)).toList();
+      return snapshot.docs.map((s) => Transaction(s)).toList();
     });
   }
 
@@ -137,7 +136,7 @@ extension TransactionsDataSource on DataSource {
     @required String id,
   }) {
     return Reference(
-        wallet.documentReference.collection("transactions").document(id));
+        wallet.documentReference.collection("transactions").doc(id));
   }
 
   Stream<Transaction> getTransaction(Reference<Transaction> transaction) =>
@@ -152,21 +151,21 @@ extension TransactionsDataSource on DataSource {
     DateTime date,
   }) async {
     final transactionRef =
-        wallet.documentReference.collection("transactions").document();
+        wallet.documentReference.collection("transactions").doc();
     await firestore.runTransaction((transaction) async {
       transaction.set(transactionRef, {
         "type": type.rawValue,
         "title": title.nullIfEmpty(),
         "amount": amount,
         "category": category?.documentReference,
-        "date": Could.Timestamp.fromDate(date),
+        "date": Firestore.Timestamp.fromDate(date),
       });
 
       transaction.update(wallet.documentReference, {
         if (type == TransactionType.expense)
-          "totalExpense": Could.FieldValue.increment(amount),
+          "totalExpense": Firestore.FieldValue.increment(amount),
         if (type == TransactionType.income)
-          "totalIncome": Could.FieldValue.increment(amount),
+          "totalIncome": Firestore.FieldValue.increment(amount),
       });
     });
     return Reference<Transaction>(transactionRef);
@@ -187,7 +186,7 @@ extension TransactionsDataSource on DataSource {
         if (type != null) 'type': type.rawValue,
         if (title != null) 'title': title,
         if (amount != null) 'amount': amount,
-        if (date != null) 'date': Could.Timestamp.fromDate(date),
+        if (date != null) 'date': Firestore.Timestamp.fromDate(date),
       });
 
       if (amount != null || type != null) {
@@ -218,8 +217,8 @@ extension TransactionsDataSource on DataSource {
         }
 
         updateTransaction.update(walletRef.documentReference, {
-          "totalExpense": Could.FieldValue.increment(expensesIncrement),
-          "totalIncome": Could.FieldValue.increment(incomesIncrement),
+          "totalExpense": Firestore.FieldValue.increment(expensesIncrement),
+          "totalIncome": Firestore.FieldValue.increment(incomesIncrement),
         });
       }
     });
@@ -235,9 +234,9 @@ extension TransactionsDataSource on DataSource {
 
       removeTransaction.update(walletRef.documentReference, {
         if (transaction.type == TransactionType.expense)
-          "totalExpense": Could.FieldValue.increment(-transaction.amount),
+          "totalExpense": Firestore.FieldValue.increment(-transaction.amount),
         if (transaction.type == TransactionType.income)
-          "totalIncome": Could.FieldValue.increment(-transaction.amount),
+          "totalIncome": Firestore.FieldValue.increment(-transaction.amount),
       });
     });
   }
@@ -251,7 +250,7 @@ extension CategoriesDataSource on DataSource {
         .collection("categories")
         .snapshots()
         .map((snapshot) {
-      return snapshot.documents.map((s) => Category(s)).toList()
+      return snapshot.docs.map((s) => Category(s)).toList()
         ..sort((lhs, rhs) =>
             lhs.title.toLowerCase().compareTo(rhs.title.toLowerCase()));
     });
@@ -288,7 +287,7 @@ extension CategoriesDataSource on DataSource {
     Color backgroundColor,
     IconData icon,
   }) {
-    return category.documentReference.updateData({
+    return category.documentReference.update({
       "title": title,
       "primaryColor": primaryColor.toHex(),
       "backgroundColor": backgroundColor.toHex(),
@@ -311,8 +310,7 @@ extension PrivateLoansDataSource on DataSource {
         .collection("privateLoans")
         .orderBy("date", descending: false)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.documents.map((s) => PrivateLoan(s)).toList());
+        .map((snapshot) => snapshot.docs.map((s) => PrivateLoan(s)).toList());
   }
 
   Future<void> addPrivateLoan({
@@ -362,7 +360,7 @@ extension UsersDataSource on DataSource {
 }
 
 extension DateTimeUtils on DateTime {
-  Could.Timestamp toTimestamp() => Could.Timestamp.fromDate(this);
+  Firestore.Timestamp toTimestamp() => Firestore.Timestamp.fromDate(this);
 }
 
 DateTimeRange getTodayDateTimeRange() {

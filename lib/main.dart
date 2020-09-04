@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,10 @@ import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/router.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
   FlutterError.onError = (details) {
     FlutterError.dumpErrorToConsole(details);
     Crashlytics.instance.recordFlutterError(details);
@@ -28,11 +32,11 @@ void main() {
 
 class MyApp extends StatelessWidget {
   MyApp() : super() {
-    defineRoutes(router);
+    initRoutes(router);
+    initFirebase();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  void initFirebase() {
     if (!kIsWeb) {
       if (Platform.isAndroid) {
         FirebaseAdMob.instance
@@ -42,7 +46,10 @@ class MyApp extends StatelessWidget {
             .initialize(appId: "ca-app-pub-2023507573427187~6712451384");
       }
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return StreamBuilder(
         stream: LocalPreferences.userPreferences,
         initialData: UserPreferences.empty(),
