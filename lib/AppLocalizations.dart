@@ -471,8 +471,8 @@ extension AddTransactionLocalizations on AppLocalizations {
 
 extension TransactionsCardLocalizations on AppLocalizations {
   String get transactionsCardTransactionsEmpty => _locale(
-        en: "There are no expenses or incomes",
-        pl: "Nie ma żadnych wydatków ani dochodów",
+        en: "There are no expenses or incomes in last time",
+        pl: "W ostatnim czasie nie ma żadnych wydatków ani dochodów",
       );
 
   String get transactionsCardToday => _locale(
