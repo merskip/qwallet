@@ -5,5 +5,5 @@ class TypedQuerySnapshot<T> {
   final List<T> values;
 
   TypedQuerySnapshot({this.snapshot, T Function(DocumentSnapshot) mapper})
-      : values = snapshot.documents.map((item) => mapper(item)).toList();
+      : values = snapshot.docs.map((item) => mapper(item)).toList();
 }

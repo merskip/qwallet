@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Reference<T> {
   DocumentReference documentReference;
 
-  String get id => documentReference.documentID;
+  String get id => documentReference.id;
 
   Reference(this.documentReference);
 

@@ -52,17 +52,18 @@ class SimpleStreamWidget<T> extends StatelessWidget {
   _error(AsyncSnapshot<T> snapshot) {
     final error = snapshot.error as Error;
 
-    return Center(
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(children: <Widget>[
-          Icon(Icons.error, size: 48, color: Colors.red.shade500),
+          Icon(Icons.error_outline, size: 48, color: Colors.red.shade500),
+          SizedBox(height: 16),
           Text(
             "Error: $error\n\n${error.stackTrace}",
             style: TextStyle(
               fontFamily: Platform.isIOS ? "Courier" : "monospace",
               color: Colors.red.shade400,
-              fontSize: 24,
+              fontSize: 12,
             ),
           ),
         ]),
@@ -73,8 +74,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
   Widget buildLoading(BuildContext context) {
     if (loadingBuilder != null) {
       return loadingBuilder(context);
-    }
-    else {
+    } else {
       return Center(
         child: CircularProgressIndicator(),
       );

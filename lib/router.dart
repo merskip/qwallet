@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -139,9 +137,9 @@ void initRoutes(Router router) {
 
       final categoryRef = DataSource.instance.firestore
           .collection("wallets")
-          .document(walletId)
+          .doc(walletId)
           .collection("categories")
-          .document(categoryId)
+          .doc(categoryId)
           .toReference<Category>();
 
       return EditCategoryPage(
@@ -169,20 +167,5 @@ void initRoutes(Router router) {
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
       return AddLoanPage();
     }),
-  );
-}
-
-typedef DataBuilder<T> = Widget Function(BuildContext context, T data);
-
-Widget _pageOrLoading<T>(Future<T> future, {@required DataBuilder<T> builder}) {
-  return FutureBuilder(
-    future: future,
-    builder: (context, AsyncSnapshot<T> snapshot) {
-      if (snapshot.hasData) {
-        return builder(context, snapshot.data);
-      } else {
-        return Center(child: CircularProgressIndicator());
-      }
-    },
   );
 }

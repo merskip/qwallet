@@ -85,18 +85,20 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Widget _mobileBetaAccessPanel() {
-    return Column(
-        children: [
+    return Column(children: [
       Text("Get early access to mobile QWallet beta",
-      style: Theme.of(context).primaryTextTheme.headline4.copyWith(fontSize: 20)),
+          style: Theme.of(context)
+              .primaryTextTheme
+              .headline4
+              .copyWith(fontSize: 20)),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           HandCursor(
             child: RaisedButton(
                 child: Text("Android"),
-                onPressed: () =>
-                    _openUrl("https://appdistribution.firebase.dev/i/RmhybzSD")),
+                onPressed: () => _openUrl(
+                    "https://appdistribution.firebase.dev/i/RmhybzSD")),
           ),
           SizedBox(width: 24),
           HandCursor(
@@ -132,7 +134,7 @@ class _SignInPageState extends State<SignInPage> {
       final signInAccount = await _googleSignIn.signIn();
       final authentication = await signInAccount.authentication;
 
-      final AuthCredential credential = GoogleAuthProvider.getCredential(
+      final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: authentication.accessToken,
         idToken: authentication.idToken,
       );
