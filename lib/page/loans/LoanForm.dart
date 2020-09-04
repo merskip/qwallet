@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/page/UserChoicePage.dart';
@@ -58,7 +57,7 @@ class _LoanFormState extends State<LoanForm> {
   }
 
   initUsers() async {
-    final users = await FirebaseService.instance.fetchUsers();
+    final users = await DataSource.instance.fetchUsers();
     setState(() => this.users = users);
   }
 

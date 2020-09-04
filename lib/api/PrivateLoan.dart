@@ -14,15 +14,15 @@ class PrivateLoan extends Model<PrivateLoan> {
   final Money amount;
 
   PrivateLoan(DocumentSnapshot snapshot)
-      : this.title = snapshot.data["title"],
-        this.date = (snapshot.data["date"] as Timestamp).toDate(),
-        this.lenderUid = snapshot.data["lenderUid"],
-        this.lenderName = snapshot.data["lenderName"],
-        this.borrowerUid = snapshot.data["borrowerUid"],
-        this.borrowerName = snapshot.data["borrowerName"],
+      : this.title = snapshot.get("title"),
+        this.date = (snapshot.get("date") as Timestamp).toDate(),
+        this.lenderUid = snapshot.get("lenderUid"),
+        this.lenderName = snapshot.get("lenderName"),
+        this.borrowerUid = snapshot.get("borrowerUid"),
+        this.borrowerName = snapshot.get("borrowerName"),
         this.amount = Money(
-          toDouble(snapshot.data['amount']),
-          Currency.fromSymbol(snapshot.data["currency"]),
+          toDouble(snapshot.get("amount")),
+          Currency.fromSymbol(snapshot.get("currency")),
         ),
         super(snapshot);
 }

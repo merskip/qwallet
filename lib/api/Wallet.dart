@@ -15,12 +15,12 @@ class Wallet extends Model<Wallet> {
       Money(totalIncome.amount - totalExpense.amount, currency);
 
   Wallet(DocumentSnapshot snapshot)
-      : this.name = snapshot.data["name"],
-        this.ownersUid = snapshot.data["ownersUid"].cast<String>(),
-        this.currency = Currency.fromSymbol(snapshot.data["currency"]),
-        this.totalExpense = Money(toDouble(snapshot.data["totalExpense"]),
-            Currency.fromSymbol(snapshot.data["currency"])),
-        this.totalIncome = Money(toDouble(snapshot.data["totalIncome"]),
-            Currency.fromSymbol(snapshot.data["currency"])),
+      : this.name = snapshot.get("name"),
+        this.ownersUid = snapshot.get("ownersUid").cast<String>(),
+        this.currency = Currency.fromSymbol(snapshot.get("currency")),
+        this.totalExpense = Money(toDouble(snapshot.get("totalExpense")),
+            Currency.fromSymbol(snapshot.get("currency"))),
+        this.totalIncome = Money(toDouble(snapshot.get("totalIncome")),
+            Currency.fromSymbol(snapshot.get("currency"))),
         super(snapshot);
 }

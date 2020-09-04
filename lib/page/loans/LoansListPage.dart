@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
-import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -20,7 +19,7 @@ class LoansListPage extends StatelessWidget {
       body: SimpleStreamWidget(
         stream: CombineLatestStream.list([
           DataSource.instance.getPrivateLoans(),
-          FirebaseService.instance.fetchUsers().asStream(),
+          DataSource.instance.fetchUsers().asStream(),
         ]),
         builder: (context, values) => buildLoansList(
           context,

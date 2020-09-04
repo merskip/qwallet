@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart' as Could;
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
-import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 
 import '../Currency.dart';
@@ -339,9 +339,22 @@ extension PrivateLoansDataSource on DataSource {
 }
 
 extension UsersDataSource on DataSource {
+  Future<List<User>> fetchUsers({bool includeAnonymous = false}) async {
+    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+      functionName: "getUsers",
+    );
+    dynamic response = await callable.call();
+    final content = response.data as List;
+
+    return content
+        .map((item) => User.fromJson(item.cast<String, dynamic>()))
+        .where((user) => includeAnonymous ? true : !user.isAnonymous)
+        .toList();
+  }
+
   Future<List<User>> getUsersByUids(List<String> usersUids) async {
     // TODO: Optimize
-    final users = await FirebaseService.instance.fetchUsers();
+    final users = await fetchUsers();
     return usersUids
         .map((userUid) => users.firstWhere((user) => user.uid == userUid))
         .toList();

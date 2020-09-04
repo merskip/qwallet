@@ -19,11 +19,11 @@ class Transaction extends Model<Transaction> {
   Reference<Category> category;
 
   Transaction(DocumentSnapshot snapshot)
-      : type = TransactionTypeConverting.fromRawValue(snapshot.data['type']),
-        title = toStringOrNull(snapshot.data['title']),
-        amount = toDouble(snapshot.data['amount']),
-        date = snapshot.data['date'],
-        category = Reference.fromNullable(snapshot.data['category']),
+      : type = TransactionTypeConverting.fromRawValue(snapshot.get("type")),
+        title = toStringOrNull(snapshot.get("title")),
+        amount = toDouble(snapshot.get("amount")),
+        date = snapshot.get("date"),
+        category = Reference.fromNullable(snapshot.get("category")),
         super(snapshot);
 
   String getTypeLocalizedText(BuildContext context) => ifType(

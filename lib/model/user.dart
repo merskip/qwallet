@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/DataSource.dart';
@@ -10,7 +10,7 @@ class User {
   final String email;
   final String avatarUrl;
 
-  final FirebaseUser firebaseUser;
+  final auth.User firebaseUser;
 
   User(
       {this.uid,
@@ -32,13 +32,13 @@ class User {
 
   factory User.currentUser() => DataSource.instance.currentUser;
 
-  factory User.fromFirebase(FirebaseUser firebaseUser) {
+  factory User.fromFirebase(auth.User firebaseUser) {
     return User(
       uid: firebaseUser.uid,
       isAnonymous: firebaseUser.isAnonymous,
       displayName: firebaseUser.displayName,
       email: firebaseUser.email,
-      avatarUrl: firebaseUser.photoUrl,
+      avatarUrl: firebaseUser.photoURL,
       firebaseUser: firebaseUser,
     );
   }

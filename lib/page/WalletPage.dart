@@ -14,7 +14,6 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../AppLocalizations.dart';
 import '../Currency.dart';
-import '../firebase_service.dart';
 
 class WalletPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
@@ -70,7 +69,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     final page = UserSelectionPage(
       title: AppLocalizations.of(context).walletOwners,
       selectedUsers: currentOwners,
-      allUsers: await FirebaseService.instance.fetchUsers(),
+      allUsers: await DataSource.instance.fetchUsers(),
     );
     final owners = await pushPage<List<User>>(
       context,

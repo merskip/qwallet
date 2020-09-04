@@ -11,10 +11,10 @@ class Category extends Model<Category> {
   final Color backgroundColor;
 
   Category(DocumentSnapshot documentSnapshot)
-      : title = documentSnapshot.data["title"],
-        icon = _mapToIconData(documentSnapshot.data["icon"]),
-        primaryColor = colorFromHex(documentSnapshot.data["primaryColor"]),
-        backgroundColor = colorFromHex(documentSnapshot.data["backgroundColor"]),
+      : title = documentSnapshot.get("title"),
+        icon = _mapToIconData(documentSnapshot.get("icon")),
+        primaryColor = colorFromHex(documentSnapshot.get("primaryColor")),
+        backgroundColor = colorFromHex(documentSnapshot.get("backgroundColor")),
         super(documentSnapshot);
 
   static IconData _mapToIconData(Map<String, dynamic> iconMap) => IconData(
