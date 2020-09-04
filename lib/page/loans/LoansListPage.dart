@@ -13,9 +13,6 @@ class LoansListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context).privateLoansTitle),
-      ),
       body: SimpleStreamWidget(
         stream: CombineLatestStream.list([
           DataSource.instance.getPrivateLoans(),
