@@ -9,23 +9,39 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../AppLocalizations.dart';
 
-class LoansListPage extends StatelessWidget {
+class LoansListPage extends StatefulWidget {
+  @override
+  _LoansListPageState createState() => _LoansListPageState();
+}
+
+class _LoansListPageState extends State<LoansListPage> {
+  bool isShowArchived = false;
+
   void onSelectedLoan(BuildContext context, PrivateLoan loan) {
     router.navigateTo(context, "/privateLoans/${loan.id}/edit");
+  }
+
+  void onSelectedShowArchived(BuildContext context) {
+    setState(() => this.isShowArchived = true);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SimpleStreamWidget(
-        stream: CombineLatestStream.list([
-          DataSource.instance.getPrivateLoans(),
-          DataSource.instance.getUsers().asStream(),
-        ]),
-        builder: (context, values) => buildLoansList(
-          context,
-          values[0] as List<PrivateLoan>,
-          values[1] as List<User>,
+      body: SafeArea(
+        child: SimpleStreamWidget(
+          stream: CombineLatestStream.list([
+            DataSource.instance.getPrivateLoans(archived: false),
+            DataSource.instance.getUsers().asStream(),
+            if (isShowArchived)
+              DataSource.instance.getPrivateLoans(archived: true),
+          ]),
+          builder: (context, List<dynamic> values) => buildLoansList(
+            context,
+            values[0] as List<PrivateLoan>,
+            values[1] as List<User>,
+            values.length > 2 ? values[2] : null,
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -36,12 +52,48 @@ class LoansListPage extends StatelessWidget {
   }
 
   Widget buildLoansList(
-      BuildContext context, List<PrivateLoan> loans, List<User> users) {
+    BuildContext context,
+    List<PrivateLoan> loans,
+    List<User> users,
+    List<PrivateLoan> archivedLoans,
+  ) {
     return ListView(
       children: [
         ...loans.map((loan) => buildLoan(context, loan, users)),
-        SizedBox(height: 16),
+        if (archivedLoans == null) buildShowArchivedButton(context),
+        if (archivedLoans != null) buildArchivedDivider(context),
+        if (archivedLoans != null)
+          ...archivedLoans.map((loan) => buildLoan(context, loan, users)),
+        SizedBox(height: 96),
       ],
+    );
+  }
+
+  Widget buildShowArchivedButton(BuildContext context) {
+    return Center(
+      child: FlatButton(
+        onPressed: () => onSelectedShowArchived(context),
+        child: Text("Show archived"),
+        textColor: Theme.of(context).primaryColor,
+        visualDensity: VisualDensity.compact,
+      ),
+    );
+  }
+
+  Widget buildArchivedDivider(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: Column(
+        children: [
+          Divider(),
+          Center(
+            child: Text(
+              "#Archived loans",
+              style: Theme.of(context).textTheme.caption,
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -54,7 +106,7 @@ class LoansListPage extends StatelessWidget {
           children: [
             buildDate(context, loan),
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(8.0),
               child: buildBorrowerAndLender(context, loan, users),
             ),
             buildAmount(context, loan),

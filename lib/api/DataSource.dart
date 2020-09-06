@@ -312,7 +312,7 @@ extension PrivateLoansDataSource on DataSource {
   }) {
     return firestore
         .collection("privateLoans")
-        .orderBy("date", descending: false)
+        .orderBy("date", descending: archived)
         .where("isArchived", isEqualTo: archived)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((s) => PrivateLoan(s)).toList());
