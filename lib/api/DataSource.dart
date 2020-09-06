@@ -307,10 +307,13 @@ extension CategoriesDataSource on DataSource {
 }
 
 extension PrivateLoansDataSource on DataSource {
-  Stream<List<PrivateLoan>> getPrivateLoans() {
+  Stream<List<PrivateLoan>> getPrivateLoans({
+    bool archived = false,
+  }) {
     return firestore
         .collection("privateLoans")
         .orderBy("date", descending: false)
+        .where("isArchived", isEqualTo: archived)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((s) => PrivateLoan(s)).toList());
   }
@@ -335,6 +338,7 @@ extension PrivateLoansDataSource on DataSource {
     DateTime date,
   }) {
     return firestore.collection("privateLoans").add({
+      "isArchived": false,
       "lenderUid": lenderUid,
       "lenderName": lenderName,
       "borrowerUid": borrowerUid,
