@@ -1,5 +1,7 @@
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/model/user.dart';
@@ -61,17 +63,12 @@ class LoanFormState extends State<LoanForm> {
 
   Currency currency;
   final amountTextController = TextEditingController();
-
   final titleTextController = TextEditingController();
-
-  final dateFocus = FocusNode();
-  final dateController = TextEditingController();
-  DateTime date = getDateWithoutTime(DateTime.now());
+  DateTime date;
 
   @override
   void initState() {
     initFields();
-    _configureDate();
     _formatUserCommonName(
       borrowerTextController,
       borrowerFocus,
@@ -86,10 +83,15 @@ class LoanFormState extends State<LoanForm> {
   }
 
   initFields() async {
-    final users = await DataSource.instance.getUsers();
     if (widget.initialLoan != null) {
       final loan = widget.initialLoan;
 
+      amountTextController.text = loan.amount.amount.toString();
+      currency = loan.amount.currency;
+      titleTextController.text = loan.title;
+      date = loan.date;
+
+      final users = await DataSource.instance.getUsers();
       lenderUser = users.getByUid(loan.lenderUid);
       lenderTextController.text =
           lenderUser?.getCommonName(context) ?? loan.lenderName;
@@ -97,41 +99,13 @@ class LoanFormState extends State<LoanForm> {
       borrowerUser = users.getByUid(loan.borrowerUid);
       borrowerTextController.text =
           borrowerUser?.getCommonName(context) ?? loan.borrowerName;
-
-      amountTextController.text = loan.amount.amount.toString();
-      currency = loan.amount.currency;
-      titleTextController.text = loan.title;
-      date = loan.date;
+      setState(() => this.users = users);
     } else {
       final currentLocale = Intl.getCurrentLocale();
       currency = Currency.all
           .firstWhere((currency) => currency.locales.contains(currentLocale));
+      date = getDateWithoutTime(DateTime.now());
     }
-    setState(() => this.users = users);
-  }
-
-  _configureDate() {
-    dateController.text = getFormattedDate(date);
-
-    dateFocus.addListener(() async {
-      if (dateFocus.hasFocus) {
-        final date = await showDatePicker(
-          context: context,
-          initialDate: this.date,
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2100),
-        );
-        dateFocus.nextFocus();
-        if (date != null) {
-          dateController.text = getFormattedDate(date);
-          setState(() => this.date = date);
-        }
-      }
-    });
-  }
-
-  String getFormattedDate(DateTime date) {
-    return DateFormat("d MMMM yyyy").format(date);
   }
 
   void _formatUserCommonName(
@@ -155,8 +129,6 @@ class LoanFormState extends State<LoanForm> {
     borrowerFocus.dispose();
     amountTextController.dispose();
     titleTextController.dispose();
-    dateController.dispose();
-    dateFocus.dispose();
     super.dispose();
   }
 
@@ -370,13 +342,23 @@ class LoanFormState extends State<LoanForm> {
   }
 
   Widget buildDate(BuildContext context) {
-    return TextFormField(
-      controller: dateController,
-      focusNode: dateFocus,
+    final locale = AppLocalizations.of(context).locale.toString();
+    final date = this.date ?? DateTime.now();
+    return DateTimeField(
       decoration: InputDecoration(
         labelText: "#Date",
         isDense: true,
       ),
+      format: DateFormat("d MMMM yyyy", locale),
+      initialValue: date,
+      resetIcon: null,
+      onShowPicker: (context, currentValue) => showDatePicker(
+        context: context,
+        initialDate: this.date,
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100),
+      ),
+      onChanged: (date) => setState(() => this.date = date),
     );
   }
 
