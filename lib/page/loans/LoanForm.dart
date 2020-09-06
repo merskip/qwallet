@@ -309,9 +309,9 @@ class LoanFormState extends State<LoanForm> {
       controller: amountTextController,
       decoration: InputDecoration(
         labelText: "#Amount",
-        suffixIcon: FlatButton(
-          child: Text(currency?.symbol ?? ""),
-          textColor: Theme.of(context).primaryColor,
+        suffix: Text(currency.symbol),
+        suffixIcon: IconButton(
+          icon: Icon(Icons.edit),
           onPressed: () => onSelectedCurrency(context),
         ),
       ),
@@ -331,7 +331,6 @@ class LoanFormState extends State<LoanForm> {
       controller: titleTextController,
       decoration: InputDecoration(
         labelText: "#Title",
-        isDense: true,
       ),
       validator: (value) {
         if (value.trim().isEmpty) return "#This field cannot be empty";
