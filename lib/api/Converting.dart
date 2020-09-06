@@ -15,6 +15,10 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
     return _getOrNull(field);
   }
 
+  bool getBool(String field) {
+    return _getOrNull(field);
+  }
+
   double getDouble(String field) {
     final value = _getOrNull(field);
     if (value is double)

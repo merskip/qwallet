@@ -315,14 +315,14 @@ extension PrivateLoansDataSource on DataSource {
         .map((snapshot) => snapshot.docs.map((s) => PrivateLoan(s)).toList());
   }
 
-  Reference<PrivateLoan> getPrivateLoanReference(String id) {
-    return Reference(firestore.collection("privateLoans").doc(id));
-  }
-
-  Stream<PrivateLoan> getPrivateLoan({
-    @required Reference<PrivateLoan> privateLoan,
-  }) =>
-      privateLoan.documentReference.snapshots().map((s) => PrivateLoan(s));
+  Stream<PrivateLoan> getPrivateLoan(
+    String id,
+  ) =>
+      firestore
+          .collection("privateLoans")
+          .doc(id)
+          .snapshots()
+          .map((s) => PrivateLoan(s));
 
   Future<void> addPrivateLoan({
     String lenderUid,
@@ -366,6 +366,15 @@ extension PrivateLoansDataSource on DataSource {
       "currency": currency.symbol,
       "title": title,
       "date": date.toTimestamp(),
+    });
+  }
+
+  Future<void> setPrivateLoanArchived({
+    @required Reference<PrivateLoan> loanRef,
+    bool isArchived,
+  }) {
+    return loanRef.documentReference.update({
+      "isArchived": isArchived,
     });
   }
 

@@ -176,8 +176,11 @@ void initRoutes(Router router) {
     handler: Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
       final loanId = params["loanId"][0];
-      return EditLoanPage(
-        loanRef: DataSource.instance.getPrivateLoanReference(loanId),
+      return SimpleStreamWidget(
+        stream: DataSource.instance.getPrivateLoan(loanId),
+        builder: (context, loan) => EditLoanPage(
+          loan: loan,
+        ),
       );
     }),
   );

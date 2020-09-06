@@ -7,6 +7,7 @@ import 'DataSource.dart';
 import 'Model.dart';
 
 class PrivateLoan extends Model<PrivateLoan> {
+  final bool isArchived;
   final String title;
   final DateTime date;
   final String lenderUid;
@@ -16,7 +17,8 @@ class PrivateLoan extends Model<PrivateLoan> {
   final Money amount;
 
   PrivateLoan(DocumentSnapshot snapshot)
-      : this.title = snapshot.getString("title"),
+      : this.isArchived = snapshot.getBool("isArchived") ?? false,
+        this.title = snapshot.getString("title"),
         this.date = snapshot.getDateTime("date"),
         this.lenderUid = snapshot.getString("lenderUid"),
         this.lenderName = snapshot.getString("lenderName"),

@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
-import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../../Money.dart';
 import 'LoanForm.dart';
 
 class EditLoanPage extends StatelessWidget {
-  final Reference<PrivateLoan> loanRef;
+  final PrivateLoan loan;
 
-  const EditLoanPage({Key key, this.loanRef}) : super(key: key);
+  const EditLoanPage({
+    Key key,
+    this.loan,
+  }) : super(key: key);
 
   void onSelectedSubmit(
     BuildContext context,
@@ -25,7 +26,7 @@ class EditLoanPage extends StatelessWidget {
     DateTime date,
   ) {
     DataSource.instance.updatePrivateLoan(
-      loanRef: loanRef,
+      loanRef: loan.reference,
       lenderUid: lenderUser.uid,
       lenderName: lenderUser == null ? lenderName : null,
       borrowerUid: borrowerUser?.uid,
@@ -38,7 +39,13 @@ class EditLoanPage extends StatelessWidget {
     Navigator.of(context).pop();
   }
 
-  void onSelectedArchive(BuildContext context) {}
+  void onSelectedArchive(BuildContext context) {
+    DataSource.instance.setPrivateLoanArchived(
+      loanRef: loan.reference,
+      isArchived: !loan.isArchived,
+    );
+    Navigator.of(context).pop();
+  }
 
   void onSelectedRemove(BuildContext context) {
     ConfirmationDialog(
@@ -46,7 +53,7 @@ class EditLoanPage extends StatelessWidget {
       content: Text("#Do do what remove this loan?"),
       isDestructive: true,
       onConfirm: () {
-        DataSource.instance.removePrivateLoan(loanRef: loanRef);
+        DataSource.instance.removePrivateLoan(loanRef: loan.reference);
         Navigator.of(context)
             .popUntil((route) => route.settings.name?.endsWith("/") ?? false);
       },
@@ -57,7 +64,7 @@ class EditLoanPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Edit loan"),
+        title: Text("#Edit loan: ${loan.title}"),
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
@@ -68,14 +75,12 @@ class EditLoanPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16),
-          child: SimpleStreamWidget(
-            stream: DataSource.instance.getPrivateLoan(privateLoan: loanRef),
-            builder: (context, loan) => LoanForm(
-              initialLoan: loan,
-              submitText: "#Save changes",
-              onSubmit: onSelectedSubmit,
-              onArchive: onSelectedArchive,
-            ),
+          child: LoanForm(
+            initialLoan: loan,
+            submitText: "#Save changes",
+            onSubmit: onSelectedSubmit,
+            archiveText: loan.isArchived ? "#Unarchive" : "#Archive",
+            onArchive: onSelectedArchive,
           ),
         ),
       ),

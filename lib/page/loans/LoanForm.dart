@@ -15,8 +15,8 @@ import '../UserChoicePage.dart';
 
 class LoanForm extends StatefulWidget {
   final PrivateLoan initialLoan;
-  final String submitText;
 
+  final String submitText;
   final Function(
     BuildContext context,
     User lenderUser,
@@ -28,6 +28,7 @@ class LoanForm extends StatefulWidget {
     DateTime date,
   ) onSubmit;
 
+  final String archiveText;
   final Function(BuildContext context) onArchive;
 
   const LoanForm({
@@ -35,6 +36,7 @@ class LoanForm extends StatefulWidget {
     this.initialLoan,
     @required this.submitText,
     this.onSubmit,
+    this.archiveText,
     this.onArchive,
   }) : super(key: key);
 
@@ -387,7 +389,7 @@ class LoanFormState extends State<LoanForm> {
 
   Widget buildArchiveButton(BuildContext context) {
     return SecondaryButton(
-      child: Text("#Archive"),
+      child: Text(widget.archiveText),
       onPressed: () => widget.onArchive(context),
     );
   }
