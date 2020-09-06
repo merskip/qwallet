@@ -4,6 +4,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
+import 'package:qwallet/widget/SecondaryButton.dart';
 import 'package:qwallet/widget/UserAvatar.dart';
 
 import '../../Currency.dart';
@@ -17,6 +18,7 @@ class LoanForm extends StatefulWidget {
   final String submitText;
 
   final Function(
+    BuildContext context,
     User lenderUser,
     String lenderName,
     User borrowerUser,
@@ -26,11 +28,14 @@ class LoanForm extends StatefulWidget {
     DateTime date,
   ) onSubmit;
 
+  final Function(BuildContext context) onArchive;
+
   const LoanForm({
     Key key,
     this.initialLoan,
     @required this.submitText,
     this.onSubmit,
+    this.onArchive,
   }) : super(key: key);
 
   @override
@@ -169,6 +174,7 @@ class LoanFormState extends State<LoanForm> {
     setState(() => personsValidationMessage = null);
     if (_formKey.currentState.validate() && _validPersons()) {
       widget.onSubmit(
+        context,
         lenderUser,
         lenderUser == null ? lenderTextController.text : null,
         borrowerUser,
@@ -219,7 +225,13 @@ class LoanFormState extends State<LoanForm> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: buildSubmitButton(context),
-        )
+        ),
+        if (widget.onArchive != null)
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0).copyWith(top: 16),
+            child: buildArchiveButton(context),
+          )
       ]),
     );
   }
@@ -370,6 +382,13 @@ class LoanFormState extends State<LoanForm> {
     return PrimaryButton(
       child: Text(widget.submitText),
       onPressed: () => onSelectedSubmit(context),
+    );
+  }
+
+  Widget buildArchiveButton(BuildContext context) {
+    return SecondaryButton(
+      child: Text("#Archive"),
+      onPressed: () => widget.onArchive(context),
     );
   }
 }

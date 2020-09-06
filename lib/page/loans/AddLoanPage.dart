@@ -40,10 +40,7 @@ class AddLoanPage extends StatelessWidget {
           padding: EdgeInsets.all(16),
           child: LoanForm(
             submitText: "#Add new loan",
-            onSubmit: (lenderUser, lenderName, borrowerUser, borrowerName,
-                    amount, title, date) =>
-                onSubmit(context, lenderUser, lenderName, borrowerUser,
-                    borrowerName, amount, title, date),
+            onSubmit: onSubmit,
           ),
         ),
       ),

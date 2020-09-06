@@ -14,7 +14,7 @@ class EditLoanPage extends StatelessWidget {
 
   const EditLoanPage({Key key, this.loanRef}) : super(key: key);
 
-  void onSubmit(
+  void onSelectedSubmit(
     BuildContext context,
     User lenderUser,
     String lenderName,
@@ -37,6 +37,8 @@ class EditLoanPage extends StatelessWidget {
     );
     Navigator.of(context).pop();
   }
+
+  void onSelectedArchive(BuildContext context) {}
 
   void onSelectedRemove(BuildContext context) {
     ConfirmationDialog(
@@ -71,10 +73,8 @@ class EditLoanPage extends StatelessWidget {
             builder: (context, loan) => LoanForm(
               initialLoan: loan,
               submitText: "#Save changes",
-              onSubmit: (lenderUser, lenderName, borrowerUser, borrowerName,
-                      amount, title, date) =>
-                  onSubmit(context, lenderUser, lenderName, borrowerUser,
-                      borrowerName, amount, title, date),
+              onSubmit: onSelectedSubmit,
+              onArchive: onSelectedArchive,
             ),
           ),
         ),
