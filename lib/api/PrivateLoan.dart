@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:qwallet/Currency.dart';
-import 'package:qwallet/Money.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
-import 'package:qwallet/utils.dart';
+
+import '../Money.dart';
+import 'Converting.dart';
+import 'DataSource.dart';
+import 'Model.dart';
 
 class PrivateLoan extends Model<PrivateLoan> {
   final String title;
@@ -16,16 +16,13 @@ class PrivateLoan extends Model<PrivateLoan> {
   final Money amount;
 
   PrivateLoan(DocumentSnapshot snapshot)
-      : this.title = snapshot.get("title"),
-        this.date = (snapshot.get("date") as Timestamp).toDate(),
-        this.lenderUid = snapshot.get("lenderUid"),
-        this.lenderName = snapshot.get("lenderName"),
-        this.borrowerUid = snapshot.get("borrowerUid"),
-        this.borrowerName = snapshot.get("borrowerName"),
-        this.amount = Money(
-          toDouble(snapshot.get("amount")),
-          Currency.fromSymbol(snapshot.get("currency")),
-        ),
+      : this.title = snapshot.getString("title"),
+        this.date = snapshot.getDateTime("date"),
+        this.lenderUid = snapshot.getString("lenderUid"),
+        this.lenderName = snapshot.getString("lenderName"),
+        this.borrowerUid = snapshot.getString("borrowerUid"),
+        this.borrowerName = snapshot.getString("borrowerName"),
+        this.amount = snapshot.getMoney("amount", "currency"),
         super(snapshot);
 
   Future<String> getLenderCommonName(BuildContext context) async =>

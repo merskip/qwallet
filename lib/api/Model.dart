@@ -7,9 +7,6 @@ class Reference<T> {
 
   Reference(this.documentReference);
 
-  factory Reference.fromNullable(DocumentReference documentReference) =>
-      documentReference != null ? Reference(documentReference) : null;
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

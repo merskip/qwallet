@@ -106,13 +106,6 @@ extension StringUtils on String {
   String firstUppercase() => this[0].toUpperCase() + this.substring(1);
 }
 
-String toStringOrNull(dynamic value) {
-  if (value is String) {
-    return value.isNotEmpty ? value : null;
-  } else
-    return null;
-}
-
 extension CompareWithAccuracy on double {
   bool isEqual(double value, {double accuracy}) =>
       (this - value).abs() <= (accuracy ?? 0.0);

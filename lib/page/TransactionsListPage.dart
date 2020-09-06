@@ -210,8 +210,7 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
       {Transaction lastTransaction}) {
     final transactionsByDate = groupBy(
       transactions,
-      (Transaction transaction) =>
-          getDateWithoutTime(transaction.date.toDate()),
+      (Transaction transaction) => getDateWithoutTime(transaction.date),
     );
     final dates = transactionsByDate.keys.toList()
       ..sort((lhs, rhs) => rhs.compareTo(lhs));

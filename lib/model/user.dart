@@ -12,13 +12,14 @@ class User {
 
   final auth.User firebaseUser;
 
-  User(
-      {this.uid,
-      this.isAnonymous,
-      this.displayName,
-      this.email,
-      this.avatarUrl,
-      this.firebaseUser});
+  User({
+    this.uid,
+    this.isAnonymous,
+    this.displayName,
+    this.email,
+    this.avatarUrl,
+    this.firebaseUser,
+  });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(

@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:qwallet/Currency.dart';
-import 'package:qwallet/Money.dart';
-import 'package:qwallet/api/Model.dart';
-import 'package:qwallet/utils.dart';
+
+import '../Currency.dart';
+import '../Money.dart';
+import 'Converting.dart';
+import 'Model.dart';
 
 class Wallet extends Model<Wallet> {
   final String name;
@@ -15,12 +16,10 @@ class Wallet extends Model<Wallet> {
       Money(totalIncome.amount - totalExpense.amount, currency);
 
   Wallet(DocumentSnapshot snapshot)
-      : this.name = snapshot.get("name"),
-        this.ownersUid = snapshot.get("ownersUid").cast<String>(),
-        this.currency = Currency.fromSymbol(snapshot.get("currency")),
-        this.totalExpense = Money(toDouble(snapshot.get("totalExpense")),
-            Currency.fromSymbol(snapshot.get("currency"))),
-        this.totalIncome = Money(toDouble(snapshot.get("totalIncome")),
-            Currency.fromSymbol(snapshot.get("currency"))),
+      : this.name = snapshot.getString("name"),
+        this.ownersUid = snapshot.getList<String>("ownersUid"),
+        this.currency = snapshot.getCurrency("currency"),
+        this.totalExpense = snapshot.getMoney("totalExpense", "currency"),
+        this.totalIncome = snapshot.getMoney("totalIncome", "currency"),
         super(snapshot);
 }
