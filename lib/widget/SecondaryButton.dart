@@ -18,7 +18,9 @@ class SecondaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveColor = color ?? Theme.of(context).primaryColor;
+    final effectiveColor = onPressed != null
+        ? (color ?? Theme.of(context).primaryColor)
+        : Theme.of(context).disabledColor;
     return SizedBox(
       height: 44,
       width: shrinkWrap ? null : double.infinity,
@@ -27,7 +29,7 @@ class SecondaryButton extends StatelessWidget {
           splashColor: effectiveColor.withAlpha(64),
           highlightColor: effectiveColor.withAlpha(32),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: DefaultTextStyle(
               child: child ?? Container(),
               style: TextStyle(

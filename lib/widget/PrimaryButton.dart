@@ -24,7 +24,7 @@ class PrimaryButton extends StatelessWidget {
       child: HandCursor(
         child: RaisedButton(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: DefaultTextStyle(
               child: child ?? Container(),
               style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500),

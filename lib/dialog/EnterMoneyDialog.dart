@@ -2,17 +2,23 @@ import 'package:expressions/expressions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qwallet/Currency.dart';
+import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SecondaryButton.dart';
 
 import '../Money.dart';
+import '../utils.dart';
 
 class EnterMoneyDialog extends StatefulWidget {
+  final Money initialMoney;
   final Currency currency;
+  final bool isCurrencySelectable;
 
   const EnterMoneyDialog({
     Key key,
+    this.initialMoney,
     @required this.currency,
+    this.isCurrencySelectable = false,
   }) : super(key: key);
 
   @override
@@ -20,6 +26,7 @@ class EnterMoneyDialog extends StatefulWidget {
 }
 
 class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
+  Currency currency;
   String expression = "";
   final displayController = TextEditingController();
 
@@ -27,8 +34,20 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
 
   @override
   void initState() {
+    currency = widget.currency;
     refreshDisplay(context);
     super.initState();
+  }
+
+  void onSelectedCurrency(BuildContext context) async {
+    final selectedCurrency = await pushPage(
+      context,
+      builder: (context) => CurrencySelectionPage(selectedCurrency: currency),
+    );
+    if (selectedCurrency != null) {
+      setState(() => this.currency = selectedCurrency);
+      refreshDisplay(context);
+    }
   }
 
   void onSelectedDigit(BuildContext context, String digit) {
@@ -48,6 +67,15 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
     }
   }
 
+  void onSelectedCancel(BuildContext context) {
+    Navigator.of(context).pop();
+  }
+
+  void onSelectedApply(BuildContext context) {
+    final result = calculateExpression();
+    Navigator.of(context).pop(result);
+  }
+
   void refreshDisplay(BuildContext context) {
     final result = calculateExpression();
 
@@ -64,14 +92,19 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   }
 
   Money calculateExpression() {
-    if (this.expression.isEmpty) return Money(0, widget.currency);
-    Expression expression = Expression.tryParse(this.expression);
-    if (expression != null) {
-      final result = evaluator.eval(expression, {});
-      if (result is double)
-        return Money(result, widget.currency);
-      else if (result is int) return Money(result.toDouble(), widget.currency);
+    if (this.expression.isEmpty) {
+      return Money(0, currency);
     }
+
+    try {
+      Expression expression = Expression.parse(this.expression);
+      if (expression != null) {
+        final result = evaluator.eval(expression, {});
+        if (result is double)
+          return Money(result, widget.currency);
+        else if (result is int) return Money(result.toDouble(), currency);
+      }
+    } catch (e) {}
     return null;
   }
 
@@ -157,8 +190,10 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
       child: Padding(
         padding: const EdgeInsets.all(3.0),
         child: SecondaryButton(
-          child: Text(widget.currency.symbol),
-          onPressed: null,
+          child: Text(currency.symbol),
+          onPressed: widget.isCurrencySelectable
+              ? () => onSelectedCurrency(context)
+              : null,
         ),
       ),
     );
@@ -250,7 +285,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
         Flexible(
           flex: 2,
           child: SecondaryButton(
-            onPressed: () {},
+            onPressed: () => onSelectedCancel(context),
             child: Text("#Cancel"),
           ),
         ),
@@ -258,7 +293,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
         Flexible(
           flex: 3,
           child: PrimaryButton(
-            onPressed: () {},
+            onPressed: () => onSelectedApply(context),
             child: Text("#Apply"),
           ),
         ),

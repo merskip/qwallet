@@ -13,7 +13,6 @@ import 'package:qwallet/widget/UserAvatar.dart';
 import '../../Currency.dart';
 import '../../Money.dart';
 import '../../utils.dart';
-import '../CurrencySelectionPage.dart';
 import '../UserChoicePage.dart';
 
 class LoanForm extends StatefulWidget {
@@ -65,6 +64,7 @@ class LoanFormState extends State<LoanForm> {
   Currency currency;
   final amountTextController = TextEditingController();
   final amountFocus = FocusNode();
+  Money amount;
   final titleTextController = TextEditingController();
   DateTime date;
 
@@ -85,12 +85,17 @@ class LoanFormState extends State<LoanForm> {
   }
 
   initFields() async {
-    amountFocus.addListener(() {
+    amountFocus.addListener(() async {
       if (amountFocus.hasFocus) {
         amountFocus.unfocus();
-        showDialog(
-            context: context,
-            builder: (context) => EnterMoneyDialog(currency: currency));
+        final money = await showDialog(
+          context: context,
+          builder: (context) => EnterMoneyDialog(
+            currency: currency,
+            isCurrencySelectable: true,
+          ),
+        ) as Money;
+        setState(() => this.amount = amount);
       }
     });
 
@@ -142,18 +147,6 @@ class LoanFormState extends State<LoanForm> {
     amountFocus.dispose();
     titleTextController.dispose();
     super.dispose();
-  }
-
-  void onSelectedCurrency(BuildContext context) async {
-    final selectedCurrency = await pushPage(
-      context,
-      builder: (context) => CurrencySelectionPage(
-        selectedCurrency: currency,
-      ),
-    );
-    if (selectedCurrency != null) {
-      setState(() => this.currency = selectedCurrency);
-    }
   }
 
   void onSelectedSubmit(BuildContext context) async {
@@ -323,10 +316,6 @@ class LoanFormState extends State<LoanForm> {
       decoration: InputDecoration(
         labelText: "#Amount",
         suffix: Text(currency.symbol),
-        suffixIcon: IconButton(
-          icon: Icon(Icons.edit),
-          onPressed: () => onSelectedCurrency(context),
-        ),
       ),
       textAlign: TextAlign.end,
       readOnly: true,
