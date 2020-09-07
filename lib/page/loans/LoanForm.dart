@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
+import 'package:qwallet/dialog/EnterMoneyDialog.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SecondaryButton.dart';
@@ -63,6 +64,7 @@ class LoanFormState extends State<LoanForm> {
 
   Currency currency;
   final amountTextController = TextEditingController();
+  final amountFocus = FocusNode();
   final titleTextController = TextEditingController();
   DateTime date;
 
@@ -83,6 +85,15 @@ class LoanFormState extends State<LoanForm> {
   }
 
   initFields() async {
+    amountFocus.addListener(() {
+      if (amountFocus.hasFocus) {
+        amountFocus.unfocus();
+        showDialog(
+            context: context,
+            builder: (context) => EnterMoneyDialog(currency: currency));
+      }
+    });
+
     if (widget.initialLoan != null) {
       final loan = widget.initialLoan;
 
@@ -128,6 +139,7 @@ class LoanFormState extends State<LoanForm> {
     borrowerTextController.dispose();
     borrowerFocus.dispose();
     amountTextController.dispose();
+    amountFocus.dispose();
     titleTextController.dispose();
     super.dispose();
   }
@@ -307,6 +319,7 @@ class LoanFormState extends State<LoanForm> {
   Widget buildAmount(BuildContext context) {
     return TextFormField(
       controller: amountTextController,
+      focusNode: amountFocus,
       decoration: InputDecoration(
         labelText: "#Amount",
         suffix: Text(currency.symbol),
@@ -316,7 +329,7 @@ class LoanFormState extends State<LoanForm> {
         ),
       ),
       textAlign: TextAlign.end,
-      keyboardType: TextInputType.number,
+      readOnly: true,
       validator: (value) {
         final amount = parseAmount(value);
         if (amount == null) return "#Enter a amount";
