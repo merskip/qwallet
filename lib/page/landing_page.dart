@@ -48,7 +48,8 @@ class _LandingPageState extends State<LandingPage> {
     debugPrint("Sign in state: uid=${user?.uid}");
     if (mounted) {
       setState(() {
-        DataSource.instance.currentUser = User.fromFirebase(user);
+        DataSource.instance.currentUser =
+            user != null ? User.fromFirebase(user) : null;
         isLogged = (user != null);
         isLoading = false;
       });
