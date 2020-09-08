@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
             darkTheme: ThemeData(
               brightness: Brightness.dark,
               primarySwatch: Colors.indigo,
-              primaryColor: Colors.indigo.shade700,
+              primaryColor: Colors.indigo,
               accentColor: Colors.indigo.shade700,
               toggleableActiveColor: Colors.indigo.shade700,
               inputDecorationTheme: InputDecorationTheme(
