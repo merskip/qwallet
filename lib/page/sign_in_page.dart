@@ -77,6 +77,7 @@ class _SignInPageState extends State<SignInPage> {
           ]),
           onPressed: onPressed,
           textColor: Theme.of(context).primaryColor,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
         ),
