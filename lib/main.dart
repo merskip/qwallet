@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -37,15 +35,15 @@ class MyApp extends StatelessWidget {
   }
 
   void initFirebase() {
-    if (!kIsWeb) {
-      if (Platform.isAndroid) {
-        FirebaseAdMob.instance
-            .initialize(appId: "ca-app-pub-2023507573427187~8579587898");
-      } else if (Platform.isIOS) {
-        FirebaseAdMob.instance
-            .initialize(appId: "ca-app-pub-2023507573427187~6712451384");
-      }
-    }
+    // if (!kIsWeb) {
+    //   if (Platform.isAndroid) {
+    //     FirebaseAdMob.instance
+    //         .initialize(appId: "ca-app-pub-2023507573427187~8579587898");
+    //   } else if (Platform.isIOS) {
+    //     FirebaseAdMob.instance
+    //         .initialize(appId: "ca-app-pub-2023507573427187~6712451384");
+    //   }
+    // }
   }
 
   @override
