@@ -28,7 +28,7 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.attach_money),
             title: Text(AppLocalizations.of(context).bottomNavigationLoans),
-            backgroundColor: Colors.teal,
+            backgroundColor: Colors.orange,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
@@ -49,7 +49,7 @@ class _MainPageState extends State<MainPage> {
       case 1:
         return Theme(
           data: ThemeData(
-            primarySwatch: Colors.teal,
+            primarySwatch: Colors.orange,
           ),
           child: Builder(builder: (context) => LoansListPage()),
         );
