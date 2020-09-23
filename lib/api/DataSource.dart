@@ -419,13 +419,11 @@ extension UsersDataSource on DataSource {
   }
 
   Future<User> getUserByUid(String userUid) async {
-    // TODO: Optimize
     final users = await getUsers();
     return users.firstWhere((user) => user.uid == userUid);
   }
 
   Future<List<User>> getUsersByUids(List<String> usersUids) async {
-    // TODO: Optimize
     final users = await getUsers();
     return usersUids
         .map((userUid) => users.firstWhere((user) => user.uid == userUid))
