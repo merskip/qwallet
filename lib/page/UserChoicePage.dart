@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/model/user.dart';
 
 class UserChoicePage extends StatefulWidget {
   final String title;
   final User selectedUser;
-  final List<User> allUsers;
 
-  const UserChoicePage(
-      {Key key,
-      @required this.title,
-      @required this.selectedUser,
-      @required this.allUsers})
-      : super(key: key);
+  const UserChoicePage({
+    Key key,
+    @required this.title,
+    @required this.selectedUser,
+  }) : super(key: key);
 
   @override
   _UserChoicePageState createState() => _UserChoicePageState();
@@ -28,11 +27,22 @@ class _UserChoicePageState extends State<UserChoicePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: ListView.builder(
-        itemCount: widget.allUsers.length,
-        itemBuilder: (BuildContext context, index) =>
-            buildUser(context, widget.allUsers[index]),
+      body: FutureBuilder(
+        future: DataSource.instance.getUsers(),
+        builder: (context, AsyncSnapshot<List<User>> snapshot) {
+          return snapshot.hasData
+              ? buildUsersList(context, snapshot.data)
+              : Center(child: CircularProgressIndicator());
+        },
       ),
+    );
+  }
+
+  Widget buildUsersList(BuildContext context, List<User> users) {
+    return ListView.builder(
+      itemCount: users.length,
+      itemBuilder: (BuildContext context, index) =>
+          buildUser(context, users[index]),
     );
   }
 

@@ -69,7 +69,6 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     final page = UserSelectionPage(
       title: AppLocalizations.of(context).walletOwners,
       selectedUsers: currentOwners,
-      allUsers: await DataSource.instance.getUsers(),
     );
     final owners = await pushPage<List<User>>(
       context,

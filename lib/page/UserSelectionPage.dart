@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/model/user.dart';
 
 class UserSelectionPage extends StatefulWidget {
   final String title;
   final List<User> selectedUsers;
-  final List<User> allUsers;
 
-  const UserSelectionPage({Key key,
+  const UserSelectionPage({
+    Key key,
     @required this.title,
     @required this.selectedUsers,
-    @required this.allUsers})
-      : super(key: key);
+  }) : super(key: key);
 
   @override
   _UserSelectionPageState createState() => _UserSelectionPageState();
 }
 
 class _UserSelectionPageState extends State<UserSelectionPage> {
-
   List<User> selectedUsers;
 
   @override
@@ -46,11 +45,22 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
           )
         ],
       ),
-      body: ListView.builder(
-        itemCount: widget.allUsers.length,
-        itemBuilder: (BuildContext context, index) =>
-            buildUser(context, widget.allUsers[index]),
+      body: FutureBuilder(
+        future: DataSource.instance.getUsers(),
+        builder: (context, AsyncSnapshot<List<User>> snapshot) {
+          return snapshot.hasData
+              ? buildUsersList(context, snapshot.data)
+              : Center(child: CircularProgressIndicator());
+        },
       ),
+    );
+  }
+
+  Widget buildUsersList(BuildContext context, List<User> users) {
+    return ListView.builder(
+      itemCount: users.length,
+      itemBuilder: (BuildContext context, index) =>
+          buildUser(context, users[index]),
     );
   }
 
@@ -66,7 +76,10 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
   Widget buildAvatar(BuildContext context, User user) {
     final isSelected = selectedUsers.contains(user);
     if (isSelected) {
-      return CircleAvatar(child: Icon(Icons.check), backgroundColor: Theme.of(context).primaryColor,);
+      return CircleAvatar(
+        child: Icon(Icons.check),
+        backgroundColor: Theme.of(context).primaryColor,
+      );
     } else {
       final avatarImage =
           user.avatarUrl != null ? NetworkImage(user.avatarUrl) : null;

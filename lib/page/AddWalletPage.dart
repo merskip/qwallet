@@ -41,7 +41,6 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   final nameFocus = FocusNode();
 
   final ownersController = UsersEditingController();
-  List<User> allUsers;
 
   Currency currency;
 
@@ -56,10 +55,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
     final users = await DataSource.instance.getUsers();
     final currentUser = users
         .firstWhere((user) => user.uid == DataSource.instance.currentUser.uid);
-    setState(() {
-      allUsers = users;
-      ownersController.value = [currentUser];
-    });
+    setState(() => ownersController.value = [currentUser]);
   }
 
   _initCurrency() async {
@@ -80,12 +76,10 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   onSelectedOwners(BuildContext context) async {
-    if (allUsers == null) return;
     final List<User> selectedUsers = await pushPage(
       context,
       builder: (context) => UserSelectionPage(
         title: AppLocalizations.of(context).addWalletOwners,
-        allUsers: allUsers,
         selectedUsers: ownersController.value,
       ),
     );

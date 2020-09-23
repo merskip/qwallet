@@ -95,7 +95,7 @@ class LoanFormState extends State<LoanForm> {
             isCurrencySelectable: true,
           ),
         ) as Money;
-        setState(() => this.amount = amount);
+        setState(() => this.amount = money);
       }
     });
 
@@ -121,6 +121,9 @@ class LoanFormState extends State<LoanForm> {
       currency = Currency.all
           .firstWhere((currency) => currency.locales.contains(currentLocale));
       date = getDateWithoutTime(DateTime.now());
+
+      final users = await DataSource.instance.getUsers();
+      setState(() => this.users = users);
     }
   }
 
@@ -254,7 +257,6 @@ class LoanFormState extends State<LoanForm> {
         builder: (context) => UserChoicePage(
           title: selectTitle,
           selectedUser: user,
-          allUsers: this.users,
         ),
       );
       if (selectedUser != null) {
@@ -278,7 +280,7 @@ class LoanFormState extends State<LoanForm> {
             : null,
         suffixIcon: IconButton(
           icon: Icon(Icons.person),
-          onPressed: () => users != null ? onSelectedSelectUser() : null,
+          onPressed: () => onSelectedSelectUser(),
         ),
       ),
       onChanged: (text) {
@@ -294,10 +296,14 @@ class LoanFormState extends State<LoanForm> {
 
   User getMatchedUser(String text) => users?.firstWhere(
         (user) =>
-            user.getCommonName(context).toLowerCase() == text.toLowerCase() ||
-            user.displayName.toLowerCase() == text.toLowerCase(),
+            _equalsIgnoreCase(text, user.getCommonName(context)) ||
+            _equalsIgnoreCase(text, user.displayName) ||
+            _equalsIgnoreCase(text, user.email),
         orElse: () => null,
       );
+
+  bool _equalsIgnoreCase(String lhs, String rhs) =>
+      lhs?.toLowerCase() == rhs?.toLowerCase();
 
   Widget buildValidationMessage(BuildContext context) {
     return Padding(
