@@ -7,7 +7,6 @@ import 'DataSource.dart';
 import 'Model.dart';
 
 class PrivateLoan extends Model<PrivateLoan> {
-  final bool isArchived;
   final String title;
   final DateTime date;
   final String lenderUid;
@@ -15,16 +14,22 @@ class PrivateLoan extends Model<PrivateLoan> {
   final String borrowerUid;
   final String borrowerName;
   final Money amount;
+  final Money repaidAmount;
+  final bool isFullyRepaid;
+
+  Money get remainingRepaidAmount =>
+      Money(amount.amount - repaidAmount.amount, amount.currency);
 
   PrivateLoan(DocumentSnapshot snapshot)
-      : this.isArchived = snapshot.getBool("isArchived") ?? false,
-        this.title = snapshot.getString("title"),
+      : this.title = snapshot.getString("title"),
         this.date = snapshot.getDateTime("date"),
         this.lenderUid = snapshot.getString("lenderUid"),
         this.lenderName = snapshot.getString("lenderName"),
         this.borrowerUid = snapshot.getString("borrowerUid"),
         this.borrowerName = snapshot.getString("borrowerName"),
         this.amount = snapshot.getMoney("amount", "currency"),
+        this.repaidAmount = snapshot.getMoney("repaidAmount", "currency"),
+        this.isFullyRepaid = snapshot.getBool("isFullyRepaid"),
         super(snapshot);
 
   Future<String> getLenderCommonName(BuildContext context) async =>

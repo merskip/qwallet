@@ -5,6 +5,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/model/user.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../Currency.dart';
 import '../LocalPreferences.dart';
@@ -308,14 +309,25 @@ extension CategoriesDataSource on DataSource {
 
 extension PrivateLoansDataSource on DataSource {
   Stream<List<PrivateLoan>> getPrivateLoans({
-    bool archived = false,
+    bool includeFullyRepaid = false,
   }) {
-    return firestore
-        .collection("privateLoans")
-        .orderBy("date", descending: archived)
-        .where("isArchived", isEqualTo: archived)
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((s) => PrivateLoan(s)).toList());
+    final makeQuery = (Firestore.Query filter(Firestore.Query query)) {
+      Firestore.Query query = firestore.collection("privateLoans");
+      query = filter(query);
+
+      if (!includeFullyRepaid)
+        query = query.where("isFullyRepaid", isEqualTo: false);
+
+      return query
+          .snapshots()
+          .map((snapshot) => snapshot.docs.map((s) => PrivateLoan(s)).toList());
+    };
+    return MergeStream([
+      makeQuery((q) => q.where("lenderUid", isEqualTo: currentUser.uid)),
+      makeQuery((q) => q.where("borrowerUid", isEqualTo: currentUser.uid))
+    ]).map(
+      (loans) => loans..sort((lhs, rhs) => rhs.date.compareTo(lhs.date)),
+    );
   }
 
   Stream<PrivateLoan> getPrivateLoan(
@@ -344,6 +356,8 @@ extension PrivateLoansDataSource on DataSource {
       "borrowerUid": borrowerUid,
       "borrowerName": borrowerName,
       "amount": amount,
+      "repaidAmount": 0.0,
+      "isFullyRepaid": false,
       "currency": currency.symbol,
       "title": title,
       "date": date.toTimestamp(),
@@ -357,6 +371,7 @@ extension PrivateLoansDataSource on DataSource {
     String borrowerUid,
     String borrowerName,
     double amount,
+    double repaidAmount,
     Currency currency,
     String title,
     DateTime date,
@@ -367,18 +382,11 @@ extension PrivateLoansDataSource on DataSource {
       "borrowerUid": borrowerUid,
       "borrowerName": borrowerName,
       "amount": amount,
+      "repaidAmount": repaidAmount,
+      "isFullyRepaid": amount == repaidAmount,
       "currency": currency.symbol,
       "title": title,
       "date": date.toTimestamp(),
-    });
-  }
-
-  Future<void> setPrivateLoanArchived({
-    @required Reference<PrivateLoan> loanRef,
-    bool isArchived,
-  }) {
-    return loanRef.documentReference.update({
-      "isArchived": isArchived,
     });
   }
 

@@ -34,10 +34,10 @@ class _LoansListPageState extends State<LoansListPage> {
       body: SafeArea(
         child: SimpleStreamWidget(
           stream: CombineLatestStream.list([
-            DataSource.instance.getPrivateLoans(archived: false),
+            DataSource.instance.getPrivateLoans(includeFullyRepaid: false),
             DataSource.instance.getUsers().asStream(),
             if (isShowArchived)
-              DataSource.instance.getPrivateLoans(archived: true),
+              DataSource.instance.getPrivateLoans(includeFullyRepaid: true),
           ]),
           builder: (context, List<dynamic> values) => buildLoansList(
             context,

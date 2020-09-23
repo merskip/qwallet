@@ -39,10 +39,10 @@ class EditLoanPage extends StatelessWidget {
     Navigator.of(context).pop();
   }
 
-  void onSelectedArchive(BuildContext context) {
-    DataSource.instance.setPrivateLoanArchived(
+  void onSelectedToggleArchive(BuildContext context) {
+    DataSource.instance.updatePrivateLoan(
       loanRef: loan.reference,
-      isArchived: !loan.isArchived,
+      repaidAmount: loan.isFullyRepaid ? 0.0 : loan.amount.amount,
     );
     Navigator.of(context).pop();
   }
@@ -79,8 +79,8 @@ class EditLoanPage extends StatelessWidget {
             initialLoan: loan,
             submitText: "#Save changes",
             onSubmit: onSelectedSubmit,
-            archiveText: loan.isArchived ? "#Unarchive" : "#Archive",
-            onArchive: onSelectedArchive,
+            archiveText: loan.isFullyRepaid ? "#Unarchive" : "#Archive",
+            onArchive: onSelectedToggleArchive,
           ),
         ),
       ),
