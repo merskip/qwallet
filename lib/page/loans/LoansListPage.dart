@@ -28,6 +28,9 @@ class _LoansListPageState extends State<LoansListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("#Loans"),
+      ),
       body: SafeArea(
         child: SimpleStreamWidget(
           stream: CombineLatestStream.list([
