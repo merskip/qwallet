@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/model/user.dart';
 
-import 'MainPage.dart';
+import 'MainNavigationPage.dart';
 import 'sign_in_page.dart';
 
 class LandingPage extends StatefulWidget {
@@ -79,6 +79,6 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Widget _homePage(BuildContext context) {
-    return MainPage();
+    return MainNavigationPage();
   }
 }
