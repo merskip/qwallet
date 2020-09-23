@@ -58,9 +58,7 @@ class _MainPageState extends State<MainPage> {
           data: ThemeData(
             primarySwatch: Colors.blueGrey,
           ),
-          isMaterialAppTheme: true,
           child: Builder(builder: (context) => SettingsPage()),
-//          child: SettingsPage(),
         );
       default:
         return Container();
