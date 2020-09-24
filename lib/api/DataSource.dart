@@ -322,12 +322,10 @@ extension PrivateLoansDataSource on DataSource {
           .snapshots()
           .map((snapshot) => snapshot.docs.map((s) => PrivateLoan(s)).toList());
     };
-    return MergeStream([
+    return CombineLatestStream([
       makeQuery((q) => q.where("lenderUid", isEqualTo: currentUser.uid)),
       makeQuery((q) => q.where("borrowerUid", isEqualTo: currentUser.uid))
-    ]).map(
-      (loans) => loans..sort((lhs, rhs) => rhs.date.compareTo(lhs.date)),
-    );
+    ], (v) => v.expand((i) => i).cast<PrivateLoan>().toList());
   }
 
   Stream<PrivateLoan> getPrivateLoan(

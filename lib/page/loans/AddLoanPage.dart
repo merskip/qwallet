@@ -17,7 +17,7 @@ class AddLoanPage extends StatelessWidget {
     DateTime date,
   ) {
     DataSource.instance.addPrivateLoan(
-      lenderUid: lenderUser.uid,
+      lenderUid: lenderUser?.uid,
       lenderName: lenderUser == null ? lenderName : null,
       borrowerUid: borrowerUser?.uid,
       borrowerName: borrowerUser == null ? borrowerName : null,

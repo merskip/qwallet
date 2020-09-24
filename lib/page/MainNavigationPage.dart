@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/page/SettingsPage.dart';
 import 'package:qwallet/page/dashboard/DashboardPage.dart';
+import 'package:qwallet/page/loans/LoansPage.dart';
 
 import '../AppLocalizations.dart';
-import 'loans/LoansListPage.dart';
 
 class MainNavigationPage extends StatefulWidget {
   @override
@@ -55,7 +55,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           data: ThemeData(
             primarySwatch: Colors.deepOrange,
           ),
-          child: LoansListPage(),
+          child: LoansPage(),
         );
       case 2:
         return Theme(

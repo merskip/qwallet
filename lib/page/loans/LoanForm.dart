@@ -95,6 +95,7 @@ class LoanFormState extends State<LoanForm> {
             isCurrencySelectable: true,
           ),
         ) as Money;
+        amountTextController.text = money.amount.toStringAsFixed(2);
         setState(() => this.amount = money);
       }
     });
@@ -158,9 +159,13 @@ class LoanFormState extends State<LoanForm> {
       widget.onSubmit(
         context,
         lenderUser,
-        lenderUser == null ? lenderTextController.text : null,
+        lenderUser == null
+            ? lenderTextController.text.trim().nullIfEmpty()
+            : null,
         borrowerUser,
-        borrowerUser == null ? borrowerTextController.text : null,
+        borrowerUser == null
+            ? borrowerTextController.text.trim().nullIfEmpty()
+            : null,
         Money(parseAmount(amountTextController.text), currency),
         titleTextController.text.trim().nullIfEmpty(),
         date,
