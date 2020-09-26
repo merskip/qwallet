@@ -311,31 +311,41 @@ extension PrivateLoansDataSource on DataSource {
   Stream<List<PrivateLoan>> getPrivateLoans({
     bool includeFullyRepaid = false,
   }) {
-    final makeQuery = (Firestore.Query filter(Firestore.Query query)) {
+    final getSnapshots = (Firestore.Query filter(Firestore.Query query)) {
       Firestore.Query query = firestore.collection("privateLoans");
       query = filter(query);
 
       if (!includeFullyRepaid)
         query = query.where("isFullyRepaid", isEqualTo: false);
 
-      return query
-          .snapshots()
-          .map((snapshot) => snapshot.docs.map((s) => PrivateLoan(s)).toList());
+      return query.snapshots();
     };
-    return CombineLatestStream([
-      makeQuery((q) => q.where("lenderUid", isEqualTo: currentUser.uid)),
-      makeQuery((q) => q.where("borrowerUid", isEqualTo: currentUser.uid))
-    ], (v) => v.expand((i) => i).cast<PrivateLoan>().toList());
+
+    return CombineLatestStream.combine3(
+      getSnapshots((q) => q.where("lenderUid", isEqualTo: currentUser.uid)),
+      getSnapshots((q) => q.where("borrowerUid", isEqualTo: currentUser.uid)),
+      getUsers().asStream(),
+      (
+        Firestore.QuerySnapshot loansAsLender,
+        Firestore.QuerySnapshot loansAsBorrower,
+        List<User> users,
+      ) {
+        final documents = loansAsLender.docs + loansAsBorrower.docs;
+        return documents.map((d) => PrivateLoan(d, users)).toList()
+          ..sort((lhs, rhs) => rhs.date.compareTo(lhs.date));
+      },
+    );
   }
 
   Stream<PrivateLoan> getPrivateLoan(
-    String id,
-  ) =>
+    String id, {
+    @required List<User> users,
+  }) =>
       firestore
           .collection("privateLoans")
           .doc(id)
           .snapshots()
-          .map((s) => PrivateLoan(s));
+          .map((s) => PrivateLoan(s, users));
 
   Future<void> addPrivateLoan({
     String lenderUid,

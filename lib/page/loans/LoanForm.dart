@@ -61,11 +61,12 @@ class LoanFormState extends State<LoanForm> {
 
   String personsValidationMessage;
 
-  Currency currency;
   final amountTextController = TextEditingController();
   final amountFocus = FocusNode();
   Money amount;
+
   final titleTextController = TextEditingController();
+
   DateTime date;
 
   @override
@@ -91,7 +92,7 @@ class LoanFormState extends State<LoanForm> {
         final money = await showDialog(
           context: context,
           builder: (context) => EnterMoneyDialog(
-            currency: currency,
+            currency: amount.currency,
             isCurrencySelectable: true,
           ),
         ) as Money;
@@ -104,23 +105,21 @@ class LoanFormState extends State<LoanForm> {
       final loan = widget.initialLoan;
 
       amountTextController.text = loan.amount.amount.toString();
-      currency = loan.amount.currency;
       titleTextController.text = loan.title;
       date = loan.date;
 
       final users = await DataSource.instance.getUsers();
-      lenderUser = users.getByUid(loan.lenderUid);
-      lenderTextController.text =
-          lenderUser?.getCommonName(context) ?? loan.lenderName;
+      lenderUser = loan.lenderUser;
+      lenderTextController.text = loan.getLenderCommonName(context);
 
-      borrowerUser = users.getByUid(loan.borrowerUid);
-      borrowerTextController.text =
-          borrowerUser?.getCommonName(context) ?? loan.borrowerName;
+      borrowerUser = loan.borrowerUser;
+      borrowerTextController.text = loan.getBorrowerCommonName(context);
       setState(() => this.users = users);
     } else {
       final currentLocale = Intl.getCurrentLocale();
-      currency = Currency.all
+      final currency = Currency.all
           .firstWhere((currency) => currency.locales.contains(currentLocale));
+      amount = Money(0, currency);
       date = getDateWithoutTime(DateTime.now());
 
       final users = await DataSource.instance.getUsers();
@@ -166,7 +165,7 @@ class LoanFormState extends State<LoanForm> {
         borrowerUser == null
             ? borrowerTextController.text.trim().nullIfEmpty()
             : null,
-        Money(parseAmount(amountTextController.text), currency),
+        Money(parseAmount(amountTextController.text), amount.currency),
         titleTextController.text.trim().nullIfEmpty(),
         date,
       );
@@ -326,7 +325,7 @@ class LoanFormState extends State<LoanForm> {
       focusNode: amountFocus,
       decoration: InputDecoration(
         labelText: "#Amount",
-        suffix: Text(currency.symbol),
+        suffix: Text(amount.currency.symbol),
       ),
       textAlign: TextAlign.end,
       readOnly: true,

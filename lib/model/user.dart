@@ -12,6 +12,8 @@ class User {
 
   final auth.User firebaseUser;
 
+  bool get isCurrentUser => User.currentUser().uid == uid;
+
   User({
     this.uid,
     this.isAnonymous,

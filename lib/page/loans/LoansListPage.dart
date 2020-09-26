@@ -141,7 +141,7 @@ class _LoansListPageState extends State<LoansListPage> {
       Expanded(
         child: buildNameWithCaption(
           context,
-          name: _getBorrower(context, loan, users),
+          name: loan.getBorrowerCommonName(context),
           caption: AppLocalizations.of(context).privateLoanBorrower,
         ),
       ),
@@ -155,7 +155,7 @@ class _LoansListPageState extends State<LoansListPage> {
       Expanded(
         child: buildNameWithCaption(
           context,
-          name: _getLender(context, loan, users),
+          name: loan.getLenderCommonName(context),
           caption: AppLocalizations.of(context).privateLoansLender,
         ),
       ),
@@ -176,19 +176,6 @@ class _LoansListPageState extends State<LoansListPage> {
       ]),
     );
   }
-
-  String _getLender(BuildContext context, PrivateLoan loan, List<User> users) =>
-      loan.lenderName ??
-      users
-          .firstWhere((user) => user.uid == loan.lenderUid)
-          .getCommonName(context);
-
-  String _getBorrower(
-          BuildContext context, PrivateLoan loan, List<User> users) =>
-      loan.borrowerName ??
-      users
-          .firstWhere((user) => user.uid == loan.borrowerUid)
-          .getCommonName(context);
 
   Widget buildAmount(BuildContext context, PrivateLoan loan) {
     return Text(

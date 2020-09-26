@@ -100,9 +100,11 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
       Expression expression = Expression.parse(this.expression);
       if (expression != null) {
         final result = evaluator.eval(expression, {});
-        if (result is double)
-          return Money(result, widget.currency);
-        else if (result is int) return Money(result.toDouble(), currency);
+        if (result is double) {
+          return Money(result, currency);
+        } else if (result is int) {
+          return Money(result.toDouble(), currency);
+        }
       }
     } catch (e) {}
     return null;

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/model/user.dart';
 
 import '../Currency.dart';
 import '../Money.dart';
@@ -72,6 +73,10 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
       fontFamily: value['fontFamily'],
       fontPackage: value['fontPackage'],
     );
+  }
+
+  User getUser(String field, List<User> users) {
+    return users.getByUid(getString(field));
   }
 
   dynamic _getOrNull(String field) {
