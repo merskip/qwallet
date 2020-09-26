@@ -337,15 +337,13 @@ extension PrivateLoansDataSource on DataSource {
     );
   }
 
-  Stream<PrivateLoan> getPrivateLoan(
-    String id, {
-    @required List<User> users,
-  }) =>
-      firestore
-          .collection("privateLoans")
-          .doc(id)
-          .snapshots()
-          .map((s) => PrivateLoan(s, users));
+  Stream<PrivateLoan> getPrivateLoan(String id) {
+    final loanSnapshots =
+        firestore.collection("privateLoans").doc(id).snapshots();
+
+    return CombineLatestStream.combine2(loanSnapshots, getUsers().asStream(),
+        (snapshot, users) => PrivateLoan(snapshot, users));
+  }
 
   Future<void> addPrivateLoan({
     String lenderUid,

@@ -17,6 +17,10 @@ class LoansPage extends StatefulWidget {
 }
 
 class _LoansPageState extends State<LoansPage> {
+  void onSelectedLoan(BuildContext context, PrivateLoan loan) {
+    router.navigateTo(context, "/privateLoans/${loan.id}/edit");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,6 +190,7 @@ class _LoansPageState extends State<LoansPage> {
           color: loan.currentUserIsBorrower ? Colors.red : null,
         ),
       ),
+      onTap: () => onSelectedLoan(context, loan),
       dense: true,
       visualDensity: VisualDensity.compact,
     );
