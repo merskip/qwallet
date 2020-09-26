@@ -356,7 +356,6 @@ extension PrivateLoansDataSource on DataSource {
     DateTime date,
   }) {
     return firestore.collection("privateLoans").add({
-      "isArchived": false,
       "lenderUid": lenderUid,
       "lenderName": lenderName,
       "borrowerUid": borrowerUid,

@@ -7,7 +7,6 @@ import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/dialog/EnterMoneyDialog.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
-import 'package:qwallet/widget/SecondaryButton.dart';
 import 'package:qwallet/widget/UserAvatar.dart';
 
 import '../../Currency.dart';
@@ -30,16 +29,11 @@ class LoanForm extends StatefulWidget {
     DateTime date,
   ) onSubmit;
 
-  final String archiveText;
-  final Function(BuildContext context) onArchive;
-
   const LoanForm({
     Key key,
     this.initialLoan,
     @required this.submitText,
     this.onSubmit,
-    this.archiveText,
-    this.onArchive,
   }) : super(key: key);
 
   @override
@@ -215,12 +209,6 @@ class LoanFormState extends State<LoanForm> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: buildSubmitButton(context),
         ),
-        if (widget.onArchive != null)
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0).copyWith(top: 16),
-            child: buildArchiveButton(context),
-          )
       ]),
     );
   }
@@ -380,13 +368,6 @@ class LoanFormState extends State<LoanForm> {
     return PrimaryButton(
       child: Text(widget.submitText),
       onPressed: () => onSelectedSubmit(context),
-    );
-  }
-
-  Widget buildArchiveButton(BuildContext context) {
-    return SecondaryButton(
-      child: Text(widget.archiveText),
-      onPressed: () => widget.onArchive(context),
     );
   }
 }

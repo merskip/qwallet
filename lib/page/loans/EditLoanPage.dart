@@ -79,8 +79,6 @@ class EditLoanPage extends StatelessWidget {
             initialLoan: loan,
             submitText: "#Save changes",
             onSubmit: onSelectedSubmit,
-            archiveText: loan.isFullyRepaid ? "#Unarchive" : "#Archive",
-            onArchive: onSelectedToggleArchive,
           ),
         ),
       ),
