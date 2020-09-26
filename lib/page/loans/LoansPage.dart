@@ -4,6 +4,8 @@ import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/model/user.dart';
+import 'package:qwallet/page/loans/RepaidLoanPage.dart';
+import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/UserAvatar.dart';
 import 'package:rxdart/rxdart.dart';
@@ -55,18 +57,18 @@ class _LoansPageState extends State<LoansPage> {
     );
   }
 
-  List<_LoansGroup> _groupLoans(
+  List<LoansGroup> _groupLoans(
     List<User> users,
     List<PrivateLoan> loans,
   ) {
-    final groups = List<_LoansGroup>();
+    final groups = List<LoansGroup>();
     for (final loan in loans) {
       final matchedGroup =
           groups.firstWhere((group) => group.isMatch(loan), orElse: () => null);
       if (matchedGroup != null) {
         matchedGroup.loans.add(loan);
       } else {
-        groups.add(_LoansGroup(
+        groups.add(LoansGroup(
           otherPersonName:
               loan.currentUserIsLender ? loan.borrowerName : loan.lenderName,
           otherPersonUser:
@@ -81,7 +83,7 @@ class _LoansPageState extends State<LoansPage> {
   }
 }
 
-class _LoansGroup implements Comparable {
+class LoansGroup implements Comparable {
   final String otherPersonName;
   final User otherPersonUser;
   final List<PrivateLoan> loans;
@@ -92,7 +94,7 @@ class _LoansGroup implements Comparable {
   List<Money> debtOfCurrentUser;
   List<Money> balance;
 
-  _LoansGroup({
+  LoansGroup({
     this.loans,
     this.otherPersonName,
     this.otherPersonUser,
@@ -128,7 +130,7 @@ class _LoansGroup implements Comparable {
 
   @override
   int compareTo(other) {
-    if (other is _LoansGroup) {
+    if (other is LoansGroup) {
       return _totalRawAmount.compareTo(other._totalRawAmount);
     } else {
       return 0;
@@ -137,7 +139,7 @@ class _LoansGroup implements Comparable {
 }
 
 class LoansGroupCard extends StatefulWidget {
-  final _LoansGroup loansGroup;
+  final LoansGroup loansGroup;
 
   const LoansGroupCard({Key key, this.loansGroup}) : super(key: key);
 
@@ -148,6 +150,15 @@ class LoansGroupCard extends StatefulWidget {
 class _LoansGroupCardState extends State<LoansGroupCard> {
   bool _isExtended = false;
 
+  void onSelectedHeader(BuildContext context) {
+    pushPage(
+      context,
+      builder: (context) => RepaidLoanPage(
+        loansGroup: widget.loansGroup,
+      ),
+    );
+  }
+
   void onSelectedLoan(BuildContext context, PrivateLoan loan) {
     router.navigateTo(context, "/privateLoans/${loan.id}/edit");
   }
@@ -157,7 +168,10 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Column(children: [
-        buildHeader(context, widget.loansGroup),
+        InkWell(
+          child: buildHeader(context, widget.loansGroup),
+          onTap: () => onSelectedHeader(context),
+        ),
         Divider(height: 4),
         if (_isExtended) buildDetails(context),
         buildToggleExpended(context),
@@ -165,7 +179,7 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
     );
   }
 
-  Widget buildHeader(BuildContext context, _LoansGroup loansGroup) {
+  Widget buildHeader(BuildContext context, LoansGroup loansGroup) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
