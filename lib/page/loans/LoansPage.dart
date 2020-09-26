@@ -50,7 +50,7 @@ class _LoansPageState extends State<LoansPage> {
     List<User> users,
     List<PrivateLoan> loans,
   ) {
-    final groups = _groupLoans(users, loans);
+    final groups = _groupLoans(users, loans).reversed.toList();
     return ListView.builder(
       itemCount: groups.length,
       itemBuilder: (context, index) =>
