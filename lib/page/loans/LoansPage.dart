@@ -146,6 +146,8 @@ class LoansGroupCard extends StatefulWidget {
 }
 
 class _LoansGroupCardState extends State<LoansGroupCard> {
+  bool _isExtended = false;
+
   void onSelectedLoan(BuildContext context, PrivateLoan loan) {
     router.navigateTo(context, "/privateLoans/${loan.id}/edit");
   }
@@ -156,8 +158,9 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Column(children: [
         buildHeader(context, widget.loansGroup),
-        Divider(),
-        for (final loan in widget.loansGroup.loans) buildLoanItem(context, loan)
+        Divider(height: 4),
+        if (_isExtended) buildDetails(context),
+        buildToggleExpended(context),
       ]),
     );
   }
@@ -245,6 +248,12 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
     );
   }
 
+  Widget buildDetails(BuildContext context) {
+    return Column(children: [
+      for (final loan in widget.loansGroup.loans) buildLoanItem(context, loan)
+    ]);
+  }
+
   Widget buildLoanItem(BuildContext context, PrivateLoan loan) {
     final locale = AppLocalizations.of(context).locale.toString();
     final format = DateFormat("d MMMM yyyy", locale);
@@ -259,6 +268,14 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
       ),
       onTap: () => onSelectedLoan(context, loan),
       dense: true,
+      visualDensity: VisualDensity.compact,
+    );
+  }
+
+  Widget buildToggleExpended(BuildContext context) {
+    return FlatButton(
+      onPressed: () => setState(() => _isExtended = !_isExtended),
+      child: Text(_isExtended ? "#Show less" : "#Show more"),
       visualDensity: VisualDensity.compact,
     );
   }
