@@ -13,6 +13,7 @@ class AddLoanPage extends StatelessWidget {
     User borrowerUser,
     String borrowerName,
     Money amount,
+    Money repaidAmount,
     String title,
     DateTime date,
   ) {
@@ -22,6 +23,7 @@ class AddLoanPage extends StatelessWidget {
       borrowerUid: borrowerUser?.uid,
       borrowerName: borrowerUser == null ? borrowerName : null,
       amount: amount.amount,
+      repaidAmount: repaidAmount.amount,
       currency: amount.currency,
       title: title,
       date: date,

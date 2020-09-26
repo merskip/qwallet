@@ -185,7 +185,7 @@ class _LoansPageState extends State<LoansPage> {
       title: Text(loan.title),
       subtitle: Text(format.format(loan.date)),
       trailing: Text(
-        loan.amount.formatted,
+        loan.remainingAmount.formatted,
         style: TextStyle(
           color: loan.currentUserIsBorrower ? Colors.red : null,
         ),

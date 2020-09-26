@@ -19,6 +19,8 @@ class Money {
 
   Money operator +(double amount) => Money(this.amount + amount, currency);
 
+  Money operator -(double amount) => Money(this.amount - amount, currency);
+
   Money operator -() => Money(-amount, currency);
 
   @override

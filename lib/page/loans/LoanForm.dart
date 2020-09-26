@@ -25,6 +25,7 @@ class LoanForm extends StatefulWidget {
     User borrowerUser,
     String borrowerName,
     Money amount,
+    Money repaidAmount,
     String title,
     DateTime date,
   ) onSubmit;
@@ -59,6 +60,10 @@ class LoanFormState extends State<LoanForm> {
   final amountFocus = FocusNode();
   Money amount;
 
+  final repaidAmountTextController = TextEditingController();
+  final repaidAmountFocus = FocusNode();
+  Money repaidAmount;
+
   final titleTextController = TextEditingController();
 
   DateTime date;
@@ -80,28 +85,34 @@ class LoanFormState extends State<LoanForm> {
   }
 
   initFields() async {
-    amountFocus.addListener(() async {
-      if (amountFocus.hasFocus) {
-        amountFocus.unfocus();
-        final money = await showDialog(
-          context: context,
-          builder: (context) => EnterMoneyDialog(
-            currency: amount.currency,
-            isCurrencySelectable: true,
-          ),
-        ) as Money;
-        if (money != null) {
-          amountTextController.text = money.amount.toStringAsFixed(2);
-          setState(() => this.amount = money);
-        }
-      }
-    });
+    initAmountField(
+      focusNode: amountFocus,
+      controller: amountTextController,
+      isCurrencySelectable: true,
+      getValue: () => this.amount,
+      onEnter: (amount) => setState(() {
+        this.amount = amount;
+        this.repaidAmount = Money(repaidAmount.amount, amount.currency);
+      }),
+    );
+
+    initAmountField(
+      focusNode: repaidAmountFocus,
+      controller: repaidAmountTextController,
+      isCurrencySelectable: false,
+      getValue: () => this.repaidAmount,
+      onEnter: (amount) => setState(() => this.repaidAmount = amount),
+    );
 
     if (widget.initialLoan != null) {
       final loan = widget.initialLoan;
 
-      amountTextController.text = loan.amount.amount.toString();
+      amountTextController.text = loan.amount.amountFormatted;
       amount = loan.amount;
+
+      repaidAmountTextController.text = loan.repaidAmount.amountFormatted;
+      repaidAmount = loan.repaidAmount;
+
       titleTextController.text = loan.title;
       date = loan.date;
 
@@ -117,11 +128,39 @@ class LoanFormState extends State<LoanForm> {
       final currency = Currency.all
           .firstWhere((currency) => currency.locales.contains(currentLocale));
       amount = Money(0, currency);
+      repaidAmount = Money(0, currency);
       date = getDateWithoutTime(DateTime.now());
 
       final users = await DataSource.instance.getUsers();
       setState(() => this.users = users);
     }
+  }
+
+  void initAmountField({
+    FocusNode focusNode,
+    TextEditingController controller,
+    bool isCurrencySelectable,
+    Money getValue(),
+    void onEnter(Money money),
+  }) {
+    focusNode.addListener(() async {
+      if (focusNode.hasFocus) {
+        focusNode.unfocus();
+        final initialMoney = getValue();
+        final money = await showDialog(
+          context: context,
+          builder: (context) => EnterMoneyDialog(
+            initialMoney: initialMoney,
+            currency: initialMoney.currency,
+            isCurrencySelectable: isCurrencySelectable,
+          ),
+        ) as Money;
+        if (money != null) {
+          controller.text = money.amountFormatted;
+          onEnter(money);
+        }
+      }
+    });
   }
 
   void _formatUserCommonName(
@@ -145,6 +184,8 @@ class LoanFormState extends State<LoanForm> {
     borrowerFocus.dispose();
     amountTextController.dispose();
     amountFocus.dispose();
+    repaidAmountTextController.dispose();
+    repaidAmountFocus.dispose();
     titleTextController.dispose();
     super.dispose();
   }
@@ -162,7 +203,8 @@ class LoanFormState extends State<LoanForm> {
         borrowerUser == null
             ? borrowerTextController.text.trim().nullIfEmpty()
             : null,
-        Money(parseAmount(amountTextController.text), amount.currency),
+        amount,
+        repaidAmount,
         titleTextController.text.trim().nullIfEmpty(),
         date,
       );
@@ -200,6 +242,10 @@ class LoanFormState extends State<LoanForm> {
         Divider(),
         SizedBox(height: 16),
         buildAmount(context),
+        SizedBox(height: 16),
+        buildRepaidAmount(context),
+        buildRemainingAmount(context),
+        Divider(),
         SizedBox(height: 16),
         buildTitle(context),
         SizedBox(height: 16),
@@ -321,11 +367,39 @@ class LoanFormState extends State<LoanForm> {
       textAlign: TextAlign.end,
       readOnly: true,
       validator: (value) {
-        final amount = parseAmount(value);
-        if (amount == null) return "#Enter a amount";
-        if (amount <= 0) return "#Amount must be greater then zero";
+        if (this.amount == null) return "#Enter a amount";
+        if (this.amount.amount <= 0) return "#Amount must be greater then zero";
         return null;
       },
+    );
+  }
+
+  Widget buildRepaidAmount(BuildContext context) {
+    return TextFormField(
+      controller: repaidAmountTextController,
+      focusNode: repaidAmountFocus,
+      decoration: InputDecoration(
+        labelText: "#Repaid amount",
+        suffix: Text(repaidAmount.currency.symbol),
+      ),
+      textAlign: TextAlign.end,
+      readOnly: true,
+      validator: (_) {
+        if (this.repaidAmount == null) return "#Enter a repaid amount";
+        if (this.repaidAmount.amount < 0)
+          return "#Repaid amount must be greater or equal to zero";
+        if (this.repaidAmount.amount > this.amount.amount)
+          return "#Repaid amount must be lower or equal to loan amount";
+        return null;
+      },
+    );
+  }
+
+  Widget buildRemainingAmount(BuildContext context) {
+    return ListTile(
+      title: Text("#Remaining amount"),
+      trailing: Text((amount - repaidAmount.amount).formatted),
+      dense: true,
     );
   }
 
