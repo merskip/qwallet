@@ -48,7 +48,7 @@ class _LoansPageState extends State<LoansPage> {
     List<User> users,
     List<PrivateLoan> loans,
   ) {
-    final groups = _groupLoans(users, loans).reversed.toList();
+    final groups = _groupLoans(users, loans);
     return ListView.builder(
       itemCount: groups.length,
       itemBuilder: (context, index) =>
@@ -77,9 +77,11 @@ class _LoansPageState extends State<LoansPage> {
         ));
       }
     }
-    return groups
-      ..forEach((g) => g.finalize())
-      ..sort();
+    return (groups
+          ..forEach((g) => g.finalize())
+          ..sort())
+        .reversed
+        .toList();
   }
 }
 

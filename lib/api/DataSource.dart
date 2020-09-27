@@ -331,8 +331,10 @@ extension PrivateLoansDataSource on DataSource {
         List<User> users,
       ) {
         final documents = loansAsLender.docs + loansAsBorrower.docs;
-        return documents.map((d) => PrivateLoan(d, users)).toList()
-          ..sort((lhs, rhs) => rhs.date.compareTo(lhs.date));
+        return (documents.map((d) => PrivateLoan(d, users)).toList()
+              ..sort((lhs, rhs) => lhs.date.compareTo(rhs.date)))
+            .reversed
+            .toList();
       },
     );
   }
