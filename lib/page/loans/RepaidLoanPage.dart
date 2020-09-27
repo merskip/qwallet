@@ -1,10 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/page/loans/LoansPage.dart';
 
+import '../../AppLocalizations.dart';
 import '../../Money.dart';
 
 class RepaidLoanPage extends StatelessWidget {
@@ -23,38 +25,95 @@ class RepaidLoanPage extends StatelessWidget {
   }
 
   Widget buildListOfRepayingLoans(BuildContext context) {
-    final repayingLoans = getRepayingLoans();
-    return ListView.separated(
+    final repayingLoans = getRepayingLoans()
+        .where((loan) =>
+            loan.usedLoans.isNotEmpty ||
+            (loan.repayingLoan.remainingAmount.amount !=
+                loan.repayingLoan.loan.remainingAmount.amount))
+        .toList();
+    return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 16),
       itemCount: repayingLoans.length,
       itemBuilder: (context, index) =>
           buildRepayingLoanResult(context, repayingLoans[index]),
-      separatorBuilder: (context, index) => Divider(),
     );
   }
 
   Widget buildRepayingLoanResult(
       BuildContext context, RepayingLoanResult repayingLoan) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(children: [
-        Column(
+    final locale = AppLocalizations.of(context).locale.toString();
+    final format = DateFormat("d MMMM yyyy", locale);
+    return Card(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-                "Repaying loan: ${repayingLoan.repayingLoan.loan.title} (${repayingLoan.repayingLoan.loan.remainingAmount.formatted})"),
-            if (repayingLoan.usedLoans.isNotEmpty) Text("Used loans:"),
-            ...repayingLoan.usedLoans.map((usedLoan) => Text(
-                " - ${usedLoan.loan.loan.title} (${usedLoan.loan.loan.remainingAmount.formatted}): ${usedLoan.repayingAmount.formatted}")),
-            if (repayingLoan.repayingLoan.remainingAmount.amount !=
-                repayingLoan.repayingLoan.loan.remainingAmount.amount)
-              Text(
-                  "Remaining amount to paid: ${repayingLoan.repayingLoan.remainingAmount.formatted}"),
+            ListTile(
+              title: Text(repayingLoan.repayingLoan.loan.title),
+              trailing: Text(
+                repayingLoan.repayingLoan.loan.remainingAmount.formatted,
+                style: Theme.of(context).textTheme.subtitle1.copyWith(
+                      color:
+                          repayingLoan.repayingLoan.loan.currentUserIsBorrower
+                              ? Colors.red
+                              : null,
+                    ),
+              ),
+              subtitle:
+                  Text(format.format(repayingLoan.repayingLoan.loan.date)),
+            ),
+            ...repayingLoan.usedLoans.map((usedLoan) {
+              return ListTile(
+                title: Text(usedLoan.loan.loan.title +
+                    " (" +
+                    usedLoan.loan.loan.remainingAmount.formatted +
+                    ")"),
+                trailing: Text(
+                  usedLoan.repayingAmount.formatted,
+                  style: TextStyle(
+                    color: usedLoan.loan.loan.currentUserIsBorrower
+                        ? Colors.red
+                        : null,
+                  ),
+                ),
+                dense: true,
+                visualDensity: VisualDensity.compact,
+              );
+            }),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Divider(),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
+              child: Row(children: [
+                Text(
+                  "#Remaning to repaid:",
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                Spacer(),
+                if (repayingLoan.repayingLoan.remainingAmount.amount == 0)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4.0),
+                    child: Icon(Icons.check, color: Colors.green),
+                  ),
+                Text(repayingLoan.repayingLoan.remainingAmount.formatted,
+                    style: TextStyle(
+                      color: repayingLoan
+                                  .repayingLoan.loan.currentUserIsBorrower &&
+                              repayingLoan.repayingLoan.remainingAmount.amount >
+                                  0
+                          ? Colors.red
+                          : null,
+                    )),
+              ]),
+            ),
           ],
         ),
-        Spacer(),
-        if (repayingLoan.repayingLoan.remainingAmount.amount == 0)
-          Icon(Icons.check)
-      ]),
+      ),
     );
   }
 
