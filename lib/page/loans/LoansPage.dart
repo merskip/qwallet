@@ -90,6 +90,9 @@ class LoansGroup implements Comparable {
 
   double _totalRawAmount;
 
+  List<PrivateLoan> loansOfOtherPerson;
+  List<PrivateLoan> loansOfCurrentUser;
+
   List<Money> debtOfOtherPerson;
   List<Money> debtOfCurrentUser;
   List<Money> balance;
@@ -102,14 +105,14 @@ class LoansGroup implements Comparable {
 
   void finalize() {
     _totalRawAmount = loans.fold(0, (p, v) => p + v.remainingAmount.amount);
-    debtOfOtherPerson = loans
-        .where((loan) => loan.currentUserIsLender)
-        .map((loan) => loan.amount)
-        .sumByCurrency();
-    debtOfCurrentUser = loans
-        .where((loan) => loan.currentUserIsBorrower)
-        .map((loan) => loan.amount)
-        .sumByCurrency();
+    loansOfOtherPerson =
+        loans.where((loan) => loan.currentUserIsLender).toList();
+    debtOfOtherPerson =
+        loansOfOtherPerson.map((loan) => loan.amount).sumByCurrency();
+    loansOfCurrentUser =
+        loans.where((loan) => loan.currentUserIsBorrower).toList();
+    debtOfCurrentUser =
+        loansOfCurrentUser.map((loan) => loan.amount).sumByCurrency();
     balance = loans
         .map((loan) => loan.currentUserIsBorrower ? -loan.amount : loan.amount)
         .sumByCurrency();
