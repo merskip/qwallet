@@ -34,19 +34,67 @@ class RepaidLoanPage extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16),
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+          padding: const EdgeInsets.fromLTRB(40.0, 16.0, 40.0, 0),
           child: Text(
             "#The loans listed below will be used to repay each other.",
             style: Theme.of(context).textTheme.caption,
           ),
         ),
-        ...repayingLoans.map((loan) => buildRepayingLoanResult(context, loan))
+        ...repayingLoans.map((loan) => RepayingLoanCard(repayingLoan: loan)),
+        Divider(height: 48),
+        RepayingResultCard(loans: repayingLoans),
       ],
     );
   }
 
-  Widget buildRepayingLoanResult(
-      BuildContext context, MutatingPrivateLoan repayingLoan) {
+  List<MutatingPrivateLoan> getRepayingLoans() {
+    final loans =
+        loansGroup.loans.map((loan) => MutatingPrivateLoan(loan)).toList();
+
+    for (final repayingLoan in loans) {
+      final loansToRepaid = (repayingLoan.loan.currentUserIsLender
+              ? loans.where((l) => l.loan.currentUserIsBorrower)
+              : loans.where((l) => l.loan.currentUserIsLender))
+          .where((loan) => repayingLoan.currency == loan.currency)
+          .toList();
+
+      repayLoan(repayingLoan, loansToRepaid);
+    }
+    return loans;
+  }
+
+  void repayLoan(
+    MutatingPrivateLoan repayingLoan,
+    List<MutatingPrivateLoan> loansToRepaid,
+  ) {
+    double remainingAmount = repayingLoan.remainingAmount.amount;
+    for (final loan in loansToRepaid) {
+      final repayingAmount = min(remainingAmount, loan.remainingAmount.amount);
+      if (repayingAmount > 0.0) {
+        remainingAmount -= repayingAmount;
+        loan.repaidAmount += repayingAmount;
+        repayingLoan.repaidAmount += repayingAmount;
+
+        repayingLoan.usedLoans.add(
+          RepayingUsedLoan(loan, Money(repayingAmount, loan.currency), false),
+        );
+        loan.usedLoans.add(
+          RepayingUsedLoan(
+              repayingLoan, Money(repayingAmount, loan.currency), true),
+        );
+      }
+      if (remainingAmount == 0.0) break;
+    }
+  }
+}
+
+class RepayingLoanCard extends StatelessWidget {
+  final MutatingPrivateLoan repayingLoan;
+
+  const RepayingLoanCard({Key key, this.repayingLoan}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Padding(
@@ -55,6 +103,12 @@ class RepaidLoanPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             buildRepayingLoanHeader(context, repayingLoan),
+            Center(
+              child: Text(
+                "#Loans using to repay",
+                style: Theme.of(context).textTheme.caption,
+              ),
+            ),
             ...repayingLoan.usedLoans
                 .map((usedLoan) => buildRepayingUsedLoan(context, usedLoan)),
             Padding(
@@ -135,45 +189,45 @@ class RepaidLoanPage extends StatelessWidget {
       ]),
     );
   }
+}
 
-  List<MutatingPrivateLoan> getRepayingLoans() {
-    final loans =
-        loansGroup.loans.map((loan) => MutatingPrivateLoan(loan)).toList();
+class RepayingResultCard extends StatelessWidget {
+  final List<MutatingPrivateLoan> loans;
 
-    for (final repayingLoan in loans) {
-      final loansToRepaid = (repayingLoan.loan.currentUserIsLender
-              ? loans.where((l) => l.loan.currentUserIsBorrower)
-              : loans.where((l) => l.loan.currentUserIsLender))
-          .where((loan) => repayingLoan.currency == loan.currency)
-          .toList();
+  const RepayingResultCard({Key key, this.loans}) : super(key: key);
 
-      repayLoan(repayingLoan, loansToRepaid);
-    }
-    return loans;
-  }
-
-  void repayLoan(
-    MutatingPrivateLoan repayingLoan,
-    List<MutatingPrivateLoan> loansToRepaid,
-  ) {
-    double remainingAmount = repayingLoan.remainingAmount.amount;
-    for (final loan in loansToRepaid) {
-      final repayingAmount = min(remainingAmount, loan.remainingAmount.amount);
-      if (repayingAmount > 0.0) {
-        remainingAmount -= repayingAmount;
-        loan.repaidAmount += repayingAmount;
-        repayingLoan.repaidAmount += repayingAmount;
-
-        repayingLoan.usedLoans.add(
-          RepayingUsedLoan(loan, Money(repayingAmount, loan.currency), false),
-        );
-        loan.usedLoans.add(
-          RepayingUsedLoan(
-              repayingLoan, Money(repayingAmount, loan.currency), true),
-        );
-      }
-      if (remainingAmount == 0.0) break;
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            title: Text(
+              "Result",
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            subtitle: Text("#Summary of loans and yours loans after apply"),
+          ),
+          ListTile(
+            title: Text("#Dług: "),
+            trailing: Text(Money(0, Currency.AMD).formatted),
+            visualDensity: VisualDensity.compact,
+          ),
+          ListTile(
+            title: Text("#Mój dług: "),
+            trailing: Text(Money(0, Currency.AMD).formatted),
+            visualDensity: VisualDensity.compact,
+          ),
+          ListTile(
+            title: Text("#Wynik: "),
+            trailing: Text(Money(0, Currency.AMD).formatted),
+            visualDensity: VisualDensity.compact,
+          ),
+        ],
+      ),
+    );
   }
 }
 
