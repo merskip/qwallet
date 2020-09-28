@@ -232,6 +232,13 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
             values: loansGroup.balance,
             defaultStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
+          SizedBox(height: 8),
+          Center(
+            child: Text(
+              "#Tap here to mark repaid loans",
+              style: Theme.of(context).textTheme.caption,
+            ),
+          ),
         ],
       ),
     );
@@ -269,7 +276,7 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
 
   Widget buildDetails(BuildContext context) {
     return Column(children: [
-      for (final loan in widget.loansGroup.loans) buildLoanItem(context, loan)
+      ...widget.loansGroup.loans.map((loan) => buildLoanItem(context, loan)),
     ]);
   }
 
