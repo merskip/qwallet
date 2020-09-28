@@ -235,7 +235,7 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
           SizedBox(height: 8),
           Center(
             child: Text(
-              "#Tap here to mark repaid loans",
+              "#Tap here to mark repaid loans each other",
               style: Theme.of(context).textTheme.caption,
             ),
           ),

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/page/loans/LoansPage.dart';
+import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../../AppLocalizations.dart';
 import '../../Money.dart';
@@ -41,8 +42,14 @@ class RepaidLoanPage extends StatelessWidget {
           ),
         ),
         ...repayingLoans.map((loan) => RepayingLoanCard(repayingLoan: loan)),
-        Divider(height: 48),
-        RepayingResultCard(loans: repayingLoans),
+        SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          child: PrimaryButton(
+            child: Text("Apply"),
+            onPressed: () {},
+          ),
+        ),
       ],
     );
   }
@@ -97,15 +104,17 @@ class RepayingLoanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      color: repayingLoan.isFullyRepaid ? Colors.green.shade50 : null,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             buildRepayingLoanHeader(context, repayingLoan),
-            Center(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                "#Loans using to repay",
+                "#Is repaid by:",
                 style: Theme.of(context).textTheme.caption,
               ),
             ),
@@ -170,63 +179,31 @@ class RepayingLoanCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
       child: Row(children: [
-        Text(
-          "#Remaning to repaid:",
-          style: Theme.of(context).textTheme.caption,
-        ),
+        if (!repayingLoan.isFullyRepaid)
+          Text(
+            "#Remaning to repaid:",
+            style: Theme.of(context).textTheme.caption,
+          ),
         Spacer(),
-        if (repayingLoan.remainingAmount.amount == 0)
-          Padding(
-            padding: const EdgeInsets.only(right: 4.0),
-            child: Icon(Icons.check, color: Colors.green),
-          ),
-        Text(
-          repayingLoan.remainingAmount.formatted,
-          style: TextStyle(
-            color: currentUserHasRemainingRepaid ? Colors.red : null,
-          ),
-        ),
-      ]),
-    );
-  }
-}
-
-class RepayingResultCard extends StatelessWidget {
-  final List<MutatingPrivateLoan> loans;
-
-  const RepayingResultCard({Key key, this.loans}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            title: Text(
-              "Result",
-              style: Theme.of(context).textTheme.headline6,
+        if (!repayingLoan.isFullyRepaid)
+          Text(
+            repayingLoan.remainingAmount.formatted,
+            style: TextStyle(
+              color: currentUserHasRemainingRepaid ? Colors.red : null,
             ),
-            subtitle: Text("#Summary of loans and yours loans after apply"),
           ),
-          ListTile(
-            title: Text("#Dług: "),
-            trailing: Text(Money(0, Currency.AMD).formatted),
-            visualDensity: VisualDensity.compact,
+        if (repayingLoan.isFullyRepaid)
+          Row(
+            children: [
+              Icon(Icons.check, color: Colors.green),
+              SizedBox(width: 4),
+              Text(
+                "Fully repaid",
+                style: TextStyle(color: Colors.green.shade700),
+              ),
+            ],
           ),
-          ListTile(
-            title: Text("#Mój dług: "),
-            trailing: Text(Money(0, Currency.AMD).formatted),
-            visualDensity: VisualDensity.compact,
-          ),
-          ListTile(
-            title: Text("#Wynik: "),
-            trailing: Text(Money(0, Currency.AMD).formatted),
-            visualDensity: VisualDensity.compact,
-          ),
-        ],
-      ),
+      ]),
     );
   }
 }
@@ -237,6 +214,8 @@ class MutatingPrivateLoan {
   Money repaidAmount;
 
   final List<RepayingUsedLoan> usedLoans = List();
+
+  bool get isFullyRepaid => remainingAmount.amount == 0;
 
   Money get remainingAmount =>
       Money(loan.amount.amount - repaidAmount.amount, loan.amount.currency);
