@@ -125,11 +125,12 @@ class LoansGroup implements Comparable {
 
   bool isMatch(PrivateLoan loan) {
     if (loan.currentUserIsLender) {
-      return otherPersonUser == loan.borrowerUser ||
-          otherPersonName == loan.borrowerName;
+      return (otherPersonUser != null &&
+              otherPersonUser == loan.borrowerUser) ||
+          (otherPersonName != null && otherPersonName == loan.borrowerName);
     } else {
-      return otherPersonUser == loan.lenderUser ||
-          otherPersonName == loan.lenderName;
+      return (otherPersonUser != null && otherPersonUser == loan.lenderUser) ||
+          (otherPersonName != null && otherPersonName == loan.lenderName);
     }
   }
 
