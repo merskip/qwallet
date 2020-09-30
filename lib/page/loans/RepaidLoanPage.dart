@@ -55,8 +55,9 @@ class RepaidLoanPage extends StatelessWidget {
   }
 
   List<MutatingPrivateLoan> getRepayingLoans() {
-    final loans =
-        loansGroup.loans.map((loan) => MutatingPrivateLoan(loan)).toList();
+    final loans = loansGroup.loans.reversed
+        .map((loan) => MutatingPrivateLoan(loan))
+        .toList();
 
     for (final repayingLoan in loans) {
       final loansToRepaid = (repayingLoan.loan.currentUserIsLender
