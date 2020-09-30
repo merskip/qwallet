@@ -398,6 +398,21 @@ extension PrivateLoansDataSource on DataSource {
     });
   }
 
+  Future<void> updateRepaidAmountsForPrivateLoans({
+    List<PrivateLoan> privateLoans,
+    double getRepaidAmount(PrivateLoan loan),
+  }) async {
+    await firestore.runTransaction((transaction) async {
+      for (final loan in privateLoans) {
+        final repaidAmount = getRepaidAmount(loan);
+        transaction.update(loan.reference.documentReference, {
+          "repaidAmount": repaidAmount,
+          "isFullyRepaid": repaidAmount >= loan.amount.amount,
+        });
+      }
+    });
+  }
+
   Future<void> removePrivateLoan({
     @required Reference<PrivateLoan> loanRef,
   }) {

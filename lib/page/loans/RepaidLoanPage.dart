@@ -3,8 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Currency.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/page/loans/LoansPage.dart';
+import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../../AppLocalizations.dart';
@@ -14,6 +16,19 @@ class RepaidLoanPage extends StatelessWidget {
   final LoansGroup loansGroup;
 
   const RepaidLoanPage({Key key, this.loansGroup}) : super(key: key);
+
+  void onSelectedApply(
+    BuildContext context,
+    List<MutatingPrivateLoan> repayingLoans,
+  ) {
+    final loans = repayingLoans.map((l) => l.loan).toList();
+    DataSource.instance.updateRepaidAmountsForPrivateLoans(
+      privateLoans: loans,
+      getRepaidAmount: (PrivateLoan loan) =>
+          repayingLoans[loans.indexOf(loan)].repaidAmount.amount,
+    );
+    router.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +61,8 @@ class RepaidLoanPage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: PrimaryButton(
-            child: Text("Apply"),
-            onPressed: () {},
+            child: Text("#Apply"),
+            onPressed: () => onSelectedApply(context, repayingLoans),
           ),
         ),
       ],
