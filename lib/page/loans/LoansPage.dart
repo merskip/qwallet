@@ -110,13 +110,15 @@ class LoansGroup implements Comparable {
     loansOfOtherPerson =
         loans.where((loan) => loan.currentUserIsLender).toList();
     debtOfOtherPerson =
-        loansOfOtherPerson.map((loan) => loan.amount).sumByCurrency();
+        loansOfOtherPerson.map((loan) => loan.remainingAmount).sumByCurrency();
     loansOfCurrentUser =
         loans.where((loan) => loan.currentUserIsBorrower).toList();
     debtOfCurrentUser =
-        loansOfCurrentUser.map((loan) => loan.amount).sumByCurrency();
+        loansOfCurrentUser.map((loan) => loan.remainingAmount).sumByCurrency();
     balance = loans
-        .map((loan) => loan.currentUserIsBorrower ? -loan.amount : loan.amount)
+        .map((loan) => loan.currentUserIsBorrower
+            ? -loan.remainingAmount
+            : loan.remainingAmount)
         .sumByCurrency();
   }
 
