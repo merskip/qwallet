@@ -27,13 +27,14 @@ class EnterMoneyDialog extends StatefulWidget {
 
 class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   Currency currency;
-  String expression = "";
+  String expression;
   final displayController = TextEditingController();
 
   final evaluator = const ExpressionEvaluator();
 
   @override
   void initState() {
+    expression = widget.initialMoney.amount.toString();
     currency = widget.currency;
     refreshDisplay(context);
     super.initState();
