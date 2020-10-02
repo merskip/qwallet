@@ -129,6 +129,7 @@ class LoanFormState extends State<LoanForm> {
           .firstWhere((currency) => currency.locales.contains(currentLocale));
       amount = Money(0, currency);
       repaidAmount = Money(0, currency);
+      repaidAmountTextController.text = repaidAmount.amountFormatted;
       date = getDateWithoutTime(DateTime.now());
 
       final users = await DataSource.instance.getUsers();
