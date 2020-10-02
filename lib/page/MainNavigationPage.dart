@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/page/SettingsPage.dart';
 import 'package:qwallet/page/dashboard/DashboardPage.dart';
-import 'package:qwallet/page/loans/LoansPage.dart';
+import 'package:qwallet/page/loans/LoansTabPage.dart';
 
 import '../AppLocalizations.dart';
 
@@ -55,7 +55,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           data: ThemeData(
             primarySwatch: Colors.deepOrange,
           ),
-          child: LoansPage(),
+          child: LoansTabPage(),
         );
       case 2:
         return Theme(

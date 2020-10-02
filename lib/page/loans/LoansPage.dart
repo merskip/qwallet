@@ -22,9 +22,6 @@ class _LoansPageState extends State<LoansPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("#Loans"),
-      ),
       body: SimpleStreamWidget(
         stream: CombineLatestStream.list([
           DataSource.instance.getPrivateLoans(),
@@ -35,10 +32,6 @@ class _LoansPageState extends State<LoansPage> {
           values[1] as List<User>,
           values[0] as List<PrivateLoan>,
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => router.navigateTo(context, "/privateLoans/add"),
       ),
     );
   }
