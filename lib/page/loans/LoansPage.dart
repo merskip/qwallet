@@ -242,14 +242,25 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
             values: loansGroup.balance,
             defaultStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
-          SizedBox(height: 8),
-          if (loansGroup.canAnyRepay)
-            Center(
-              child: Text(
-                "#Tap here to mark repaid loans each other",
-                style: Theme.of(context).textTheme.caption,
-              ),
-            ),
+          if (loansGroup.canAnyRepay) buildRepaidLoansPrompt(context),
+        ],
+      ),
+    );
+  }
+
+  Widget buildRepaidLoansPrompt(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.info_outline, color: Colors.deepOrange),
+          SizedBox(width: 4),
+          Text(
+            "#Tap here to mark repaid loans each other",
+            style: TextStyle(color: Colors.grey, fontSize: 12),
+          ),
         ],
       ),
     );
