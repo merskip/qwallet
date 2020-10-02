@@ -1,11 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/page/loans/LoansPage.dart';
+import 'package:qwallet/page/loans/RepayingMatcher.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
@@ -41,7 +40,8 @@ class RepaidLoanPage extends StatelessWidget {
   }
 
   Widget buildListOfRepayingLoans(BuildContext context) {
-    final repayingLoans = getRepayingLoans()
+    final repayingLoans = RepayingMatcher(loansGroup)
+        .getRepayingLoans()
         .where((loan) =>
             loan.usedLoans.isNotEmpty ||
             (loan.remainingAmount.amount != loan.loan.remainingAmount.amount))
@@ -67,47 +67,6 @@ class RepaidLoanPage extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  List<MutatingPrivateLoan> getRepayingLoans() {
-    final loans = loansGroup.loans.reversed
-        .map((loan) => MutatingPrivateLoan(loan))
-        .toList();
-
-    for (final repayingLoan in loans) {
-      final loansToRepaid = (repayingLoan.loan.currentUserIsLender
-              ? loans.where((l) => l.loan.currentUserIsBorrower)
-              : loans.where((l) => l.loan.currentUserIsLender))
-          .where((loan) => repayingLoan.currency == loan.currency)
-          .toList();
-
-      repayLoan(repayingLoan, loansToRepaid);
-    }
-    return loans;
-  }
-
-  void repayLoan(
-    MutatingPrivateLoan repayingLoan,
-    List<MutatingPrivateLoan> loansToRepaid,
-  ) {
-    double remainingAmount = repayingLoan.remainingAmount.amount;
-    for (final loan in loansToRepaid) {
-      final repayingAmount = min(remainingAmount, loan.remainingAmount.amount);
-      if (repayingAmount > 0.0) {
-        remainingAmount -= repayingAmount;
-        loan.repaidAmount += repayingAmount;
-        repayingLoan.repaidAmount += repayingAmount;
-
-        repayingLoan.usedLoans.add(
-          RepayingUsedLoan(loan, Money(repayingAmount, loan.currency), false),
-        );
-        loan.usedLoans.add(
-          RepayingUsedLoan(
-              repayingLoan, Money(repayingAmount, loan.currency), true),
-        );
-      }
-      if (remainingAmount == 0.0) break;
-    }
   }
 }
 
