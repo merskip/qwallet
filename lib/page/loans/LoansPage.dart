@@ -99,6 +99,8 @@ class LoansGroup implements Comparable {
   List<Money> debtOfCurrentUser;
   List<Money> balance;
 
+  bool canAnyRepay;
+
   LoansGroup({
     this.loans,
     this.otherPersonName,
@@ -120,6 +122,9 @@ class LoansGroup implements Comparable {
             ? -loan.remainingAmount
             : loan.remainingAmount)
         .sumByCurrency();
+
+    canAnyRepay = debtOfOtherPerson.any((debt) => debtOfCurrentUser
+        .any((otherDebt) => otherDebt.currency == debt.currency));
   }
 
   String getOtherPersonCommonName(BuildContext context) =>
@@ -178,7 +183,9 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
       child: Column(children: [
         InkWell(
           child: buildHeader(context, widget.loansGroup),
-          onTap: () => onSelectedHeader(context),
+          onTap: widget.loansGroup.canAnyRepay
+              ? () => onSelectedHeader(context)
+              : null,
         ),
         Divider(height: 4),
         if (_isExtended) buildDetails(context),
@@ -236,12 +243,13 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
             defaultStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
           SizedBox(height: 8),
-          Center(
-            child: Text(
-              "#Tap here to mark repaid loans each other",
-              style: Theme.of(context).textTheme.caption,
+          if (loansGroup.canAnyRepay)
+            Center(
+              child: Text(
+                "#Tap here to mark repaid loans each other",
+                style: Theme.of(context).textTheme.caption,
+              ),
             ),
-          ),
         ],
       ),
     );

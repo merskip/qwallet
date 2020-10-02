@@ -40,12 +40,8 @@ class RepaidLoanPage extends StatelessWidget {
   }
 
   Widget buildListOfRepayingLoans(BuildContext context) {
-    final repayingLoans = RepayingMatcher(loansGroup)
-        .getRepayingLoans()
-        .where((loan) =>
-            loan.usedLoans.isNotEmpty ||
-            (loan.remainingAmount.amount != loan.loan.remainingAmount.amount))
-        .toList();
+    final repayingLoans = RepayingMatcher(loansGroup).getRepayingLoans();
+
     return ListView(
       padding: const EdgeInsets.only(bottom: 16),
       children: [

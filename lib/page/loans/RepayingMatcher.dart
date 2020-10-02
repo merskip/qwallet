@@ -24,7 +24,11 @@ class RepayingMatcher {
 
       repayLoan(repayingLoan, loansToRepaid);
     }
-    return loans;
+    return loans
+        .where((loan) =>
+            loan.usedLoans.isNotEmpty ||
+            (loan.remainingAmount.amount != loan.loan.remainingAmount.amount))
+        .toList();
   }
 
   void repayLoan(
