@@ -43,7 +43,14 @@ class SimpleStreamWidget<T> extends StatelessWidget {
       ConnectionState.done: "✅",
     })[snapshot.connectionState];
 
-    print("[Snapshot $T] "
+    String typeName = "$T";
+
+    if (snapshot.data is List<List<dynamic>>) {
+      final list = snapshot.data as List<List<dynamic>>;
+      typeName = "List<${list.first?.runtimeType}>";
+    }
+
+    print("[Snapshot $typeName] "
         "state=($stateIcon $state) "
         "hasData=${snapshot.hasData} "
         "hasError=${snapshot.hasError}");
