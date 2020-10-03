@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/page/loans/LoansListPage.dart';
 import 'package:qwallet/page/loans/LoansPage.dart';
 
+import '../../AppLocalizations.dart';
 import '../../router.dart';
 
 class LoansTabPage extends StatelessWidget {
@@ -13,8 +14,8 @@ class LoansTabPage extends StatelessWidget {
         appBar: AppBar(
           title: TabBar(
             tabs: [
-              Tab(text: "#Actual"),
-              Tab(text: "#Show all"),
+              Tab(text: AppLocalizations.of(context).privateLoanTabActual),
+              Tab(text: AppLocalizations.of(context).privateLoanTabAll),
             ],
           ),
         ),
@@ -26,6 +27,7 @@ class LoansTabPage extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
+          tooltip: AppLocalizations.of(context).privateLoanAddLoan,
           onPressed: () => router.navigateTo(context, "/privateLoans/add"),
         ),
       ),

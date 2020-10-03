@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/model/user.dart';
 
+import '../../AppLocalizations.dart';
 import '../../Money.dart';
 import 'LoanForm.dart';
 
@@ -35,13 +36,13 @@ class AddLoanPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Add loans"),
+        title: Text(AppLocalizations.of(context).privateLoanAddTitle),
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16),
           child: LoanForm(
-            submitText: "#Add new loan",
+            submitText: AppLocalizations.of(context).privateLoanAddSubmit,
             onSubmit: onSubmit,
           ),
         ),

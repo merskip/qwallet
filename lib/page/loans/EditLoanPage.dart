@@ -4,6 +4,7 @@ import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 
+import '../../AppLocalizations.dart';
 import '../../Money.dart';
 import 'LoanForm.dart';
 
@@ -51,8 +52,10 @@ class EditLoanPage extends StatelessWidget {
 
   void onSelectedRemove(BuildContext context) {
     ConfirmationDialog(
-      title: Text("#Remove?"),
-      content: Text("#Do do what remove this loan?"),
+      title: Text(AppLocalizations.of(context)
+          .privateLoanRemoveConfirmation(loan.title)),
+      content: Text(AppLocalizations.of(context)
+          .privateLoanRemoveConfirmationContent(loan.title)),
       isDestructive: true,
       onConfirm: () {
         DataSource.instance.removePrivateLoan(loanRef: loan.reference);
@@ -66,7 +69,7 @@ class EditLoanPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Edit loan: ${loan.title}"),
+        title: Text(AppLocalizations.of(context).privateLoanEditTitle),
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
@@ -79,7 +82,7 @@ class EditLoanPage extends StatelessWidget {
           padding: EdgeInsets.all(16),
           child: LoanForm(
             initialLoan: loan,
-            submitText: "#Save changes",
+            submitText: AppLocalizations.of(context).privateLoanEditSubmit,
             onSubmit: onSelectedSubmit,
           ),
         ),

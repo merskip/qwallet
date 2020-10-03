@@ -215,14 +215,14 @@ class LoanFormState extends State<LoanForm> {
   bool _validPersons() {
     if (lenderUser != User.currentUser() &&
         borrowerUser != User.currentUser()) {
-      setState(() => personsValidationMessage =
-          "#You yourself must be lender or borrower");
+      setState(() => personsValidationMessage = AppLocalizations.of(context)
+          .privateLoanValidationCurrentUserIsNotLenderOrBorrower);
       return false;
     }
 
     if (lenderUser == borrowerUser) {
-      setState(() => personsValidationMessage =
-          "#Lender and borrower cannot be the same person");
+      setState(() => personsValidationMessage = AppLocalizations.of(context)
+          .privateLoanValidationLenderAnBorrowerIsTheSamePerson);
       return false;
     }
     return true;
@@ -263,8 +263,8 @@ class LoanFormState extends State<LoanForm> {
   Widget buildBorrowerField(BuildContext context) {
     return buildUserTextField(
       context: context,
-      title: "#Borrower",
-      selectTitle: "#Select borrower",
+      title: AppLocalizations.of(context).privateLoanBorrower,
+      selectTitle: AppLocalizations.of(context).privateLoanBorrowerSelect,
       controller: borrowerTextController,
       focusNode: borrowerFocus,
       user: borrowerUser,
@@ -275,8 +275,8 @@ class LoanFormState extends State<LoanForm> {
   Widget buildLenderField(BuildContext context) {
     return buildUserTextField(
       context: context,
-      title: "#Lender",
-      selectTitle: "#Select lender",
+      title: AppLocalizations.of(context).privateLoanLender,
+      selectTitle: AppLocalizations.of(context).privateLoanLenderSelect,
       controller: lenderTextController,
       focusNode: lenderFocus,
       user: lenderUser,
@@ -330,7 +330,8 @@ class LoanFormState extends State<LoanForm> {
         if (user != matchedUser) onSelectedUser(matchedUser);
       },
       validator: (value) {
-        if (value.trim().isEmpty) return "#This field cannot be empty";
+        if (value.trim().isEmpty)
+          return AppLocalizations.of(context).privateLoanValidationFieldIsEmpty;
         return null;
       },
     );
@@ -362,14 +363,17 @@ class LoanFormState extends State<LoanForm> {
       controller: amountTextController,
       focusNode: amountFocus,
       decoration: InputDecoration(
-        labelText: "#Amount",
+        labelText: AppLocalizations.of(context).privateLoanAmount,
         suffix: Text(amount.currency.symbol),
       ),
       textAlign: TextAlign.end,
       readOnly: true,
       validator: (value) {
-        if (this.amount == null) return "#Enter a amount";
-        if (this.amount.amount <= 0) return "#Amount must be greater then zero";
+        if (this.amount == null)
+          return AppLocalizations.of(context).privateLoanValidationFieldIsEmpty;
+        if (this.amount.amount <= 0)
+          return AppLocalizations.of(context)
+              .privateLoanValidationAmountIsNegativeOrZero;
         return null;
       },
     );
@@ -380,17 +384,20 @@ class LoanFormState extends State<LoanForm> {
       controller: repaidAmountTextController,
       focusNode: repaidAmountFocus,
       decoration: InputDecoration(
-        labelText: "#Repaid amount",
+        labelText: AppLocalizations.of(context).privateLoanRepaidAmount,
         suffix: Text(repaidAmount.currency.symbol),
       ),
       textAlign: TextAlign.end,
       readOnly: true,
       validator: (_) {
-        if (this.repaidAmount == null) return "#Enter a repaid amount";
+        if (this.repaidAmount == null)
+          return AppLocalizations.of(context).privateLoanValidationFieldIsEmpty;
         if (this.repaidAmount.amount < 0)
-          return "#Repaid amount must be greater or equal to zero";
+          return AppLocalizations.of(context)
+              .privateLoanValidationAmountIsNegativeOrZero;
         if (this.repaidAmount.amount > this.amount.amount)
-          return "#Repaid amount must be lower or equal to loan amount";
+          return AppLocalizations.of(context)
+              .privateLoanValidationRepaidAmountGreaterThenAmount;
         return null;
       },
     );
@@ -398,7 +405,7 @@ class LoanFormState extends State<LoanForm> {
 
   Widget buildRemainingAmount(BuildContext context) {
     return ListTile(
-      title: Text("#Remaining amount"),
+      title: Text(AppLocalizations.of(context).privateLoanRemainingAmount),
       trailing: Text((amount - repaidAmount.amount).formatted),
       dense: true,
     );
@@ -408,10 +415,11 @@ class LoanFormState extends State<LoanForm> {
     return TextFormField(
       controller: titleTextController,
       decoration: InputDecoration(
-        labelText: "#Title",
+        labelText: AppLocalizations.of(context).privateLoanTitle,
       ),
       validator: (value) {
-        if (value.trim().isEmpty) return "#This field cannot be empty";
+        if (value.trim().isEmpty)
+          return AppLocalizations.of(context).privateLoanValidationFieldIsEmpty;
         return null;
       },
       maxLength: 50,
@@ -423,7 +431,7 @@ class LoanFormState extends State<LoanForm> {
     final date = this.date ?? DateTime.now();
     return DateTimeField(
       decoration: InputDecoration(
-        labelText: "#Date",
+        labelText: AppLocalizations.of(context).privateLoanDate,
         isDense: true,
       ),
       format: DateFormat("d MMMM yyyy", locale),

@@ -33,7 +33,7 @@ class RepaidLoanPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Mark as repaid loans"),
+        title: Text(AppLocalizations.of(context).privateLoanRepaidLoansTitle),
       ),
       body: buildListOfRepayingLoans(context),
     );
@@ -46,9 +46,10 @@ class RepaidLoanPage extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16),
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(40.0, 16.0, 40.0, 0),
+          padding: const EdgeInsets.fromLTRB(40.0, 24.0, 40.0, 8.0),
           child: Text(
-            "#The loans listed below will be used to repay each other.",
+            AppLocalizations.of(context).privateLoansRepaidLoansInfo,
+            textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.caption,
           ),
         ),
@@ -57,7 +58,8 @@ class RepaidLoanPage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: PrimaryButton(
-            child: Text("#Apply"),
+            child: Text(
+                AppLocalizations.of(context).privateLoansRepaidLoansSubmit),
             onPressed: () => onSelectedApply(context, repayingLoans),
           ),
         ),
@@ -85,7 +87,8 @@ class RepayingLoanCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                "#Is repaid by:",
+                AppLocalizations.of(context)
+                    .privateLoansRepaidLoansUsedLoansInfo,
                 style: Theme.of(context).textTheme.caption,
               ),
             ),
@@ -152,7 +155,7 @@ class RepayingLoanCard extends StatelessWidget {
       child: Row(children: [
         if (!repayingLoan.isFullyRepaid)
           Text(
-            "#Remaning to repaid:",
+            AppLocalizations.of(context).privateLoanRemainingAmount,
             style: Theme.of(context).textTheme.caption,
           ),
         Spacer(),
@@ -169,7 +172,7 @@ class RepayingLoanCard extends StatelessWidget {
               Icon(Icons.check, color: Colors.green),
               SizedBox(width: 4),
               Text(
-                "Fully repaid",
+                AppLocalizations.of(context).privateLoansRepaidLoansFullyRepaid,
                 style: TextStyle(color: Colors.green.shade700),
               ),
             ],

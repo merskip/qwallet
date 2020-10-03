@@ -212,7 +212,7 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
               padding: const EdgeInsets.only(top: 8.0),
               child: buildSummaryItem(
                 context,
-                title: Text("#Dług"),
+                title: Text(AppLocalizations.of(context).privateLoanDebt),
                 values: loansGroup.debtOfOtherPerson,
               ),
             ),
@@ -221,7 +221,7 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
               padding: const EdgeInsets.only(top: 8.0),
               child: buildSummaryItem(
                 context,
-                title: Text("#Mój dług"),
+                title: Text(AppLocalizations.of(context).privateLoanMyDebt),
                 values: loansGroup.debtOfCurrentUser,
                 defaultStyle: TextStyle(color: Colors.red),
               ),
@@ -248,11 +248,14 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.info_outline, color: Colors.deepOrange),
-          SizedBox(width: 4),
-          Text(
-            "#Tap here to mark repaid loans each other",
-            style: TextStyle(color: Colors.grey, fontSize: 12),
+          Icon(Icons.info_outline, color: Colors.blue),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              AppLocalizations.of(context).privateLoanRepaidLoansPrompt,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey, fontSize: 12),
+            ),
           ),
         ],
       ),
@@ -316,7 +319,9 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
   Widget buildToggleExpended(BuildContext context) {
     return FlatButton(
       onPressed: () => setState(() => _isExtended = !_isExtended),
-      child: Text(_isExtended ? "#Show less" : "#Show more"),
+      child: Text(_isExtended
+          ? AppLocalizations.of(context).privateLoanShowLess
+          : AppLocalizations.of(context).transactionsCardShowMore),
       visualDensity: VisualDensity.compact,
     );
   }

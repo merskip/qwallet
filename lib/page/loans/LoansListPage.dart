@@ -37,28 +37,10 @@ class _LoansListPageState extends State<LoansListPage> {
         if (!lhs.isFullyRepaid && rhs.isFullyRepaid) return -1;
         return rhs.date.compareTo(lhs.date);
       });
-    return ListView(
-      children: [
-        ...sortedLoans.map((loan) => buildLoan(context, loan)),
-        SizedBox(height: 96),
-      ],
-    );
-  }
-
-  Widget buildArchivedDivider(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16.0),
-      child: Column(
-        children: [
-          Divider(),
-          Center(
-            child: Text(
-              "#Archived loans",
-              style: Theme.of(context).textTheme.caption,
-            ),
-          )
-        ],
-      ),
+    return ListView.builder(
+      itemCount: sortedLoans.length,
+      itemBuilder: (context, index) => buildLoan(context, sortedLoans[index]),
+      padding: const EdgeInsets.only(bottom: 96),
     );
   }
 
@@ -118,14 +100,17 @@ class _LoansListPageState extends State<LoansListPage> {
         child: buildNameWithCaption(
           context,
           name: loan.getLenderCommonName(context),
-          caption: AppLocalizations.of(context).privateLoansLender,
+          caption: AppLocalizations.of(context).privateLoanLender,
         ),
       ),
     ]);
   }
 
-  Widget buildNameWithCaption(BuildContext context,
-      {String name, String caption}) {
+  Widget buildNameWithCaption(
+    BuildContext context, {
+    String name,
+    String caption,
+  }) {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(children: [
