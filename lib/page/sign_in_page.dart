@@ -5,10 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
 import '../AppLocalizations.dart';
+import '../LocalPreferences.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -25,16 +27,52 @@ class _SignInPageState extends State<SignInPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: Builder(
-        builder: (context) => Center(
-          child: Column(children: <Widget>[
-            Spacer(flex: 2),
-            buildHeader(context),
-            Spacer(flex: 1),
-            if (isLoginInProgress)
-              CircularProgressIndicator(backgroundColor: Colors.white),
-            if (!isLoginInProgress) buildSingInButtons(context),
-            Spacer(),
-          ]),
+        builder: (context) => SafeArea(
+          child: Center(
+            child: Column(children: <Widget>[
+              buildLanguageSelection(context),
+              Spacer(flex: 1),
+              buildHeader(context),
+              Spacer(flex: 1),
+              if (isLoginInProgress)
+                CircularProgressIndicator(backgroundColor: Colors.white),
+              if (!isLoginInProgress) buildSingInButtons(context),
+              Spacer(),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildLanguageSelection(BuildContext context) {
+    final locales = [
+      Locale("en", "US"),
+      Locale("pl", "PL"),
+    ];
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: SimpleStreamWidget(
+          stream: LocalPreferences.userPreferences,
+          builder: (context, UserPreferences userPreferences) {
+            final currentLocale =
+                userPreferences.locale ?? AppLocalizations.of(context).locale;
+
+            return ToggleButtons(
+              children: <Widget>[
+                Text("EN"),
+                Text("PL"),
+              ],
+              selectedColor: Colors.white,
+              onPressed: (int index) =>
+                  LocalPreferences.setUserLocale(locales[index]),
+              isSelected: locales.map((l) => l == currentLocale).toList(),
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              constraints: BoxConstraints.tightFor(height: 36, width: 44),
+            );
+          },
         ),
       ),
     );
