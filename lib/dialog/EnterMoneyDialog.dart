@@ -6,6 +6,7 @@ import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SecondaryButton.dart';
 
+import '../AppLocalizations.dart';
 import '../Money.dart';
 import '../utils.dart';
 
@@ -289,7 +290,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
           flex: 2,
           child: SecondaryButton(
             onPressed: () => onSelectedCancel(context),
-            child: Text("#Cancel"),
+            child: Text(AppLocalizations.of(context).enterAmountCancel),
           ),
         ),
         SizedBox(width: 16),
@@ -297,7 +298,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
           flex: 3,
           child: PrimaryButton(
             onPressed: () => onSelectedApply(context),
-            child: Text("#Apply"),
+            child: Text(AppLocalizations.of(context).enterAmountApply),
           ),
         ),
       ]),

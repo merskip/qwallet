@@ -7,7 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:qwallet/widget/vector_image.dart';
-import 'package:url_launcher/url_launcher.dart';
+
+import '../AppLocalizations.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -33,8 +34,6 @@ class _SignInPageState extends State<SignInPage> {
               CircularProgressIndicator(backgroundColor: Colors.white),
             if (!isLoginInProgress) buildSingInButtons(context),
             Spacer(),
-            if (kIsWeb) _mobileBetaAccessPanel(),
-            Spacer(),
           ]),
         ),
       ),
@@ -59,20 +58,20 @@ class _SignInPageState extends State<SignInPage> {
   Widget buildSingInButtons(BuildContext context) {
     return Column(children: <Widget>[
       _singInButton(
-        text: 'Stay anonymous',
+        text: AppLocalizations.of(context).singInAnonymous,
         icon: Icon(Icons.person_outline),
         onPressed: () => _signInAnonymous(context),
       ),
       SizedBox(height: 16),
       _singInButton(
-        text: 'Sign in with Google',
+        text: AppLocalizations.of(context).singInWithGoogle,
         icon: VectorImage("assets/ic-google.svg",
             color: Theme.of(context).primaryColor),
         onPressed: () => _singInWithGoogle(context),
       ),
       SizedBox(height: 16),
       _singInButton(
-        text: 'Get going with Email',
+        text: AppLocalizations.of(context).singInWithEmail,
         icon: Icon(Icons.alternate_email),
         onPressed: () => _showDialogForSignInWithEmail(context),
       ),
@@ -101,43 +100,6 @@ class _SignInPageState extends State<SignInPage> {
         ),
       ),
     );
-  }
-
-  Widget _mobileBetaAccessPanel() {
-    return Column(children: [
-      Text("Get early access to mobile QWallet beta",
-          style: Theme.of(context)
-              .primaryTextTheme
-              .headline4
-              .copyWith(fontSize: 20)),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          HandCursor(
-            child: RaisedButton(
-                child: Text("Android"),
-                onPressed: () => _openUrl(
-                    "https://appdistribution.firebase.dev/i/RmhybzSD")),
-          ),
-          SizedBox(width: 24),
-          HandCursor(
-            child: RaisedButton(
-              child: Text("iOS"),
-              onPressed: () =>
-                  _openUrl("https://appdistribution.firebase.dev/i/D3qez77X"),
-            ),
-          ),
-        ],
-      )
-    ]);
-  }
-
-  _openUrl(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 
   _signInAnonymous(BuildContext context) async {
@@ -180,7 +142,7 @@ class _SignInPageState extends State<SignInPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("#Someting went wrong :-("),
+        title: Text(AppLocalizations.of(context).singInFailedLogin),
         content: Text(
           "$error",
           style: TextStyle(
@@ -191,7 +153,7 @@ class _SignInPageState extends State<SignInPage> {
         actions: [
           FlatButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text("#Ok"),
+            child: Text(AppLocalizations.of(context).singInFailedLoginOk),
           ),
         ],
       ),
@@ -246,7 +208,7 @@ class _SignInWithEmailDialogState extends State<_SignInWithEmailDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Sign in with e-mail"),
+      title: Text(AppLocalizations.of(context).singInWithEmail),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -263,28 +225,30 @@ class _SignInWithEmailDialogState extends State<_SignInWithEmailDialog> {
             controller: emailController,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              labelText: "E-mail",
+              labelText: AppLocalizations.of(context).singInEmail,
             ),
           ),
           SizedBox(height: 16),
           TextField(
             obscureText: true,
             controller: passwordController,
-            decoration: InputDecoration(labelText: "Password"),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).singInEmailPassword,
+            ),
           ),
         ],
       ),
       actions: <Widget>[
         FlatButton(
-          child: Text("Cancel"),
+          child: Text(AppLocalizations.of(context).singInEmailCancel),
           onPressed: () => Navigator.pop(context),
         ),
         FlatButton(
-          child: Text("Sign up"),
+          child: Text(AppLocalizations.of(context).singInEmailSignUp),
           onPressed: () => _signUpWithEmail(context),
         ),
         RaisedButton(
-          child: Text("Sign in"),
+          child: Text(AppLocalizations.of(context).singInEmailSignIn),
           color: Theme.of(context).primaryColor,
           onPressed: () => _signInWithEmail(context),
         )

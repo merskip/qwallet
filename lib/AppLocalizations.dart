@@ -41,6 +41,58 @@ class AppLocalizations {
   }
 }
 
+extension SingInLocalizations on AppLocalizations {
+  String get singInAnonymous => _locale(
+        en: "Stay anonymous",
+        pl: "Pozostań anonimowy",
+      );
+
+  String get singInWithGoogle => _locale(
+        en: "Sign in with Google",
+        pl: "Zaloguj się przez Google",
+      );
+
+  String get singInWithEmail => _locale(
+        en: "Sign in with E-mail",
+        pl: "Zaloguj się przez E-mail",
+      );
+
+  String get singInEmail => _locale(
+        en: "E-mail",
+        pl: "E-mail",
+      );
+
+  String get singInEmailPassword => _locale(
+        en: "Password",
+        pl: "Hasło",
+      );
+
+  String get singInEmailCancel => _locale(
+        en: "Cancel",
+        pl: "Anuluj",
+      );
+
+  String get singInEmailSignUp => _locale(
+        en: "Sign up",
+        pl: "Zarejestruj się",
+      );
+
+  String get singInEmailSignIn => _locale(
+        en: "Sign in",
+        pl: "Zaloguj się",
+      );
+
+  String get singInFailedLogin => _locale(
+        en: "Something went wrong :-(",
+        pl: "Coś poszło nie tak :-(",
+      );
+
+  String get singInFailedLoginOk => _locale(
+        en: "Ok",
+        pl: "Ok",
+      );
+}
+
 extension BottomNavigationLocalizations on AppLocalizations {
   String get bottomNavigationDashboard => _locale(
         en: "Dashboard",
@@ -964,6 +1016,18 @@ extension PrivateLoansLocalizations on AppLocalizations {
       );
 
   String get privateLoansRepaidLoansSubmit => _locale(
+        en: "Apply",
+        pl: "Zastosuj",
+      );
+}
+
+extension EnterAmountLocalizations on AppLocalizations {
+  String get enterAmountCancel => _locale(
+        en: "Cancel",
+        pl: "Anuluj",
+      );
+
+  String get enterAmountApply => _locale(
         en: "Apply",
         pl: "Zastosuj",
       );
