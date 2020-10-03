@@ -13,6 +13,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
+  // Connection to Firebase Local Emulator
+  // FirebaseFirestore.instance.settings = Settings(
+  //   host: Platform.isAndroid ? '10.0.2.2:8080' : 'localhost:8080',
+  //   sslEnabled: false,
+  //   persistenceEnabled: false,
+  // );
+
   FlutterError.onError = (details) {
     FlutterError.dumpErrorToConsole(details);
     Crashlytics.instance.recordFlutterError(details);
@@ -31,19 +38,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   MyApp() : super() {
     initRoutes(router);
-    initFirebase();
-  }
-
-  void initFirebase() {
-    // if (!kIsWeb) {
-    //   if (Platform.isAndroid) {
-    //     FirebaseAdMob.instance
-    //         .initialize(appId: "ca-app-pub-2023507573427187~8579587898");
-    //   } else if (Platform.isIOS) {
-    //     FirebaseAdMob.instance
-    //         .initialize(appId: "ca-app-pub-2023507573427187~6712451384");
-    //   }
-    // }
   }
 
   @override
