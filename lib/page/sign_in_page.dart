@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,50 +17,66 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final _googleSignIn = GoogleSignIn();
 
+  bool isLoginInProgress = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
-      body: Center(
-        child: Column(children: <Widget>[
-          Spacer(flex: 2),
-          VectorImage(
-            "assets/app-logo-black.svg",
-            size: Size.square(128),
-            color: Theme.of(context).primaryTextTheme.headline4.color,
-          ),
-          SizedBox(height: 24),
-          Text(
-            "Welcum to QWallet!",
-            style: Theme.of(context).primaryTextTheme.headline4,
-          ),
-          Spacer(flex: 1),
-          Column(children: <Widget>[
-            _singInButton(
-              text: 'Stay anonymous',
-              icon: Icon(Icons.person_outline),
-              onPressed: _signInAnonymous,
-            ),
-            SizedBox(height: 16),
-            _singInButton(
-              text: 'Sign in with Google',
-              icon: VectorImage("assets/ic-google.svg",
-                  color: Theme.of(context).primaryColor),
-              onPressed: _singInWithGoogle,
-            ),
-            SizedBox(height: 16),
-            _singInButton(
-              text: 'Get going with Email',
-              icon: Icon(Icons.alternate_email),
-              onPressed: () => _showDialogForSignInWithEmail(context),
-            ),
+      body: Builder(
+        builder: (context) => Center(
+          child: Column(children: <Widget>[
+            Spacer(flex: 2),
+            buildHeader(context),
+            Spacer(flex: 1),
+            if (isLoginInProgress)
+              CircularProgressIndicator(backgroundColor: Colors.white),
+            if (!isLoginInProgress) buildSingInButtons(context),
+            Spacer(),
+            if (kIsWeb) _mobileBetaAccessPanel(),
+            Spacer(),
           ]),
-          Spacer(),
-          if (kIsWeb) _mobileBetaAccessPanel(),
-          Spacer(),
-        ]),
+        ),
       ),
     );
+  }
+
+  Widget buildHeader(BuildContext context) {
+    return Column(children: [
+      VectorImage(
+        "assets/app-logo-black.svg",
+        size: Size.square(128),
+        color: Theme.of(context).primaryTextTheme.headline4.color,
+      ),
+      SizedBox(height: 24),
+      Text(
+        "Welcum to QWallet!",
+        style: Theme.of(context).primaryTextTheme.headline4,
+      ),
+    ]);
+  }
+
+  Widget buildSingInButtons(BuildContext context) {
+    return Column(children: <Widget>[
+      _singInButton(
+        text: 'Stay anonymous',
+        icon: Icon(Icons.person_outline),
+        onPressed: () => _signInAnonymous(context),
+      ),
+      SizedBox(height: 16),
+      _singInButton(
+        text: 'Sign in with Google',
+        icon: VectorImage("assets/ic-google.svg",
+            color: Theme.of(context).primaryColor),
+        onPressed: () => _singInWithGoogle(context),
+      ),
+      SizedBox(height: 16),
+      _singInButton(
+        text: 'Get going with Email',
+        icon: Icon(Icons.alternate_email),
+        onPressed: () => _showDialogForSignInWithEmail(context),
+      ),
+    ]);
   }
 
   _singInButton({String text, Widget icon, VoidCallback onPressed}) {
@@ -122,15 +140,19 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  _signInAnonymous() async {
+  _signInAnonymous(BuildContext context) async {
+    setState(() => isLoginInProgress = true);
     try {
       await FirebaseAuth.instance.signInAnonymously();
     } catch (e) {
-      print(e); // TODO: show dialog with error
+      _handleError(context, e);
+    } finally {
+      setState(() => isLoginInProgress = false);
     }
   }
 
-  _singInWithGoogle() async {
+  _singInWithGoogle(BuildContext context) async {
+    setState(() => isLoginInProgress = true);
     try {
       final signInAccount = await _googleSignIn.signIn();
       final authentication = await signInAccount.authentication;
@@ -142,13 +164,38 @@ class _SignInPageState extends State<SignInPage> {
 
       await FirebaseAuth.instance.signInWithCredential(credential);
     } catch (e) {
-      print(e); // TODO: show dialog with error
+      _handleError(context, e);
+    } finally {
+      setState(() => isLoginInProgress = false);
     }
   }
 
   _showDialogForSignInWithEmail(BuildContext context) {
     showDialog(
         context: context, builder: (context) => _SignInWithEmailDialog());
+  }
+
+  _handleError(BuildContext context, dynamic error) {
+    print("Failed login: $error");
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("#Someting went wrong :-("),
+        content: Text(
+          "$error",
+          style: TextStyle(
+            fontFamily: Platform.isIOS ? "Courier" : "monospace",
+            color: Colors.red.shade500,
+          ),
+        ),
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text("#Ok"),
+          ),
+        ],
+      ),
+    );
   }
 }
 
