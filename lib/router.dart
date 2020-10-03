@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +7,8 @@ import 'package:qwallet/page/AddTransactionPage.dart';
 import 'package:qwallet/page/TransactionPage.dart';
 import 'package:qwallet/page/WalletPage.dart';
 import 'package:qwallet/page/WalletsPage.dart';
+import 'package:qwallet/page/loans/AddLoanPage.dart';
+import 'package:qwallet/page/loans/EditLoanPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import 'api/Model.dart';
@@ -23,7 +23,7 @@ import 'page/landing_page.dart';
 
 final router = Router();
 
-void defineRoutes(Router router) {
+void initRoutes(Router router) {
   router.define(
     "/",
     handler: Handler(
@@ -138,9 +138,9 @@ void defineRoutes(Router router) {
 
       final categoryRef = DataSource.instance.firestore
           .collection("wallets")
-          .document(walletId)
+          .doc(walletId)
           .collection("categories")
-          .document(categoryId)
+          .doc(categoryId)
           .toReference<Category>();
 
       return EditCategoryPage(
@@ -160,19 +160,28 @@ void defineRoutes(Router router) {
       );
     }),
   );
-}
 
-typedef DataBuilder<T> = Widget Function(BuildContext context, T data);
+  router.define(
+    "/privateLoans/add",
+    transitionType: TransitionType.nativeModal,
+    handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      return AddLoanPage();
+    }),
+  );
 
-Widget _pageOrLoading<T>(Future<T> future, {@required DataBuilder<T> builder}) {
-  return FutureBuilder(
-    future: future,
-    builder: (context, AsyncSnapshot<T> snapshot) {
-      if (snapshot.hasData) {
-        return builder(context, snapshot.data);
-      } else {
-        return Center(child: CircularProgressIndicator());
-      }
-    },
+  router.define(
+    "/privateLoans/:loanId/edit",
+    transitionType: TransitionType.nativeModal,
+    handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      final loanId = params["loanId"][0];
+      return SimpleStreamWidget(
+        stream: DataSource.instance.getPrivateLoan(loanId),
+        builder: (context, loan) => EditLoanPage(
+          loan: loan,
+        ),
+      );
+    }),
   );
 }

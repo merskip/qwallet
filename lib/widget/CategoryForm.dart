@@ -240,7 +240,8 @@ class _CategoryFormState extends State<CategoryForm> {
         return AppLocalizations.of(context).categoryIconPackFontAwesome;
       case IconPack.lineAwesomeIcons:
         return AppLocalizations.of(context).categoryIconPackLineAwesome;
+      default:
+        return null;
     }
-    return null;
   }
 }

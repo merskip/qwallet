@@ -68,7 +68,7 @@ class _TransactionPageState extends State<TransactionPage> {
   void onSelectedDate(BuildContext context) async {
     final selectedDate = await showDatePicker(
       context: context,
-      initialDate: widget.transaction.date.toDate(),
+      initialDate: widget.transaction.date,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
@@ -272,7 +272,7 @@ class _TransactionPageState extends State<TransactionPage> {
     final format = DateFormat("d MMMM yyyy");
     return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).transactionDetailsDate),
-      value: Text(format.format(widget.transaction.date.toDate())),
+      value: Text(format.format(widget.transaction.date)),
       onEdit: (context) => onSelectedDate(context),
     );
   }

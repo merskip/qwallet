@@ -24,7 +24,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
       builder: (context, AsyncSnapshot<T> snapshot) {
         _debugSnapshot(snapshot);
         if (snapshot.hasError)
-          return _error(snapshot);
+          return _error(context, snapshot);
         else if (snapshot.hasData)
           return builder(context, snapshot.data);
         else
@@ -43,28 +43,55 @@ class SimpleStreamWidget<T> extends StatelessWidget {
       ConnectionState.done: "✅",
     })[snapshot.connectionState];
 
-    print("[Snapshot $T] "
+    String typeName = "$T";
+
+    if (snapshot.data is List<List<dynamic>>) {
+      final list = snapshot.data as List<List<dynamic>>;
+      typeName = "List<${list.first?.runtimeType}>";
+    }
+
+    print("[Snapshot $typeName] "
         "state=($stateIcon $state) "
         "hasData=${snapshot.hasData} "
         "hasError=${snapshot.hasError}");
   }
 
-  _error(AsyncSnapshot<T> snapshot) {
-    final error = snapshot.error as Error;
+  Widget _error(BuildContext context, Object error) {
+    if (error is Error) {
+      return buildError(context, error.toString(), error.stackTrace);
+    } else {
+      return buildError(context, error.toString(), null);
+    }
+  }
 
-    return Center(
+  Widget buildError(
+      BuildContext context, String description, StackTrace stackTrace) {
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(children: <Widget>[
-          Icon(Icons.error, size: 48, color: Colors.red.shade500),
-          Text(
-            "Error: $error\n\n${error.stackTrace}",
+          Icon(Icons.error_outline, size: 48, color: Colors.red.shade500),
+          SizedBox(height: 16),
+          SelectableText(
+            "Error: $description",
             style: TextStyle(
               fontFamily: Platform.isIOS ? "Courier" : "monospace",
-              color: Colors.red.shade400,
-              fontSize: 24,
+              color: Colors.red.shade500,
+              fontSize: 12,
             ),
           ),
+          if (stackTrace != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                stackTrace.toString(),
+                style: TextStyle(
+                  fontFamily: Platform.isIOS ? "Courier" : "monospace",
+                  color: Colors.red.shade300,
+                  fontSize: 8,
+                ),
+              ),
+            ),
         ]),
       ),
     );
@@ -73,8 +100,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
   Widget buildLoading(BuildContext context) {
     if (loadingBuilder != null) {
       return loadingBuilder(context);
-    }
-    else {
+    } else {
       return Center(
         child: CircularProgressIndicator(),
       );

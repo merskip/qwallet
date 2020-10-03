@@ -3,12 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Reference<T> {
   DocumentReference documentReference;
 
-  String get id => documentReference.documentID;
+  String get id => documentReference.id;
 
   Reference(this.documentReference);
-
-  factory Reference.fromNullable(DocumentReference documentReference) =>
-      documentReference != null ? Reference(documentReference) : null;
 
   @override
   bool operator ==(Object other) =>

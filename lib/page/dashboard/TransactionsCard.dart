@@ -52,8 +52,7 @@ class _TransactionsCardState extends State<TransactionsCard> {
   _prepareTransactions() {
     transactionsByDate = groupBy(
       widget.transactions,
-      (Transaction transaction) =>
-          getDateWithoutTime(transaction.date.toDate()),
+      (Transaction transaction) => getDateWithoutTime(transaction.date),
     );
     dates = transactionsByDate.keys.toList()
       ..sort((lhs, rhs) => rhs.compareTo(lhs));

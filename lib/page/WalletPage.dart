@@ -14,7 +14,6 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../AppLocalizations.dart';
 import '../Currency.dart';
-import '../firebase_service.dart';
 
 class WalletPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
@@ -70,7 +69,6 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     final page = UserSelectionPage(
       title: AppLocalizations.of(context).walletOwners,
       selectedUsers: currentOwners,
-      allUsers: await FirebaseService.instance.fetchUsers(),
     );
     final owners = await pushPage<List<User>>(
       context,
@@ -184,7 +182,8 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   Widget buildCurrency(BuildContext context) {
     return EditableDetailsItem(
       title: Text(AppLocalizations.of(context).walletCurrency),
-      value: Text("${widget.wallet.currency.symbol} - ${widget.wallet..name}"),
+      value: Text(
+          "${widget.wallet.currency.symbol} - ${widget.wallet.currency.name}"),
       onEdit: (context) => onSelectedCurrency(context),
     );
   }
@@ -206,7 +205,6 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           : Text(widget.wallet.totalIncome.formatted),
     );
   }
-
 
   Widget buildBalance(BuildContext context) {
     return EditableDetailsItem(

@@ -2,35 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/model/user.dart';
 
-class UserSelectionPage extends StatefulWidget {
+class UserChoicePage extends StatefulWidget {
   final String title;
-  final List<User> selectedUsers;
+  final User selectedUser;
 
-  const UserSelectionPage({
+  const UserChoicePage({
     Key key,
     @required this.title,
-    @required this.selectedUsers,
+    @required this.selectedUser,
   }) : super(key: key);
 
   @override
-  _UserSelectionPageState createState() => _UserSelectionPageState();
+  _UserChoicePageState createState() => _UserChoicePageState();
 }
 
-class _UserSelectionPageState extends State<UserSelectionPage> {
-  List<User> selectedUsers;
-
-  @override
-  void initState() {
-    selectedUsers = widget.selectedUsers;
-    super.initState();
-  }
-
-  toggleSelectUser(User user) {
-    setState(() {
-      selectedUsers.contains(user)
-          ? selectedUsers.remove(user)
-          : selectedUsers.add(user);
-    });
+class _UserChoicePageState extends State<UserChoicePage> {
+  void onSelectedUser(BuildContext context, User user) {
+    Navigator.of(context).pop(user);
   }
 
   @override
@@ -38,12 +26,6 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.done),
-            onPressed: () => Navigator.of(context).pop(selectedUsers ?? []),
-          )
-        ],
       ),
       body: FutureBuilder(
         future: DataSource.instance.getUsers(),
@@ -69,12 +51,12 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
       leading: buildAvatar(context, user),
       title: Text(user.getCommonName(context)),
       subtitle: Text(user.getSubtitle()),
-      onTap: () => toggleSelectUser(user),
+      onTap: () => onSelectedUser(context, user),
     );
   }
 
   Widget buildAvatar(BuildContext context, User user) {
-    final isSelected = selectedUsers.contains(user);
+    final isSelected = widget.selectedUser == user;
     if (isSelected) {
       return CircleAvatar(
         child: Icon(Icons.check),

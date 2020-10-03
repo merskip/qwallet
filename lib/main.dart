@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:firebase_admob/firebase_admob.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,17 @@ import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/router.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+  // Connection to Firebase Local Emulator
+  // FirebaseFirestore.instance.settings = Settings(
+  //   host: Platform.isAndroid ? '10.0.2.2:8080' : 'localhost:8080',
+  //   sslEnabled: false,
+  //   persistenceEnabled: false,
+  // );
+
   FlutterError.onError = (details) {
     FlutterError.dumpErrorToConsole(details);
     Crashlytics.instance.recordFlutterError(details);
@@ -28,21 +37,11 @@ void main() {
 
 class MyApp extends StatelessWidget {
   MyApp() : super() {
-    defineRoutes(router);
+    initRoutes(router);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!kIsWeb) {
-      if (Platform.isAndroid) {
-        FirebaseAdMob.instance
-            .initialize(appId: "ca-app-pub-2023507573427187~8579587898");
-      } else if (Platform.isIOS) {
-        FirebaseAdMob.instance
-            .initialize(appId: "ca-app-pub-2023507573427187~6712451384");
-      }
-    }
-
     return StreamBuilder(
         stream: LocalPreferences.userPreferences,
         initialData: UserPreferences.empty(),

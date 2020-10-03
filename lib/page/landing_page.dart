@@ -1,10 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/model/user.dart';
 
-import '../firebase_service.dart';
-import 'dashboard/DashboardPage.dart';
+import 'MainNavigationPage.dart';
 import 'sign_in_page.dart';
 
 class LandingPage extends StatefulWidget {
@@ -23,17 +22,18 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   _signIn() async {
-    final loggedUser = await FirebaseAuth.instance.currentUser();
+    final loggedUser = auth.FirebaseAuth.instance.currentUser;
     if (loggedUser != null) {
       debugPrint("Signing with current user...");
       _setSignInState(loggedUser);
     }
 
-    FirebaseAuth.instance.onAuthStateChanged
+    auth.FirebaseAuth.instance
+        .authStateChanges()
         .listen((user) => _setSignInState(user));
 
     if (loggedUser == null) {
-      FirebaseAuth.instance.onAuthStateChanged.first.timeout(
+      auth.FirebaseAuth.instance.authStateChanges().first.timeout(
         Duration(milliseconds: 500),
         onTimeout: () {
           print("Timeout on change auth state");
@@ -44,12 +44,12 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-  _setSignInState(FirebaseUser user) {
+  _setSignInState(auth.User user) {
     debugPrint("Sign in state: uid=${user?.uid}");
     if (mounted) {
       setState(() {
-        FirebaseService.instance.currentUser = user;
-        DataSource.instance.currentUser = User.fromFirebase(user);
+        DataSource.instance.currentUser =
+            user != null ? User.fromFirebase(user) : null;
         isLogged = (user != null);
         isLoading = false;
       });
@@ -79,6 +79,6 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Widget _homePage(BuildContext context) {
-    return DashboardPage();
+    return MainNavigationPage();
   }
 }

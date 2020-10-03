@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/hand_cursor.dart';
 import 'package:qwallet/widget/vector_image.dart';
-import 'package:url_launcher/url_launcher.dart';
+
+import '../AppLocalizations.dart';
+import '../LocalPreferences.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -15,50 +20,100 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final _googleSignIn = GoogleSignIn();
 
+  bool isLoginInProgress = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
-      body: Center(
-        child: Column(children: <Widget>[
-          Spacer(flex: 2),
-          VectorImage(
-            "assets/app-logo-black.svg",
-            size: Size.square(128),
-            color: Theme.of(context).primaryTextTheme.headline4.color,
+      body: Builder(
+        builder: (context) => SafeArea(
+          child: Center(
+            child: Column(children: <Widget>[
+              buildLanguageSelection(context),
+              Spacer(flex: 1),
+              buildHeader(context),
+              Spacer(flex: 1),
+              if (isLoginInProgress)
+                CircularProgressIndicator(backgroundColor: Colors.white),
+              if (!isLoginInProgress) buildSingInButtons(context),
+              Spacer(),
+            ]),
           ),
-          SizedBox(height: 24),
-          Text(
-            "Welcum to QWallet!",
-            style: Theme.of(context).primaryTextTheme.headline4,
-          ),
-          Spacer(flex: 1),
-          Column(children: <Widget>[
-            _singInButton(
-              text: 'Stay anonymous',
-              icon: Icon(Icons.person_outline),
-              onPressed: _signInAnonymous,
-            ),
-            SizedBox(height: 16),
-            _singInButton(
-              text: 'Sign in with Google',
-              icon: VectorImage("assets/ic-google.svg",
-                  color: Theme.of(context).primaryColor),
-              onPressed: _singInWithGoogle,
-            ),
-            SizedBox(height: 16),
-            _singInButton(
-              text: 'Get going with Email',
-              icon: Icon(Icons.alternate_email),
-              onPressed: () => _showDialogForSignInWithEmail(context),
-            ),
-          ]),
-          Spacer(),
-          if (kIsWeb) _mobileBetaAccessPanel(),
-          Spacer(),
-        ]),
+        ),
       ),
     );
+  }
+
+  Widget buildLanguageSelection(BuildContext context) {
+    final locales = [
+      Locale("en", "US"),
+      Locale("pl", "PL"),
+    ];
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: SimpleStreamWidget(
+          stream: LocalPreferences.userPreferences,
+          builder: (context, UserPreferences userPreferences) {
+            final currentLocale =
+                userPreferences.locale ?? AppLocalizations.of(context).locale;
+
+            return ToggleButtons(
+              children: <Widget>[
+                Text("EN"),
+                Text("PL"),
+              ],
+              selectedColor: Colors.white,
+              onPressed: (int index) =>
+                  LocalPreferences.setUserLocale(locales[index]),
+              isSelected: locales.map((l) => l == currentLocale).toList(),
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              constraints: BoxConstraints.tightFor(height: 36, width: 44),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget buildHeader(BuildContext context) {
+    return Column(children: [
+      VectorImage(
+        "assets/app-logo-black.svg",
+        size: Size.square(128),
+        color: Theme.of(context).primaryTextTheme.headline4.color,
+      ),
+      SizedBox(height: 24),
+      Text(
+        "Welcum to QWallet!",
+        style: Theme.of(context).primaryTextTheme.headline4,
+      ),
+    ]);
+  }
+
+  Widget buildSingInButtons(BuildContext context) {
+    return Column(children: <Widget>[
+      _singInButton(
+        text: AppLocalizations.of(context).singInAnonymous,
+        icon: Icon(Icons.person_outline),
+        onPressed: () => _signInAnonymous(context),
+      ),
+      SizedBox(height: 16),
+      _singInButton(
+        text: AppLocalizations.of(context).singInWithGoogle,
+        icon: VectorImage("assets/ic-google.svg",
+            color: Theme.of(context).primaryColor),
+        onPressed: () => _singInWithGoogle(context),
+      ),
+      SizedBox(height: 16),
+      _singInButton(
+        text: AppLocalizations.of(context).singInWithEmail,
+        icon: Icon(Icons.alternate_email),
+        onPressed: () => _showDialogForSignInWithEmail(context),
+      ),
+    ]);
   }
 
   _singInButton({String text, Widget icon, VoidCallback onPressed}) {
@@ -77,6 +132,7 @@ class _SignInPageState extends State<SignInPage> {
           ]),
           onPressed: onPressed,
           textColor: Theme.of(context).primaryColor,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
         ),
@@ -84,68 +140,62 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget _mobileBetaAccessPanel() {
-    return Column(
-        children: [
-      Text("Get early access to mobile QWallet beta",
-      style: Theme.of(context).primaryTextTheme.headline4.copyWith(fontSize: 20)),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          HandCursor(
-            child: RaisedButton(
-                child: Text("Android"),
-                onPressed: () =>
-                    _openUrl("https://appdistribution.firebase.dev/i/RmhybzSD")),
-          ),
-          SizedBox(width: 24),
-          HandCursor(
-            child: RaisedButton(
-              child: Text("iOS"),
-              onPressed: () =>
-                  _openUrl("https://appdistribution.firebase.dev/i/D3qez77X"),
-            ),
-          ),
-        ],
-      )
-    ]);
-  }
-
-  _openUrl(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
-  _signInAnonymous() async {
+  _signInAnonymous(BuildContext context) async {
+    setState(() => isLoginInProgress = true);
     try {
       await FirebaseAuth.instance.signInAnonymously();
     } catch (e) {
-      print(e); // TODO: show dialog with error
+      _handleError(context, e);
+    } finally {
+      setState(() => isLoginInProgress = false);
     }
   }
 
-  _singInWithGoogle() async {
+  _singInWithGoogle(BuildContext context) async {
+    setState(() => isLoginInProgress = true);
     try {
       final signInAccount = await _googleSignIn.signIn();
       final authentication = await signInAccount.authentication;
 
-      final AuthCredential credential = GoogleAuthProvider.getCredential(
+      final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: authentication.accessToken,
         idToken: authentication.idToken,
       );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
     } catch (e) {
-      print(e); // TODO: show dialog with error
+      _handleError(context, e);
+    } finally {
+      setState(() => isLoginInProgress = false);
     }
   }
 
   _showDialogForSignInWithEmail(BuildContext context) {
     showDialog(
         context: context, builder: (context) => _SignInWithEmailDialog());
+  }
+
+  _handleError(BuildContext context, dynamic error) {
+    print("Failed login: $error");
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context).singInFailedLogin),
+        content: Text(
+          "$error",
+          style: TextStyle(
+            fontFamily: Platform.isIOS ? "Courier" : "monospace",
+            color: Colors.red.shade500,
+          ),
+        ),
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(AppLocalizations.of(context).singInFailedLoginOk),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -196,7 +246,7 @@ class _SignInWithEmailDialogState extends State<_SignInWithEmailDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Sign in with e-mail"),
+      title: Text(AppLocalizations.of(context).singInWithEmail),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -213,28 +263,30 @@ class _SignInWithEmailDialogState extends State<_SignInWithEmailDialog> {
             controller: emailController,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              labelText: "E-mail",
+              labelText: AppLocalizations.of(context).singInEmail,
             ),
           ),
           SizedBox(height: 16),
           TextField(
             obscureText: true,
             controller: passwordController,
-            decoration: InputDecoration(labelText: "Password"),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).singInEmailPassword,
+            ),
           ),
         ],
       ),
       actions: <Widget>[
         FlatButton(
-          child: Text("Cancel"),
+          child: Text(AppLocalizations.of(context).singInEmailCancel),
           onPressed: () => Navigator.pop(context),
         ),
         FlatButton(
-          child: Text("Sign up"),
+          child: Text(AppLocalizations.of(context).singInEmailSignUp),
           onPressed: () => _signUpWithEmail(context),
         ),
         RaisedButton(
-          child: Text("Sign in"),
+          child: Text(AppLocalizations.of(context).singInEmailSignIn),
           color: Theme.of(context).primaryColor,
           onPressed: () => _signInWithEmail(context),
         )

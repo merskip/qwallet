@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qwallet/AppLocalizations.dart';
@@ -27,7 +27,7 @@ class UserDialog extends StatelessWidget {
       debugPrint("Logout...");
       final googleSignIn = GoogleSignIn();
       if (await googleSignIn.isSignedIn()) googleSignIn.signOut();
-      await FirebaseAuth.instance.signOut();
+      await auth.FirebaseAuth.instance.signOut();
 
       Navigator.of(context).popUntil(ModalRoute.withName('/'));
     } catch (e) {

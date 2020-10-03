@@ -29,7 +29,7 @@ class CategoryPicker extends StatelessWidget {
     if (selectedCategory == null)
       return offset > 0 ? categories.first : categories.last;
     final targetIndex = categories.indexOf(selectedCategory) + offset;
-    if (targetIndex > 0 && targetIndex < categories.length)
+    if (targetIndex >= 0 && targetIndex < categories.length)
       return categories[targetIndex];
     else
       return null;
@@ -75,7 +75,8 @@ class CategoryPicker extends StatelessWidget {
         ),
         onHorizontalDragEnd: (details) {
           final dx = details.velocity.pixelsPerSecond.dx;
-          if (dx < 0) onSwipeLeft();
+          if (dx < 0)
+            onSwipeLeft();
           else if (dx > 0) onSwipeRight();
         },
       ),

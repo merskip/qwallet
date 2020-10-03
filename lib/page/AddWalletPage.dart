@@ -3,7 +3,6 @@ import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/firebase_service.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/page/UserSelectionPage.dart';
@@ -42,7 +41,6 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   final nameFocus = FocusNode();
 
   final ownersController = UsersEditingController();
-  List<User> allUsers;
 
   Currency currency;
 
@@ -54,13 +52,10 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   _initOwners() async {
-    final users = await FirebaseService.instance.fetchUsers();
+    final users = await DataSource.instance.getUsers();
     final currentUser = users
         .firstWhere((user) => user.uid == DataSource.instance.currentUser.uid);
-    setState(() {
-      allUsers = users;
-      ownersController.value = [currentUser];
-    });
+    setState(() => ownersController.value = [currentUser]);
   }
 
   _initCurrency() async {
@@ -81,12 +76,10 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   onSelectedOwners(BuildContext context) async {
-    if (allUsers == null) return;
     final List<User> selectedUsers = await pushPage(
       context,
       builder: (context) => UserSelectionPage(
         title: AppLocalizations.of(context).addWalletOwners,
-        allUsers: allUsers,
         selectedUsers: ownersController.value,
       ),
     );
@@ -173,7 +166,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
           if (users.isEmpty)
             return AppLocalizations.of(context).addWalletOwnersErrorIsEmpty;
           final currentUserInSelected = users.firstWhere(
-              (user) => user.uid == FirebaseService.instance.currentUser.uid,
+              (user) => user.uid == DataSource.instance.currentUser.uid,
               orElse: () => null);
           if (currentUserInSelected == null)
             return AppLocalizations.of(context).addWalletOwnersErrorNoYou;

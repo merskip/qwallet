@@ -41,10 +41,84 @@ class AppLocalizations {
   }
 }
 
+extension SingInLocalizations on AppLocalizations {
+  String get singInAnonymous => _locale(
+        en: "Stay anonymous",
+        pl: "Pozostań anonimowy",
+      );
+
+  String get singInWithGoogle => _locale(
+        en: "Sign in with Google",
+        pl: "Zaloguj się przez Google",
+      );
+
+  String get singInWithEmail => _locale(
+        en: "Sign in with E-mail",
+        pl: "Zaloguj się przez E-mail",
+      );
+
+  String get singInEmail => _locale(
+        en: "E-mail",
+        pl: "E-mail",
+      );
+
+  String get singInEmailPassword => _locale(
+        en: "Password",
+        pl: "Hasło",
+      );
+
+  String get singInEmailCancel => _locale(
+        en: "Cancel",
+        pl: "Anuluj",
+      );
+
+  String get singInEmailSignUp => _locale(
+        en: "Sign up",
+        pl: "Zarejestruj się",
+      );
+
+  String get singInEmailSignIn => _locale(
+        en: "Sign in",
+        pl: "Zaloguj się",
+      );
+
+  String get singInFailedLogin => _locale(
+        en: "Something went wrong :-(",
+        pl: "Coś poszło nie tak :-(",
+      );
+
+  String get singInFailedLoginOk => _locale(
+        en: "Ok",
+        pl: "Ok",
+      );
+}
+
+extension BottomNavigationLocalizations on AppLocalizations {
+  String get bottomNavigationDashboard => _locale(
+        en: "Dashboard",
+        pl: "Dashboard",
+      );
+
+  String get bottomNavigationLoans => _locale(
+        en: "Loans",
+        pl: "Pożyczki",
+      );
+
+  String get bottomNavigationSettings => _locale(
+        en: "Settings",
+        pl: "Ustawienia",
+      );
+}
+
 extension DashbaordLocalizations on AppLocalizations {
   String get dashboardTitle => _locale(
         en: "QWallet",
         pl: "QWallet",
+      );
+
+  String get dashboardEditWallet => _locale(
+        en: "Edit wallet",
+        pl: "Edytuj portfel",
       );
 
   String get dashboardWalletsEmpty => _locale(
@@ -167,6 +241,11 @@ extension UserLocalizations on AppLocalizations {
   String get userAnonymous => _locale(
         en: "Anonymous",
         pl: "Anonimowy",
+      );
+
+  String get userMe => _locale(
+        en: "Me",
+        pl: "Ja",
       );
 
   String get userLoggedHint => _locale(
@@ -444,8 +523,8 @@ extension AddTransactionLocalizations on AppLocalizations {
 
 extension TransactionsCardLocalizations on AppLocalizations {
   String get transactionsCardTransactionsEmpty => _locale(
-        en: "There are no expenses or incomes",
-        pl: "Nie ma żadnych wydatków ani dochodów",
+        en: "There are no expenses or incomes in last time",
+        pl: "W ostatnim czasie nie ma żadnych wydatków ani dochodów",
       );
 
   String get transactionsCardToday => _locale(
@@ -765,5 +844,191 @@ extension CategoriesLocalizations on AppLocalizations {
   String get categoryNoSelected => _locale(
         en: "No selected category",
         pl: "Nie wybrano kategorii",
+      );
+}
+
+extension PrivateLoansLocalizations on AppLocalizations {
+  String get privateLoansTitle => _locale(
+        en: "Loans",
+        pl: "Pożyczki",
+      );
+
+  String get privateLoanLender => _locale(
+        en: "Lender",
+        pl: "Pożyczkodawca",
+      );
+
+  String get privateLoanBorrower => _locale(
+        en: "Borrower",
+        pl: "Pożyczkobiorca",
+      );
+
+  String get privateLoanTabActual => _locale(
+        en: "Actual",
+        pl: "Aktualne",
+      );
+
+  String get privateLoanTabAll => _locale(
+        en: "Show all",
+        pl: "Wszystkie",
+      );
+
+  String get privateLoanAddLoan => _locale(
+        en: "All a new private loan",
+        pl: "Dodaj nową pożyczkę",
+      );
+
+  String get privateLoanDebt => _locale(
+        en: "Debt",
+        pl: "Dług",
+      );
+
+  String get privateLoanMyDebt => _locale(
+        en: "My debt",
+        pl: "Mój dług",
+      );
+
+  String get privateLoanRepaidLoansPrompt => _locale(
+        en: "Tap here to mark repaid loans each other",
+        pl: "Kliknij tutaj, aby oznaczyć wzajemnie spłacone pożyczki",
+      );
+
+  String get privateLoanShowLess => _locale(
+        en: "Show less",
+        pl: "Pokaż mniej",
+      );
+
+  String get privateLoanShowMore => _locale(
+        en: "Show more",
+        pl: "Pokaż więcej",
+      );
+
+  String get privateLoanAddTitle => _locale(
+        en: "Add loan",
+        pl: "Dodaj pożyczkę",
+      );
+
+  String get privateLoanAddSubmit => _locale(
+        en: "Add new loan",
+        pl: "Dodaj nową pożyczkę",
+      );
+
+  String get privateLoanEditTitle => _locale(
+        en: "Loan editing",
+        pl: "Edycja pożyczki",
+      );
+
+  String get privateLoanEditSubmit => _locale(
+        en: "Save changes",
+        pl: "Zapisz zmiany",
+      );
+
+  String Function(String) get privateLoanRemoveConfirmation =>
+      (String loan) => _locale(
+            en: "Remove loan: \"$loan\"?",
+            pl: "Czy usunąć pożyczkę: \"$loan\"?",
+          );
+
+  String Function(String) get privateLoanRemoveConfirmationContent =>
+      (String loan) => _locale(
+            en: "Are you sure remove the \"$loan\" loan? This operation cannot be undone.",
+            pl: "Czy jesteś pewny, że chcesz usunąć pożyczkę \"$loan\"? Tej operacji nie można cofnąć.",
+          );
+
+  String get privateLoanValidationCurrentUserIsNotLenderOrBorrower => _locale(
+        en: "You must be lender or borrower",
+        pl: "Musisz być pożyczkodawcą lub pożyczkobiorcą",
+      );
+
+  String get privateLoanValidationLenderAnBorrowerIsTheSamePerson => _locale(
+        en: "Lender and borrower cannot be the same person",
+        pl: "Pożyczkodawca i pożyczkobiorca nie mogą być tą samą osobą",
+      );
+
+  String get privateLoanBorrowerSelect => _locale(
+        en: "Select borrower",
+        pl: "Wybierz pożyczkobiorcę",
+      );
+
+  String get privateLoanLenderSelect => _locale(
+        en: "Select lender",
+        pl: "Wybierz pożyczkodawcę",
+      );
+
+  String get privateLoanValidationFieldIsEmpty => _locale(
+        en: "This field cannot be empty",
+        pl: "To pole nie może być puste",
+      );
+
+  String get privateLoanAmount => _locale(
+        en: "Amount",
+        pl: "Kwota",
+      );
+
+  String get privateLoanValidationAmountIsNegativeOrZero => _locale(
+        en: "Amount must be greater than zero",
+        pl: "Kwota musi być większa od zera",
+      );
+
+  String get privateLoanRepaidAmount => _locale(
+        en: "Repaid amount",
+        pl: "Spłacona kwota",
+      );
+
+  String get privateLoanValidationRepaidAmountGreaterThenAmount => _locale(
+        en: "Repaid amount must be lower or equal to loan amount",
+        pl: "Spłacana kwota musi być niższa lub równa kwocie pożyczki",
+      );
+
+  String get privateLoanRemainingAmount => _locale(
+        en: "Remaining amount:",
+        pl: "Pozostała kwota:",
+      );
+
+  String get privateLoanTitle => _locale(
+        en: "Title",
+        pl: "Tytuł",
+      );
+
+  String get privateLoanDate => _locale(
+        en: "Date",
+        pl: "Data",
+      );
+
+  String get privateLoanRepaidLoansTitle => _locale(
+        en: "Loans repayment",
+        pl: "Spłata pożyczek",
+      );
+
+  String get privateLoansRepaidLoansInfo => _locale(
+        en: "The loans listed below will be used to repay each other",
+        pl: "Pożyczki wymienione poniżej zostaną wykorzystane do wzajemnej spłaty",
+      );
+
+  String get privateLoansRepaidLoansUsedLoansInfo => _locale(
+        en: "Is repaid by:",
+        pl: "Spłacane przez:",
+      );
+
+  String get privateLoansRepaidLoansFullyRepaid => _locale(
+        en: "Fully repaid",
+        pl: "W pełni spłacone",
+      );
+
+  String get privateLoansRepaidLoansSubmit => _locale(
+        en: "Apply",
+        pl: "Zastosuj",
+      );
+}
+
+extension EnterAmountLocalizations on AppLocalizations {
+  String get enterAmountCancel => _locale(
+        en: "Cancel",
+        pl: "Anuluj",
+      );
+
+  String get enterAmountApply => _locale(
+        en: "Apply",
+        pl: "Zastosuj",
       );
 }

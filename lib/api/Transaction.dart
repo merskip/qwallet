@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:qwallet/api/Category.dart';
 
 import '../AppLocalizations.dart';
-import '../utils.dart';
+import 'Category.dart';
+import 'Converting.dart';
 import 'Model.dart';
 
 enum TransactionType {
@@ -15,15 +15,15 @@ class Transaction extends Model<Transaction> {
   TransactionType type;
   String title;
   double amount;
-  Timestamp date;
+  DateTime date;
   Reference<Category> category;
 
   Transaction(DocumentSnapshot snapshot)
-      : type = TransactionTypeConverting.fromRawValue(snapshot.data['type']),
-        title = toStringOrNull(snapshot.data['title']),
-        amount = toDouble(snapshot.data['amount']),
-        date = snapshot.data['date'],
-        category = Reference.fromNullable(snapshot.data['category']),
+      : type = snapshot.getOneOf("type", TransactionType.values),
+        title = snapshot.getString("title"),
+        amount = snapshot.getDouble("amount"),
+        date = snapshot.getDateTime("date"),
+        category = snapshot.getReference("category"),
         super(snapshot);
 
   String getTypeLocalizedText(BuildContext context) => ifType(
@@ -64,17 +64,5 @@ extension TransactionTypeConverting on TransactionType {
       default:
         return null;
     }
-  }
-
-  static TransactionType fromRawValue(dynamic rawValue) {
-    if (rawValue is String) {
-      switch (rawValue) {
-        case "expense":
-          return TransactionType.expense;
-        case "income":
-          return TransactionType.income;
-      }
-    }
-    return null;
   }
 }
