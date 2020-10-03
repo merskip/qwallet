@@ -5,15 +5,25 @@ service cloud.firestore {
     match /wallets/{wallet} {
       allow create: if isSignedIn(request)
       allow read, write: if isOwner(request, resource.data)
+
+      match /transactions/{transaction} {
+      	allow create, read, write: if true
+      }
+
+      match /categories/{category} {
+      	allow create, read, write: if true
+      }
     }
-    
-    match /wallets/{wallet}/expenses/{expance} {
+
+    match /privateLoans/{loan} {
     	allow create: if true
-      allow read, write: if true
+      allow read, write: if isSignedIn(request)
+                            && (resource.data.lenderUid == request.auth.uid
+                                || resource.data.borrowerUid == request.auth.uid)
     }
-    
+
     function isOwner(request, wallet) {
-    	return isSignedIn(request) && request.auth.uid in wallet.owners_uid;
+    	return isSignedIn(request) && request.auth.uid in wallet.ownersUid;
     }
     
     function isSignedIn(request) {
