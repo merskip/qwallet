@@ -76,7 +76,7 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.google.firebase:firebase-crashlytics:17.1.1'
+    implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
     implementation ('com.google.firebase:firebase-perf:19.0.8', {
         // Workaround from https://github.com/firebase/firebase-android-sdk/issues/1143
         exclude group: 'com.google.protobuf', module: 'protobuf-javalite'
