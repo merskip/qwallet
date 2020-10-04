@@ -166,12 +166,13 @@ class _DashboardPageState extends State<DashboardPage> {
 
   List<Widget> buildAppBarActions(BuildContext context) {
     return <Widget>[
-      IconButton(
-        icon: Icon(Icons.edit),
-        tooltip: AppLocalizations.of(context).dashboardEditWallet,
-        onPressed: () => router.navigateTo(
-            context, "/settings/wallets/${_selectedWallet.value.id}"),
-      ),
+      if (_selectedWallet.hasValue)
+        IconButton(
+          icon: Icon(Icons.edit),
+          tooltip: AppLocalizations.of(context).dashboardEditWallet,
+          onPressed: () => router.navigateTo(
+              context, "/settings/wallets/${_selectedWallet.value.id}"),
+        ),
     ];
   }
 
