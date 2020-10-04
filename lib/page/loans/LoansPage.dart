@@ -12,6 +12,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../AppLocalizations.dart';
 import '../../router.dart';
+import '../../widget/empty_state_widget.dart';
 
 class LoansPage extends StatefulWidget {
   @override
@@ -41,6 +42,11 @@ class _LoansPageState extends State<LoansPage> {
     List<User> users,
     List<PrivateLoan> loans,
   ) {
+    if (loans.isEmpty)
+      return EmptyStateWidget(
+        icon: Icons.attach_money,
+        text: AppLocalizations.of(context).privateLoansEmptyList,
+      );
     final groups = _groupLoans(users, loans);
     return ListView.builder(
       itemCount: groups.length,

@@ -4,6 +4,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
+import 'package:qwallet/widget/empty_state_widget.dart';
 
 import '../../AppLocalizations.dart';
 
@@ -31,6 +32,11 @@ class _LoansListPageState extends State<LoansListPage> {
     BuildContext context,
     List<PrivateLoan> loans,
   ) {
+    if (loans.isEmpty) if (loans.isEmpty)
+      return EmptyStateWidget(
+        icon: Icons.attach_money,
+        text: AppLocalizations.of(context).privateLoansEmptyList,
+      );
     final sortedLoans = loans
       ..sort((lhs, rhs) {
         if (lhs.isFullyRepaid && !rhs.isFullyRepaid) return 1;

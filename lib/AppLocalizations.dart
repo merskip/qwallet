@@ -853,6 +853,11 @@ extension PrivateLoansLocalizations on AppLocalizations {
         pl: "Pożyczki",
       );
 
+  String get privateLoansEmptyList => _locale(
+        en: "There are no loans here",
+        pl: "Nie ma tutaj żadnych pożyczek",
+      );
+
   String get privateLoanLender => _locale(
         en: "Lender",
         pl: "Pożyczkodawca",
