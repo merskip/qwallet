@@ -55,7 +55,7 @@ dependencies:
   rxdart: ^0.24.1
   sliver_fill_remaining_box_adapter: ^0.1.1
   flutter_html: ^1.0.2
-  flutter_iconpicker: ^2.0.6
+#  flutter_iconpicker: ^2.1.5
   firebase_crashlytics: ^0.1.4+1
   firebase_performance: ^0.4.0
   expressions: ^0.1.5

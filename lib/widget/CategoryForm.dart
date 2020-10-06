@@ -1,8 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_iconpicker/Models/IconPack.dart';
-import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+// import 'package:flutter_iconpicker/Models/IconPack.dart';
+// import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:qwallet/api/Category.dart';
 
 import '../AppLocalizations.dart';
@@ -66,7 +64,7 @@ class _CategoryFormState extends State<CategoryForm> {
   }
 
   onSelectedIcon(BuildContext context) async {
-    IconData icon = await _showIconPicker(context);
+    // IconData icon = await _showIconPicker(context);
     if (icon != null) {
       setState(() => this.icon = icon);
     }
@@ -191,57 +189,57 @@ class _CategoryFormState extends State<CategoryForm> {
     );
   }
 
-  Future<IconData> _showIconPicker(BuildContext context) async {
-    final IconPack iconPack = await showDialog(
-      context: context,
-      builder: (context) => SimpleDialog(
-        title: Text(AppLocalizations.of(context).categoryIconPackSelect),
-        children: [
-          buildIconPackItem(context, IconPack.material),
-          buildIconPackItem(context, IconPack.materialOutline),
-          buildIconPackItem(context, IconPack.cupertino),
-          buildIconPackItem(context, IconPack.fontAwesomeIcons),
-          buildIconPackItem(context, IconPack.lineAwesomeIcons),
-        ],
-      ),
-    );
-    if (iconPack == null) return null;
+  // Future<IconData> _showIconPicker(BuildContext context) async {
+  //   final IconPack iconPack = await showDialog(
+  //     context: context,
+  //     builder: (context) => SimpleDialog(
+  //       title: Text(AppLocalizations.of(context).categoryIconPackSelect),
+  //       children: [
+  //         buildIconPackItem(context, IconPack.material),
+  //         buildIconPackItem(context, IconPack.materialOutline),
+  //         buildIconPackItem(context, IconPack.cupertino),
+  //         buildIconPackItem(context, IconPack.fontAwesomeIcons),
+  //         buildIconPackItem(context, IconPack.lineAwesomeIcons),
+  //       ],
+  //     ),
+  //   );
+  //   if (iconPack == null) return null;
+  //
+  //   IconData icon = await FlutterIconPicker.showIconPicker(
+  //     context,
+  //     showTooltips: true,
+  //     adaptiveDialog: true,
+  //     title: Text(_getIconPackTitle(iconPack)),
+  //     searchHintText: AppLocalizations.of(context).categoryIconPackSearch,
+  //     noResultsText: AppLocalizations.of(context).categoryIconPackSearchEmpty,
+  //     mainAxisSpacing: 8,
+  //     crossAxisSpacing: 8,
+  //     iconPackMode: iconPack,
+  //   );
+  //   return icon;
+  // }
 
-    IconData icon = await FlutterIconPicker.showIconPicker(
-      context,
-      showTooltips: true,
-      adaptiveDialog: true,
-      title: Text(_getIconPackTitle(iconPack)),
-      searchHintText: AppLocalizations.of(context).categoryIconPackSearch,
-      noResultsText: AppLocalizations.of(context).categoryIconPackSearchEmpty,
-      mainAxisSpacing: 8,
-      crossAxisSpacing: 8,
-      iconPackMode: iconPack,
-    );
-    return icon;
-  }
-
-  Widget buildIconPackItem(BuildContext context, IconPack iconPack) {
-    return ListTile(
-      title: Text(_getIconPackTitle(iconPack)),
-      onTap: () => Navigator.of(context).pop(iconPack),
-    );
-  }
-
-  String _getIconPackTitle(IconPack iconPack) {
-    switch (iconPack) {
-      case IconPack.material:
-        return AppLocalizations.of(context).categoryIconPackMaterial;
-      case IconPack.materialOutline:
-        return AppLocalizations.of(context).categoryIconPackMaterialOutline;
-      case IconPack.cupertino:
-        return AppLocalizations.of(context).categoryIconPackCupertino;
-      case IconPack.fontAwesomeIcons:
-        return AppLocalizations.of(context).categoryIconPackFontAwesome;
-      case IconPack.lineAwesomeIcons:
-        return AppLocalizations.of(context).categoryIconPackLineAwesome;
-      default:
-        return null;
-    }
-  }
+  // Widget buildIconPackItem(BuildContext context, IconPack iconPack) {
+  //   return ListTile(
+  //     title: Text(_getIconPackTitle(iconPack)),
+  //     onTap: () => Navigator.of(context).pop(iconPack),
+  //   );
+  // }
+  //
+  // String _getIconPackTitle(IconPack iconPack) {
+  //   switch (iconPack) {
+  //     case IconPack.material:
+  //       return AppLocalizations.of(context).categoryIconPackMaterial;
+  //     case IconPack.materialOutline:
+  //       return AppLocalizations.of(context).categoryIconPackMaterialOutline;
+  //     case IconPack.cupertino:
+  //       return AppLocalizations.of(context).categoryIconPackCupertino;
+  //     case IconPack.fontAwesomeIcons:
+  //       return AppLocalizations.of(context).categoryIconPackFontAwesome;
+  //     case IconPack.lineAwesomeIcons:
+  //       return AppLocalizations.of(context).categoryIconPackLineAwesome;
+  //     default:
+  //       return null;
+  //   }
+  // }
 }
