@@ -90,7 +90,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
     displayController.text =
         "$displayExpression\n= ${result?.formatted ?? "?"}";
     displayController.selection =
-        TextSelection.collapsed(int: displayExpression.length);
+        TextSelection.collapsed(offset: displayExpression.length);
   }
 
   Money calculateExpression() {
