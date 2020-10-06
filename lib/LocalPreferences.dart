@@ -12,7 +12,7 @@ class UserPreferences {
   UserPreferences({@required this.themeMode, this.locale});
 
   factory UserPreferences.empty() =>
-      UserPreferences(themeMode: ThemeMode.system, locale: null);
+      UserPreferences(themeMode: ThemeMode.light, locale: null);
 }
 
 class LocalPreferences {
