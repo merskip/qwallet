@@ -15,10 +15,17 @@ jobs:
           java-version: '12.x'
       - uses: subosito/flutter-action@v1
         with:
-          channel: 'dev'
+          channel: 'stable'
       - run: flutter pub get
-      - run: flutter analyze
-      - run: flutter build apk --build-number="$GITHUB_RUN_NUMBER" --verbose
+      - run: echo "$KEY_JKS" | base64 -d > android/app/key.jks && sha1sum android/app/key.jks
+        env:
+          KEY_JKS: ${{ secrets.KEY_JKS }}
+      - run: flutter build apk --build-number="$GITHUB_RUN_NUMBER" --verbose --no-tree-shake-icons
+        env:
+          KEY_PATH: key.jks
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          ALIAS_PASSWORD: ${{ secrets.ALIAS_PASSWORD }}
+          ALIAS: ${{ secrets.KEY_ALIAS }}
       - run: git log --format="%s (%h)" ${{ github.event.after }}^.. > release-notes.txt
       - name: Deploy to Firebase App Distribution
         uses: w9jds/firebase-action@master
