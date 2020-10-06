@@ -27,17 +27,17 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
       items: [
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
-          title: Text(AppLocalizations.of(context).bottomNavigationDashboard),
+          label: AppLocalizations.of(context).bottomNavigationDashboard,
           backgroundColor: Theme.of(context).primaryColor,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.attach_money),
-          title: Text(AppLocalizations.of(context).bottomNavigationLoans),
+          label: AppLocalizations.of(context).bottomNavigationLoans,
           backgroundColor: Colors.deepOrange,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings),
-          title: Text(AppLocalizations.of(context).bottomNavigationSettings),
+          label: AppLocalizations.of(context).bottomNavigationSettings,
           backgroundColor: Colors.blueGrey,
         ),
       ],
