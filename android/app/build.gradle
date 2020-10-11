@@ -2,13 +2,13 @@ def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
     localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
+        localProperties.load(reader as Reader)
     }
 }
 
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+    throw new Exception("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
 }
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile as File))
 } else {
     keystoreProperties.setProperty('storeFile', System.getenv('KEY_PATH'))
     keystoreProperties.setProperty('storePassword', System.getenv('KEY_PASSWORD'))
@@ -54,7 +54,7 @@ android {
 
     defaultConfig {
         applicationId "pl.merskip.qwallet"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -63,10 +63,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(keystoreProperties['storeFile'])
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storePassword keystoreProperties['storePassword']
+            storeFile file(keystoreProperties.get("storeFile"))
+            keyAlias keystoreProperties.get("keyAlias")
+            keyPassword keystoreProperties.get("keyPassword")
+            storePassword keystoreProperties.get("storePassword")
         }
     }
 
