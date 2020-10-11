@@ -1,0 +1,14 @@
+{
+    "shop": {
+        "name": "CARREFOUR MARKET Lublin",
+        "address": "al.Spółdzielczości Pracy32, 20-147 Lublin"
+    },
+    "shop_branch": {
+        "name": "CAREFOUR Polska Sp. z o. o.",
+        "address": "ul. Targowa 72, 03-734 Warszawa"
+    },
+    "nip": "7370008168",
+    "purchase_date": "2020-08-28",
+    "total_price": 19.94,
+    "products": null
+}

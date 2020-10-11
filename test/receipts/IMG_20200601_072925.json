@@ -1,0 +1,16 @@
+{
+    "shop": {
+        "name": "Al.Capone Sp. z.o.o",
+        "address": "33-171 Pleśna 506"
+    },
+    "shop_branch": {
+        "name": null,
+        "address": "ul. Nałęczowska 14, 20-701 Lublin"
+    },
+    "nip": "8733249490",
+    "purchase_date": "2020-05-18",
+    "total_price": 13.99,
+    "products": [
+        ["Browar Trzech Kumpli Pan IPani Triple 8% 500ml bbz", 13.99]
+    ]
+}

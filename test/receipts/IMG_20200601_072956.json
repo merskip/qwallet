@@ -1,0 +1,18 @@
+{
+    "shop": {
+        "name": "AL.Capone Sp. z o.o.o",
+        "address": "33-171 Pleśna 506"
+    },
+    "shop_branch": {
+        "name": null,
+        "address": "ul. Nałęczowska 14, 20-701 Lublin"
+    },
+    "nip": "8733249790",
+    "purchase_date": "2020-05-14",
+    "total_price": 20.88,
+    "products": [
+        ["Browar Incognitor Salvador Sabro Hazy IPA 6% 500ml bbz", 10.49],
+        ["Browar Szpunt Mangonel 6.5% 500ml bbz", 9.49],
+        ["Al Capone Reklamówka EKOLOGICZNA", 0.90]
+    ]
+}

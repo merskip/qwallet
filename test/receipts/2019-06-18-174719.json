@@ -1,0 +1,16 @@
+{
+    "shop": {
+        "name": "Euto-Net Sp. z o.o.",
+        "address": "ul. Maszkieterów 15, 02-273 Warszawa"
+    },
+    "shop_branch": {
+        "name": "SKLEP ZANA LUBLIN",
+        "address": "ul. Tomasza Zana 19, 20-601 Lublin"
+    },
+    "nip": "5270005984",
+    "purchase_date": "2019-05-04",
+    "total_price": 849.00,
+    "products": [
+        ["SMARTFON P Smart 2019 Blue HUAWEI", 849]
+    ]
+}

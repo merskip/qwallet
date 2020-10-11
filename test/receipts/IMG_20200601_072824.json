@@ -1,0 +1,17 @@
+{
+    "shop": {
+        "name": "GRIG P.H.U.P Krzysztof Grigorian",
+        "address": "ul. Świętoduska 6, 20-082 Lublin"
+    },
+    "shop_branch": null,
+    "nip": "8251934595",
+    "purchase_date": "2020-05-10",
+    "total_price": 83.60,
+    "products": [
+        ["dosatawa lublin 0zl", 4.00],
+        ["Lamadu z jagnięciny", 18.00],
+        ["Szaszłyk polski 200g", 9.60],
+        ["Pierogi z ziemniakami", 12.00],
+        ["Chaszlama", 40.00]
+    ]
+}

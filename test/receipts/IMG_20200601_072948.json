@@ -1,0 +1,23 @@
+{
+    "shop": {
+        "name": "Jeronimo Martis Polska S.A.",
+        "address": "ul. Żniwa 5, 62-025 Kostrzyn"
+    },
+    "shop_branch": {
+        "name": "Sklep 2314",
+        "address": "ul. Jana Sawy 1A, 20-632 Lublin"
+    },
+    "nip": "7791011327",
+    "purchase_date": "2020-05-09",
+    "total_price": 28.89,
+    "products": [
+        [null, 7.38],
+        [null, 3.99],
+        [null, 1.99],
+        [null, 1.99],
+        [null, 2.79],
+        [null, 3.98],
+        [null, 1.78],
+        [null, 4.99]
+    ]
+}

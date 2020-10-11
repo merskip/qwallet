@@ -1,0 +1,34 @@
+{
+    "shop": {
+        "name": "Hipermarket E.LECLERC",
+        "address": "ul. T Zana 19, 20-601 LUBLIN"
+    },
+    "shop_branch": null,
+    "nip": "9462651328",
+    "purchase_date": "2020-05-13",
+    "total_price": 197.51,
+    "products": [
+        ["SCHAB STEKOWANY NA1J", 8.47],
+        ["ŚMIETANA HOMOG. 181J", 3.39],
+        ["MASECZKA OCHRONNA 1X", 17.97],
+        ["MLEKO BUTELKA 3,2%1J", 3.39],
+        ["CHRZAN 20G0R RĘBEK1L", 2.99],
+        ["KAWAŁKI CZEKOLADY 1X", 7.98],
+        ["CUKIER BRąZOWY 7501L", 6.09],
+        ["SOL HIMAL.ROZOWA D1X", 4.29],
+        ["BIO MW KARMA D/PSA1L", 9.98],
+        ["IMBIR MIELONY 15G 1X", 2.99],
+        ["NCS DLC GST CAFEAU1X", 20.69],
+        ["NECS DLG NESQUI CH1X", 21.99],
+        ["KIEŁBASA JAK U MAM1J", 10.30],
+        ["WKŁAD FILTRUJąCY D1X", 8.99],
+        ["KLAMERKI DO BIELIZ1X", 5.99],
+        ["NOTES POST-IT 200K1X", 2.99],
+        ["RECZNIK VELVET JUM1X", 11.39],
+        ["MASŁO EXTRA 200G  1J", 11.67],
+        ["SOL DE CHILLE BIAŁ1X", 21.99],
+        ["WM BURAKI CZERWONE1L", 3.99],
+        ["SELER.NACIOWY     1J", 4.99],
+        ["SZPINAK 100g opak.1L", 4.99]
+    ]
+}

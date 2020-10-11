@@ -1,0 +1,16 @@
+{
+    "shop": {
+        "name": "ALICANTEE Sp. z o.o. Sp. k.",
+        "address": "ul. Wlotowa 1, 60-668 Kraków"
+    },
+    "shop_branch": {
+        "name": "APTEKA\"Niezapominajka dla całej rodziny\"",
+        "address": "ul. Jana Sawy 1b, 20-632 Lublin"
+    },
+    "nip": "6772280830",
+    "purchase_date": "2020-05-08",
+    "total_price": 0.98,
+    "products": [
+        ["Kompresy jał. 7,5x7,5c,", 0.98]
+    ]
+}

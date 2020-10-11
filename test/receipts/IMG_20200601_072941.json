@@ -1,0 +1,17 @@
+{
+    "shop": {
+        "name": "MEDIA MARKT POLSKA SP. Z O.O.",
+        "address": "AL. JEROZOLIMSKIE 179, 02-222 WARSZAWA"
+    },
+    "shop_branch": {
+        "name": null,
+        "address": "UL. ZANA 31, 20-601"
+    },
+    "nip": "1132485101",
+    "purchase_date": "2020-05-21",
+    "total_price": 157.60,
+    "products": [
+        [null, 84.80],
+        [null, 72.80]
+    ]
+}

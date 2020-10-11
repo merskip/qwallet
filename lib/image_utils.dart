@@ -39,4 +39,7 @@ Image adjustContrast(Image image) {
 int pixelToGray(Image image, int i) =>
     (getRed(image[i]) + getGreen(image[i]) + getBlue(image[i])) ~/ 3;
 
+int rgbToGray(int color) =>
+    (getRed(color) + getGreen(color) + getBlue(color)) ~/ 3;
+
 int grayToRgb(int i) => i << 16 | i << 8 | i;

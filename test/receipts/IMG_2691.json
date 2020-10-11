@@ -1,0 +1,20 @@
+{
+    "shop": {
+        "name": "RESTAURACJA BACHUS",
+        "address": "ul. 1-go Maja 32, 20-410 Lublin"
+    },
+    "shop_branch": null,
+    "nip": "9462389681",
+    "purchase_date": "2019-06-16",
+    "total_price": 96.50,
+    "products": [
+        ["FORSZMAK LUBELSKI", 9.00],
+        ["FURA FRYTEK Z KETCH. SOSEM CZOSNKOWYM", 8.00],
+        ["DLA TRADYCJONALISTÓW", 18.00],
+        ["ROLADKA DELUXE", 18.00],
+        ["W LEŚNEJ CHACIE", 18.00],
+        ["PIEROGI RUSKIE", 9.00],
+        ["MIZERIA", 4.50],
+        ["DZBANEK NIEGAZ. NAPOJU 1,2L", 12.00]
+    ]
+}

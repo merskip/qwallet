@@ -1,0 +1,14 @@
+{
+    "shop": {
+        "name": "Polski Koncern Naftowy ORLEN S.A",
+        "address": "UL.CHEMIÓW 7, 09-411 PŁOCK"
+    },
+    "shop_branch": {
+        "name": "STACJA PALIW NR 0474 W LUBLINIE",
+        "address": "UL. GŁĘBOKA 32, 20-612 LUBLIN"
+    },
+    "nip": "7740001454",
+    "purchase_date": "2020-05-29",
+    "total_price": 138.32,
+    "products": null
+}
