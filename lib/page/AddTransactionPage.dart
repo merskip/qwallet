@@ -246,7 +246,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       autofocus: true,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).addTransactionAmount,
-        suffixText: wallet.currency.symbol,
+        suffixText: wallet.currency.symbols.first,
         helperText: getBalanceAfter(),
       ),
       textAlign: TextAlign.end,

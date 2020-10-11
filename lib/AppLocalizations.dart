@@ -421,9 +421,9 @@ extension SelectCurrencyLocalizations on AppLocalizations {
         pl: "Wybierz walutę",
       );
 
-  String get selectCurrencySymbol => _locale(
-        en: "Currency symbol",
-        pl: "Symbol waluty",
+  String get selectCurrencyCode => _locale(
+        en: "Currency code",
+        pl: "Lod waluty",
       );
 
   String get selectCurrencyName => _locale(
@@ -431,19 +431,24 @@ extension SelectCurrencyLocalizations on AppLocalizations {
         pl: "Nazwa waluty",
       );
 
-  String get selectCurrencyDecimalPlaces => _locale(
-        en: "Decimal places",
-        pl: "Miejsc dziesiętnych",
+  String get selectCurrencySymbols => _locale(
+        en: "Symbols",
+        pl: "Symbole",
       );
 
-  String get selectCurrencyISO4217Number => _locale(
-        en: "ISO 4217 number",
-        pl: "Numer ISO 4217",
+  String get selectCurrencyISO4217 => _locale(
+        en: "ISO 4217",
+        pl: "ISO 4217",
       );
 
   String get selectCurrencyWiki => _locale(
         en: "Wikipedia",
         pl: "Wikipedia",
+      );
+
+  String get selectCurrencyWebsite => _locale(
+        en: "Website",
+        pl: "Strona internetowa",
       );
 
   String get selectCurrencyExamples => _locale(

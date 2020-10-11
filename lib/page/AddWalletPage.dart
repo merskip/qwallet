@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:intl/intl.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/model/user.dart';
@@ -10,6 +9,7 @@ import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../Currency.dart';
+import '../CurrencyFormatting.dart';
 import 'UsersFormField.dart';
 
 class AddWalletPage extends StatelessWidget {
@@ -42,31 +42,17 @@ class _AddWalletFormState extends State<_AddWalletForm> {
 
   final ownersController = UsersEditingController();
 
-  Currency currency;
+  Currency currency = Currency.fromSystem();
 
   @override
   void initState() {
     _initOwners();
-    _initCurrency();
     super.initState();
   }
 
-  _initOwners() async {
-    final users = await DataSource.instance.getUsers();
-    final currentUser = users
-        .firstWhere((user) => user.uid == DataSource.instance.currentUser.uid);
+  _initOwners() {
+    final currentUser = User.currentUser();
     setState(() => ownersController.value = [currentUser]);
-  }
-
-  _initCurrency() async {
-    // TODO: Doesn't work, always returns en_US
-    final currentLocale = Intl.getCurrentLocale();
-
-    // TODO: Improve matching system locale with supported currencies
-//    final currentLocale = await findSystemLocale();
-
-    currency = Currency.all
-        .firstWhere((currency) => currency.locales.contains(currentLocale));
   }
 
   @override
@@ -106,7 +92,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
       final walletRef = await DataSource.instance.addWallet(
         nameController.text,
         ownersController.value.map((user) => user.uid).toList(),
-        currency.symbol,
+        currency.code,
       );
       Navigator.of(context).pop(walletRef);
     }
@@ -180,8 +166,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   Widget buildCurrency(BuildContext context) {
     if (currency == null) return CircularProgressIndicator();
 
-    String locale = currency.locales.first;
-    String text = NumberFormat.simpleCurrency(locale: locale).format(1234.456);
+    String text = currency.format(1234.456);
     return InkWell(
       child: InputDecorator(
         decoration: InputDecoration(
@@ -189,7 +174,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
           helperText:
               AppLocalizations.of(context).addWalletCurrencyExample(text),
         ),
-        child: Text("${currency.symbol} (${currency.name})"),
+        child: Text(currency.getCommonName(context)),
       ),
       onTap: () => onSelectedCurrency(context),
     );

@@ -194,7 +194,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
       child: Padding(
         padding: const EdgeInsets.all(3.0),
         child: SecondaryButton(
-          child: Text(currency.symbol),
+          child: Text(currency.code),
           onPressed: widget.isCurrencySelectable
               ? () => onSelectedCurrency(context)
               : null,

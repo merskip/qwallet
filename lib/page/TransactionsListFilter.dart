@@ -224,7 +224,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
         controller: amountController,
         decoration: InputDecoration(
           hintText: "0.00",
-          suffixText: widget.wallet.currency.symbol,
+          suffixText: widget.wallet.currency.symbols.first,
           contentPadding: EdgeInsets.symmetric(horizontal: 8),
         ),
         autofocus: true,

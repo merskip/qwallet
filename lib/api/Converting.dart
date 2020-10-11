@@ -54,7 +54,7 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
   }
 
   Currency getCurrency(String field) {
-    return Currency.fromSymbol(getString(field));
+    return Currency.fromCode(getString(field));
   }
 
   DateTime getDateTime(String field) {

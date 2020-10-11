@@ -70,7 +70,7 @@ extension WalletsDataSource on DataSource {
     await firestore.runTransaction((transaction) async {
       transaction.update(wallet.reference.documentReference, {
         if (name != null) 'name': name,
-        if (currency != null) 'currency': currency.symbol,
+        if (currency != null) 'currency': currency.code,
         if (ownersUid != null) 'ownersUid': ownersUid,
       });
     });
@@ -365,7 +365,7 @@ extension PrivateLoansDataSource on DataSource {
       "borrowerName": borrowerName,
       "amount": amount,
       "repaidAmount": repaidAmount,
-      "currency": currency.symbol,
+      "currency": currency.code,
       "isFullyRepaid": repaidAmount >= amount,
       "title": title,
       "date": date.toTimestamp(),
@@ -392,7 +392,7 @@ extension PrivateLoansDataSource on DataSource {
       "amount": amount,
       "repaidAmount": repaidAmount,
       "isFullyRepaid": repaidAmount >= amount,
-      "currency": currency.symbol,
+      "currency": currency.code,
       "title": title,
       "date": date.toTimestamp(),
     });

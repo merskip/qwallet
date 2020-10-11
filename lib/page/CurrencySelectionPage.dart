@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:qwallet/AppLocalizations.dart';
+import 'package:qwallet/CurrencyFormatting.dart';
+import 'package:qwallet/CurrencyList.dart';
 import 'package:qwallet/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Currency.dart';
 
 class CurrencySelectionPage extends StatefulWidget {
-
   final Currency selectedCurrency;
 
-  const CurrencySelectionPage({Key key, this.selectedCurrency}) : super(key: key);
+  const CurrencySelectionPage({Key key, this.selectedCurrency})
+      : super(key: key);
 
   @override
   _CurrencySelectionPageState createState() => _CurrencySelectionPageState();
 }
 
 class _CurrencySelectionPageState extends State<CurrencySelectionPage> {
-  final currencies = Currency.all;
+  final currencies = CurrencyList.all;
 
   onSelectedCurrency(BuildContext context, Currency currency) {
     Navigator.of(context).pop(currency);
@@ -38,20 +39,17 @@ class _CurrencySelectionPageState extends State<CurrencySelectionPage> {
         title: Text(AppLocalizations.of(context).selectCurrency),
       ),
       body: Scrollbar(
-        child: ListView.builder(
-          itemCount: currencies.length + (hasSelectedCurrency != null ? 2 : 0),
-          itemBuilder: (BuildContext context, index) {
-            if (hasSelectedCurrency) {
-              if (index == 0)
-                return buildCurrency(context, widget.selectedCurrency,
-                    selected: true);
-              else if (index == 1)
-                return Divider();
-              else
-                index -= 2;
-            }
-            return buildCurrency(context, currencies[index]);
-          },
+        child: ListView(
+          children: [
+            if (hasSelectedCurrency)
+              buildCurrency(context, widget.selectedCurrency, selected: true),
+            if (hasSelectedCurrency) Divider(),
+            ...currencies.map((currency) => buildCurrency(
+                  context,
+                  currency,
+                  selected: widget.selectedCurrency == currency,
+                )),
+          ],
         ),
       ),
     );
@@ -60,8 +58,9 @@ class _CurrencySelectionPageState extends State<CurrencySelectionPage> {
   Widget buildCurrency(BuildContext context, Currency currency,
       {bool selected = false}) {
     return ListTile(
-      title: Text(currency.symbol),
-      subtitle: Text(currency.name),
+      leading: selected ? Icon(Icons.check) : SizedBox(),
+      title: Text(currency.code),
+      subtitle: Text(currency.getName(context)),
       trailing: IconButton(
         icon: Icon(Icons.info_outline),
         onPressed: () => onSelectedCurrencyInfo(context, currency),
@@ -77,62 +76,74 @@ class _CurrencyInfoPage extends StatelessWidget {
 
   const _CurrencyInfoPage({Key key, this.currency}) : super(key: key);
 
-  onSelectedOpenWiki() async {
-    if (await canLaunch(currency.wikiUrl))
-      await launch(currency.wikiUrl);
+  onSelectedOpenUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${currency.symbol} - ${currency.name}"),
+        title: Text(currency.getCommonName(context)),
       ),
       body: ListView(children: [
+        if (currency.iso4217 != null)
+          ListTile(
+            title: Text(AppLocalizations.of(context).selectCurrencyISO4217),
+            subtitle: Text(currency.iso4217),
+          ),
         ListTile(
-          title: Text(AppLocalizations.of(context).selectCurrencySymbol),
-          subtitle: Text(currency.symbol),
+          title: Text(AppLocalizations.of(context).selectCurrencyCode),
+          subtitle: Text(currency.code),
         ),
         ListTile(
           title: Text(AppLocalizations.of(context).selectCurrencyName),
-          subtitle: Text(currency.name),
+          subtitle: Text(currency.getName(context)),
         ),
         ListTile(
-          title: Text(AppLocalizations.of(context).selectCurrencyDecimalPlaces),
-          subtitle: Text(currency.decimalPlaces.toString()),
+          title: Text(AppLocalizations.of(context).selectCurrencySymbols),
+          subtitle: Text(currency.symbols.join("\n")),
         ),
-        if (currency.isoNumber != null)
-          ListTile(
-            title: Text(AppLocalizations.of(context).selectCurrencyISO4217Number),
-            subtitle: Text(currency.isoNumber),
-          ),
         ListTile(
           title: Text(AppLocalizations.of(context).selectCurrencyExamples),
           subtitle: Text(currencyExamples()),
           isThreeLine: true,
         ),
-        ListTile(
-          title: Text(AppLocalizations.of(context).selectCurrencyWiki),
-          subtitle: Text(
-            currency.wikiUrl,
-            style: TextStyle(
-              color: Colors.blue,
-              decoration: TextDecoration.underline,
+        if (currency.wikiUrl != null)
+          ListTile(
+            title: Text(AppLocalizations.of(context).selectCurrencyWiki),
+            subtitle: Text(
+              currency.wikiUrl,
+              style: TextStyle(
+                color: Colors.blue,
+                decoration: TextDecoration.underline,
+              ),
             ),
+            onTap: () => onSelectedOpenUrl(currency.wikiUrl),
           ),
-          onTap: () => onSelectedOpenWiki(),
-        ),
+        if (currency.websiteUrl != null)
+          ListTile(
+            title: Text(AppLocalizations.of(context).selectCurrencyWebsite),
+            subtitle: Text(
+              currency.websiteUrl,
+              style: TextStyle(
+                color: Colors.blue,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+            onTap: () => onSelectedOpenUrl(currency.websiteUrl),
+          ),
       ]),
     );
   }
 
   String currencyExamples() {
-    String locale = currency.locales.first;
-    String text = NumberFormat.simpleCurrency(locale: locale).format(1234.456);
-    text += "\n";
-    text += NumberFormat.compactSimpleCurrency(locale: locale).format(1234.456);
-    text += "\n";
-    text += NumberFormat.compactCurrency(locale: locale).format(1234.456);
+    String text = "";
+    text += currency.formatAmount(1234.567) + "\n";
+    text += currency.format(1234.567) + "\n";
+    text += currency.formatWithCode(1234.567);
     return text;
   }
 }

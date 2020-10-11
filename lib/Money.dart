@@ -1,19 +1,13 @@
-import 'package:intl/intl.dart';
-import 'package:qwallet/Currency.dart';
+import 'Currency.dart';
+import 'CurrencyFormatting.dart';
 
 class Money {
   final double amount;
   final Currency currency;
 
-  String get formatted {
-    return NumberFormat.simpleCurrency(locale: currency.locales[0])
-        .format(amount);
-  }
+  String get formatted => currency.format(amount);
 
-  String get amountFormatted {
-    return NumberFormat.simpleCurrency(locale: currency.locales[0], name: "")
-        .format(amount);
-  }
+  String get amountFormatted => currency.formatAmount(amount);
 
   Money(this.amount, this.currency);
 
@@ -24,7 +18,7 @@ class Money {
   Money operator -() => Money(-amount, currency);
 
   @override
-  String toString() => "$amount ${currency.symbol}";
+  String toString() => "$amount ${currency.code}";
 }
 
 extension MoneyList on Iterable<Money> {

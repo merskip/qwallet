@@ -2,6 +2,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/AppLocalizations.dart';
+import 'package:qwallet/CurrencyList.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/dialog/EnterMoneyDialog.dart';
@@ -9,7 +10,6 @@ import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/UserAvatar.dart';
 
-import '../../Currency.dart';
 import '../../Money.dart';
 import '../../utils.dart';
 import '../UserChoicePage.dart';
@@ -125,8 +125,8 @@ class LoanFormState extends State<LoanForm> {
       setState(() => this.users = users);
     } else {
       final currentLocale = Intl.getCurrentLocale();
-      final currency = Currency.all
-          .firstWhere((currency) => currency.locales.contains(currentLocale));
+      final currency = CurrencyList.all
+          .firstWhere((currency) => currency.countries.contains(currentLocale));
       amount = Money(0, currency);
       repaidAmount = Money(0, currency);
       repaidAmountTextController.text = repaidAmount.amountFormatted;
@@ -364,7 +364,7 @@ class LoanFormState extends State<LoanForm> {
       focusNode: amountFocus,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).privateLoanAmount,
-        suffix: Text(amount.currency.symbol),
+        suffix: Text(amount.currency.symbols.first),
       ),
       textAlign: TextAlign.end,
       readOnly: true,
@@ -385,7 +385,7 @@ class LoanFormState extends State<LoanForm> {
       focusNode: repaidAmountFocus,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).privateLoanRepaidAmount,
-        suffix: Text(repaidAmount.currency.symbol),
+        suffix: Text(repaidAmount.currency.symbols.first),
       ),
       textAlign: TextAlign.end,
       readOnly: true,
