@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -13,12 +15,19 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
-  // Connection to Firebase Local Emulator
-  // FirebaseFirestore.instance.settings = Settings(
-  //   host: Platform.isAndroid ? '10.0.2.2:8080' : 'localhost:8080',
-  //   sslEnabled: false,
-  //   persistenceEnabled: false,
-  // );
+
+  if (kDebugMode) {
+    // Connection to Firebase Local Emulator
+    FirebaseFirestore.instance.settings = Settings(
+      host: Platform.isAndroid ? '10.0.2.2:8080' : 'localhost:8080',
+      sslEnabled: false,
+      persistenceEnabled: false,
+    );
+  } else {
+    FirebaseFirestore.instance.settings = Settings(
+      persistenceEnabled: true,
+    );
+  }
 
   FlutterError.onError = (details) {
     FlutterError.dumpErrorToConsole(details);
