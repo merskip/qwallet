@@ -21,7 +21,7 @@ void main() async {
     FirebaseFirestore.instance.settings = Settings(
       host: Platform.isAndroid ? '10.0.2.2:8080' : 'localhost:8080',
       sslEnabled: false,
-      persistenceEnabled: false,
+      persistenceEnabled: true,
     );
   } else {
     FirebaseFirestore.instance.settings = Settings(

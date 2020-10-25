@@ -89,12 +89,12 @@ class _AddWalletFormState extends State<_AddWalletForm> {
 
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState.validate()) {
-      final walletRef = await DataSource.instance.addWallet(
+      DataSource.instance.addWallet(
         nameController.text,
         ownersController.value.map((user) => user.uid).toList(),
         currency.code,
       );
-      Navigator.of(context).pop(walletRef);
+      Navigator.of(context).pop();
     }
   }
 
