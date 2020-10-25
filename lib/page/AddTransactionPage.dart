@@ -9,6 +9,7 @@ import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/dialog/SelectWalletDialog.dart';
+import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -72,8 +73,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   TransactionType type = TransactionType.expense;
 
   final amountFocus = FocusNode();
-  final amountController = TextEditingController();
-  double amount;
+  final amountController = AmountEditingController();
 
   Category category;
 
@@ -105,26 +105,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   _configureAmount() {
-    amountFocus.addListener(() {
-      if (amountFocus.hasFocus)
-        _setAmountUnformatted();
-      else
-        _setAmountFormatted();
-    });
-  }
-
-  _setAmountUnformatted() {
-    amountController.text = amount?.toStringAsFixed(2);
-  }
-
-  _setAmountFormatted() {
-    setState(() {
-      amount = parseAmount(amountController.text);
-      if (amount != null) {
-        final money = Money(amount, widget.initialWallet.currency);
-        amountController.text = money.amountFormatted;
-      }
-    });
+    amountController.addListener(() => setState(() {}));
   }
 
   _configureDate() {
@@ -169,14 +150,12 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   onSelectedSubmit(BuildContext context) async {
-    _setAmountFormatted();
-
     if (_formKey.currentState.validate()) {
       final transactionRef = await DataSource.instance.addTransaction(
         wallet.reference,
         type: type,
         title: titleController.text.trim(),
-        amount: amount,
+        amount: amountController.value.amount,
         category: category?.reference,
         date: date,
       );
@@ -240,34 +219,29 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   Widget buildAmount(BuildContext context) {
-    return TextFormField(
+    return AmountFormField(
+      initialMoney: Money(null, widget.initialWallet.currency),
+      decoration: InputDecoration(
+        labelText: AppLocalizations.of(context).addTransactionAmount,
+        helperText: getBalanceAfterTransactionText(),
+      ),
       controller: amountController,
       focusNode: amountFocus,
       autofocus: true,
-      decoration: InputDecoration(
-        labelText: AppLocalizations.of(context).addTransactionAmount,
-        suffixText: wallet.currency.symbols.first,
-        helperText: getBalanceAfter(),
-      ),
-      textAlign: TextAlign.end,
-      keyboardType: TextInputType.numberWithOptions(decimal: true),
       textInputAction: TextInputAction.next,
-      validator: (amountText) {
-        if (amountText.trim().isEmpty)
+      validator: (amount) {
+        if (amount.amount == null)
           return AppLocalizations.of(context).addTransactionAmountErrorIsEmpty;
-        if (amount == null)
-          return AppLocalizations.of(context)
-              .addTransactionAmountErrorNonNumber;
-        if (amount <= 0)
+        if (amount.amount <= 0)
           return AppLocalizations.of(context)
               .addTransactionAmountErrorZeroOrNegative;
         return null;
       },
-      onFieldSubmitted: (value) => amountFocus.nextFocus(),
     );
   }
 
-  String getBalanceAfter() {
+  String getBalanceAfterTransactionText() {
+    final amount = amountController.value?.amount;
     if (amount != null) {
       final balanceAfter = type == TransactionType.expense
           ? wallet.balance.amount - amount

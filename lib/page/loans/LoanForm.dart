@@ -107,10 +107,10 @@ class LoanFormState extends State<LoanForm> {
     if (widget.initialLoan != null) {
       final loan = widget.initialLoan;
 
-      amountTextController.text = loan.amount.amountFormatted;
+      amountTextController.text = loan.amount.formattedOnlyAmount;
       amount = loan.amount;
 
-      repaidAmountTextController.text = loan.repaidAmount.amountFormatted;
+      repaidAmountTextController.text = loan.repaidAmount.formattedOnlyAmount;
       repaidAmount = loan.repaidAmount;
 
       titleTextController.text = loan.title;
@@ -129,7 +129,7 @@ class LoanFormState extends State<LoanForm> {
           .firstWhere((currency) => currency.countries.contains(currentLocale));
       amount = Money(0, currency);
       repaidAmount = Money(0, currency);
-      repaidAmountTextController.text = repaidAmount.amountFormatted;
+      repaidAmountTextController.text = repaidAmount.formattedOnlyAmount;
       date = getDateWithoutTime(DateTime.now());
 
       final users = await DataSource.instance.getUsers();
@@ -157,7 +157,7 @@ class LoanFormState extends State<LoanForm> {
           ),
         ) as Money;
         if (money != null) {
-          controller.text = money.amountFormatted;
+          controller.text = money.formattedOnlyAmount;
           onEnter(money);
         }
       }

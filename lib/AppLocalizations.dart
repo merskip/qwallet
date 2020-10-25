@@ -490,11 +490,6 @@ extension AddTransactionLocalizations on AppLocalizations {
         pl: "Wprowadź jakąś kwotę",
       );
 
-  String get addTransactionAmountErrorNonNumber => _locale(
-        en: "Enter amount in valid format",
-        pl: "Wprowadź kwotę w poprawnym formacie",
-      );
-
   String get addTransactionAmountErrorZeroOrNegative => _locale(
         en: "Amount must be greater then zero",
         pl: "Kwota musi być większa niż zero",

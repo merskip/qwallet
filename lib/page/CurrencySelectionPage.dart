@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
-import 'package:qwallet/CurrencyFormatting.dart';
 import 'package:qwallet/CurrencyList.dart';
 import 'package:qwallet/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Currency.dart';
+import '../Money.dart';
 
 class CurrencySelectionPage extends StatefulWidget {
   final Currency selectedCurrency;
@@ -141,9 +141,9 @@ class _CurrencyInfoPage extends StatelessWidget {
 
   String currencyExamples() {
     String text = "";
-    text += currency.formatAmount(1234.567) + "\n";
-    text += currency.format(1234.567) + "\n";
-    text += currency.formatWithCode(1234.567);
+    text += Money(1234.567, currency).formattedOnlyAmount + "\n";
+    text += Money(1234.567, currency).formatted + "\n";
+    text += Money(1234.567, currency).formattedWithCode;
     return text;
   }
 }

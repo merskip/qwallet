@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:qwallet/AppLocalizations.dart';
+import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
@@ -9,7 +10,6 @@ import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../Currency.dart';
-import '../CurrencyFormatting.dart';
 import 'UsersFormField.dart';
 
 class AddWalletPage extends StatelessWidget {
@@ -166,7 +166,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   Widget buildCurrency(BuildContext context) {
     if (currency == null) return CircularProgressIndicator();
 
-    String text = currency.format(1234.456);
+    String text = Money(1234.456, currency).formatted;
     return InkWell(
       child: InputDecorator(
         decoration: InputDecoration(
