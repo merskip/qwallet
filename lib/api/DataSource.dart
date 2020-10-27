@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart' as Firestore;
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/model/user.dart';
@@ -35,7 +36,14 @@ extension WalletsDataSource on DataSource {
         .collection("wallets")
         .where("ownersUid", arrayContains: currentUser.uid)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((s) => Wallet(s)).toList());
+        .switchMap((querySnapshot) {
+      final wallets = querySnapshot.docs.map((walletSnapshot) {
+        return DataSource.instance
+            .getCategories(wallet: walletSnapshot.reference.toReference())
+            .map((categories) => Wallet(walletSnapshot, categories));
+      });
+      return CombineLatestStream.list(wallets);
+    });
   }
 
   Reference<Wallet> getWalletReference(String id) {
@@ -43,11 +51,15 @@ extension WalletsDataSource on DataSource {
   }
 
   Stream<Wallet> getWallet(Reference<Wallet> walletRef) {
-    return firestore
+    final walletSnapshots = firestore
         .collection("wallets")
         .doc(walletRef.documentReference.id)
-        .snapshots()
-        .map((s) => Wallet(s));
+        .snapshots();
+
+    final categories = DataSource.instance.getCategories(wallet: walletRef);
+
+    return CombineLatestStream.combine2(walletSnapshots, categories,
+        (walletSnapshot, categories) => Wallet(walletSnapshot, categories));
   }
 
   Future<Reference<Wallet>> addWallet(

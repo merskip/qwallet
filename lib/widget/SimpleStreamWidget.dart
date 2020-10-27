@@ -66,33 +66,35 @@ class SimpleStreamWidget<T> extends StatelessWidget {
 
   Widget buildError(
       BuildContext context, String description, StackTrace stackTrace) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(children: <Widget>[
-          Icon(Icons.error_outline, size: 48, color: Colors.red.shade500),
-          SizedBox(height: 16),
-          SelectableText(
-            "Error: $description",
-            style: TextStyle(
-              fontFamily: Platform.isIOS ? "Courier" : "monospace",
-              color: Colors.red.shade500,
-              fontSize: 12,
-            ),
-          ),
-          if (stackTrace != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Text(
-                stackTrace.toString(),
-                style: TextStyle(
-                  fontFamily: Platform.isIOS ? "Courier" : "monospace",
-                  color: Colors.red.shade300,
-                  fontSize: 8,
-                ),
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(children: <Widget>[
+            Icon(Icons.error_outline, size: 48, color: Colors.red.shade500),
+            SizedBox(height: 16),
+            SelectableText(
+              "Error: $description",
+              style: TextStyle(
+                fontFamily: Platform.isIOS ? "Courier" : "monospace",
+                color: Colors.red.shade500,
+                fontSize: 12,
               ),
             ),
-        ]),
+            if (stackTrace != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  stackTrace.toString(),
+                  style: TextStyle(
+                    fontFamily: Platform.isIOS ? "Courier" : "monospace",
+                    color: Colors.red.shade300,
+                    fontSize: 8,
+                  ),
+                ),
+              ),
+          ]),
+        ),
       ),
     );
   }

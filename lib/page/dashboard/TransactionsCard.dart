@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/router.dart';
@@ -16,13 +15,11 @@ import '../../AppLocalizations.dart';
 
 class TransactionsCard extends StatefulWidget {
   final Wallet wallet;
-  final List<Category> categories;
   final List<Transaction> transactions;
 
   const TransactionsCard({
     Key key,
     this.wallet,
-    this.categories,
     this.transactions,
   }) : super(key: key);
 
@@ -150,7 +147,8 @@ class _TransactionsCardState extends State<TransactionsCard> {
 
   Widget buildTransactionListItem(
       BuildContext context, Transaction transaction) {
-    final category = transaction.getCategory(widget.categories);
+    final category = widget.wallet.categories
+        .firstWhere((category) => category.reference == transaction.category);
     return TransactionListTile(
       wallet: widget.wallet,
       transaction: transaction,

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
-import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/page/dashboard/CategoriesChartCard.dart';
-import 'package:qwallet/page/dashboard/TransactionsCard.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
@@ -15,6 +11,8 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../router.dart';
 import '../../widget_utils.dart';
+import 'CategoriesChartCard.dart';
+import 'TransactionsCard.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -24,19 +22,9 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final _selectedWallet = BehaviorSubject<Wallet>();
 
-  Stream<List<Category>> _walletCategories;
-  Stream<List<Transaction>> _walletTransactions;
-
   void onSelectedWallet(BuildContext context, Wallet wallet) {
     setState(() {
       _selectedWallet.add(wallet);
-      _walletCategories = DataSource.instance.getCategories(
-        wallet: wallet.reference,
-      );
-      _walletTransactions = DataSource.instance.getTransactionsInTimeRange(
-        wallet: wallet.reference,
-        range: getLastMonthDateTimeRange(),
-      );
     });
   }
 
@@ -85,33 +73,27 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget buildWalletCards(BuildContext context) {
-    if (_walletCategories == null || _walletTransactions == null)
-      return silverProgressIndicator();
+    if (_selectedWallet.value == null) return silverProgressIndicator();
     return SimpleStreamWidget(
-      key: Key(_selectedWallet.value?.id),
-      stream: CombineLatestStream.list([
-        _walletCategories,
-        _walletTransactions,
-      ]),
+      // key: Key(_selectedWallet.value.id),
+      stream: DataSource.instance.getTransactionsInTimeRange(
+        wallet: _selectedWallet.value.reference,
+        range: getLastMonthDateTimeRange(),
+      ),
       loadingBuilder: (context) => silverProgressIndicator(),
-      builder: (context, values) {
+      builder: (context, transactions) {
         final wallet = _selectedWallet.value;
-        final categories = values[0] as List<Category>;
-        final transactions = values[1] as List<Transaction>;
         return SliverToBoxAdapter(
           child: Column(
             children: [
               TransactionsCard(
                 wallet: wallet,
-                categories: categories,
                 transactions: transactions,
               ),
-              if (transactions.isNotEmpty)
-                CategoriesChartCard(
-                  wallet: wallet,
-                  categories: categories,
-                  transactions: transactions,
-                ),
+              CategoriesChartCard(
+                wallet: wallet,
+                transactions: transactions,
+              ),
             ],
           ),
         );

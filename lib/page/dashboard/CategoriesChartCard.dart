@@ -12,13 +12,11 @@ import '../../Money.dart';
 
 class CategoriesChartCard extends StatelessWidget {
   final Wallet wallet;
-  final List<Category> categories;
   final List<Transaction> transactions;
 
   const CategoriesChartCard({
     Key key,
     this.wallet,
-    this.categories,
     this.transactions,
   }) : super(key: key);
 
@@ -30,7 +28,6 @@ class CategoriesChartCard extends StatelessWidget {
       child: _CategoriesChartContent(
         wallet: wallet,
         transactions: transactions,
-        categories: categories,
       ),
     );
   }
@@ -39,10 +36,8 @@ class CategoriesChartCard extends StatelessWidget {
 class _CategoriesChartContent extends StatefulWidget {
   final Wallet wallet;
   final List<Transaction> transactions;
-  final List<Category> categories;
 
-  const _CategoriesChartContent(
-      {Key key, this.wallet, this.transactions, this.categories})
+  const _CategoriesChartContent({Key key, this.wallet, this.transactions})
       : super(key: key);
 
   @override
@@ -100,7 +95,7 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
         groupBy(transactionInType, (Transaction t) => t.category);
 
     return transactionsByCategory.keys.map((categoryRef) {
-      final category = widget.categories.firstWhere(
+      final category = widget.wallet.categories.firstWhere(
         (c) => c.reference.id == categoryRef?.id,
         orElse: () => null,
       );
