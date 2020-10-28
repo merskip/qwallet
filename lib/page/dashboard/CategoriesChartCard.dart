@@ -94,6 +94,10 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
     final transactionsByCategory =
         groupBy(transactionInType, (Transaction t) => t.category);
 
+    if (transactionsByCategory.isEmpty) {
+      return [_CategoryChartItem(widget.wallet, null, [])];
+    }
+
     return transactionsByCategory.keys.map((categoryRef) {
       final category = widget.wallet.categories.firstWhere(
         (c) => c.reference.id == categoryRef?.id,
@@ -253,21 +257,22 @@ class _CategoriesChart extends StatelessWidget {
     else
       return PieChart(
         PieChartData(
-            sections: [
-              ...items.map((item) => createSection(context, item)),
-            ],
-            borderData: FlBorderData(show: false),
-            pieTouchData: PieTouchData(
-              enabled: !showAllTitles,
-              touchCallback: (touch) {
-                if (touch.touchedSectionIndex != null) {
-                  final selectedItem = items[touch.touchedSectionIndex];
-                  onSelectedItem(selectedItem);
-                }
-              },
-            ),
-            centerSpaceRadius: 72,
-            startDegreeOffset: -90),
+          sections: [
+            ...items.map((item) => createSection(context, item)),
+          ],
+          borderData: FlBorderData(show: false),
+          pieTouchData: PieTouchData(
+            enabled: !showAllTitles,
+            touchCallback: (touch) {
+              if (touch.touchedSectionIndex != null) {
+                final selectedItem = items[touch.touchedSectionIndex];
+                onSelectedItem(selectedItem);
+              }
+            },
+          ),
+          centerSpaceRadius: 72,
+          startDegreeOffset: -90,
+        ),
       );
   }
 
@@ -275,13 +280,14 @@ class _CategoriesChart extends StatelessWidget {
     BuildContext context,
     _CategoryChartItem item,
   ) {
-    final percentage = (item.sum.amount / totalAmount * 100).round();
+    final percentage =
+        totalAmount > 0.0 ? (item.sum.amount / totalAmount * 100).round() : 0.0;
     final titleStyle = Theme.of(context).textTheme.bodyText1.copyWith(
           backgroundColor: item.category?.backgroundColor ?? Colors.grey,
         );
 
     return PieChartSectionData(
-      value: item.sum.amount,
+      value: item.sum.amount > 0.0 ? item.sum.amount : 1.0,
       color: item.category?.primaryColor ?? Colors.black12,
       title: "$percentage%",
       titleStyle: titleStyle,
