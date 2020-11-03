@@ -174,7 +174,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         SizedBox(height: 16),
         buildAmount(context),
         SizedBox(height: 16),
-        buildCategory(context),
+        if (wallet.categories.isNotEmpty) buildCategory(context),
         SizedBox(height: 4),
         Divider(),
         SizedBox(height: 16),

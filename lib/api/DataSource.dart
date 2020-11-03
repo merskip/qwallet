@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' as Firestore;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/IconsSerialization.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:rxdart/rxdart.dart';
@@ -287,11 +288,7 @@ extension CategoriesDataSource on DataSource {
       "title": title,
       "primaryColor": primaryColor.toHex(),
       "backgroundColor": backgroundColor.toHex(),
-      "icon": {
-        "codePoint": icon.codePoint,
-        "fontFamily": icon.fontFamily,
-        "fontPackage": icon.fontPackage
-      },
+      "icon": serializeIcon(icon),
     });
   }
 
@@ -306,11 +303,7 @@ extension CategoriesDataSource on DataSource {
       "title": title,
       "primaryColor": primaryColor.toHex(),
       "backgroundColor": backgroundColor.toHex(),
-      "icon": {
-        "codePoint": icon.codePoint,
-        "fontFamily": icon.fontFamily,
-        "fontPackage": icon.fontPackage
-      },
+      "icon": serializeIcon(icon),
     });
   }
 

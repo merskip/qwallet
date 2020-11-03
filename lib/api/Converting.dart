@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/IconsSerialization.dart';
 import 'package:qwallet/model/user.dart';
 
 import '../Currency.dart';
@@ -68,11 +69,7 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
 
   IconData getIconData(String field) {
     final value = _getOrNull(field);
-    return IconData(
-      value['codePoint'],
-      fontFamily: value['fontFamily'],
-      fontPackage: value['fontPackage'],
-    );
+    return deserializeIcon(value);
   }
 
   User getUser(String field, List<User> users) {
