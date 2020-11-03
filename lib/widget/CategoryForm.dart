@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/IconPack.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+import 'package:qwallet/IconsSerialization.dart';
 import 'package:qwallet/api/Category.dart';
 
 import '../AppLocalizations.dart';
@@ -133,16 +134,25 @@ class _CategoryFormState extends State<CategoryForm> {
       child: Tooltip(
         message: AppLocalizations.of(context).categoryIconHint,
         child: GestureDetector(
-          child: CircleAvatar(
-            backgroundColor: backgroundColor.shade100,
-            child: Center(
-              child: Icon(
-                icon,
-                color: primaryColor.shade800,
-                size: 48,
+          child: Column(
+            children: [
+              CircleAvatar(
+                backgroundColor: backgroundColor.shade100,
+                child: Center(
+                  child: Icon(
+                    icon,
+                    color: primaryColor.shade800,
+                    size: 48,
+                  ),
+                ),
+                radius: 48,
               ),
-            ),
-            radius: 48,
+              SizedBox(height: 6),
+              Text(
+                getIconDescription(icon),
+                style: Theme.of(context).textTheme.caption,
+              ),
+            ],
           ),
           onTap: () => onSelectedIcon(context),
         ),

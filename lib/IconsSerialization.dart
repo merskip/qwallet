@@ -11,68 +11,23 @@ import 'package:flutter_iconpicker/IconPicker/Packs/MaterialOutline.dart'
 import 'package:flutter_iconpicker/Models/IconPack.dart';
 
 Map<String, dynamic> serializeIcon(IconData icon, {IconPack iconPack}) {
-  if (iconPack == null) {
-    print("yyyy");
-    switch (icon.fontFamily) {
-      case "MaterialIcons":
-        iconPack = IconPack.material;
-        break;
-      case "outline_material_icons":
-        iconPack = IconPack.materialOutline;
-        break;
-      case "CupertinoIcons":
-        iconPack = IconPack.cupertino;
-        break;
-      case "FontAwesomeSolid":
-        iconPack = IconPack.fontAwesomeIcons;
-        break;
-      case "LineAwesomeIcons":
-        iconPack = IconPack.lineAwesomeIcons;
-        break;
-      default:
-        iconPack = IconPack.custom;
-    }
-  }
-  switch (iconPack) {
-    case IconPack.material:
-      return {
-        'pack': "material",
-        'key': _getIconKey(Material.icons, icon),
-      };
-    case IconPack.materialOutline:
-      return {
-        'pack': "materialOutline",
-        'key': _getIconKey(MaterialOutline.materialOutline, icon),
-      };
-    case IconPack.cupertino:
-      return {
-        'pack': "cupertino",
-        'key': _getIconKey(Cupertino.cupertinoIcons, icon),
-      };
-    case IconPack.fontAwesomeIcons:
-      return {
-        'pack': "fontAwesomeIcons",
-        'key': _getIconKey(FontAwesome.fontAwesomeIcons, icon),
-      };
-      break;
-    case IconPack.lineAwesomeIcons:
-      return {
-        'pack': "lineAwesomeIcons",
-        'key': _getIconKey(LineAwesome.lineAwesomeIcons, icon),
-      };
-      break;
-    case IconPack.custom:
-      return {
-        'pack': "custom",
-        'iconData': {
-          'codePoint': icon.codePoint,
-          'fontFamily': icon.fontFamily,
-          'fontPackage': icon.fontPackage,
-          'matchTextDirection': icon.matchTextDirection,
-        }
-      };
-    default:
-      return null;
+  iconPack = iconPack ?? _getInferredIconPack(icon);
+  final iconKey = _getInferredIconKey(iconPack, icon);
+  if (iconKey != null) {
+    return {
+      'pack': _iconPackToString(iconPack),
+      'key': iconKey,
+    };
+  } else {
+    return {
+      'pack': "custom",
+      'iconData': {
+        'codePoint': icon.codePoint,
+        'fontFamily': icon.fontFamily,
+        'fontPackage': icon.fontPackage,
+        'matchTextDirection': icon.matchTextDirection,
+      }
+    };
   }
 }
 
@@ -104,6 +59,76 @@ IconData deserializeIcon(Map<String, dynamic> iconMap) {
     }
   } catch (e) {
     return null;
+  }
+}
+
+String getIconDescription(IconData icon) {
+  final iconPack = _getInferredIconPack(icon);
+  final iconPackName = _iconPackToString(iconPack);
+  final iconKey = _getInferredIconKey(iconPack, icon);
+  if (iconKey != null) {
+    return [
+      iconPackName,
+      iconKey,
+    ].join(".");
+  } else {
+    return [
+      iconPackName,
+      icon.fontPackage,
+      icon.fontFamily,
+      icon.codePoint.toRadixString(16),
+    ].join(".");
+  }
+}
+
+IconPack _getInferredIconPack(IconData icon) {
+  if (icon.fontFamily == "MaterialIcons")
+    return IconPack.material;
+  else if (icon.fontFamily == "outline_material_icons")
+    return IconPack.materialOutline;
+  else if (icon.fontFamily == "CupertinoIcons")
+    return IconPack.cupertino;
+  else if (icon.fontPackage == "font_awesome_flutter")
+    return IconPack.fontAwesomeIcons;
+  else if (icon.fontPackage == "line_awesome_flutter")
+    return IconPack.lineAwesomeIcons;
+  else
+    return IconPack.custom;
+}
+
+String _iconPackToString(IconPack iconPack) {
+  switch (iconPack) {
+    case IconPack.material:
+      return "material";
+    case IconPack.materialOutline:
+      return "materialOutline";
+    case IconPack.cupertino:
+      return "cupertino";
+    case IconPack.fontAwesomeIcons:
+      return "fontAwesomeIcons";
+    case IconPack.lineAwesomeIcons:
+      return "lineAwesomeIcons";
+    case IconPack.custom:
+    default:
+      return "custom";
+  }
+}
+
+String _getInferredIconKey(IconPack iconPack, IconData icon) {
+  switch (iconPack) {
+    case IconPack.material:
+      return _getIconKey(Material.icons, icon);
+    case IconPack.materialOutline:
+      return _getIconKey(MaterialOutline.materialOutline, icon);
+    case IconPack.cupertino:
+      return _getIconKey(Cupertino.cupertinoIcons, icon);
+    case IconPack.fontAwesomeIcons:
+      return _getIconKey(FontAwesome.fontAwesomeIcons, icon);
+      break;
+    case IconPack.lineAwesomeIcons:
+      return _getIconKey(LineAwesome.lineAwesomeIcons, icon);
+    default:
+      return null;
   }
 }
 

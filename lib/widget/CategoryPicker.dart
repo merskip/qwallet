@@ -63,7 +63,8 @@ class CategoryPicker extends StatelessWidget {
   }
 
   Widget buildCategories(BuildContext context) {
-    return Center(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: GestureDetector(
         child: Wrap(
           spacing: 12,
