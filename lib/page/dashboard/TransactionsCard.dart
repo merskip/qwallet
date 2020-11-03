@@ -147,8 +147,10 @@ class _TransactionsCardState extends State<TransactionsCard> {
 
   Widget buildTransactionListItem(
       BuildContext context, Transaction transaction) {
-    final category = widget.wallet.categories
-        .firstWhere((category) => category.reference == transaction.category);
+    final category = widget.wallet.categories.firstWhere(
+      (category) => category.reference == transaction.category,
+      orElse: () => null,
+    );
     return TransactionListTile(
       wallet: widget.wallet,
       transaction: transaction,

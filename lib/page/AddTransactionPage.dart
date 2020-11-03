@@ -241,16 +241,13 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   String getBalanceAfterTransactionText() {
-    final amount = amountController.value?.amount;
-    if (amount != null) {
-      final balanceAfter = type == TransactionType.expense
-          ? wallet.balance.amount - amount
-          : wallet.balance.amount + amount;
-      final balanceAfterMoney = Money(balanceAfter, wallet.currency);
-      return AppLocalizations.of(context)
-          .addTransactionBalanceAfter(balanceAfterMoney);
-    }
-    return null;
+    final amount = amountController.value?.amount ?? 0.0;
+    final balanceAfter = type == TransactionType.expense
+        ? wallet.balance.amount - amount
+        : wallet.balance.amount + amount;
+    final balanceAfterMoney = Money(balanceAfter, wallet.currency);
+    return AppLocalizations.of(context)
+        .addTransactionBalanceAfter(balanceAfterMoney);
   }
 
   Widget buildCategory(BuildContext context) {
