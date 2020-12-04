@@ -16,7 +16,6 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 import '../AppLocalizations.dart';
-import '../utils.dart';
 
 class AddTransactionPage extends StatelessWidget {
   final Reference<Wallet> initialWalletRef;
@@ -82,7 +81,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   final dateFocus = FocusNode();
   final dateController = TextEditingController();
-  DateTime date = getDateWithoutTime(DateTime.now());
+  DateTime date = DateTime.now();
 
   _AddTransactionFormState(this.wallet);
 
@@ -122,7 +121,21 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         dateFocus.nextFocus();
         if (date != null) {
           dateController.text = getFormattedDate(date);
-          setState(() => this.date = date);
+
+          final nowUtc = DateTime.now();
+          final dateUtc = date.toUtc();
+
+          final dateTime = DateTime.utc(
+            dateUtc.year,
+            dateUtc.month,
+            dateUtc.day,
+            nowUtc.hour,
+            nowUtc.minute,
+            nowUtc.second,
+            nowUtc.millisecond,
+            nowUtc.microsecond,
+          );
+          setState(() => this.date = dateTime);
         }
       }
     });
