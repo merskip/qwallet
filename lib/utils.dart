@@ -1,4 +1,3 @@
-import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -7,21 +6,6 @@ Future<T> pushPage<T>(BuildContext context,
   final Route route =
       MaterialPageRoute<T>(builder: (context) => builder(context));
   return await Navigator.of(context).push(route);
-}
-
-DateTime getBeginOfCurrentMonth() {
-  DateTime now = DateTime.now();
-  return getBeginOfMonth(now);
-}
-
-DateTime getBeginOfMonth(DateTime date) {
-  if (date == null) return null;
-  return Utils.firstDayOfMonth(date);
-}
-
-DateTime getEndOfMonth(DateTime date) {
-  if (date == null) return null;
-  return Utils.lastDayOfMonth(date).add(Duration(hours: 24));
 }
 
 DateTime getNowPlusOneMonth() {

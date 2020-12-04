@@ -74,15 +74,21 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget buildWalletCards(BuildContext context) {
     if (_selectedWallet.value == null) return silverProgressIndicator();
+    final timeRange = getCurrentMonthTimeRange();
     return SimpleStreamWidget(
       // key: Key(_selectedWallet.value.id),
       stream: DataSource.instance.getTransactionsInTimeRange(
         wallet: _selectedWallet.value.reference,
-        range: getLastMonthDateTimeRange(),
+        timeRange: timeRange,
       ),
       loadingBuilder: (context) => silverProgressIndicator(),
       builder: (context, transactions) {
         final wallet = _selectedWallet.value;
+
+        // NOTE: Temporary workaround for local balance calculation
+        DataSource.instance
+            .refreshWalletBalance(wallet.reference, transactions);
+
         return SliverToBoxAdapter(
           child: Column(
             children: [

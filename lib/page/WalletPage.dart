@@ -99,7 +99,14 @@ class _WalletPageContentState extends State<_WalletPageContent> {
 
   void onSelectedRefreshBalance(BuildContext context) async {
     setState(() => isBalanceRefreshing = true);
-    await DataSource.instance.refreshWalletBalance(widget.wallet);
+    final transactions = await DataSource.instance
+        .getTransactionsInTimeRange(
+          wallet: widget.wallet.reference,
+          timeRange: getCurrentMonthTimeRange(),
+        )
+        .first;
+    await DataSource.instance
+        .refreshWalletBalance(widget.wallet.reference, transactions);
     setState(() => isBalanceRefreshing = false);
   }
 

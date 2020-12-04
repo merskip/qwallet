@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart' as Firestore;
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:date_utils/date_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/IconsSerialization.dart';
@@ -91,13 +92,9 @@ extension WalletsDataSource on DataSource {
   }
 
   Future<void> refreshWalletBalance(
-    Wallet wallet,
+    Reference<Wallet> wallet,
+    List<Transaction> transactions,
   ) async {
-    final transactions = await getTransactionsInTimeRange(
-      wallet: wallet.reference,
-      range: getLastMonthDateTimeRange(),
-    ).first;
-
     double totalExpense = 0.0, totalIncome = 0.0;
     for (final transaction in transactions) {
       transaction.ifType(
@@ -105,7 +102,7 @@ extension WalletsDataSource on DataSource {
         income: () => totalIncome += transaction.amount,
       )();
     }
-    wallet.reference.documentReference.update({
+    wallet.documentReference.update({
       'totalExpense': totalExpense,
       'totalIncome': totalIncome,
     });
@@ -119,12 +116,12 @@ extension WalletsDataSource on DataSource {
 extension TransactionsDataSource on DataSource {
   Stream<List<Transaction>> getTransactionsInTimeRange({
     @required Reference<Wallet> wallet,
-    @required DateTimeRange range,
+    @required DateTimeRange timeRange,
   }) {
     return wallet.documentReference
         .collection("transactions")
-        .where("date", isGreaterThanOrEqualTo: range.start.toTimestamp())
-        .where("date", isLessThanOrEqualTo: range.end.toTimestamp())
+        .where("date", isGreaterThanOrEqualTo: timeRange.start.toTimestamp())
+        .where("date", isLessThanOrEqualTo: timeRange.end.toTimestamp())
         .orderBy("date", descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((s) => Transaction(s)).toList());
@@ -491,5 +488,12 @@ DateTimeRange getLastMonthDateTimeRange() {
   final startDay =
       DateTime(now.year, now.month - 1, now.day, 23, 59, 59, 999, 999);
   final endDay = DateTime(now.year, now.month, now.day);
+  return DateTimeRange(start: startDay, end: endDay);
+}
+
+DateTimeRange getCurrentMonthTimeRange() {
+  final now = getDateWithoutTime(DateTime.now());
+  final startDay = Utils.firstDayOfMonth(now);
+  final endDay = Utils.lastDayOfMonth(now).add(Duration(hours: 24));
   return DateTimeRange(start: startDay, end: endDay);
 }
