@@ -106,7 +106,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
         )
         .first;
     await DataSource.instance
-        .refreshWalletBalance(widget.wallet.reference, transactions);
+        .refreshWalletBalanceIfNeeded(widget.wallet, transactions);
     setState(() => isBalanceRefreshing = false);
   }
 

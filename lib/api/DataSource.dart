@@ -91,8 +91,8 @@ extension WalletsDataSource on DataSource {
     return wallet.reference;
   }
 
-  Future<void> refreshWalletBalance(
-    Reference<Wallet> wallet,
+  Future<void> refreshWalletBalanceIfNeeded(
+    Wallet wallet,
     List<Transaction> transactions,
   ) async {
     double totalExpense = 0.0, totalIncome = 0.0;
@@ -102,10 +102,13 @@ extension WalletsDataSource on DataSource {
         income: () => totalIncome += transaction.amount,
       )();
     }
-    wallet.documentReference.update({
-      'totalExpense': totalExpense,
-      'totalIncome': totalIncome,
-    });
+    if (wallet.totalExpense.amount != totalExpense ||
+        wallet.totalIncome.amount != totalIncome) {
+      wallet.reference.documentReference.update({
+        'totalExpense': totalExpense,
+        'totalIncome': totalIncome,
+      });
+    }
   }
 
   Future<void> removeWallet(Reference<Wallet> wallet) {

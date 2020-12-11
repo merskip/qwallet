@@ -86,8 +86,7 @@ class _DashboardPageState extends State<DashboardPage> {
         final wallet = _selectedWallet.value;
 
         // NOTE: Temporary workaround for local balance calculation
-        DataSource.instance
-            .refreshWalletBalance(wallet.reference, transactions);
+        DataSource.instance.refreshWalletBalanceIfNeeded(wallet, transactions);
 
         return SliverToBoxAdapter(
           child: Column(
