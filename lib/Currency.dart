@@ -66,7 +66,7 @@ class Currency {
 
   factory Currency.fromCode(String code) => CurrencyList.codeToCurrency[code];
 
-  factory Currency.fromSystem() {
+  factory Currency.getDefaultBasedOnLocale() {
     final systemLocale = Platform.localeName;
     final localeChunks = systemLocale.split("_");
     if (localeChunks.length >= 2) {

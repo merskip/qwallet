@@ -42,7 +42,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
 
   final ownersController = UsersEditingController();
 
-  Currency currency = Currency.fromSystem();
+  Currency currency = Currency.getDefaultBasedOnLocale();
 
   @override
   void initState() {

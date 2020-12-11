@@ -2,7 +2,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/AppLocalizations.dart';
-import 'package:qwallet/CurrencyList.dart';
+import 'package:qwallet/Currency.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/dialog/EnterMoneyDialog.dart';
@@ -124,9 +124,7 @@ class LoanFormState extends State<LoanForm> {
       borrowerTextController.text = loan.getBorrowerCommonName(context);
       setState(() => this.users = users);
     } else {
-      final currentLocale = Intl.getCurrentLocale();
-      final currency = CurrencyList.all
-          .firstWhere((currency) => currency.countries.contains(currentLocale));
+      final currency = Currency.getDefaultBasedOnLocale();
       amount = Money(0, currency);
       repaidAmount = Money(0, currency);
       repaidAmountTextController.text = repaidAmount.formattedOnlyAmount;
