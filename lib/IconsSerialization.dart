@@ -47,13 +47,6 @@ IconData deserializeIcon(Map<String, dynamic> iconMap) {
       case "lineAwesomeIcons":
         return LineAwesome.lineAwesomeIcons[iconKey];
       case "custom":
-        final iconData = iconMap['iconData'];
-        return IconData(
-          iconData['codePoint'],
-          fontFamily: iconData['fontFamily'],
-          fontPackage: iconData['fontPackage'],
-          matchTextDirection: iconData['matchTextDirection'],
-        );
       default:
         return null;
     }
