@@ -163,25 +163,26 @@ extension TransactionsDataSource on DataSource {
     Reference<Category> category,
     DateTime date,
   }) async {
-    final transactionRef =
-        wallet.documentReference.collection("transactions").doc();
-    await firestore.runTransaction((transaction) async {
-      transaction.set(transactionRef, {
-        "type": type.rawValue,
-        "title": title.nullIfEmpty(),
-        "amount": amount,
-        "category": category?.documentReference,
-        "date": Firestore.Timestamp.fromDate(date),
-      });
-
-      transaction.update(wallet.documentReference, {
-        if (type == TransactionType.expense)
-          "totalExpense": Firestore.FieldValue.increment(amount),
-        if (type == TransactionType.income)
-          "totalIncome": Firestore.FieldValue.increment(amount),
-      });
+    final addingTransaction =
+        wallet.documentReference.collection("transactions").add({
+      "type": type.rawValue,
+      "title": title.nullIfEmpty(),
+      "amount": amount,
+      "category": category?.documentReference,
+      "date": Firestore.Timestamp.fromDate(date),
     });
-    return Reference<Transaction>(transactionRef);
+
+    final updatingWallet = wallet.documentReference.update({
+      if (type == TransactionType.expense)
+        "totalExpense": Firestore.FieldValue.increment(amount),
+      if (type == TransactionType.income)
+        "totalIncome": Firestore.FieldValue.increment(amount),
+    });
+
+    return Future.wait([addingTransaction, updatingWallet])
+        .timeout(Duration(seconds: 5))
+        .then((values) =>
+            (values[0] as Firestore.DocumentReference).toReference());
   }
 
   Future<Reference<Transaction>> updateTransaction(

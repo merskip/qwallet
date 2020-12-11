@@ -83,6 +83,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   final dateController = TextEditingController();
   DateTime date = DateTime.now();
 
+  bool isSubmitting = false;
+
   _AddTransactionFormState(this.wallet);
 
   @override
@@ -164,15 +166,20 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState.validate()) {
-      final transactionRef = await DataSource.instance.addTransaction(
-        wallet.reference,
-        type: type,
-        title: titleController.text.trim(),
-        amount: amountController.value.amount,
-        category: category?.reference,
-        date: date,
-      );
-      Navigator.of(context).pop(transactionRef);
+      setState(() => isSubmitting = true);
+      try {
+        final transactionRef = await DataSource.instance.addTransaction(
+          wallet.reference,
+          type: type,
+          title: titleController.text.trim(),
+          amount: amountController.value.amount,
+          category: category?.reference,
+          date: date,
+        );
+        Navigator.of(context).pop(transactionRef);
+      } finally {
+        setState(() => isSubmitting = false);
+      }
     }
   }
 
@@ -317,6 +324,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     return PrimaryButton(
       child: Text(AppLocalizations.of(context).addTransactionSubmit),
       onPressed: () => onSelectedSubmit(context),
+      isLoading: isSubmitting,
     );
   }
 }
