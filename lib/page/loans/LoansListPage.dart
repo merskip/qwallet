@@ -131,12 +131,13 @@ class _LoansListPageState extends State<LoansListPage> {
   }
 
   Widget buildAmount(BuildContext context, PrivateLoan loan) {
-    return Text(
-      loan.isFullyRepaid
-          ? loan.amount.formatted
-          : "${loan.repaidAmount.formatted} / ${loan.amount.formatted}",
-      style: Theme.of(context).textTheme.headline6,
-    );
+    final text = loan.isFullyRepaid
+        ? loan.amount.formatted
+        : "${loan.repaidAmount.formatted} / ${loan.amount.formatted}";
+    final textStyle = Theme.of(context).textTheme.headline6.copyWith(
+          decoration: loan.isFullyRepaid ? TextDecoration.lineThrough : null,
+        );
+    return Text(text, style: textStyle);
   }
 
   Widget buildTitle(BuildContext context, PrivateLoan loan) {
