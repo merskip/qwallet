@@ -20,7 +20,7 @@ jobs:
       - run: echo "$KEY_JKS" | base64 -d > android/app/key.jks && sha1sum android/app/key.jks
         env:
           KEY_JKS: ${{ secrets.KEY_JKS }}
-      - run: flutter build apk --build-number="$GITHUB_RUN_NUMBER" --verbose --no-tree-shake-icons
+      - run: flutter build apk --build-number="$GITHUB_RUN_NUMBER" --verbose --release
         env:
           KEY_PATH: key.jks
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
