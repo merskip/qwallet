@@ -35,7 +35,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
 
   @override
   void initState() {
-    final initialAmount = widget.initialMoney.amount;
+    final initialAmount = widget.initialMoney.amount ?? 0.0;
     expression = initialAmount != 0.0 ? initialAmount.toString() : "";
     currency = widget.currency;
     refreshDisplay(context);

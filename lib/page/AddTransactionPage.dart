@@ -248,7 +248,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       ),
       controller: amountController,
       focusNode: amountFocus,
-      autofocus: true,
       textInputAction: TextInputAction.next,
       validator: (amount) {
         if (amount.amount == null)

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qwallet/Currency.dart';
+import 'package:qwallet/dialog/EnterMoneyDialog.dart';
 
 import '../Money.dart';
 
@@ -15,7 +16,7 @@ class AmountFormField extends FormField<Money> {
     this.controller,
     InputDecoration decoration = const InputDecoration(),
     this.focusNode,
-    bool autofocus,
+    bool autofocus = false,
     TextInputAction textInputAction,
     FormFieldValidator<Money> validator,
   }) : super(
@@ -64,28 +65,52 @@ class AmountFormFieldState extends FormFieldState<Money> {
     if (widget.focusNode == null) {
       _focusNode = FocusNode();
     }
-    effectiveFocusNode.addListener(_handleFocusChange);
+    initAmountField(
+      focusNode: effectiveFocusNode,
+      controller: controller,
+      isCurrencySelectable: true,
+      getValue: () => value,
+      onEnter: (amount) => setState(() {
+        controller.text = amount.formattedOnlyAmount;
+        setValue(amount);
+        widget.controller.value = amount;
+      }),
+    );
     super.initState();
   }
 
   @override
   void dispose() {
-    effectiveFocusNode.removeListener(_handleFocusChange);
     controller?.dispose();
     _focusNode?.dispose();
     super.dispose();
   }
 
-  void _handleFocusChange() {
-    final hasFocus = effectiveFocusNode.hasFocus;
-    if (hasFocus) {
-      controller.text = value.formatForEditing();
-    } else {
-      final enteredMoney = _getEnteredMoney();
-      setValue(enteredMoney);
-      controller.text = enteredMoney.formattedOnlyAmount;
-      widget.controller.value = enteredMoney;
-    }
+  void initAmountField({
+    FocusNode focusNode,
+    TextEditingController controller,
+    bool isCurrencySelectable,
+    Money getValue(),
+    void onEnter(Money money),
+  }) {
+    focusNode.addListener(() async {
+      if (focusNode.hasFocus) {
+        focusNode.unfocus();
+        final initialMoney = getValue();
+        final money = await showDialog(
+          context: context,
+          builder: (context) => EnterMoneyDialog(
+            initialMoney: initialMoney,
+            currency: initialMoney.currency,
+            isCurrencySelectable: isCurrencySelectable,
+          ),
+        ) as Money;
+        if (money != null) {
+          controller.text = money.formattedOnlyAmount;
+          onEnter(money);
+        }
+      }
+    });
   }
 
   Money _getEnteredMoney() {
