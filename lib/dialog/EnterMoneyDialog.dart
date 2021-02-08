@@ -35,7 +35,8 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
 
   @override
   void initState() {
-    expression = widget.initialMoney.amount.toString();
+    final initialAmount = widget.initialMoney.amount;
+    expression = initialAmount != 0.0 ? initialAmount.toString() : "";
     currency = widget.currency;
     refreshDisplay(context);
     super.initState();
@@ -94,9 +95,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   }
 
   Money calculateExpression() {
-    if (this.expression.isEmpty) {
-      return Money(0, currency);
-    }
+    if (this.expression.isEmpty) return Money(0, currency);
 
     try {
       Expression expression = Expression.parse(this.expression);
