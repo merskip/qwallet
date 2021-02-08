@@ -32,10 +32,7 @@ class AmountFormField extends FormField<Money> {
               focusNode: state.effectiveFocusNode,
               autofocus: autofocus,
               readOnly: true,
-              validator: (text) {
-                final money = state._getEnteredMoney();
-                return validator(money);
-              },
+              validator: (text) => validator(state.value),
               inputFormatters: [
                 NumericTextFormatter(state.value.currency),
               ],
@@ -71,7 +68,7 @@ class AmountFormFieldState extends FormFieldState<Money> {
       getValue: () => value,
       onEnter: (amount) => setState(() {
         controller.text = amount.formattedOnlyAmount;
-        setValue(amount);
+        didChange(amount);
         widget.controller.value = amount;
       }),
     );
