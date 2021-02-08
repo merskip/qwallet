@@ -40,7 +40,7 @@ class CategoryPicker extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           buildTitle(context),
           SizedBox(height: 8),
@@ -53,11 +53,14 @@ class CategoryPicker extends StatelessWidget {
   }
 
   Widget buildTitle(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      child: DefaultTextStyle(
-        style: Theme.of(context).textTheme.bodyText2,
-        child: title,
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        child: DefaultTextStyle(
+          style: Theme.of(context).textTheme.bodyText2,
+          child: title,
+        ),
       ),
     );
   }
@@ -70,8 +73,8 @@ class CategoryPicker extends StatelessWidget {
           spacing: 12,
           runSpacing: 12,
           children: [
-            ...categories
-                .map((category) => buildCategoryButton(context, category)),
+            ...categories.map((category) => buildCategoryButton(
+                context, category, this.selectedCategory == category)),
           ],
         ),
         onHorizontalDragEnd: (details) {
@@ -84,8 +87,11 @@ class CategoryPicker extends StatelessWidget {
     );
   }
 
-  Widget buildCategoryButton(BuildContext context, Category category) {
-    final isSelected = (this.selectedCategory == category);
+  Widget buildCategoryButton(
+    BuildContext context,
+    Category category,
+    bool isSelected,
+  ) {
     return Tooltip(
       message: category.title,
       verticalOffset: 36,
@@ -119,13 +125,10 @@ class CategoryPicker extends StatelessWidget {
     final color = selectedCategory == null
         ? Theme.of(context).textTheme.caption.color
         : null;
-    return Align(
-      child: Text(
-        selectedCategory?.title ??
-            AppLocalizations.of(context).categoryNoSelected,
-        style: Theme.of(context).textTheme.subtitle2.copyWith(color: color),
-      ),
-      alignment: AlignmentDirectional.center,
+    return Text(
+      selectedCategory?.title ??
+          AppLocalizations.of(context).categoryNoSelected,
+      style: Theme.of(context).textTheme.subtitle2.copyWith(color: color),
     );
   }
 }
