@@ -4,15 +4,9 @@
 
 Managing your personal wallet
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+## Publishing in Google Play
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- `flutter build appbundle`
+- `git log --format="%s (%h)" $LAST TAG NAME$^..`
+- [Create a version for testing closed](https://play.google.com/console/developers/8362371812197927008/app/4973926522312587885/tracks/4699516313258805361/releases/3/prepare)
