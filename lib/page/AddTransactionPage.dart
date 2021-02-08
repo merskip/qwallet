@@ -112,30 +112,28 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
     dateFocus.addListener(() async {
       if (dateFocus.hasFocus) {
+        dateFocus.unfocus();
         final date = await showDatePicker(
           context: context,
           initialDate: this.date,
           firstDate: DateTime(2000),
           lastDate: DateTime(2100),
         );
-        dateFocus.nextFocus();
         if (date != null) {
-          dateController.text = getFormattedDate(date);
-
-          final nowUtc = DateTime.now();
-          final dateUtc = date.toUtc();
-
-          final dateTime = DateTime.utc(
-            dateUtc.year,
-            dateUtc.month,
-            dateUtc.day,
-            nowUtc.hour,
-            nowUtc.minute,
-            nowUtc.second,
-            nowUtc.millisecond,
-            nowUtc.microsecond,
+          // Adding local now time
+          final now = DateTime.now();
+          final dateTime = DateTime(
+            date.year,
+            date.month,
+            date.day,
+            now.hour,
+            now.minute,
+            now.second,
           );
-          setState(() => this.date = dateTime);
+          setState(() {
+            dateController.text = getFormattedDate(dateTime);
+            this.date = dateTime;
+          });
         }
       }
     });
@@ -245,7 +243,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         helperText: getBalanceAfterTransactionText(),
       ),
       controller: amountController,
-      textInputAction: TextInputAction.next,
       validator: (amount) {
         if (amount.amount == null)
           return AppLocalizations.of(context).addTransactionAmountErrorIsEmpty;
@@ -299,8 +296,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       ),
       maxLength: 50,
       textCapitalization: TextCapitalization.sentences,
-      textInputAction: TextInputAction.next,
-      onFieldSubmitted: (value) => titleFocus.nextFocus(),
+      textInputAction: TextInputAction.done,
+      onFieldSubmitted: (value) => titleFocus.unfocus(),
     );
   }
 
@@ -315,7 +312,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       ),
       textInputAction: TextInputAction.next,
       readOnly: true,
-      onFieldSubmitted: (value) => dateFocus.nextFocus(),
     );
   }
 

@@ -17,7 +17,6 @@ class AmountFormField extends FormField<Money> {
     InputDecoration decoration = const InputDecoration(),
     this.focusNode,
     bool autofocus = false,
-    TextInputAction textInputAction,
     FormFieldValidator<Money> validator,
   }) : super(
           initialValue: initialMoney,
@@ -30,7 +29,6 @@ class AmountFormField extends FormField<Money> {
               ),
               textAlign: TextAlign.end,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
-              textInputAction: textInputAction,
               focusNode: state.effectiveFocusNode,
               autofocus: autofocus,
               readOnly: true,
