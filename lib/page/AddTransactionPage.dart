@@ -285,8 +285,10 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       selectedCategory: category,
       title: Text(AppLocalizations.of(context).addTransactionCategory),
       onChangeCategory: (category) {
-        setState(() =>
-            this.category = (this.category != category ? category : null));
+        FocusScope.of(context).unfocus();
+        setState(() {
+          this.category = (this.category != category ? category : null);
+        });
       },
     );
   }
