@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart' as Could;
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/DataSource.dart';
@@ -36,6 +37,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
+      debugId: "dashboard-wallets",
       stream: DataSource.instance.getOrderedWallets(),
       builder: (context, List<Wallet> wallets) =>
           buildContent(context, wallets),
@@ -63,7 +65,10 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           actions: buildAppBarActions(context),
         ),
-        buildWalletCards(context),
+        if (_selectedWallet.hasValue)
+          buildWalletCards(context, _selectedWallet.value)
+        else
+          silverProgressIndicator(),
         SliverPadding(
           padding: EdgeInsets.only(bottom: 88),
         ),
@@ -72,21 +77,26 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget buildWalletCards(BuildContext context) {
-    if (_selectedWallet.value == null) return silverProgressIndicator();
+  Widget buildWalletCards(BuildContext context, Wallet wallet) {
     final timeRange = getCurrentMonthTimeRange();
     return SimpleStreamWidget(
-      // key: Key(_selectedWallet.value.id),
+      debugId: "dashboard-transactions",
       stream: DataSource.instance.getTransactionsInTimeRange(
-        wallet: _selectedWallet.value.reference,
+        wallet: wallet.reference,
         timeRange: timeRange,
       ),
       loadingBuilder: (context) => silverProgressIndicator(),
       builder: (context, transactions) {
-        final wallet = _selectedWallet.value;
-
-        // NOTE: Temporary workaround for local balance calculation
-        DataSource.instance.refreshWalletBalanceIfNeeded(wallet, transactions);
+        DataSource.instance
+            .refreshWalletBalanceIfNeeded(wallet, transactions)
+            .catchError((error) {
+          if (error is Could.FirebaseException &&
+              error.code == "permission-denied") {
+            print(
+                "Permission denied while updating wallet balance, clearing cache");
+            DataSource.instance.firestore.clearPersistence();
+          }
+        });
 
         return SliverToBoxAdapter(
           child: Column(

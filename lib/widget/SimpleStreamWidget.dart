@@ -9,12 +9,14 @@ class SimpleStreamWidget<T> extends StatelessWidget {
   final Stream<T> stream;
   final ValueWidgetBuilder<T> builder;
   final WidgetBuilder loadingBuilder;
+  final String debugId;
 
   const SimpleStreamWidget({
     Key key,
     @required this.stream,
     @required this.builder,
     this.loadingBuilder,
+    this.debugId,
   }) : super(key: key);
 
   @override
@@ -34,23 +36,26 @@ class SimpleStreamWidget<T> extends StatelessWidget {
   }
 
   _debugSnapshot(AsyncSnapshot<T> snapshot) {
-    final state =
-        snapshot.connectionState.toString().replaceFirst("ConnectionState", "");
+    String id = stream.hashCode.toRadixString(16).padLeft(8, '0');
+    if (debugId != null) id += "-\"$debugId\"";
+
+    String typeName = "$T";
+    if (snapshot.data is List<List<dynamic>>) {
+      final list = snapshot.data as List<List<dynamic>>;
+      typeName = "List<${list.first?.runtimeType}>";
+    }
+
     String stateIcon = HashMap.of({
       ConnectionState.none: "⛔",
       ConnectionState.waiting: "⏳",
       ConnectionState.active: "🔁",
       ConnectionState.done: "✅",
     })[snapshot.connectionState];
+    final state =
+        snapshot.connectionState.toString().replaceFirst("ConnectionState", "");
 
-    String typeName = "$T";
-
-    if (snapshot.data is List<List<dynamic>>) {
-      final list = snapshot.data as List<List<dynamic>>;
-      typeName = "List<${list.first?.runtimeType}>";
-    }
-
-    print("[Snapshot $typeName] "
+    print("Stream-$id "
+        "type=$typeName "
         "state=($stateIcon $state) "
         "hasData=${snapshot.hasData} "
         "hasError=${snapshot.hasError}");

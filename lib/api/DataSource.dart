@@ -104,7 +104,7 @@ extension WalletsDataSource on DataSource {
     }
     if (wallet.totalExpense.amount != totalExpense ||
         wallet.totalIncome.amount != totalIncome) {
-      wallet.reference.documentReference.update({
+      return wallet.reference.documentReference.update({
         'totalExpense': totalExpense,
         'totalIncome': totalIncome,
       });
