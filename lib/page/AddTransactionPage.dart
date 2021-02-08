@@ -71,7 +71,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   TransactionType type = TransactionType.expense;
 
-  final amountFocus = FocusNode();
   final amountController = AmountEditingController();
 
   Category category;
@@ -96,7 +95,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   @override
   void dispose() {
-    amountFocus.dispose();
     amountController.dispose();
     titleFocus.dispose();
     titleController.dispose();
@@ -247,7 +245,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         helperText: getBalanceAfterTransactionText(),
       ),
       controller: amountController,
-      focusNode: amountFocus,
       textInputAction: TextInputAction.next,
       validator: (amount) {
         if (amount.amount == null)

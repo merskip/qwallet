@@ -10,6 +10,8 @@ import '../AppLocalizations.dart';
 import '../Money.dart';
 import '../utils.dart';
 
+const buttonHeight = 56.0;
+
 class EnterMoneyDialog extends StatefulWidget {
   final Money initialMoney;
   final Currency currency;
@@ -35,11 +37,22 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
 
   @override
   void initState() {
-    final initialAmount = widget.initialMoney.amount ?? 0.0;
-    expression = initialAmount != 0.0 ? initialAmount.toString() : "";
+    expression = _getInitialExpression();
     currency = widget.currency;
     refreshDisplay(context);
     super.initState();
+  }
+
+  String _getInitialExpression() {
+    final initialAmount = widget.initialMoney.amount ?? 0.0;
+    if (initialAmount != 0.0) {
+      final amount = initialAmount.toString();
+      if (amount.endsWith(".0"))
+        return amount.substring(0, amount.length - 2);
+      else
+        return amount;
+    } else
+      return "";
   }
 
   void onSelectedCurrency(BuildContext context) async {
@@ -82,16 +95,25 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   void refreshDisplay(BuildContext context) {
     final result = calculateExpression();
 
+    setState(() {
+      displayController.text = _getDisplayText(result);
+    });
+  }
+
+  String _getDisplayText(Money result) {
     final displayExpression = this
         .expression
         .replaceAllMapped(RegExp("([^0-9\.])"),
             (m) => " " + _operatorToText(context, m.group(1)) + " ")
         .replaceAll("  ", " ");
 
-    displayController.text =
-        "$displayExpression\n= ${result?.formatted ?? "?"}";
-    displayController.selection =
-        TextSelection.collapsed(offset: displayExpression.length);
+    var displayText = "$displayExpression\n";
+    if (result != null) {
+      displayText += "= ${result.formatted}";
+    } else {
+      displayText += "= …";
+    }
+    return displayText;
   }
 
   Money calculateExpression() {
@@ -101,7 +123,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
       Expression expression = Expression.parse(this.expression);
       if (expression != null) {
         final result = evaluator.eval(expression, {});
-        if (result is double) {
+        if (result is double && result.isFinite) {
           return Money(result, currency);
         } else if (result is int) {
           return Money(result.toDouble(), currency);
@@ -114,6 +136,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      insetPadding: EdgeInsets.all(8),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         buildAmountPreview(context),
         buildKeyboard(context),
@@ -133,7 +156,9 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
         maxLines: null,
         minLines: 2,
         showCursor: true,
+        enableInteractiveSelection: false,
         autofocus: true,
+        style: TextStyle(fontSize: 17),
       ),
     );
   }
@@ -145,25 +170,25 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
         Flexible(flex: 2, child: Container()),
         buildOperatorButton(context, "("),
         buildOperatorButton(context, ")"),
-        buildOperatorButton(context, "+"),
+        buildOperatorButton(context, "*"),
       ],
       [
         buildDigitButton(context, "1"),
         buildDigitButton(context, "2"),
         buildDigitButton(context, "3"),
-        buildOperatorButton(context, "-"),
+        buildOperatorButton(context, "/"),
       ],
       [
         buildDigitButton(context, "4"),
         buildDigitButton(context, "5"),
         buildDigitButton(context, "6"),
-        buildOperatorButton(context, "*"),
+        buildOperatorButton(context, "+"),
       ],
       [
         buildDigitButton(context, "7"),
         buildDigitButton(context, "8"),
         buildDigitButton(context, "9"),
-        buildOperatorButton(context, "/"),
+        buildOperatorButton(context, "-"),
       ],
       [
         Flexible(flex: 3, child: Container()),
@@ -203,12 +228,12 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   }
 
   Widget buildDigitButton(BuildContext context, String digit) {
-    return Flexible(
+    return Expanded(
       flex: 3,
       child: Padding(
         padding: const EdgeInsets.all(3.0),
         child: Container(
-          height: 44,
+          height: buttonHeight,
           child: RaisedButton(
             onPressed: () => onSelectedDigit(context, digit),
             child: Text(
@@ -234,7 +259,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
       child: Padding(
         padding: const EdgeInsets.all(3.0),
         child: Container(
-          height: 44,
+          height: buttonHeight,
           child: FlatButton(
             onPressed: () => onSelectedOperator(context, operator),
             child: Text(
@@ -263,7 +288,8 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
       child: Padding(
         padding: const EdgeInsets.all(3.0),
         child: Container(
-          height: 44,
+          height: buttonHeight,
+          width: double.infinity,
           child: FlatButton(
             onPressed: () => onSelectedBackspace(context),
             child: Icon(Icons.backspace, color: Colors.red),

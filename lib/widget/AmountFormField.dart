@@ -33,6 +33,7 @@ class AmountFormField extends FormField<Money> {
               textInputAction: textInputAction,
               focusNode: state.effectiveFocusNode,
               autofocus: autofocus,
+              readOnly: true,
               validator: (text) {
                 final money = state._getEnteredMoney();
                 return validator(money);
