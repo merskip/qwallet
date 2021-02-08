@@ -176,6 +176,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           category: category?.reference,
           date: date,
         );
+        FocusScope.of(context).unfocus();
         Navigator.of(context).pop(transactionRef);
       } finally {
         setState(() => isSubmitting = false);
