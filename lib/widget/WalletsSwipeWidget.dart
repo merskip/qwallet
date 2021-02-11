@@ -140,11 +140,18 @@ class _WalletSinglePage extends StatelessWidget {
 
   Widget buildSpendingIndicator(BuildContext context) {
     final timeRange = getCurrentMonthTimeRange();
-    final days = timeRange.duration.inDays.toDouble();
-    final availableDailyBudget = wallet.totalIncome / days;
-    final currentSpending = wallet.totalExpense / days;
+    final totalDays = timeRange.duration.inDays.toDouble();
+    final currentDay = DateTime.now().day.toDouble();
+
+    final availableDailyBudget = wallet.totalIncome / totalDays;
+    final currentSpending = wallet.totalExpense / currentDay;
+
+    final currentAvailableBudget =
+        availableDailyBudget.amount * currentDay.toDouble();
+    final remainingCurrentBudget = Money(
+        currentAvailableBudget - wallet.totalExpense.amount, wallet.currency);
 
     return Text(
-        "${currentSpending.formattedOnlyAmount} / ${availableDailyBudget.formatted}");
+        "${currentSpending.formattedOnlyAmount} / ${availableDailyBudget.formatted}; ${remainingCurrentBudget.formatted}");
   }
 }
