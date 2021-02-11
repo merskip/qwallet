@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/Money.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
 
 class WalletsSwipeWidget extends StatefulWidget {
@@ -130,28 +128,9 @@ class _WalletSinglePage extends StatelessWidget {
               wallet.balance.formatted,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 8),
-            buildSpendingIndicator(context),
           ],
         ),
       ),
     );
-  }
-
-  Widget buildSpendingIndicator(BuildContext context) {
-    final timeRange = getCurrentMonthTimeRange();
-    final totalDays = timeRange.duration.inDays.toDouble();
-    final currentDay = DateTime.now().day.toDouble();
-
-    final availableDailyBudget = wallet.totalIncome / totalDays;
-    final currentSpending = wallet.totalExpense / currentDay;
-
-    final currentAvailableBudget =
-        availableDailyBudget.amount * currentDay.toDouble();
-    final remainingCurrentBudget = Money(
-        currentAvailableBudget - wallet.totalExpense.amount, wallet.currency);
-
-    return Text(
-        "${currentSpending.formattedOnlyAmount} / ${availableDailyBudget.formatted}; ${remainingCurrentBudget.formatted}");
   }
 }

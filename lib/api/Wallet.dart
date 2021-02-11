@@ -26,4 +26,10 @@ class Wallet extends Model<Wallet> {
         this.totalIncome = snapshot.getMoney("totalIncome", "currency"),
         this.categories = categories,
         super(snapshot);
+
+  Category getCategory(Reference<Category> category) {
+    return category != null
+        ? categories.firstWhere((c) => c.id == category.id)
+        : null;
+  }
 }
