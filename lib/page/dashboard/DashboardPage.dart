@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/page/dashboard/DailyReportCard.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
@@ -101,6 +102,10 @@ class _DashboardPageState extends State<DashboardPage> {
         return SliverToBoxAdapter(
           child: Column(
             children: [
+              DailyReportCard(
+                wallet: wallet,
+                transactions: transactions,
+              ),
               TransactionsCard(
                 wallet: wallet,
                 transactions: transactions,

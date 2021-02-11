@@ -24,7 +24,7 @@ class CategoriesChartCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       key: Key(wallet.id),
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: _CategoriesChartContent(
         wallet: wallet,
         transactions: transactions,
