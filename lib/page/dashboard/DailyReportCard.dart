@@ -4,6 +4,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
+import 'package:qwallet/widget/SpendingGauge.dart';
 
 import '../../Money.dart';
 
@@ -73,7 +74,8 @@ class _DailyReportCardState extends State<DailyReportCard> {
           title: Text("Remaining current daily budget"),
           value: Text(_remainingCurrentBudget.formatted),
           padding: EdgeInsets.all(16),
-        )
+        ),
+        SpendingGauge(),
       ]),
     );
   }
