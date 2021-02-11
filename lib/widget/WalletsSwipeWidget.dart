@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/Money.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
 
 class WalletsSwipeWidget extends StatefulWidget {
@@ -113,22 +115,36 @@ class _WalletSinglePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            wallet.name,
-            style: Theme.of(context).primaryTextTheme.subtitle2,
-          ),
-          SizedBox(height: 4),
-          Text(
-            wallet.balance.formatted,
-            style: TextStyle(
-                color: Colors.white, fontSize: 24, fontWeight: FontWeight.w600),
-          )
-        ],
+      child: DefaultTextStyle(
+        style: TextStyle(color: Colors.white),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              wallet.name,
+              style: Theme.of(context).primaryTextTheme.subtitle2,
+            ),
+            SizedBox(height: 4),
+            Text(
+              wallet.balance.formatted,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 8),
+            buildSpendingIndicator(context),
+          ],
+        ),
       ),
     );
+  }
+
+  Widget buildSpendingIndicator(BuildContext context) {
+    final timeRange = getCurrentMonthTimeRange();
+    final days = timeRange.duration.inDays.toDouble();
+    final availableDailyBudget = wallet.totalIncome / days;
+    final currentSpending = wallet.totalExpense / days;
+
+    return Text(
+        "${currentSpending.formattedOnlyAmount} / ${availableDailyBudget.formatted}");
   }
 }

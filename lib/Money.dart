@@ -23,6 +23,10 @@ extension MoneyOperators on Money {
 
   Money operator -(double amount) => Money(this.amount - amount, currency);
 
+  Money operator *(double factor) => Money(this.amount * factor, currency);
+
+  Money operator /(double factor) => Money(this.amount / factor, currency);
+
   Money operator -() => Money(-amount, currency);
 }
 
