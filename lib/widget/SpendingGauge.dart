@@ -12,21 +12,21 @@ class _SpendingGaugeState extends State<SpendingGauge> {
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size(100, 100),
-      painter: GuagePainter([
-        _GaugeSegment(Colors.red, 0.80, 0.20),
-        _GaugeSegment(Colors.orange, 0.70, 0.10),
-        _GaugeSegment(Colors.green, 0.0, 0.7),
+      painter: _GaugePainter([
+        _GaugeSegment(Colors.red, 0.67, 0.33),
+        _GaugeSegment(Colors.orange, 0.33, 0.34),
+        _GaugeSegment(Colors.green, 0.0, 0.33),
       ]),
     );
   }
 }
 
-class GuagePainter extends CustomPainter {
+class _GaugePainter extends CustomPainter {
   final List<_GaugeSegment> segments;
 
   final double width = 10;
 
-  GuagePainter(this.segments);
+  _GaugePainter(this.segments);
 
   @override
   void paint(Canvas canvas, Size size) {
