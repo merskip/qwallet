@@ -2,7 +2,22 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../Money.dart';
+
 class SpendingGauge extends StatefulWidget {
+  final Money midLow;
+  final Money midHigh;
+  final Money max;
+  final Money current;
+
+  const SpendingGauge({
+    Key key,
+    @required this.midLow,
+    @required this.midHigh,
+    @required this.max,
+    @required this.current,
+  }) : super(key: key);
+
   @override
   _SpendingGaugeState createState() => _SpendingGaugeState();
 }
@@ -10,31 +25,34 @@ class SpendingGauge extends StatefulWidget {
 class _SpendingGaugeState extends State<SpendingGauge> {
   @override
   Widget build(BuildContext context) {
+    final normalizedMidLow = widget.midLow.amount / widget.max.amount;
+    final normalizedMidHigh = widget.midHigh.amount / widget.max.amount;
+    final normalizedCurrent = widget.current.amount / widget.max.amount;
+
     return CustomPaint(
-      size: Size(128, 128),
       painter: _GaugePainter(
         segments: [
-          _GaugeSegment(Colors.red, 0.67, 0.33),
-          _GaugeSegment(Colors.orange, 0.5, 0.17),
-          _GaugeSegment(Colors.green, 0.0, 0.5),
+          _GaugeSegment(Colors.red, normalizedMidHigh, 1.0),
+          _GaugeSegment(Colors.orange, normalizedMidLow, normalizedMidHigh),
+          _GaugeSegment(Colors.green, 0.0, normalizedMidLow),
         ],
         labels: [
           _GaugeLabel(
-              0.67,
-              "100 zł",
+              normalizedMidHigh,
+              widget.midHigh.formatted,
               Theme.of(context)
                   .textTheme
                   .bodyText1
                   .copyWith(color: Colors.red)),
           _GaugeLabel(
-              0.5,
-              "80 zł",
+              normalizedMidLow,
+              widget.midLow.formatted,
               Theme.of(context)
                   .textTheme
                   .bodyText1
                   .copyWith(color: Colors.orange)),
         ],
-        markerPosition: 0.6,
+        markerPosition: normalizedCurrent,
       ),
     );
   }
@@ -140,11 +158,11 @@ class _GaugePainter extends CustomPainter {
 class _GaugeSegment {
   final MaterialColor color;
   final double start;
-  final double sweep;
+  final double end;
 
-  double get end => start + sweep;
+  double get sweep => end - start;
 
-  _GaugeSegment(this.color, this.start, this.sweep);
+  _GaugeSegment(this.color, this.start, this.end);
 }
 
 class _GaugeLabel {

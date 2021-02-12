@@ -62,20 +62,36 @@ class _DailyReportCardState extends State<DailyReportCard> {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Column(children: [
-        DetailsItemTile(
-          title: Text("Current / Available daily spending"),
-          value: Text(_currentDailySpending.formatted +
-              " / " +
-              _availableDailyBudget.formatted),
-          padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: Stack(children: [
+        Column(children: [
+          DetailsItemTile(
+            title: Text("Current / Available daily spending"),
+            value: Text(_currentDailySpending.formatted +
+                " / " +
+                _availableDailyBudget.formatted),
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+          ),
+          DetailsItemTile(
+            title: Text("Remaining current daily budget"),
+            value: Text(_remainingCurrentBudget.formatted),
+            padding: EdgeInsets.all(16),
+          ),
+        ]),
+        Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: SizedBox.fromSize(
+              size: Size.square(128),
+              child: SpendingGauge(
+                current: _currentDailySpending,
+                midLow: _availableDailyBudget * 0.67,
+                midHigh: _availableDailyBudget,
+                max: _availableDailyBudget * 2,
+              ),
+            ),
+          ),
         ),
-        DetailsItemTile(
-          title: Text("Remaining current daily budget"),
-          value: Text(_remainingCurrentBudget.formatted),
-          padding: EdgeInsets.all(16),
-        ),
-        SpendingGauge(),
       ]),
     );
   }
