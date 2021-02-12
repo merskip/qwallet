@@ -11,7 +11,7 @@ class _SpendingGaugeState extends State<SpendingGauge> {
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      size: Size(100, 100),
+      size: Size(64, 128),
       painter: _GaugePainter(
         segments: [
           _GaugeSegment(Colors.red, 0.67, 0.33),
@@ -48,7 +48,7 @@ class _GaugePainter extends CustomPainter {
         ..strokeWidth = segmentWidth;
 
       final halfWidth = segmentWidth / 2;
-      final rect = Rect.fromLTRB(halfWidth, halfWidth, size.width - halfWidth,
+      final rect = Rect.fromLTRB(-size.width, halfWidth, size.width - halfWidth,
           size.height - halfWidth);
       final arcStart = pi / 2 - segment.sweep * pi - segment.start * pi;
       final arcSweep = segment.sweep * pi;
@@ -57,13 +57,13 @@ class _GaugePainter extends CustomPainter {
   }
 
   void _paintMarker(Canvas canvas, Size size) {
-    canvas.translate(size.width / 2, size.height / 2);
+    canvas.translate(0, size.height / 2);
 
     final markerSegment = segments.lastWhere((s) =>
         markerPosition >= s.start && markerPosition <= s.start + s.sweep);
 
     canvas.rotate(pi / 2 - markerPosition * pi);
-    canvas.translate(size.width / 2, 0);
+    canvas.translate(size.width, 0);
 
     final circlePaint = Paint()
       ..color = markerSegment.color.shade100
