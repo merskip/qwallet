@@ -10,11 +10,12 @@ void main() {
       excludedExpenses: 0,
       totalDays: 10,
       currentDay: 1,
+      currency: null,
     );
 
-    expect(result.availableDailySpending, 100.0);
-    expect(result.currentDailySpending, 0.0);
-    expect(result.remainingCurrentDailyBalance, 100.0);
+    expect(result.availableDailySpending.amount, 100.0);
+    expect(result.currentDailySpending.amount, 0.0);
+    expect(result.remainingCurrentDailyBalance.amount, 100.0);
   });
 
   test("First day with excluded expenses", () {
@@ -24,11 +25,12 @@ void main() {
       excludedExpenses: 1000,
       totalDays: 10,
       currentDay: 1,
+      currency: null,
     );
 
-    expect(result.availableDailySpending, 100.0);
-    expect(result.currentDailySpending, 0.0);
-    expect(result.remainingCurrentDailyBalance, 100.0);
+    expect(result.availableDailySpending.amount, 100.0);
+    expect(result.currentDailySpending.amount, 0.0);
+    expect(result.remainingCurrentDailyBalance.amount, 100.0);
   });
 
   test("Second day with excluded expenses", () {
@@ -38,11 +40,12 @@ void main() {
       excludedExpenses: 1000,
       totalDays: 10,
       currentDay: 2,
+      currency: null,
     );
 
-    expect(result.availableDailySpending, 100.0);
-    expect(result.currentDailySpending, 25.0);
-    expect(result.remainingCurrentDailyBalance, 150.0);
+    expect(result.availableDailySpending.amount, 100.0);
+    expect(result.currentDailySpending.amount, 25.0);
+    expect(result.remainingCurrentDailyBalance.amount, 150.0);
   });
 
   test("Second day with overspending", () {
@@ -52,10 +55,11 @@ void main() {
       excludedExpenses: 1000,
       totalDays: 10,
       currentDay: 2,
+      currency: null,
     );
 
-    expect(result.availableDailySpending, 100.0);
-    expect(result.currentDailySpending, 125.0);
-    expect(result.remainingCurrentDailyBalance, -50.0);
+    expect(result.availableDailySpending.amount, 100.0);
+    expect(result.currentDailySpending.amount, 125.0);
+    expect(result.remainingCurrentDailyBalance.amount, -50.0);
   });
 }

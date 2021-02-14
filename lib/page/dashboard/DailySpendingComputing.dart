@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 
+import '../../Currency.dart';
+import '../../Money.dart';
+
 class DailySpendingComputing {
   DailySpending compute({
     @required double totalIncome,
@@ -7,6 +10,7 @@ class DailySpendingComputing {
     @required double excludedExpenses,
     @required int totalDays,
     @required int currentDay,
+    @required Currency currency,
   }) {
     assert(totalExpenses >= excludedExpenses);
     final availableDailyBudget = totalIncome - excludedExpenses;
@@ -17,17 +21,17 @@ class DailySpendingComputing {
     final remainingCurrentDailyBalance =
         currentAvailableBudget - (totalExpenses - excludedExpenses);
     return DailySpending(
-      availableDailySpending,
-      currentDailySpending,
-      remainingCurrentDailyBalance,
+      Money(availableDailySpending, currency),
+      Money(currentDailySpending, currency),
+      Money(remainingCurrentDailyBalance, currency),
     );
   }
 }
 
 class DailySpending {
-  final double availableDailySpending;
-  final double currentDailySpending;
-  final double remainingCurrentDailyBalance;
+  final Money availableDailySpending;
+  final Money currentDailySpending;
+  final Money remainingCurrentDailyBalance;
 
   DailySpending(
     this.availableDailySpending,

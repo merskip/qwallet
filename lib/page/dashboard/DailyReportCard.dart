@@ -3,77 +3,35 @@ import 'package:flutter/widgets.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/page/dashboard/DailySpendingComputing.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/SpendingGauge.dart';
 
 import '../../Money.dart';
 
-class DailyReportCard extends StatefulWidget {
+class DailyReportCard extends StatelessWidget {
   final Wallet wallet;
   final List<Transaction> transactions;
 
-  const DailyReportCard({
-    Key key,
-    this.wallet,
-    this.transactions,
-  }) : super(key: key);
-
-  @override
-  _DailyReportCardState createState() => _DailyReportCardState();
-}
-
-class _DailyReportCardState extends State<DailyReportCard> {
-  Money _currentDailySpending;
-  Money _availableDailyBudget;
-  Money _remainingCurrentBudget;
-
-  @override
-  void initState() {
-    final timeRange = getCurrentMonthTimeRange();
-    final totalDays = timeRange.duration.inDays.toDouble();
-    final currentDay = DateTime.now().day.toDouble() + 1;
-
-    final totalDailyExpense = _getTotalTransactions(TransactionType.expense);
-    final totalExcludedExpense =
-        widget.wallet.totalExpense - totalDailyExpense.amount;
-    final totalIncomeAvailable =
-        widget.wallet.totalIncome - totalExcludedExpense.amount;
-    _availableDailyBudget = totalIncomeAvailable / totalDays;
-    _currentDailySpending = totalDailyExpense / currentDay;
-
-    final currentAvailableBudget = _availableDailyBudget.amount * currentDay;
-    _remainingCurrentBudget = Money(
-        currentAvailableBudget - totalDailyExpense.amount,
-        widget.wallet.currency);
-    super.initState();
-  }
-
-  Money _getTotalTransactions(TransactionType type) {
-    final transactions = widget.transactions.where((transaction) {
-      final category = widget.wallet.getCategory(transaction.category);
-      if (category != null && category.isExcludedFromDailyBalance) return false;
-      return transaction.type == type;
-    });
-    final total = transactions.fold(0.0, (a, t) => a + t.amount);
-    return Money(total, widget.wallet.currency);
-  }
+  DailyReportCard({Key key, this.wallet, this.transactions}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final dailySpending = _computeDailySpending();
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Stack(children: [
         Column(children: [
           DetailsItemTile(
             title: Text("Current / Available daily spending"),
-            value: Text(_currentDailySpending.formatted +
+            value: Text(dailySpending.currentDailySpending.formatted +
                 " / " +
-                _availableDailyBudget.formatted),
+                dailySpending.availableDailySpending.formatted),
             padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
           ),
           DetailsItemTile(
             title: Text("Remaining current daily budget"),
-            value: Text(_remainingCurrentBudget.formatted),
+            value: Text(dailySpending.remainingCurrentDailyBalance.formatted),
             padding: EdgeInsets.all(16),
           ),
         ]),
@@ -84,15 +42,40 @@ class _DailyReportCardState extends State<DailyReportCard> {
             child: SizedBox.fromSize(
               size: Size.square(128),
               child: SpendingGauge(
-                current: _currentDailySpending,
-                midLow: _availableDailyBudget * 0.67,
-                midHigh: _availableDailyBudget,
-                max: _availableDailyBudget * 2,
+                current: dailySpending.currentDailySpending,
+                midLow: dailySpending.availableDailySpending * 0.67,
+                midHigh: dailySpending.availableDailySpending,
+                max: dailySpending.availableDailySpending * 2,
               ),
             ),
           ),
         ),
       ]),
     );
+  }
+
+  DailySpending _computeDailySpending() {
+    final timeRange = getCurrentMonthTimeRange();
+    final totalDays = timeRange.duration.inDays;
+    final currentDay = DateTime.now().day;
+
+    print("totalExpenses: ${wallet.totalExpense}");
+    return DailySpendingComputing().compute(
+      totalIncome: wallet.totalIncome.amount,
+      totalExpenses: wallet.totalExpense.amount,
+      excludedExpenses: _getTotalExpensesExcludedFromDailyBalance(),
+      totalDays: totalDays,
+      currentDay: currentDay,
+      currency: wallet.currency,
+    );
+  }
+
+  double _getTotalExpensesExcludedFromDailyBalance() {
+    return transactions.where((transaction) {
+      final category = wallet.getCategory(transaction.category);
+      return transaction.type == TransactionType.expense &&
+          category != null &&
+          category.isExcludedFromDailyBalance;
+    }).fold(0.0, (a, t) => a + t.amount);
   }
 }

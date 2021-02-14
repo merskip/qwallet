@@ -9,15 +9,13 @@ class SimpleStreamWidget<T> extends StatelessWidget {
   final Stream<T> stream;
   final ValueWidgetBuilder<T> builder;
   final WidgetBuilder loadingBuilder;
-  final String debugId;
 
-  const SimpleStreamWidget({
-    Key key,
-    @required this.stream,
-    @required this.builder,
-    this.loadingBuilder,
-    this.debugId,
-  }) : super(key: key);
+  const SimpleStreamWidget(
+      {Key key,
+      @required this.stream,
+      @required this.builder,
+      this.loadingBuilder})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +35,6 @@ class SimpleStreamWidget<T> extends StatelessWidget {
 
   _debugSnapshot(AsyncSnapshot<T> snapshot) {
     String id = stream.hashCode.toRadixString(16).padLeft(8, '0');
-    if (debugId != null) id += "-\"$debugId\"";
 
     String typeName = "$T";
     if (snapshot.data is List<List<dynamic>>) {

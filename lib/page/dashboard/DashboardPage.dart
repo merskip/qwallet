@@ -38,7 +38,6 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      debugId: "dashboard-wallets",
       stream: DataSource.instance.getOrderedWallets(),
       builder: (context, List<Wallet> wallets) =>
           buildContent(context, wallets),
@@ -81,13 +80,18 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget buildWalletCards(BuildContext context, Wallet wallet) {
     final timeRange = getCurrentMonthTimeRange();
     return SimpleStreamWidget(
-      debugId: "dashboard-transactions",
-      stream: DataSource.instance.getTransactionsInTimeRange(
-        wallet: wallet.reference,
-        timeRange: timeRange,
-      ),
+      stream: Rx.combineLatestList([
+        DataSource.instance.getWallet(wallet.reference),
+        DataSource.instance.getTransactionsInTimeRange(
+          wallet: wallet.reference,
+          timeRange: timeRange,
+        )
+      ]),
       loadingBuilder: (context) => silverProgressIndicator(),
-      builder: (context, transactions) {
+      builder: (context, values) {
+        final wallet = values[0];
+        final transactions = values[1];
+
         DataSource.instance
             .refreshWalletBalanceIfNeeded(wallet, transactions)
             .catchError((error) {
