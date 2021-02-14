@@ -845,6 +845,16 @@ extension CategoriesLocalizations on AppLocalizations {
         en: "No selected category",
         pl: "Nie wybrano kategorii",
       );
+
+  String get categoryExcludedFromDailyBalance => _locale(
+        en: "Excluded from the daily balance",
+        pl: "Wyłączone z dziennego salda",
+      );
+
+  String get categoryExcludedFromDailyBalanceDescription => _locale(
+        en: "If this options is enabled, then expenses won't be included in the calculation of the daily balance. That hasn't effect for wallet's balance.",
+        pl: "Jeśli ta opcja jest włączona, wydatki nie będą uwzględniane przy obliczaniu dziennego salda. Nie ma to wpływu na saldo portfela.",
+      );
 }
 
 extension PrivateLoansLocalizations on AppLocalizations {

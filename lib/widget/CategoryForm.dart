@@ -53,7 +53,7 @@ class _CategoryFormState extends State<CategoryForm> {
             Colors.primaries.first,
         icon = category?.icon ?? Icons.category {
     backgroundColorIsPrimary = (primaryColor == backgroundColor);
-    isExcludedFromDailyBalance = category.isExcludedFromDailyBalance;
+    isExcludedFromDailyBalance = category?.isExcludedFromDailyBalance ?? false;
   }
 
   static MaterialColor _findMaterialColor(Color color, int shade) {
@@ -201,9 +201,10 @@ class _CategoryFormState extends State<CategoryForm> {
 
   Widget buildExcludedFromDailyBalanceSwitch(BuildContext context) {
     return SwitchListTile(
-      title: Text("#Excluded from the daily balance"),
-      subtitle: Text(
-          "#If this switch is enabled, then expenses and incomes aren't included in the calculation of the daily balance. That hasn't effect for wallet's balance."),
+      title:
+          Text(AppLocalizations.of(context).categoryExcludedFromDailyBalance),
+      subtitle: Text(AppLocalizations.of(context)
+          .categoryExcludedFromDailyBalanceDescription),
       isThreeLine: true,
       dense: true,
       value: isExcludedFromDailyBalance,
