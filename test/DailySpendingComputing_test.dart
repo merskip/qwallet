@@ -15,7 +15,7 @@ void main() {
 
     expect(result.availableDailySpending.amount, 100.0);
     expect(result.currentDailySpending.amount, 0.0);
-    expect(result.remainingCurrentDailyBalance.amount, 100.0);
+    expect(result.availableTodayBudget.amount, 100.0);
   });
 
   test("First day with excluded expenses", () {
@@ -30,7 +30,7 @@ void main() {
 
     expect(result.availableDailySpending.amount, 100.0);
     expect(result.currentDailySpending.amount, 0.0);
-    expect(result.remainingCurrentDailyBalance.amount, 100.0);
+    expect(result.availableTodayBudget.amount, 100.0);
   });
 
   test("Second day with excluded expenses", () {
@@ -45,7 +45,7 @@ void main() {
 
     expect(result.availableDailySpending.amount, 100.0);
     expect(result.currentDailySpending.amount, 25.0);
-    expect(result.remainingCurrentDailyBalance.amount, 150.0);
+    expect(result.availableTodayBudget.amount, 150.0);
   });
 
   test("Second day with overspending", () {
@@ -60,6 +60,6 @@ void main() {
 
     expect(result.availableDailySpending.amount, 100.0);
     expect(result.currentDailySpending.amount, 125.0);
-    expect(result.remainingCurrentDailyBalance.amount, -50.0);
+    expect(result.availableTodayBudget.amount, -50.0);
   });
 }

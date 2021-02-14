@@ -62,7 +62,7 @@ class _DetailsItemTileState extends State<DetailsItemTile> {
     final content = Padding(
       padding: widget.padding ?? const EdgeInsets.all(16.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        // crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           if (widget.leading != null && !isEditing)

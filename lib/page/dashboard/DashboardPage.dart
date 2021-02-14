@@ -78,13 +78,12 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget buildWalletCards(BuildContext context, Wallet wallet) {
-    final timeRange = getCurrentMonthTimeRange();
     return SimpleStreamWidget(
       stream: Rx.combineLatestList([
         DataSource.instance.getWallet(wallet.reference),
         DataSource.instance.getTransactionsInTimeRange(
           wallet: wallet.reference,
-          timeRange: timeRange,
+          timeRange: getCurrentMonthTimeRange(),
         )
       ]),
       loadingBuilder: (context) => silverProgressIndicator(),
@@ -106,7 +105,7 @@ class _DashboardPageState extends State<DashboardPage> {
         return SliverToBoxAdapter(
           child: Column(
             children: [
-              DailyReportCard(
+              DailyReportSection(
                 wallet: wallet,
                 transactions: transactions,
               ),

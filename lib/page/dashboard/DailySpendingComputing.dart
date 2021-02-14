@@ -17,13 +17,13 @@ class DailySpendingComputing {
     final availableDailySpending = availableDailyBudget / totalDays.toDouble();
     final currentDailySpending =
         (totalExpenses - excludedExpenses) / currentDay.toDouble();
-    final currentAvailableBudget = availableDailySpending * currentDay;
-    final remainingCurrentDailyBalance =
-        currentAvailableBudget - (totalExpenses - excludedExpenses);
+    final todayAvailableIncome = availableDailySpending * currentDay;
+    final availableTodayBudget =
+        todayAvailableIncome - (totalExpenses - excludedExpenses);
     return DailySpending(
       Money(availableDailySpending, currency),
       Money(currentDailySpending, currency),
-      Money(remainingCurrentDailyBalance, currency),
+      Money(availableTodayBudget, currency),
     );
   }
 }
@@ -31,11 +31,11 @@ class DailySpendingComputing {
 class DailySpending {
   final Money availableDailySpending;
   final Money currentDailySpending;
-  final Money remainingCurrentDailyBalance;
+  final Money availableTodayBudget;
 
   DailySpending(
     this.availableDailySpending,
     this.currentDailySpending,
-    this.remainingCurrentDailyBalance,
+    this.availableTodayBudget,
   );
 }
