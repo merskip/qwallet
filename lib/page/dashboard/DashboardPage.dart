@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/page/dashboard/DailyReportCard.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
@@ -14,6 +13,7 @@ import 'package:rxdart/rxdart.dart';
 import '../../router.dart';
 import '../../widget_utils.dart';
 import 'CategoriesChartCard.dart';
+import 'DailyReportSection.dart';
 import 'TransactionsCard.dart';
 
 class DashboardPage extends StatefulWidget {

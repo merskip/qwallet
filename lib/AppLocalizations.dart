@@ -1037,3 +1037,15 @@ extension EnterAmountLocalizations on AppLocalizations {
         pl: "Zastosuj",
       );
 }
+
+extension DailySpendingLocalizations on AppLocalizations {
+  String get dailySpendingCurrentDailySpending => _locale(
+        en: "Current daily spending",
+        pl: "Bieżące dzienne wydatki",
+      );
+
+  String get dailySpendingAvailableTodayBudget => _locale(
+        en: "Budget available for today",
+        pl: "Dostępny budżet na dziś",
+      );
+}

@@ -6,13 +6,15 @@ import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/page/dashboard/DailySpendingComputing.dart';
 import 'package:qwallet/widget/SpendingGauge.dart';
 
+import '../../AppLocalizations.dart';
 import '../../Money.dart';
 
 class DailyReportSection extends StatelessWidget {
   final Wallet wallet;
   final List<Transaction> transactions;
 
-  DailyReportSection({Key key, this.wallet, this.transactions}) : super(key: key);
+  DailyReportSection({Key key, this.wallet, this.transactions})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -53,18 +55,16 @@ class DailyReportSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          "#Daily spending",
+          AppLocalizations.of(context).dailySpendingCurrentDailySpending,
           style: Theme.of(context).textTheme.caption,
         ),
         Text(
-          dailySpending.currentDailySpending.formattedOnlyAmount +
-              " / " +
-              dailySpending.availableDailySpending.formatted,
+          dailySpending.currentDailySpending.formatted,
           style: Theme.of(context).textTheme.bodyText1,
         ),
         SizedBox(height: 8),
         Text(
-          "#Available today budget",
+          AppLocalizations.of(context).dailySpendingAvailableTodayBudget,
           style: Theme.of(context).textTheme.caption,
         ),
         Text(
