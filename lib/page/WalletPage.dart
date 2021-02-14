@@ -9,7 +9,7 @@ import 'package:qwallet/page/UserSelectionPage.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
-import 'package:qwallet/widget/EditableDetailsItem.dart';
+import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../AppLocalizations.dart';
@@ -143,7 +143,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   }
 
   Widget buildName(BuildContext context) {
-    return EditableDetailsItem(
+    return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletName),
       value: Text(widget.wallet.name),
       editingBegin: () => nameController.text = widget.wallet.name,
@@ -170,7 +170,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   }
 
   Widget buildOwners(BuildContext context) {
-    return EditableDetailsItem(
+    return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletOwners),
       value: SimpleStreamWidget(
         stream: DataSource.instance
@@ -187,7 +187,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   }
 
   Widget buildCurrency(BuildContext context) {
-    return EditableDetailsItem(
+    return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletCurrency),
       value: Text(widget.wallet.currency.getCommonName(context)),
       onEdit: (context) => onSelectedCurrency(context),
@@ -195,7 +195,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   }
 
   Widget buildTotalExpense(BuildContext context) {
-    return EditableDetailsItem(
+    return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletTotalExpense),
       value: isBalanceRefreshing
           ? CircularProgressIndicator()
@@ -204,7 +204,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   }
 
   Widget buildTotalIncome(BuildContext context) {
-    return EditableDetailsItem(
+    return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletTotalIncome),
       value: isBalanceRefreshing
           ? CircularProgressIndicator()
@@ -213,7 +213,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   }
 
   Widget buildBalance(BuildContext context) {
-    return EditableDetailsItem(
+    return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletBalance),
       value: isBalanceRefreshing
           ? CircularProgressIndicator()

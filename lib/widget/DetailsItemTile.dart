@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../AppLocalizations.dart';
 
-class EditableDetailsItem extends StatefulWidget {
+class DetailsItemTile extends StatefulWidget {
   final Widget leading;
   final Widget title;
   final Widget value;
+  final EdgeInsets padding;
 
   final IconData editIcon;
   final String editTooltip;
@@ -15,11 +16,12 @@ class EditableDetailsItem extends StatefulWidget {
   final WidgetBuilder editingContent;
   final VoidCallback editingSave;
 
-  const EditableDetailsItem({
+  const DetailsItemTile({
     Key key,
     this.leading,
     this.title,
     this.value,
+    this.padding,
     this.editIcon,
     this.editTooltip,
     this.onEdit,
@@ -29,10 +31,10 @@ class EditableDetailsItem extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _EditableDetailsItemState createState() => _EditableDetailsItemState();
+  _DetailsItemTileState createState() => _DetailsItemTileState();
 }
 
-class _EditableDetailsItemState extends State<EditableDetailsItem> {
+class _DetailsItemTileState extends State<DetailsItemTile> {
   bool isEditing = false;
 
   bool get isEditable => widget.onEdit != null || widget.editingContent != null;
@@ -58,9 +60,9 @@ class _EditableDetailsItemState extends State<EditableDetailsItem> {
   @override
   Widget build(BuildContext context) {
     final content = Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: widget.padding ?? const EdgeInsets.all(16.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        // crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           if (widget.leading != null && !isEditing)

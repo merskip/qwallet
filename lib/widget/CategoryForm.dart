@@ -17,6 +17,7 @@ class CategoryForm extends StatefulWidget {
     Color primaryColor,
     Color backgroundColor,
     IconData icon,
+    bool isExcludedFromDailyBalance,
   ) onSubmit;
 
   final Widget submitChild;
@@ -42,6 +43,7 @@ class _CategoryFormState extends State<CategoryForm> {
   bool backgroundColorIsPrimary;
   MaterialColor backgroundColor;
   IconData icon;
+  bool isExcludedFromDailyBalance;
 
   _CategoryFormState({Category category})
       : titleController = TextEditingController(text: category?.title),
@@ -51,6 +53,7 @@ class _CategoryFormState extends State<CategoryForm> {
             Colors.primaries.first,
         icon = category?.icon ?? Icons.category {
     backgroundColorIsPrimary = (primaryColor == backgroundColor);
+    isExcludedFromDailyBalance = category.isExcludedFromDailyBalance;
   }
 
   static MaterialColor _findMaterialColor(Color color, int shade) {
@@ -85,6 +88,7 @@ class _CategoryFormState extends State<CategoryForm> {
           primaryColor.shade800,
           backgroundColor.shade100,
           icon,
+          isExcludedFromDailyBalance,
         );
     }
   }
@@ -97,11 +101,10 @@ class _CategoryFormState extends State<CategoryForm> {
         buildTitleField(context),
         buildIconPreview(context),
         buildPrimaryColorPicker(context),
-        Padding(
-          padding: const EdgeInsets.only(top: 16.0),
-          child: Divider(),
-        ),
+        SizedBox(height: 16),
         buildBackgroundColorPicker(context),
+        Divider(),
+        buildExcludedFromDailyBalanceSwitch(context),
         buildSubmit(context),
       ]),
     );
@@ -193,6 +196,20 @@ class _CategoryFormState extends State<CategoryForm> {
             ),
           ),
       ],
+    );
+  }
+
+  Widget buildExcludedFromDailyBalanceSwitch(BuildContext context) {
+    return SwitchListTile(
+      title: Text("#Excluded from the daily balance"),
+      subtitle: Text(
+          "#If this switch is enabled, then expenses and incomes aren't included in the calculation of the daily balance. That hasn't effect for wallet's balance."),
+      isThreeLine: true,
+      dense: true,
+      value: isExcludedFromDailyBalance,
+      onChanged: (newValue) => setState(() {
+        isExcludedFromDailyBalance = newValue;
+      }),
     );
   }
 

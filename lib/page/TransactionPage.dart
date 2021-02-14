@@ -10,7 +10,7 @@ import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/CatgegoryIcon.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
-import 'package:qwallet/widget/EditableDetailsItem.dart';
+import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
@@ -116,7 +116,7 @@ class _TransactionPageState extends State<TransactionPage> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
-        child: EditableDetailsItem(
+        child: DetailsItemTile(
           title: Text(AppLocalizations.of(context).transactionDetailsWallet),
           value: Text(wallet.name + " (${wallet.balance.formatted})"),
         ),
@@ -153,7 +153,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
   Widget buildCategoryDetailsItem(BuildContext context,
       {Widget leading, Widget value, Category category}) {
-    return EditableDetailsItem(
+    return DetailsItemTile(
       leading: leading,
       title: Text(AppLocalizations.of(context).transactionDetailsCategory),
       value: value,
@@ -185,7 +185,7 @@ class _TransactionPageState extends State<TransactionPage> {
   }
 
   Widget buildType(BuildContext context) {
-    return EditableDetailsItem(
+    return DetailsItemTile(
       title: Text(AppLocalizations.of(context).transactionDetailsType),
       value: Text(widget.transaction.getTypeLocalizedText(context)),
       editingBegin: () => _selectedType = widget.transaction.type,
@@ -221,7 +221,7 @@ class _TransactionPageState extends State<TransactionPage> {
   }
 
   Widget buildTitle(BuildContext context) {
-    return EditableDetailsItem(
+    return DetailsItemTile(
       title: Text(AppLocalizations.of(context).transactionDetailsTitle),
       value: widget.transaction.title != null
           ? Text(widget.transaction.title)
@@ -245,7 +245,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
   Widget buildAmount(BuildContext context, Wallet wallet) {
     final amount = Money(widget.transaction.amount, wallet.currency);
-    return EditableDetailsItem(
+    return DetailsItemTile(
       title: Text(AppLocalizations.of(context).transactionDetailsAmount),
       value: Text(amount.formatted),
       editingContent: (context) => TextField(
@@ -270,7 +270,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
   Widget buildDate(BuildContext context) {
     final format = DateFormat("d MMMM yyyy");
-    return EditableDetailsItem(
+    return DetailsItemTile(
       title: Text(AppLocalizations.of(context).transactionDetailsDate),
       value: Text(format.format(widget.transaction.date)),
       onEdit: (context) => onSelectedDate(context),

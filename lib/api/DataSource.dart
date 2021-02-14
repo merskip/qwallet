@@ -284,12 +284,14 @@ extension CategoriesDataSource on DataSource {
     Color primaryColor,
     Color backgroundColor,
     IconData icon,
+    bool isExcludedFromDailyBalance,
   }) {
     return wallet.documentReference.collection("categories").add({
       "title": title,
       "primaryColor": primaryColor.toHex(),
       "backgroundColor": backgroundColor.toHex(),
       "icon": serializeIcon(icon),
+      "isExcludedFromDailyBalance": isExcludedFromDailyBalance,
     });
   }
 
@@ -299,12 +301,14 @@ extension CategoriesDataSource on DataSource {
     Color primaryColor,
     Color backgroundColor,
     IconData icon,
+    bool isExcludedFromDailyBalance,
   }) {
     return category.documentReference.update({
       "title": title,
       "primaryColor": primaryColor.toHex(),
       "backgroundColor": backgroundColor.toHex(),
       "icon": serializeIcon(icon),
+      "isExcludedFromDailyBalance": isExcludedFromDailyBalance,
     });
   }
 
