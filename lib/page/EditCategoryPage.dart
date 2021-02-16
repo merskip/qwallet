@@ -16,9 +16,9 @@ class EditCategoryPage extends StatelessWidget {
   onSelectedRemove(BuildContext context, Category category) {
     ConfirmationDialog(
       title: Text(AppLocalizations.of(context)
-          .categoryRemoveConfirmation(category.title)),
+          .categoryRemoveConfirmation(category.titleText)),
       content: Text(AppLocalizations.of(context)
-          .categoryRemoveConfirmationContent(category.title)),
+          .categoryRemoveConfirmationContent(category.titleText)),
       isDestructive: true,
       onConfirm: () {
         DataSource.instance.removeCategory(category: categoryRef);

@@ -28,9 +28,10 @@ class TransactionListTile extends StatelessWidget {
     final amountText = Money(transaction.amount, wallet.currency).formatted;
 
     final String title = transaction.title ??
-        category?.title ??
+        category?.titleText ??
         transaction.getTypeLocalizedText(context);
-    final String subTitle = transaction.title != null ? category?.title : null;
+    final String subTitle =
+        transaction.title != null ? category?.titleText : null;
 
     return ListTile(
       key: Key(transaction.id),

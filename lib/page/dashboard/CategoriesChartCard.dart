@@ -194,7 +194,7 @@ class _CategoriesChartWithLegendState
         style: Theme.of(context).textTheme.headline6,
       ),
       Text(
-        item.category?.title ??
+        item.category?.titleText ??
             AppLocalizations.of(context).categoriesChartCardNoCategory,
         style: Theme.of(context).textTheme.caption,
       ),
@@ -221,7 +221,7 @@ class _CategoriesChartWithLegendState
                 ),
               ),
               SizedBox(width: 3),
-              Text(item.category?.title ??
+              Text(item.category?.titleText ??
                   AppLocalizations.of(context).categoriesChartCardNoCategory),
             ]);
           })

@@ -131,7 +131,7 @@ class _TransactionPageState extends State<TransactionPage> {
           return buildCategoryDetailsItem(
             context,
             leading: CategoryIcon(category, size: 20),
-            value: Text(category.title),
+            value: Text(category.titleText),
             category: category,
           );
         },

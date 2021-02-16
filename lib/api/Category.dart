@@ -11,6 +11,11 @@ class Category extends Model<Category> {
   final Color backgroundColor;
   final bool isExcludedFromDailyBalance;
 
+  String get titleText => title.replaceAllMapped(
+        RegExp(r" ([a-z]) "),
+        (match) => " ${match.group(1)}\u{00a0}",
+      );
+
   Category(DocumentSnapshot snapshot)
       : title = snapshot.getString("title"),
         icon = snapshot.getIconData("icon"),

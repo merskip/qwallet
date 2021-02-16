@@ -115,14 +115,13 @@ class CategoryPicker extends StatelessWidget {
         SizedBox(
           width: 64,
           child: Text(
-            category.title,
+            category.titleText,
             style: Theme.of(context).textTheme.caption.copyWith(
                   color: isSelected ? category.primaryColor : null,
                   fontWeight: isSelected ? FontWeight.bold : null,
                 ),
             textAlign: TextAlign.center,
             maxLines: 2,
-            overflow: TextOverflow.fade,
           ),
         ),
       ],

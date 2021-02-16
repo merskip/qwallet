@@ -103,7 +103,7 @@ class _WalletCategoriesPageContent extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              category.title,
+              category.titleText,
               style: Theme.of(context).textTheme.bodyText1,
               textAlign: TextAlign.center,
               maxLines: 2,
