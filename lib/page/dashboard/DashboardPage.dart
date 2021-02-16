@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/dialog/EnterMoneyDialog.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
@@ -28,6 +29,17 @@ class _DashboardPageState extends State<DashboardPage> {
     setState(() {
       _selectedWallet.add(wallet);
     });
+  }
+
+  void onSelectedEditBalance(BuildContext context, Wallet wallet) {
+    showDialog(
+      context: context,
+      builder: (context) => EnterMoneyDialog(currency: wallet.currency),
+    );
+  }
+
+  void onSelectedEditWallet(BuildContext context, Wallet wallet) {
+    router.navigateTo(context, "/settings/wallets/${_selectedWallet.value.id}");
   }
 
   void onSelectedAddTransaction(BuildContext context) {
@@ -156,6 +168,11 @@ class _DashboardPageState extends State<DashboardPage> {
     if (!_selectedWallet.hasValue) return [];
 
     return <Widget>[
+      IconButton(
+        icon: Icon(Icons.edit_outlined),
+        tooltip: "#Edit balance",
+        onPressed: () => onSelectedEditBalance(context, _selectedWallet.value),
+      ),
       PopupMenuButton(
         itemBuilder: (context) => [
           PopupMenuItem(
@@ -166,8 +183,7 @@ class _DashboardPageState extends State<DashboardPage> {
         onSelected: (id) {
           switch (id) {
             case "edit-wallet":
-              router.navigateTo(
-                  context, "/settings/wallets/${_selectedWallet.value.id}");
+              onSelectedEditWallet(context, _selectedWallet.value);
               break;
           }
         },

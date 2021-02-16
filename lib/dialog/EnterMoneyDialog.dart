@@ -44,7 +44,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   }
 
   String _getInitialExpression() {
-    final initialAmount = widget.initialMoney.amount ?? 0.0;
+    final initialAmount = widget.initialMoney?.amount ?? 0.0;
     if (initialAmount != 0.0) {
       final amount = initialAmount.toString();
       if (amount.endsWith(".0"))
