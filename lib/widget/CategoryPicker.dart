@@ -1,7 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
-
-import '../AppLocalizations.dart';
 
 class CategoryPicker extends StatelessWidget {
   final List<Category> categories;
@@ -44,9 +43,7 @@ class CategoryPicker extends StatelessWidget {
         children: [
           buildTitle(context),
           SizedBox(height: 8),
-          buildCategories(context),
-          SizedBox(height: 12),
-          buildSelectedCategoryHint(context),
+          buildCategories(context)
         ],
       ),
     );
@@ -66,24 +63,21 @@ class CategoryPicker extends StatelessWidget {
   }
 
   Widget buildCategories(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: GestureDetector(
-        child: Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: [
-            ...categories.map((category) => buildCategoryButton(
-                context, category, this.selectedCategory == category)),
-          ],
-        ),
-        onHorizontalDragEnd: (details) {
-          final dx = details.velocity.pixelsPerSecond.dx;
-          if (dx < 0)
-            onSwipeLeft();
-          else if (dx > 0) onSwipeRight();
-        },
+    return GestureDetector(
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 12,
+        children: [
+          ...categories.map((category) => buildCategoryButton(
+              context, category, this.selectedCategory == category)),
+        ],
       ),
+      onHorizontalDragEnd: (details) {
+        final dx = details.velocity.pixelsPerSecond.dx;
+        if (dx < 0)
+          onSwipeLeft();
+        else if (dx > 0) onSwipeRight();
+      },
     );
   }
 
@@ -92,43 +86,46 @@ class CategoryPicker extends StatelessWidget {
     Category category,
     bool isSelected,
   ) {
-    return Tooltip(
-      message: category.title,
-      verticalOffset: 36,
-      child: RawMaterialButton(
-        elevation: isSelected ? 8 : 4,
-        constraints: BoxConstraints(),
-        shape: CircleBorder(
-          side: isSelected
-              ? BorderSide(
-                  color: category.primaryColor,
-                  width: 3,
-                )
-              : BorderSide.none,
+    return Column(
+      children: [
+        RawMaterialButton(
+          elevation: isSelected ? 8 : 4,
+          constraints: BoxConstraints(),
+          shape: CircleBorder(
+            side: isSelected
+                ? BorderSide(
+                    color: category.primaryColor,
+                    width: 3,
+                  )
+                : BorderSide.none,
+          ),
+          fillColor: category.backgroundColor,
+          child: SizedBox(
+            width: 56,
+            height: 56,
+            child: Icon(
+              category.icon,
+              color: category.primaryColor.withOpacity(isSelected ? 1.0 : 0.5),
+              size: 28,
+            ),
+          ),
+          onPressed: () => onChangeCategory(category),
         ),
-        fillColor: category.backgroundColor,
-        child: SizedBox(
-          width: 56,
-          height: 56,
-          child: Icon(
-            category.icon,
-            color: category.primaryColor.withOpacity(isSelected ? 1.0 : 0.5),
-            size: 28,
+        SizedBox(height: 4),
+        SizedBox(
+          width: 64,
+          child: Text(
+            category.title,
+            style: Theme.of(context).textTheme.caption.copyWith(
+                  color: isSelected ? category.primaryColor : null,
+                  fontWeight: isSelected ? FontWeight.bold : null,
+                ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.fade,
           ),
         ),
-        onPressed: () => onChangeCategory(category),
-      ),
-    );
-  }
-
-  Widget buildSelectedCategoryHint(BuildContext context) {
-    final color = selectedCategory == null
-        ? Theme.of(context).textTheme.caption.color
-        : null;
-    return Text(
-      selectedCategory?.title ??
-          AppLocalizations.of(context).categoryNoSelected,
-      style: Theme.of(context).textTheme.subtitle2.copyWith(color: color),
+      ],
     );
   }
 }
