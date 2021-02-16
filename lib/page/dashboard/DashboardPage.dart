@@ -153,14 +153,25 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   List<Widget> buildAppBarActions(BuildContext context) {
+    if (!_selectedWallet.hasValue) return [];
+
     return <Widget>[
-      if (_selectedWallet.hasValue)
-        IconButton(
-          icon: Icon(Icons.edit),
-          tooltip: AppLocalizations.of(context).dashboardEditWallet,
-          onPressed: () => router.navigateTo(
-              context, "/settings/wallets/${_selectedWallet.value.id}"),
-        ),
+      PopupMenuButton(
+        itemBuilder: (context) => [
+          PopupMenuItem(
+            child: Text(AppLocalizations.of(context).dashboardEditWallet),
+            value: "edit-wallet",
+          ),
+        ],
+        onSelected: (id) {
+          switch (id) {
+            case "edit-wallet":
+              router.navigateTo(
+                  context, "/settings/wallets/${_selectedWallet.value.id}");
+              break;
+          }
+        },
+      )
     ];
   }
 
