@@ -6,7 +6,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/CatgegoryIcon.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
@@ -29,15 +29,13 @@ class TransactionPage extends StatefulWidget {
 
 class _TransactionPageState extends State<TransactionPage> {
   final TextEditingController titleController;
-  final TextEditingController amountController;
+  final amountController = AmountEditingController();
 
   Category _selectedCategory;
   TransactionType _selectedType;
 
   _TransactionPageState(Transaction transaction)
       : titleController = TextEditingController(text: transaction.title),
-        amountController =
-            TextEditingController(text: transaction.amount.toStringAsFixed(2)),
         super();
 
   @override
@@ -248,20 +246,20 @@ class _TransactionPageState extends State<TransactionPage> {
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).transactionDetailsAmount),
       value: Text(amount.formatted),
-      editingContent: (context) => TextField(
+      editingContent: (context) => AmountFormField(
+        initialMoney: amount,
         controller: amountController,
         decoration: InputDecoration(
           labelText: AppLocalizations.of(context).transactionDetailsAmount,
         ),
-        autofocus: true,
       ),
       editingSave: () {
-        final amount = parseAmount(amountController.text);
+        final amount = amountController.value;
         if (amount != null) {
           return DataSource.instance.updateTransaction(
             widget.walletRef,
             widget.transaction,
-            amount: parseAmount(amountController.text),
+            amount: amount.amount,
           );
         }
       },
