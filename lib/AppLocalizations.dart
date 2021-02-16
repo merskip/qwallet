@@ -116,6 +116,11 @@ extension DashbaordLocalizations on AppLocalizations {
         pl: "QWallet",
       );
 
+  String get dashboardEditBalance => _locale(
+        en: "Edit balance",
+        pl: "Edytuj balans",
+      );
+
   String get dashboardEditWallet => _locale(
         en: "Edit wallet",
         pl: "Edytuj portfel",

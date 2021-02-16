@@ -50,11 +50,17 @@ class AmountFormFieldState extends FormFieldState<Money> {
 
   TextEditingController controller;
   FocusNode _focusNode;
+
   FocusNode get effectiveFocusNode => widget.focusNode ?? _focusNode;
 
   @override
   void initState() {
+    super.initState();
     controller = TextEditingController();
+    if (value != null) {
+      controller.text = value.formattedOnlyAmount;
+      widget.controller.value = value;
+    }
     controller.addListener(() {
       widget.controller.value = _getEnteredMoney();
     });
@@ -72,7 +78,6 @@ class AmountFormFieldState extends FormFieldState<Money> {
         widget.controller.value = amount;
       }),
     );
-    super.initState();
   }
 
   @override

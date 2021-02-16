@@ -11,6 +11,7 @@ import 'package:qwallet/widget/empty_state_widget.dart';
 import 'package:qwallet/widget/vector_image.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../Money.dart';
 import '../../router.dart';
 import '../../widget_utils.dart';
 import 'CategoriesChartCard.dart';
@@ -31,11 +32,16 @@ class _DashboardPageState extends State<DashboardPage> {
     });
   }
 
-  void onSelectedEditBalance(BuildContext context, Wallet wallet) {
-    showDialog(
+  void onSelectedEditBalance(BuildContext context, Wallet wallet) async {
+    final newBalance = await showDialog(
       context: context,
       builder: (context) => EnterMoneyDialog(currency: wallet.currency),
-    );
+    ) as Money;
+    if (newBalance != null) {
+      final initialAmount = newBalance.amount - wallet.balance.amount;
+      router.navigateTo(
+          context, "/wallet/${wallet.id}/addTransaction/amount/$initialAmount");
+    }
   }
 
   void onSelectedEditWallet(BuildContext context, Wallet wallet) {
@@ -170,7 +176,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return <Widget>[
       IconButton(
         icon: Icon(Icons.edit_outlined),
-        tooltip: "#Edit balance",
+        tooltip: AppLocalizations.of(context).dashboardEditBalance,
         onPressed: () => onSelectedEditBalance(context, _selectedWallet.value),
       ),
       PopupMenuButton(
