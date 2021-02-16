@@ -19,24 +19,35 @@ import '../AppLocalizations.dart';
 
 class AddTransactionPage extends StatelessWidget {
   final Reference<Wallet> initialWalletRef;
+  final double initialAmount;
 
-  const AddTransactionPage({Key key, this.initialWalletRef}) : super(key: key);
+  const AddTransactionPage({
+    Key key,
+    this.initialWalletRef,
+    this.initialAmount,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getWallet(initialWalletRef),
-      builder: (context, wallet) =>
-          _AddTransactionPageContent(initialWallet: wallet),
+      builder: (context, wallet) => _AddTransactionPageContent(
+        initialWallet: wallet,
+        initialAmount: initialAmount,
+      ),
     );
   }
 }
 
 class _AddTransactionPageContent extends StatelessWidget {
   final Wallet initialWallet;
+  final double initialAmount;
 
-  const _AddTransactionPageContent({Key key, this.initialWallet})
-      : super(key: key);
+  const _AddTransactionPageContent({
+    Key key,
+    this.initialWallet,
+    this.initialAmount,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +58,13 @@ class _AddTransactionPageContent extends StatelessWidget {
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16),
-          child: _AddTransactionForm(initialWallet: initialWallet),
+          child: _AddTransactionForm(
+            initialWallet: initialWallet,
+            initialAmount: initialAmount,
+            initialTransactionType: (initialAmount ?? 0) <= 0
+                ? TransactionType.expense
+                : TransactionType.income,
+          ),
         ),
       ),
     );
@@ -56,12 +73,21 @@ class _AddTransactionPageContent extends StatelessWidget {
 
 class _AddTransactionForm extends StatefulWidget {
   final Wallet initialWallet;
+  final double initialAmount;
+  final TransactionType initialTransactionType;
 
-  const _AddTransactionForm({Key key, this.initialWallet}) : super(key: key);
+  const _AddTransactionForm({
+    Key key,
+    this.initialWallet,
+    this.initialAmount,
+    this.initialTransactionType,
+  }) : super(key: key);
 
   @override
-  _AddTransactionFormState createState() =>
-      _AddTransactionFormState(initialWallet);
+  _AddTransactionFormState createState() => _AddTransactionFormState(
+        initialWallet,
+        initialTransactionType ?? TransactionType.expense,
+      );
 }
 
 class _AddTransactionFormState extends State<_AddTransactionForm> {
@@ -69,7 +95,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   Wallet wallet;
 
-  TransactionType type = TransactionType.expense;
+  TransactionType type;
 
   final amountController = AmountEditingController();
 
@@ -84,11 +110,10 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   bool isSubmitting = false;
 
-  _AddTransactionFormState(this.wallet);
+  _AddTransactionFormState(this.wallet, this.type);
 
   @override
   void initState() {
-    _configureAmount();
     _configureDate();
     super.initState();
   }
@@ -101,10 +126,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     dateFocus.dispose();
     dateController.dispose();
     super.dispose();
-  }
-
-  _configureAmount() {
-    amountController.addListener(() => setState(() {}));
   }
 
   _configureDate() {
@@ -237,7 +258,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   Widget buildAmount(BuildContext context) {
     return AmountFormField(
-      initialMoney: Money(null, widget.initialWallet.currency),
+      initialMoney: Money(widget.initialAmount, widget.initialWallet.currency),
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).addTransactionAmount,
         helperText: getBalanceAfterTransactionText(),
@@ -255,7 +276,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   String getBalanceAfterTransactionText() {
-    final amount = amountController.value?.amount ?? 0.0;
+    final amount =
+        amountController.value?.amount ?? widget.initialAmount ?? 0.0;
     final balanceAfter = type == TransactionType.expense
         ? wallet.balance.amount - amount
         : wallet.balance.amount + amount;

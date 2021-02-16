@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/dialog/EnterMoneyDialog.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
@@ -10,6 +11,7 @@ import 'package:qwallet/widget/empty_state_widget.dart';
 import 'package:qwallet/widget/vector_image.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../Money.dart';
 import '../../router.dart';
 import '../../widget_utils.dart';
 import 'CategoriesChartCard.dart';
@@ -28,6 +30,22 @@ class _DashboardPageState extends State<DashboardPage> {
     setState(() {
       _selectedWallet.add(wallet);
     });
+  }
+
+  void onSelectedEditBalance(BuildContext context, Wallet wallet) async {
+    final newBalance = await showDialog(
+      context: context,
+      builder: (context) => EnterMoneyDialog(currency: wallet.currency),
+    ) as Money;
+    if (newBalance != null) {
+      final initialAmount = newBalance.amount - wallet.balance.amount;
+      router.navigateTo(
+          context, "/wallet/${wallet.id}/addTransaction/amount/$initialAmount");
+    }
+  }
+
+  void onSelectedEditWallet(BuildContext context, Wallet wallet) {
+    router.navigateTo(context, "/settings/wallets/${_selectedWallet.value.id}");
   }
 
   void onSelectedAddTransaction(BuildContext context) {
@@ -153,14 +171,29 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   List<Widget> buildAppBarActions(BuildContext context) {
+    if (!_selectedWallet.hasValue) return [];
+
     return <Widget>[
-      if (_selectedWallet.hasValue)
-        IconButton(
-          icon: Icon(Icons.edit),
-          tooltip: AppLocalizations.of(context).dashboardEditWallet,
-          onPressed: () => router.navigateTo(
-              context, "/settings/wallets/${_selectedWallet.value.id}"),
-        ),
+      IconButton(
+        icon: Icon(Icons.edit_outlined),
+        tooltip: AppLocalizations.of(context).dashboardEditBalance,
+        onPressed: () => onSelectedEditBalance(context, _selectedWallet.value),
+      ),
+      PopupMenuButton(
+        itemBuilder: (context) => [
+          PopupMenuItem(
+            child: Text(AppLocalizations.of(context).dashboardEditWallet),
+            value: "edit-wallet",
+          ),
+        ],
+        onSelected: (id) {
+          switch (id) {
+            case "edit-wallet":
+              onSelectedEditWallet(context, _selectedWallet.value);
+              break;
+          }
+        },
+      )
     ];
   }
 

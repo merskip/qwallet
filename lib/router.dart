@@ -71,6 +71,20 @@ void initRoutes(fluro.Router router) {
   );
 
   router.define(
+    "/wallet/:walletId/addTransaction/amount/:amount",
+    transitionType: fluro.TransitionType.nativeModal,
+    handler: fluro.Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      final walletId = params["walletId"][0];
+      final initialAmount = double.tryParse(params["amount"][0]);
+      return AddTransactionPage(
+        initialWalletRef: DataSource.instance.getWalletReference(walletId),
+        initialAmount: initialAmount,
+      );
+    }),
+  );
+
+  router.define(
     "/wallet/:walletId/addTransaction",
     transitionType: fluro.TransitionType.nativeModal,
     handler: fluro.Handler(

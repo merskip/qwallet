@@ -44,7 +44,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   }
 
   String _getInitialExpression() {
-    final initialAmount = widget.initialMoney.amount ?? 0.0;
+    final initialAmount = widget.initialMoney?.amount ?? 0.0;
     if (initialAmount != 0.0) {
       final amount = initialAmount.toString();
       if (amount.endsWith(".0"))
@@ -95,25 +95,28 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   void refreshDisplay(BuildContext context) {
     final result = calculateExpression();
 
+    final displayText = _getDisplayText(result);
+    final expressionText = displayText[0];
+    final resultText = displayText[1];
     setState(() {
-      displayController.text = _getDisplayText(result);
+      displayController.text = expressionText + "\n" + resultText;
+      displayController.selection =
+          TextSelection.collapsed(offset: expressionText.length);
     });
   }
 
-  String _getDisplayText(Money result) {
+  List<String> _getDisplayText(Money result) {
     final displayExpression = this
         .expression
         .replaceAllMapped(RegExp("([^0-9\.])"),
             (m) => " " + _operatorToText(context, m.group(1)) + " ")
         .replaceAll("  ", " ");
 
-    var displayText = "$displayExpression\n";
     if (result != null) {
-      displayText += "= ${result.formatted}";
+      return [displayExpression, "= ${result.formatted}"];
     } else {
-      displayText += "= …";
+      return [displayExpression, "= …"];
     }
-    return displayText;
   }
 
   Money calculateExpression() {
