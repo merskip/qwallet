@@ -3,9 +3,7 @@ import 'package:qwallet/CurrencyList.dart';
 import 'package:qwallet/MoneyTextDetector.dart';
 
 void main() {
-  final detector = MonetTextDetector([
-    CurrencyList.PLN,
-  ]);
+  final detector = MoneyTextDetector(CurrencyList.all);
 
   test("Detect from incoming domestic transfer", () {
     final result = detector.detect(

@@ -2,14 +2,19 @@ import 'package:qwallet/Currency.dart';
 
 import 'Money.dart';
 
-class MonetTextDetector {
+class MoneyTextDetector {
   final List<Currency> currencies;
 
-  MonetTextDetector(this.currencies);
+  MoneyTextDetector(this.currencies);
 
   List<Money> detect(String text) {
+    if (text == null) return [];
     final results = List<Money>();
     for (final currency in currencies) {
+      if (currency.groupSeparator == null ||
+          currency.decimalSeparator == null ||
+          currency.code == null) continue; // NOTE: Temporary solution
+
       final groupSeparator = RegExp.escape(currency.groupSeparator);
       final decimalSeparator = RegExp.escape(currency.decimalSeparator);
       final currencyCode = RegExp.escape(currency.code);

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.service.notification.NotificationListenerService
-import android.service.notification.StatusBarNotification
 
 class PushNotificationsService : NotificationListenerService() {
 
@@ -39,10 +38,6 @@ class PushNotificationsService : NotificationListenerService() {
                     text = extras.getString("android.text"),
             )
         }
-    }
-
-    override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        super.onNotificationPosted(sbn)
     }
 
     data class PushNotification(
