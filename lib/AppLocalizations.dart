@@ -140,6 +140,16 @@ extension DashbaordLocalizations on AppLocalizations {
         en: "Add expense or income",
         pl: "Dodaj wydatek lub przychód",
       );
+
+  String get dashboardDetectedTransactions => _locale(
+        en: "Detected transactions",
+        pl: "Wykryte transakcje",
+      );
+
+  String get dashboardDetectedTransactionsClose => _locale(
+        en: "Close",
+        pl: "Zamknij",
+      );
 }
 
 extension SettingsLocalizations on AppLocalizations {

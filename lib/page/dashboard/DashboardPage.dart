@@ -1,6 +1,12 @@
+import 'dart:typed_data';
+
+import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as Could;
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:qwallet/AppLocalizations.dart';
+import 'package:qwallet/CurrencyList.dart';
+import 'package:qwallet/MoneyTextDetector.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/dialog/EnterMoneyDialog.dart';
@@ -12,6 +18,7 @@ import 'package:qwallet/widget/vector_image.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../Money.dart';
+import '../../PushNotificationService.dart';
 import '../../router.dart';
 import '../../widget_utils.dart';
 import 'CategoriesChartCard.dart';
@@ -42,6 +49,68 @@ class _DashboardPageState extends State<DashboardPage> {
       router.navigateTo(
           context, "/wallet/${wallet.id}/addTransaction/amount/$initialAmount");
     }
+  }
+
+  void onSelectedPushNotifications(
+    BuildContext context,
+    List<PushNotificationWithMoney> detectedMoneys,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context).dashboardDetectedTransactions),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          ...detectedMoneys.map((notification) => ListTile(
+                leading: notification.largeIcon != null
+                    ? Image.memory(
+                        notification.largeIcon,
+                        width: 36,
+                        height: 36,
+                      )
+                    : null,
+                title: Text(
+                  notification.money.formatted,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: RichText(
+                  text: TextSpan(
+                      style: Theme.of(context).textTheme.caption,
+                      children: [
+                        TextSpan(
+                            text: notification.title,
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(text: "\n"),
+                        TextSpan(text: notification.text),
+                      ]),
+                ),
+                trailing: Icon(Icons.chevron_right),
+                onTap: () =>
+                    onSelectedPushNotificationWithMoney(context, notification),
+              )),
+        ]),
+        actions: [
+          TextButton(
+            child: Text(AppLocalizations.of(context)
+                .dashboardDetectedTransactionsClose),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void onSelectedPushNotificationWithMoney(
+    BuildContext context,
+    PushNotificationWithMoney notification,
+  ) async {
+    final wallet = _selectedWallet.value;
+    final amount =
+        notification.money.amount * -1; // NOTE: By default is expense
+    router.pop(context);
+    router.navigateTo(
+        context, "/wallet/${wallet.id}/addTransaction/amount/$amount");
   }
 
   void onSelectedEditWallet(BuildContext context, Wallet wallet) {
@@ -174,6 +243,7 @@ class _DashboardPageState extends State<DashboardPage> {
     if (!_selectedWallet.hasValue) return [];
 
     return <Widget>[
+      buildPushNotificationsButton(context),
       IconButton(
         icon: Icon(Icons.edit_outlined),
         tooltip: AppLocalizations.of(context).dashboardEditBalance,
@@ -214,4 +284,59 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
+
+  Widget buildPushNotificationsButton(BuildContext context) {
+    return FutureBuilder(
+      future: PushNotificationService().getActivePushNotifications(),
+      builder: (context, AsyncSnapshot<List<PushNotification>> snapshot) {
+        if (snapshot.hasData) {
+          final notifications = snapshot.data;
+          final detectedMoneys = detectMoneysFromNotifications(
+              MoneyTextDetector(CurrencyList.all), notifications);
+
+          if (detectedMoneys.isNotEmpty) {
+            return Badge(
+              badgeColor: Colors.red,
+              badgeContent: Text(
+                detectedMoneys.length.toString(),
+                style: TextStyle(color: Colors.white),
+              ),
+              position: BadgePosition.topEnd(top: 4, end: 4),
+              child: IconButton(
+                icon: Icon(Icons.notifications_active),
+                onPressed: () =>
+                    onSelectedPushNotifications(context, detectedMoneys),
+              ),
+            );
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  List<PushNotificationWithMoney> detectMoneysFromNotifications(
+    MoneyTextDetector detector,
+    List<PushNotification> notifications,
+  ) {
+    return notifications
+        .map((n) => detector.detect(n.text).map((money) =>
+            (PushNotificationWithMoney(
+                n.id, n.title, n.text, n.smallIcon, n.largeIcon, money))))
+        .expand((e) => e)
+        .toList();
+  }
+}
+
+class PushNotificationWithMoney extends PushNotification {
+  final Money money;
+
+  PushNotificationWithMoney(
+    String id,
+    String title,
+    String text,
+    Uint8List smallIcon,
+    Uint8List largeIcon,
+    this.money,
+  ) : super(id, title, text, smallIcon, largeIcon);
 }

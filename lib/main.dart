@@ -16,7 +16,7 @@ void main() async {
 
   await Firebase.initializeApp();
 
-  if (kDebugMode) {
+  if (kDebugMode && false) {
     // Connection to Firebase Local Emulator
     FirebaseFirestore.instance.settings = Settings(
       host: Platform.isAndroid ? '10.0.2.2:8080' : 'localhost:8080',
