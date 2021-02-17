@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart' as Could;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -58,13 +60,27 @@ class _DashboardPageState extends State<DashboardPage> {
         title: Text("#Detected transactions"),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           ...detectedMoneys.map((notification) => ListTile(
+                leading: notification.largeIcon != null
+                    ? Image.memory(
+                        notification.largeIcon,
+                        width: 36,
+                        height: 36,
+                      )
+                    : null,
                 title: Text(
                   notification.money.formatted,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                subtitle: Text(
-                  "#From: ${notification.title}\n${notification.text}",
-                  style: Theme.of(context).textTheme.caption,
+                subtitle: RichText(
+                  text: TextSpan(
+                      style: Theme.of(context).textTheme.caption,
+                      children: [
+                        TextSpan(
+                            text: notification.title,
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(text: "\n"),
+                        TextSpan(text: notification.text),
+                      ]),
                 ),
                 trailing: Icon(Icons.chevron_right),
                 onTap: () =>
@@ -294,11 +310,9 @@ class _DashboardPageState extends State<DashboardPage> {
     List<PushNotification> notifications,
   ) {
     return notifications
-        .map((notification) {
-          return detector.detect(notification.text).map((money) =>
-              (PushNotificationWithMoney(notification.id, notification.title,
-                  notification.text, money)));
-        })
+        .map((n) => detector.detect(n.text).map((money) =>
+            (PushNotificationWithMoney(
+                n.id, n.title, n.text, n.smallIcon, n.largeIcon, money))))
         .expand((e) => e)
         .toList();
   }
@@ -311,6 +325,8 @@ class PushNotificationWithMoney extends PushNotification {
     String id,
     String title,
     String text,
+    Uint8List smallIcon,
+    Uint8List largeIcon,
     this.money,
-  ) : super(id, title, text);
+  ) : super(id, title, text, smallIcon, largeIcon);
 }

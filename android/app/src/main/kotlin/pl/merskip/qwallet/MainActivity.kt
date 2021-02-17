@@ -11,6 +11,8 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import pl.merskip.QWallet.PushNotificationsService
+import java.lang.Error
+import java.lang.Exception
 
 class MainActivity: FlutterActivity() {
 
@@ -58,15 +60,21 @@ class MainActivity: FlutterActivity() {
     }
 
     private fun handleGetActiveNotifications(call: MethodCall, result: MethodChannel.Result) {
-        val notifications = pushNotificationsService.getActivePushNotifications()
-        result.success(mapOf(
-                "notifications" to notifications.map {
-                    mapOf(
-                            "id" to it.id,
-                            "title" to it.title,
-                            "text" to it.text
-                    )
-                }
-        ))
+        try {
+            val notifications = pushNotificationsService.getActivePushNotifications()
+            result.success(mapOf(
+                    "notifications" to notifications.map {
+                        mapOf(
+                                "id" to it.id,
+                                "title" to it.title,
+                                "text" to it.text,
+                                "smallIcon" to it.smallIcon,
+                                "largeIcon" to it.largeIcon
+                        )
+                    }
+            ))
+        } catch (e: Exception) {
+            result.error("FAILED", "Failed get active push notification", e)
+        }
     }
 }
