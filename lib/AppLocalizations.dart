@@ -126,6 +126,11 @@ extension DashbaordLocalizations on AppLocalizations {
         pl: "Edytuj portfel",
       );
 
+  String get dashboardReport => _locale(
+        en: "Report",
+        pl: "Raport",
+      );
+
   String get dashboardWalletsEmpty => _locale(
         en: "There are no wallets in your account",
         pl: "Na twoim koncie nie ma żadnych portfeli",
@@ -1072,5 +1077,27 @@ extension DailySpendingLocalizations on AppLocalizations {
   String get dailySpendingAvailableTodayBudget => _locale(
         en: "Budget available for today",
         pl: "Dostępny budżet na dziś",
+      );
+}
+
+extension ReportLocalizations on AppLocalizations {
+  String get reportTitle => _locale(
+        en: "Report",
+        pl: "Raport",
+      );
+
+  String get reportCategory => _locale(
+        en: "Cateogry",
+        pl: "Kateoria",
+      );
+
+  String get reportAmount => _locale(
+        en: "Amount",
+        pl: "Kwota",
+      );
+
+  String get reportNoCategory => _locale(
+        en: "Without category",
+        pl: "Bez categorii",
       );
 }

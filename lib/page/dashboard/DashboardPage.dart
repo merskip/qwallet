@@ -117,6 +117,10 @@ class _DashboardPageState extends State<DashboardPage> {
     router.navigateTo(context, "/settings/wallets/${_selectedWallet.value.id}");
   }
 
+  void onSelectedReport(BuildContext context, Wallet wallet) {
+    router.navigateTo(context, "/wallet/${_selectedWallet.value.id}/report");
+  }
+
   void onSelectedAddTransaction(BuildContext context) {
     final wallet = _selectedWallet.value;
     router.navigateTo(context, "/wallet/${wallet.id}/addTransaction");
@@ -255,12 +259,18 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Text(AppLocalizations.of(context).dashboardEditWallet),
             value: "edit-wallet",
           ),
+          PopupMenuItem(
+            child: Text(AppLocalizations.of(context).dashboardReport),
+            value: "report",
+          ),
         ],
         onSelected: (id) {
           switch (id) {
             case "edit-wallet":
               onSelectedEditWallet(context, _selectedWallet.value);
               break;
+            case "report":
+              onSelectedReport(context, _selectedWallet.value);
           }
         },
       )

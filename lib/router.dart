@@ -17,6 +17,7 @@ import 'page/AddCategoryPage.dart';
 import 'page/AddWalletPage.dart';
 import 'page/CategoriesPage.dart';
 import 'page/EditCategoryPage.dart';
+import 'page/ReportPage.dart';
 import 'page/SettingsPage.dart';
 import 'page/TransactionsListPage.dart';
 import 'page/landing_page.dart';
@@ -170,6 +171,18 @@ void initRoutes(fluro.Router router) {
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
       final walletId = params["walletId"][0];
       return TransactionsListPage(
+        walletRef: DataSource.instance.getWalletReference(walletId),
+      );
+    }),
+  );
+
+  router.define(
+    "/wallet/:walletId/report",
+    transitionType: fluro.TransitionType.nativeModal,
+    handler: fluro.Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      final walletId = params["walletId"][0];
+      return ReportPage(
         walletRef: DataSource.instance.getWalletReference(walletId),
       );
     }),
