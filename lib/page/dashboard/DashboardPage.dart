@@ -12,6 +12,7 @@ import 'package:qwallet/widget/vector_image.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../Money.dart';
+import '../../PushNotificationService.dart';
 import '../../router.dart';
 import '../../widget_utils.dart';
 import 'CategoriesChartCard.dart';
@@ -42,6 +43,26 @@ class _DashboardPageState extends State<DashboardPage> {
       router.navigateTo(
           context, "/wallet/${wallet.id}/addTransaction/amount/$initialAmount");
     }
+  }
+
+  void onSelectedPushNotifications(
+    BuildContext context,
+    List<PushNotification> notifications,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text("Notifications"),
+        children: [
+          ...notifications.map((notification) => ListTile(
+                title: Text(notification.title),
+                subtitle:
+                    Text(notification.text + "\n(id=" + notification.id + ")"),
+                isThreeLine: true,
+              ))
+        ],
+      ),
+    );
   }
 
   void onSelectedEditWallet(BuildContext context, Wallet wallet) {
@@ -179,6 +200,7 @@ class _DashboardPageState extends State<DashboardPage> {
         tooltip: AppLocalizations.of(context).dashboardEditBalance,
         onPressed: () => onSelectedEditBalance(context, _selectedWallet.value),
       ),
+      buildPushNotificationsButton(context),
       PopupMenuButton(
         itemBuilder: (context) => [
           PopupMenuItem(
@@ -212,6 +234,28 @@ class _DashboardPageState extends State<DashboardPage> {
         shrinkWrap: true,
         onPressed: () => router.navigateTo(context, "/settings/wallets/add"),
       ),
+    );
+  }
+
+  Widget buildPushNotificationsButton(BuildContext context) {
+    return FutureBuilder(
+      future: PushNotificationService().getActivePushNotifications(),
+      builder: (context, AsyncSnapshot<List<PushNotification>> snapshot) {
+        if (snapshot.hasData) {
+          final notifications = snapshot.data;
+          return IconButton(
+              icon: notifications.isEmpty
+                  ? Icon(Icons.notifications_none_outlined)
+                  : Icon(Icons.notifications_active),
+              onPressed: () =>
+                  onSelectedPushNotifications(context, notifications));
+        } else {
+          return IconButton(
+            icon: Icon(Icons.notifications_outlined),
+            onPressed: null,
+          );
+        }
+      },
     );
   }
 }
