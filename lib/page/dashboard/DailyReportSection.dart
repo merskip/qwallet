@@ -25,7 +25,7 @@ class DailyReportSection extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           Positioned(
-            right: 96,
+            right: 112,
             child: buildDailySpendingText(context, dailySpending),
           ),
           Align(
@@ -80,7 +80,7 @@ class DailyReportSection extends StatelessWidget {
     DailySpending dailySpending,
   ) {
     return SizedBox.fromSize(
-      size: Size.square(128),
+      size: Size.square(144),
       child: SpendingGauge(
         current: dailySpending.currentDailySpending,
         midLow: dailySpending.availableDailySpending * 0.67,
