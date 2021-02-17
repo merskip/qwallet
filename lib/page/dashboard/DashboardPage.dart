@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as Could;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -294,10 +295,18 @@ class _DashboardPageState extends State<DashboardPage> {
               MoneyTextDetector(CurrencyList.all), notifications);
 
           if (detectedMoneys.isNotEmpty) {
-            return IconButton(
-              icon: Icon(Icons.notifications_active),
-              onPressed: () =>
-                  onSelectedPushNotifications(context, detectedMoneys),
+            return Badge(
+              badgeColor: Colors.red,
+              badgeContent: Text(
+                detectedMoneys.length.toString(),
+                style: TextStyle(color: Colors.white),
+              ),
+              position: BadgePosition.topEnd(top: 4, end: 4),
+              child: IconButton(
+                icon: Icon(Icons.notifications_active),
+                onPressed: () =>
+                    onSelectedPushNotifications(context, detectedMoneys),
+              ),
             );
           }
         }
