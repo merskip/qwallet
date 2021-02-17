@@ -57,7 +57,7 @@ class _DashboardPageState extends State<DashboardPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("#Detected transactions"),
+        title: Text(AppLocalizations.of(context).dashboardDetectedTransactions),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           ...detectedMoneys.map((notification) => ListTile(
                 leading: notification.largeIcon != null
@@ -89,7 +89,8 @@ class _DashboardPageState extends State<DashboardPage> {
         ]),
         actions: [
           TextButton(
-            child: Text("#Close"),
+            child: Text(AppLocalizations.of(context)
+                .dashboardDetectedTransactionsClose),
             onPressed: () {
               Navigator.of(context).pop();
             },
