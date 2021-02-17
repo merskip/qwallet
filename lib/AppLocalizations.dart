@@ -769,6 +769,16 @@ extension CategoriesLocalizations on AppLocalizations {
         pl: "Nie ma żadnych kategorii",
       );
 
+  String get categoriesChangeOrder => _locale(
+        en: "Change categories order",
+        pl: "Zmień kolejność kategorii",
+      );
+
+  String get categoriesChangeOrderHint => _locale(
+        en: "Drag and drop to change the order of categories",
+        pl: "Przeciągnij i upuść, aby zmienić kolejność kategorii",
+      );
+
   String get addCategory => _locale(
         en: "Add category",
         pl: "Dodaj kategorię",

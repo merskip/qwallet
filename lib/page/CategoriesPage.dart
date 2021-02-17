@@ -5,6 +5,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/router.dart';
+import 'package:qwallet/widget/CatgegoryIcon.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
 
@@ -25,19 +26,29 @@ class CategoriesPage extends StatelessWidget {
   }
 }
 
-class _WalletCategoriesPageContent extends StatelessWidget {
+class _WalletCategoriesPageContent extends StatefulWidget {
   final Wallet wallet;
 
   const _WalletCategoriesPageContent({Key key, this.wallet}) : super(key: key);
 
+  @override
+  __WalletCategoriesPageContentState createState() =>
+      __WalletCategoriesPageContentState();
+}
+
+class __WalletCategoriesPageContentState
+    extends State<_WalletCategoriesPageContent> {
+  bool isReordering = false;
+  List<Category> sortingCategories;
+
   onSelectedAddCategory(BuildContext context) {
-    router.navigateTo(context, "/wallet/${wallet.id}/categories/add");
+    router.navigateTo(context, "/wallet/${widget.wallet.id}/categories/add");
   }
 
   onSelectedCategory(BuildContext context, Category category) {
     router.navigateTo(
       context,
-      "/wallet/${wallet.id}/category/${category.id}",
+      "/wallet/${widget.wallet.id}/category/${category.id}",
     );
   }
 
@@ -46,23 +57,47 @@ class _WalletCategoriesPageContent extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).categories),
+        actions: [
+          if (!isReordering)
+            IconButton(
+              icon: Icon(Icons.reorder),
+              onPressed: () => setState(() {
+                sortingCategories = null;
+                isReordering = true;
+              }),
+              tooltip: AppLocalizations.of(context).categoriesChangeOrder,
+            )
+          else
+            IconButton(
+              icon: Icon(Icons.done),
+              onPressed: () => setState(() {
+                sortingCategories = null;
+                isReordering = false;
+              }),
+            )
+        ],
       ),
       body: buildCategories(context),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => onSelectedAddCategory(context),
-        tooltip: AppLocalizations.of(context).addCategory,
-      ),
+      floatingActionButton: !isReordering
+          ? FloatingActionButton(
+              child: Icon(Icons.add),
+              onPressed: () => onSelectedAddCategory(context),
+              tooltip: AppLocalizations.of(context).addCategory,
+            )
+          : null,
     );
   }
 
   Widget buildCategories(BuildContext context) {
     return SimpleStreamWidget(
-      stream: DataSource.instance.getCategories(wallet: wallet.reference),
+      stream:
+          DataSource.instance.getCategories(wallet: widget.wallet.reference),
       builder: (context, List<Category> categories) {
-        if (categories.isNotEmpty)
-          return buildCategoriesGrid(context, categories);
-        else
+        if (categories.isNotEmpty) {
+          return !isReordering
+              ? buildCategoriesGrid(context, categories)
+              : buildReorderableCategoriesList(context, categories);
+        } else
           return EmptyStateWidget(
             icon: Icons.category,
             text: AppLocalizations.of(context).categoriesEmpty,
@@ -113,6 +148,42 @@ class _WalletCategoriesPageContent extends StatelessWidget {
         ),
       ),
       onTap: () => onSelectedCategory(context, category),
+    );
+  }
+
+  Widget buildReorderableCategoriesList(
+    BuildContext context,
+    List<Category> categories,
+  ) {
+    if (sortingCategories == null) sortingCategories = categories;
+    return ReorderableListView(
+      padding: const EdgeInsets.all(8),
+      header: Text(
+        AppLocalizations.of(context).categoriesChangeOrderHint,
+        style: Theme.of(context).textTheme.caption,
+      ),
+      children: [
+        ...sortingCategories
+            .map((category) => buildReorderableCategory(context, category))
+      ],
+      onReorder: (oldIndex, newIndex) {
+        final category = sortingCategories.removeAt(oldIndex);
+        setState(() {
+          if (newIndex < sortingCategories.length)
+            sortingCategories.insert(newIndex, category);
+          else
+            sortingCategories.add(category);
+        });
+      },
+    );
+  }
+
+  Widget buildReorderableCategory(BuildContext context, Category category) {
+    return ListTile(
+      key: Key(category.id),
+      leading: CategoryIcon(category, size: 18),
+      title: Text(category.titleText),
+      trailing: Icon(Icons.drag_handle),
     );
   }
 }

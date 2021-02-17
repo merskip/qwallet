@@ -10,6 +10,7 @@ class Category extends Model<Category> {
   final Color primaryColor;
   final Color backgroundColor;
   final bool isExcludedFromDailyBalance;
+  final int order;
 
   String get titleText => title.replaceAllMapped(
         RegExp(r" ([a-z]) "),
@@ -23,5 +24,6 @@ class Category extends Model<Category> {
         backgroundColor = snapshot.getColorHex("backgroundColor"),
         isExcludedFromDailyBalance =
             snapshot.getBool("isExcludedFromDailyBalance") ?? false,
+        order = snapshot.getInt("order") ?? 0,
         super(snapshot);
 }
