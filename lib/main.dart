@@ -12,30 +12,32 @@ import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/router.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp();
-
-  if (kDebugMode && false) {
-    // Connection to Firebase Local Emulator
-    FirebaseFirestore.instance.settings = Settings(
-      host: Platform.isAndroid ? '10.0.2.2:8080' : 'localhost:8080',
-      sslEnabled: false,
-      persistenceEnabled: true,
-    );
-  } else {
-    FirebaseFirestore.instance.settings = Settings(
-      persistenceEnabled: true,
-    );
-  }
-
-  FlutterError.onError = (details) {
-    FlutterError.dumpErrorToConsole(details);
-    Crashlytics.instance.recordFlutterError(details);
-  };
-
   runZonedGuarded(
-    () => runApp(MyApp()),
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+
+      await Firebase.initializeApp();
+
+      if (kDebugMode && false) {
+        // Connection to Firebase Local Emulator
+        FirebaseFirestore.instance.settings = Settings(
+          host: Platform.isAndroid ? '10.0.2.2:8080' : 'localhost:8080',
+          sslEnabled: false,
+          persistenceEnabled: true,
+        );
+      } else {
+        FirebaseFirestore.instance.settings = Settings(
+          persistenceEnabled: true,
+        );
+      }
+
+      FlutterError.onError = (details) {
+        FlutterError.dumpErrorToConsole(details);
+        Crashlytics.instance.recordFlutterError(details);
+      };
+
+      runApp(MyApp());
+    },
     (error, stackTrace) {
       print("Error: $error");
       print("Stack trace: $stackTrace");
