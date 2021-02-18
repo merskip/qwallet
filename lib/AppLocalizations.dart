@@ -1101,9 +1101,19 @@ extension ReporstLocalizations on AppLocalizations {
         pl: "Według kategorii",
       );
 
+  String get reportsByDate => _locale(
+        en: "By date",
+        pl: "Według daty",
+      );
+
   String get reportsCategory => _locale(
         en: "Cateogry",
         pl: "Kateoria",
+      );
+
+  String get reportsDate => _locale(
+        en: "Date",
+        pl: "Dzień",
       );
 
   String get reportsAmount => _locale(
