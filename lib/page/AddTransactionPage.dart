@@ -60,7 +60,7 @@ class _AddTransactionPageContent extends StatelessWidget {
           padding: EdgeInsets.all(16),
           child: _AddTransactionForm(
             initialWallet: initialWallet,
-            initialAmount: initialAmount.abs(),
+            initialAmount: initialAmount?.abs(),
             initialTransactionType: (initialAmount ?? 0) <= 0
                 ? TransactionType.expense
                 : TransactionType.income,
