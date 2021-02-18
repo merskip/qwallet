@@ -1,4 +1,6 @@
 import 'package:collection/collection.dart';
+import 'package:date_utils/date_utils.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/api/Category.dart';
@@ -202,48 +204,106 @@ class _ReportByDatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context).locale.toString();
-    final dateFormat = DateFormat("d MMMM yyyy", locale);
     final items = getByDateItems();
-
     return SingleChildScrollView(
-      child: Table(
-        border: TableBorder(
-          horizontalInside: BorderSide(
-            color: Colors.black12,
-            width: 1,
-            style: BorderStyle.solid,
-          ),
-        ),
-        columnWidths: {
-          0: FlexColumnWidth(3),
-          1: FlexColumnWidth(3),
-          2: FlexColumnWidth(2),
-        },
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      child: Column(
         children: [
-          TableRow(children: [
-            buildHeaderCell(context, AppLocalizations.of(context).reportsDate),
-            buildHeaderCell(
-                context, AppLocalizations.of(context).reportsAmount),
-            TableCell(child: Container()),
-          ]),
-          ...items.map((item) => TableRow(children: [
-                buildContentCell(
-                  context,
-                  child: Text(dateFormat.format(item.date)),
-                ),
-                buildContentCell(
-                  context,
-                  child: Text(item.totalAmount.formatted),
-                ),
-                buildContentCell(
-                  context,
-                  child: Text("${item.percentage.toStringAsFixed(1)}%"),
-                ),
-              ]))
+          buildChart(context, items),
+          buildTable(context, items),
         ],
       ),
+    );
+  }
+
+  Widget buildChart(BuildContext context, List<_ByDateItem> items) {
+    return SizedBox(
+      width: double.infinity,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: LineChart(
+          LineChartData(
+            lineBarsData: [
+              LineChartBarData(
+                spots: items
+                    .map((item) => FlSpot(
+                          item.date.day.toDouble(),
+                          (item.totalAmount.amount * 10).roundToDouble() / 10,
+                        ))
+                    .toList(),
+                dotData: FlDotData(show: false),
+                barWidth: 2,
+                colors: [Theme.of(context).primaryColor],
+                isCurved: true,
+                curveSmoothness: 0.2,
+                isStrokeCapRound: true,
+              ),
+            ],
+            minX: 1,
+            maxX: Utils.lastDayOfMonth(DateTime.now()).day.toDouble(),
+            titlesData: FlTitlesData(
+              leftTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 48,
+                interval: 100,
+                getTitles: (value) => Money(value, wallet.currency).formatted,
+              ),
+              bottomTitles: SideTitles(
+                showTitles: true,
+                interval: 2,
+              ),
+            ),
+            gridData: FlGridData(
+              show: true,
+              drawHorizontalLine: true,
+              horizontalInterval: 100,
+              drawVerticalLine: true,
+              verticalInterval: 7,
+            ),
+            borderData: FlBorderData(show: false),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildTable(BuildContext context, List<_ByDateItem> items) {
+    final locale = AppLocalizations.of(context).locale.toString();
+    final dateFormat = DateFormat("d MMMM yyyy", locale);
+    return Table(
+      border: TableBorder(
+        horizontalInside: BorderSide(
+          color: Colors.black12,
+          width: 1,
+          style: BorderStyle.solid,
+        ),
+      ),
+      columnWidths: {
+        0: FlexColumnWidth(3),
+        1: FlexColumnWidth(3),
+        2: FlexColumnWidth(2),
+      },
+      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      children: [
+        TableRow(children: [
+          buildHeaderCell(context, AppLocalizations.of(context).reportsDate),
+          buildHeaderCell(context, AppLocalizations.of(context).reportsAmount),
+          TableCell(child: Container()),
+        ]),
+        ...items.map((item) => TableRow(children: [
+              buildContentCell(
+                context,
+                child: Text(dateFormat.format(item.date)),
+              ),
+              buildContentCell(
+                context,
+                child: Text(item.totalAmount.formatted),
+              ),
+              buildContentCell(
+                context,
+                child: Text("${item.percentage.toStringAsFixed(1)}%"),
+              ),
+            ]))
+      ],
     );
   }
 
@@ -270,7 +330,11 @@ class _ReportByDatePage extends StatelessWidget {
 
   List<_ByDateItem> getByDateItems() {
     final groupedTransactions = Map<DateTime, List<Transaction>>();
-    transactions.where((t) => t.type == TransactionType.expense).forEach((t) {
+    transactions.where((t) {
+      final category = wallet.getCategory(t.category);
+      if (category != null && category.isExcludedFromDailyBalance) return false;
+      return t.type == TransactionType.expense;
+    }).forEach((t) {
       final date = getDateWithoutTime(t.date);
       groupedTransactions.putIfAbsent(date, () => []);
       groupedTransactions[date].add(t);
