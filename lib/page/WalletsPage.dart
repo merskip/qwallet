@@ -80,11 +80,11 @@ class _WalletsPageState extends State<WalletsPage> {
           .map((wallet) => buildReorderableWallet(context, wallet))
           .toList(),
       onReorder: (oldIndex, newIndex) {
-        final wallet = wallets.removeAt(oldIndex);
-        if (newIndex < wallets.length)
-          wallets.insert(newIndex, wallet);
-        else
-          wallets.add(wallet);
+        if (newIndex > oldIndex) newIndex -= 1;
+        setState(() {
+          final category = wallets.removeAt(oldIndex);
+          wallets.insert(newIndex, category);
+        });
         LocalPreferences.orderWallets(wallets);
       },
     );

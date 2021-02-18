@@ -39,10 +39,30 @@ class _WalletCategoriesPageContent extends StatefulWidget {
 class __WalletCategoriesPageContentState
     extends State<_WalletCategoriesPageContent> {
   bool isReordering = false;
-  List<Category> sortingCategories;
+
+  final GlobalKey<_CategoriesReorderableListState> _reorderableListState =
+      GlobalKey();
 
   onSelectedAddCategory(BuildContext context) {
     router.navigateTo(context, "/wallet/${widget.wallet.id}/categories/add");
+  }
+
+  onSelectedReorder(BuildContext context) {
+    setState(() {
+      isReordering = true;
+    });
+  }
+
+  onSelectedCloseReorder(BuildContext context) async {
+    final sortedCategories = _reorderableListState
+        .currentState.sortingCategories
+        .map((c) => c.reference)
+        .toList();
+    await DataSource.instance
+        .updateCategoriesOrder(categoriesOrder: sortedCategories);
+    setState(() {
+      isReordering = false;
+    });
   }
 
   onSelectedCategory(BuildContext context, Category category) {
@@ -61,19 +81,13 @@ class __WalletCategoriesPageContentState
           if (!isReordering)
             IconButton(
               icon: Icon(Icons.reorder),
-              onPressed: () => setState(() {
-                sortingCategories = null;
-                isReordering = true;
-              }),
+              onPressed: () => onSelectedReorder(context),
               tooltip: AppLocalizations.of(context).categoriesChangeOrder,
             )
           else
             IconButton(
               icon: Icon(Icons.done),
-              onPressed: () => setState(() {
-                sortingCategories = null;
-                isReordering = false;
-              }),
+              onPressed: () => onSelectedCloseReorder(context),
             )
         ],
       ),
@@ -96,7 +110,10 @@ class __WalletCategoriesPageContentState
         if (categories.isNotEmpty) {
           return !isReordering
               ? buildCategoriesGrid(context, categories)
-              : buildReorderableCategoriesList(context, categories);
+              : _CategoriesReorderableList(
+                  key: _reorderableListState,
+                  categories: categories,
+                );
         } else
           return EmptyStateWidget(
             icon: Icons.category,
@@ -113,7 +130,7 @@ class __WalletCategoriesPageContentState
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
       ),
-      padding: EdgeInsets.all(8),
+      padding: EdgeInsets.all(8).copyWith(bottom: 88),
       itemCount: categories.length,
       itemBuilder: (context, index) {
         return buildCategoryTile(context, categories[index]);
@@ -123,6 +140,7 @@ class __WalletCategoriesPageContentState
 
   Widget buildCategoryTile(BuildContext context, Category category) {
     return InkWell(
+      key: Key(category.id),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -150,12 +168,37 @@ class __WalletCategoriesPageContentState
       onTap: () => onSelectedCategory(context, category),
     );
   }
+}
 
-  Widget buildReorderableCategoriesList(
-    BuildContext context,
-    List<Category> categories,
-  ) {
-    if (sortingCategories == null) sortingCategories = categories;
+class _CategoriesReorderableList extends StatefulWidget {
+  final List<Category> categories;
+
+  const _CategoriesReorderableList({
+    Key key,
+    this.categories,
+  }) : super(key: key);
+
+  @override
+  _CategoriesReorderableListState createState() =>
+      _CategoriesReorderableListState(categories);
+}
+
+class _CategoriesReorderableListState
+    extends State<_CategoriesReorderableList> {
+  List<Category> sortingCategories;
+
+  _CategoriesReorderableListState(this.sortingCategories);
+
+  void onReorder(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) newIndex -= 1;
+    setState(() {
+      final category = sortingCategories.removeAt(oldIndex);
+      sortingCategories.insert(newIndex, category);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return ReorderableListView(
       padding: const EdgeInsets.all(8),
       header: Text(
@@ -166,15 +209,7 @@ class __WalletCategoriesPageContentState
         ...sortingCategories
             .map((category) => buildReorderableCategory(context, category))
       ],
-      onReorder: (oldIndex, newIndex) {
-        final category = sortingCategories.removeAt(oldIndex);
-        setState(() {
-          if (newIndex < sortingCategories.length)
-            sortingCategories.insert(newIndex, category);
-          else
-            sortingCategories.add(category);
-        });
-      },
+      onReorder: onReorder,
     );
   }
 

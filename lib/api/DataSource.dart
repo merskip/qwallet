@@ -265,12 +265,9 @@ extension CategoriesDataSource on DataSource {
   }) {
     return wallet.documentReference
         .collection("categories")
+        .orderBy("order")
         .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((s) => Category(s)).toList()
-        ..sort((lhs, rhs) =>
-            lhs.title.toLowerCase().compareTo(rhs.title.toLowerCase()));
-    });
+        .map((snapshot) => snapshot.docs.map((s) => Category(s)).toList());
   }
 
   Stream<Category> getCategory({
@@ -309,6 +306,18 @@ extension CategoriesDataSource on DataSource {
       "backgroundColor": backgroundColor.toHex(),
       "icon": serializeIcon(icon),
       "isExcludedFromDailyBalance": isExcludedFromDailyBalance,
+    });
+  }
+
+  Future<void> updateCategoriesOrder({
+    @required List<Reference<Category>> categoriesOrder,
+  }) async {
+    await firestore.runTransaction((transaction) async {
+      categoriesOrder.forEach((category) {
+        transaction.update(category.documentReference, {
+          'order': categoriesOrder.indexOf(category),
+        });
+      });
     });
   }
 
