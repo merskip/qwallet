@@ -126,9 +126,9 @@ extension DashbaordLocalizations on AppLocalizations {
         pl: "Edytuj portfel",
       );
 
-  String get dashboardReport => _locale(
-        en: "Report",
-        pl: "Raport",
+  String get dashboardReports => _locale(
+        en: "Reports",
+        pl: "Raporty",
       );
 
   String get dashboardWalletsEmpty => _locale(
@@ -1090,23 +1090,28 @@ extension DailySpendingLocalizations on AppLocalizations {
       );
 }
 
-extension ReportLocalizations on AppLocalizations {
-  String get reportTitle => _locale(
-        en: "Report",
-        pl: "Raport",
+extension ReporstLocalizations on AppLocalizations {
+  String get reportsTitle => _locale(
+        en: "Reports",
+        pl: "Raporty",
       );
 
-  String get reportCategory => _locale(
+  String get reportsByCategory => _locale(
+        en: "By category",
+        pl: "Według kategorii",
+      );
+
+  String get reportsCategory => _locale(
         en: "Cateogry",
         pl: "Kateoria",
       );
 
-  String get reportAmount => _locale(
+  String get reportsAmount => _locale(
         en: "Amount",
         pl: "Kwota",
       );
 
-  String get reportNoCategory => _locale(
+  String get reportsNoCategory => _locale(
         en: "Without category",
         pl: "Bez categorii",
       );

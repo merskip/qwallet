@@ -12,48 +12,65 @@ import 'package:rxdart/rxdart.dart';
 import '../AppLocalizations.dart';
 import '../Money.dart';
 
-class ReportPage extends StatefulWidget {
+class ReportsPage extends StatefulWidget {
   final Reference<Wallet> walletRef;
 
-  const ReportPage({Key key, this.walletRef}) : super(key: key);
+  const ReportsPage({Key key, this.walletRef}) : super(key: key);
 
   @override
-  _ReportPageState createState() => _ReportPageState();
+  _ReportsPageState createState() => _ReportsPageState();
 }
 
-class _ReportPageState extends State<ReportPage> {
+class _ReportsPageState extends State<ReportsPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context).reportTitle),
-      ),
-      body: SimpleStreamWidget(
-          stream: Rx.combineLatestList([
-            DataSource.instance.getWallet(widget.walletRef),
-            DataSource.instance.getTransactionsInTimeRange(
-              wallet: widget.walletRef,
-              timeRange: getCurrentMonthTimeRange(),
-            )
-          ]),
-          builder: (context, values) {
-            final wallet = values[0];
-            final transactions = values[1];
+    return SimpleStreamWidget(
+        stream: Rx.combineLatestList([
+          DataSource.instance.getWallet(widget.walletRef),
+          DataSource.instance.getTransactionsInTimeRange(
+            wallet: widget.walletRef,
+            timeRange: getCurrentMonthTimeRange(),
+          )
+        ]),
+        builder: (context, values) {
+          final wallet = values[0];
+          final transactions = values[1];
 
-            return _ReportPageContent(
-              wallet: wallet,
-              transactions: transactions,
-            );
-          }),
-    );
+          return DefaultTabController(
+            length: 2,
+            child: Scaffold(
+              appBar: AppBar(
+                bottom: TabBar(
+                  tabs: [
+                    Tab(
+                      child:
+                          Text(AppLocalizations.of(context).reportsByCategory),
+                    ),
+                    Tab(icon: Icon(Icons.directions_transit)),
+                  ],
+                ),
+                title: Text(AppLocalizations.of(context).reportsTitle),
+              ),
+              body: TabBarView(
+                children: [
+                  _ReportByCategoriesPage(
+                    wallet: wallet,
+                    transactions: transactions,
+                  ),
+                  Icon(Icons.directions_transit)
+                ],
+              ),
+            ),
+          );
+        });
   }
 }
 
-class _ReportPageContent extends StatelessWidget {
+class _ReportByCategoriesPage extends StatelessWidget {
   final Wallet wallet;
   final List<Transaction> transactions;
 
-  const _ReportPageContent({
+  const _ReportByCategoriesPage({
     Key key,
     this.wallet,
     this.transactions,
@@ -83,8 +100,9 @@ class _ReportPageContent extends StatelessWidget {
           TableRow(children: [
             TableCell(child: Container()),
             buildHeaderCell(
-                context, AppLocalizations.of(context).reportCategory),
-            buildHeaderCell(context, AppLocalizations.of(context).reportAmount),
+                context, AppLocalizations.of(context).reportsCategory),
+            buildHeaderCell(
+                context, AppLocalizations.of(context).reportsAmount),
             TableCell(child: Container()),
           ]),
           ...categories.map((category) => TableRow(children: [
@@ -95,7 +113,7 @@ class _ReportPageContent extends StatelessWidget {
                 buildContentCell(
                   context,
                   child: Text(category.category?.titleText ??
-                      AppLocalizations.of(context).reportNoCategory),
+                      AppLocalizations.of(context).reportsNoCategory),
                 ),
                 buildContentCell(
                   context,

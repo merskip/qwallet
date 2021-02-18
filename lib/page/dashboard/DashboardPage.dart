@@ -260,7 +260,7 @@ class _DashboardPageState extends State<DashboardPage> {
             value: "edit-wallet",
           ),
           PopupMenuItem(
-            child: Text(AppLocalizations.of(context).dashboardReport),
+            child: Text(AppLocalizations.of(context).dashboardReports),
             value: "report",
           ),
         ],
