@@ -49,8 +49,9 @@ class User {
   }
 
   String getCommonName(BuildContext context) {
-    var commonName =
-        displayName ?? email ?? AppLocalizations.of(context).userAnonymous;
+    var commonName = displayName ?? email;
+    if (commonName == null || isAnonymous)
+      commonName = AppLocalizations.of(context).userAnonymous;
     if (this == User.currentUser())
       commonName += " (${AppLocalizations.of(context).userMe})";
     return commonName;

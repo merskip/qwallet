@@ -136,10 +136,11 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget buildContent(BuildContext context, List<Wallet> wallets) {
-    if (wallets.isNotEmpty)
+    if (wallets.isNotEmpty) {
       return buildContentWithWallets(context, wallets);
-    else
+    } else {
       return buildContentWithNoWallets(context);
+    }
   }
 
   Widget buildContentWithWallets(BuildContext context, List<Wallet> wallets) {
@@ -156,7 +157,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           actions: buildAppBarActions(context),
         ),
-        if (_selectedWallet.hasValue)
+        if (_selectedWallet.value != null)
           buildWalletCards(context, _selectedWallet.value)
         else
           silverProgressIndicator(),
@@ -231,7 +232,6 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).dashboardTitle),
-        actions: buildAppBarActions(context),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -244,8 +244,6 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   List<Widget> buildAppBarActions(BuildContext context) {
-    if (!_selectedWallet.hasValue) return [];
-
     return <Widget>[
       buildPushNotificationsButton(context),
       IconButton(

@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/Model.dart';
 
 typedef ValueWidgetBuilder<T> = Widget Function(BuildContext context, T value);
 
@@ -25,9 +26,12 @@ class SimpleStreamWidget<T> extends StatelessWidget {
         _debugSnapshot(snapshot);
         if (snapshot.hasError)
           return _error(context, snapshot);
-        else if (snapshot.hasData)
-          return builder(context, snapshot.data);
-        else
+        else if (snapshot.hasData) {
+          final data = snapshot.data;
+          if (data is Model && !data.documentSnapshot.exists)
+            return buildLoading(context);
+          return builder(context, data);
+        } else
           return buildLoading(context);
       },
     );
@@ -68,7 +72,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
 
   Widget buildError(
       BuildContext context, String description, StackTrace stackTrace) {
-    return SafeArea(
+    final content = SafeArea(
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -99,6 +103,14 @@ class SimpleStreamWidget<T> extends StatelessWidget {
         ),
       ),
     );
+
+    final existsScaffold = Scaffold.of(context, nullOk: true) != null;
+    return existsScaffold
+        ? content
+        : Scaffold(
+            body: content,
+            appBar: AppBar(backgroundColor: Colors.red),
+          );
   }
 
   Widget buildLoading(BuildContext context) {

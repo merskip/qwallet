@@ -207,10 +207,12 @@ class _ReportByDatePage extends StatelessWidget {
     final items = getByDateItems();
     return SingleChildScrollView(
       child: Column(
-        children: [
-          buildChart(context, items),
-          buildTable(context, items),
-        ],
+        children: items.isNotEmpty
+            ? [
+                buildChart(context, items),
+                buildTable(context, items),
+              ]
+            : [],
       ),
     );
   }

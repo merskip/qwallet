@@ -37,7 +37,7 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
   }
 
   List<T> getList<T>(String field) {
-    return get(field).cast<T>();
+    return _getOrNull(field)?.cast<T>();
   }
 
   T getOneOf<T>(String field, List<T> values) {
@@ -60,7 +60,7 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
 
   DateTime getDateTime(String field) {
     final value = _getOrNull(field) as Timestamp;
-    return value.toDate();
+    return value?.toDate();
   }
 
   Color getColorHex(String field) {
@@ -78,7 +78,7 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
 
   dynamic _getOrNull(String field) {
     try {
-      return get(field);
+      return exists ? get(field) : null;
     } on StateError {
       return null;
     }

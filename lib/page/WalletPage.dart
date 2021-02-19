@@ -56,9 +56,9 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           .walletRemoveConfirmationContent(widget.wallet.name)),
       isDestructive: true,
       onConfirm: () {
+        Navigator.of(context).pop();
         DataSource.instance.removeWallet(widget.wallet.reference);
-        Navigator.of(context)
-            .popUntil((route) => route.settings.name == "/settings/wallets");
+        Navigator.of(context).pop();
       },
     ).show(context);
   }
