@@ -78,9 +78,7 @@ class SettingsPage extends StatelessWidget {
         final chunks = message.split("|");
         final assetName = chunks[0];
         final title = chunks[1];
-        content = Column(
-          mainAxisSize: MainAxisSize.min,
-            children: [
+        content = Column(mainAxisSize: MainAxisSize.min, children: [
           Text(title, style: Theme.of(context).primaryTextTheme.headline6),
           SizedBox(height: 8),
           Image(image: AssetImage(assetName)),
@@ -137,7 +135,7 @@ class SettingsPage extends StatelessWidget {
             : null,
       ),
       title: Text(user.getCommonName(context)),
-      subtitle: Text(user.getSubtitle()),
+      subtitle: user.getSubtitle() != null ? Text(user.getSubtitle()) : null,
       onTap: () {
         showDialog(
           context: context,

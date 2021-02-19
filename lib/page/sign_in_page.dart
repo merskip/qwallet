@@ -147,7 +147,7 @@ class _SignInPageState extends State<SignInPage> {
     } catch (e) {
       _handleError(context, e);
     } finally {
-      setState(() => isLoginInProgress = false);
+      if (mounted) setState(() => isLoginInProgress = false);
     }
   }
 
