@@ -24,6 +24,6 @@ class Category extends Model<Category> {
         backgroundColor = snapshot.getColorHex("backgroundColor"),
         isExcludedFromDailyBalance =
             snapshot.getBool("isExcludedFromDailyBalance") ?? false,
-        order = snapshot.getInt("order") ?? 0,
+        order = snapshot.getInt("order"),
         super(snapshot);
 }

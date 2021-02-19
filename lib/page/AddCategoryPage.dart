@@ -25,13 +25,12 @@ class AddCategoryPage extends StatelessWidget {
             onSubmit: (context, title, primaryColor, backgroundColor, icon,
                 isExcludedFromDailyBalance) {
               DataSource.instance.addCategory(
-                wallet: walletRef,
-                title: title,
-                primaryColor: primaryColor,
-                backgroundColor: backgroundColor,
-                icon: icon,
-                isExcludedFromDailyBalance: isExcludedFromDailyBalance,
-              );
+                  wallet: walletRef,
+                  title: title,
+                  primaryColor: primaryColor,
+                  backgroundColor: backgroundColor,
+                  icon: icon,
+                  isExcludedFromDailyBalance: isExcludedFromDailyBalance);
               Navigator.of(context).pop();
             },
           ),

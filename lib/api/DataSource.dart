@@ -265,9 +265,11 @@ extension CategoriesDataSource on DataSource {
   }) {
     return wallet.documentReference
         .collection("categories")
-        .orderBy("order")
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((s) => Category(s)).toList());
+        .map((snapshot) => snapshot.docs.map((s) => Category(s)).toList()
+          ..sort(
+            (lhs, rhs) => compareWithNullAtEnd(lhs.order, rhs.order),
+          ));
   }
 
   Stream<Category> getCategory({
@@ -275,20 +277,20 @@ extension CategoriesDataSource on DataSource {
   }) =>
       category.documentReference.snapshots().map((s) => Category(s));
 
-  Future<void> addCategory({
-    @required Reference<Wallet> wallet,
-    String title,
-    Color primaryColor,
-    Color backgroundColor,
-    IconData icon,
-    bool isExcludedFromDailyBalance,
-  }) {
+  Future<void> addCategory(
+      {@required Reference<Wallet> wallet,
+      String title,
+      Color primaryColor,
+      Color backgroundColor,
+      IconData icon,
+      bool isExcludedFromDailyBalance}) {
     return wallet.documentReference.collection("categories").add({
       "title": title,
       "primaryColor": primaryColor.toHex(),
       "backgroundColor": backgroundColor.toHex(),
       "icon": serializeIcon(icon),
       "isExcludedFromDailyBalance": isExcludedFromDailyBalance,
+      "order": null
     });
   }
 
@@ -513,4 +515,10 @@ DateTimeRange getCurrentMonthTimeRange() {
   final startDay = Utils.firstDayOfMonth(now);
   final endDay = Utils.lastDayOfMonth(now).add(Duration(hours: 24));
   return DateTimeRange(start: startDay, end: endDay);
+}
+
+int compareWithNullAtEnd(lhs, rhs) {
+  if (lhs == null) return 1;
+  if (rhs == null) return -1;
+  return lhs.compareTo(rhs);
 }
