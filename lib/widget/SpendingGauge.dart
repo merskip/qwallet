@@ -25,6 +25,10 @@ class SpendingGauge extends StatefulWidget {
 class _SpendingGaugeState extends State<SpendingGauge> {
   @override
   Widget build(BuildContext context) {
+    if (widget.max.amount == 0) {
+      return buildEmptyGauge(context);
+    }
+
     final normalizedMidLow = widget.midLow.amount / widget.max.amount;
     final normalizedMidHigh = widget.midHigh.amount / widget.max.amount;
     final normalizedCurrent = widget.current.amount / widget.max.amount;
@@ -53,6 +57,18 @@ class _SpendingGaugeState extends State<SpendingGauge> {
                   .copyWith(color: Colors.orange)),
         ],
         markerPosition: normalizedCurrent,
+      ),
+    );
+  }
+
+  Widget buildEmptyGauge(BuildContext context) {
+    return CustomPaint(
+      painter: _GaugePainter(
+        segments: [
+          _GaugeSegment(Colors.green, 0.0, 1.0),
+        ],
+        labels: [],
+        markerPosition: null,
       ),
     );
   }
@@ -102,6 +118,7 @@ class _GaugePainter extends CustomPainter {
   }
 
   void _paintMarker(Canvas canvas, Size size) {
+    if (markerPosition == null) return;
     canvas.save();
     _translate(canvas, size, markerPosition);
 
