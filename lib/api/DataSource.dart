@@ -481,7 +481,10 @@ extension UsersDataSource on DataSource {
   Future<List<User>> getUsersByUids(List<String> usersUids) async {
     final users = await getUsers();
     return usersUids
-        .map((userUid) => users.firstWhere((user) => user.uid == userUid))
+        .map((uid) => users.firstWhere(
+              (user) => user.uid == uid,
+              orElse: () => User.emptyFromUid(uid),
+            ))
         .toList();
   }
 }

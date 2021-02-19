@@ -177,7 +177,8 @@ class _WalletPageContentState extends State<_WalletPageContent> {
             .getUsersByUids(widget.wallet.ownersUid)
             .asStream(),
         builder: (context, List<User> users) {
-          final text = users.map((user) => user.displayName).join(", ");
+          final text =
+              users.map((user) => user.getCommonName(context)).join(", ");
           return Text(text);
         },
         loadingBuilder: (context) => Text("..."),
