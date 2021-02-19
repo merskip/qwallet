@@ -54,12 +54,13 @@ class __WalletCategoriesPageContentState
   }
 
   onSelectedCloseReorder(BuildContext context) async {
-    final sortedCategories = _reorderableListState
-        .currentState.sortingCategories
-        .map((c) => c.reference)
-        .toList();
-    await DataSource.instance
-        .updateCategoriesOrder(categoriesOrder: sortedCategories);
+    final sortingCategories =
+        _reorderableListState.currentState?.sortingCategories;
+    if (sortingCategories != null) {
+      await DataSource.instance.updateCategoriesOrder(
+        categoriesOrder: sortingCategories.map((c) => c.reference).toList(),
+      );
+    }
     setState(() {
       isReordering = false;
     });
