@@ -44,7 +44,10 @@ extension WalletsDataSource on DataSource {
             .getCategories(wallet: walletSnapshot.reference.toReference())
             .map((categories) => Wallet(walletSnapshot, categories));
       });
-      return CombineLatestStream.list(wallets);
+      if (wallets.isNotEmpty) // NOTE: Fixes #40
+        return CombineLatestStream.list(wallets);
+      else
+        return Stream.value([]);
     });
   }
 

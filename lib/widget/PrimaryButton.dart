@@ -38,7 +38,7 @@ class PrimaryButton extends StatelessWidget {
               child: child ?? Container(),
               style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500),
             ),
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
       onPressed: isLoading ? null : onPressed,
       color: color ?? Theme.of(context).primaryColor,
       shape: RoundedRectangleBorder(
