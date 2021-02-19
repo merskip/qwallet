@@ -83,9 +83,9 @@ class DailyReportSection extends StatelessWidget {
       size: Size.square(144),
       child: SpendingGauge(
         current: dailySpending.currentDailySpending,
-        midLow: dailySpending.availableDailySpending * 0.67,
-        midHigh: dailySpending.availableDailySpending,
-        max: dailySpending.availableDailySpending * 2,
+        midLow: dailySpending.availableDailySpending * 0.8,
+        midHigh: dailySpending.availableDailySpending * 1.0,
+        max: dailySpending.availableDailySpending * 1.5,
       ),
     );
   }
