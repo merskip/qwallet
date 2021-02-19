@@ -104,6 +104,14 @@ extension WalletsDataSource on DataSource {
     }
     if (wallet.totalExpense.amount != totalExpense ||
         wallet.totalIncome.amount != totalIncome) {
+      print("Detected incorrect wallet balance.\n"
+          " - Current: income=${wallet.totalIncome.amount}, "
+          "expenses=${wallet.totalExpense.amount}, "
+          "balance=${wallet.balance.amount}\n"
+          " - Calculated: income=$totalIncome, "
+          "expenses=$totalExpense, "
+          "balance=${totalIncome - totalExpense}");
+
       return wallet.reference.documentReference.update({
         'totalExpense': totalExpense,
         'totalIncome': totalIncome,
