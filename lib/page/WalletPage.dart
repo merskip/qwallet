@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
@@ -135,6 +136,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           buildTotalExpense(context),
           buildTotalIncome(context),
           buildBalance(context),
+          buildCurrentRangeTime(context),
           Divider(),
           buildCategories(context)
         ],
@@ -222,6 +224,19 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       editIcon: Icons.refresh,
       editTooltip: AppLocalizations.of(context).walletBalanceRefresh,
       onEdit: (context) => onSelectedRefreshBalance(context),
+    );
+  }
+
+  Widget buildCurrentRangeTime(BuildContext context) {
+    final dateFormat = new DateFormat("d.MM.yyyy");
+    final currentDateRange = getCurrentMonthTimeRange();
+    return DetailsItemTile(
+      title: Text(AppLocalizations.of(context).walletCurrentTimeRange),
+      value: Text(
+        dateFormat.format(currentDateRange.start) +
+            " - " +
+            dateFormat.format(currentDateRange.end.subtract(Duration(days: 1))),
+      ),
     );
   }
 

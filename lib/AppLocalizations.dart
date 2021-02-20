@@ -347,6 +347,11 @@ extension WalletLocalizations on AppLocalizations {
         pl: "Saldo",
       );
 
+  String get walletCurrentTimeRange => _locale(
+        en: "Current time period",
+        pl: "Aktualny okres czasu",
+      );
+
   String get walletBalanceRefresh => _locale(
         en: "Refresh",
         pl: "Odśwież",
