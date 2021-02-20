@@ -31,6 +31,14 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
       return null;
   }
 
+  Map<K, V> getMap<K, V>(String field) {
+    final value = _getOrNull(field);
+    if (value is Map<K, V>)
+      return value;
+    else
+      return null;
+  }
+
   Reference<T> getReference<T>(String field) {
     final value = _getOrNull(field) as DocumentReference;
     return value != null ? Reference(value) : null;
