@@ -132,7 +132,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           buildTotalExpense(context),
           buildTotalIncome(context),
           buildBalance(context),
-          buildCurrentRangeTime(context),
+          buildCurrentDateRange(context),
           Divider(),
           buildCategories(context)
         ],
@@ -223,17 +223,29 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     );
   }
 
-  Widget buildCurrentRangeTime(BuildContext context) {
-    final dateFormat = new DateFormat("d.MM.yyyy");
-    final currentDateRange = widget.wallet.dateRange.dateTimeRange;
+  Widget buildCurrentDateRange(BuildContext context) {
     return DetailsItemTile(
-      title: Text(AppLocalizations.of(context).walletCurrentTimeRange),
-      value: Text(
-        dateFormat.format(currentDateRange.start) +
-            " - " +
-            dateFormat.format(currentDateRange.end.subtract(Duration(days: 1))),
-      ),
+      title: Text(AppLocalizations.of(context).walletCurrentDateRange),
+      value: Text(_getWalletDateRangeTypeText(widget.wallet.dateRange.type) +
+          "\n" +
+          _getTimeDateRangeText(widget.wallet.dateRange.dateTimeRange)),
     );
+  }
+
+  String _getWalletDateRangeTypeText(WalletDateRangeType dateRangeType) {
+    switch (dateRangeType) {
+      case WalletDateRangeType.currentMonth:
+        return AppLocalizations.of(context).walletDateRangeCurrentMonth;
+      default:
+        return null;
+    }
+  }
+
+  String _getTimeDateRangeText(DateTimeRange dateTimeRange) {
+    final dateFormat = new DateFormat("d.MM.yyyy");
+    return dateFormat.format(dateTimeRange.start) +
+        " - " +
+        dateFormat.format(dateTimeRange.end);
   }
 
   Widget buildCategories(BuildContext context) {
