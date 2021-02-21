@@ -171,20 +171,11 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget buildWalletCards(BuildContext context, Wallet wallet) {
     return SimpleStreamWidget(
-      stream: Rx.combineLatestList([
-        DataSource.instance.getWallet(wallet.reference),
-        DataSource.instance.getTransactionsInTimeRange(
-          wallet: wallet.reference,
-          timeRange: getCurrentMonthTimeRange(),
-        )
-      ]),
+      stream: DataSource.instance.getLatestTransactions(wallet.reference),
       loadingBuilder: (context) => silverProgressIndicator(),
-      builder: (context, values) {
-        final wallet = values[0];
-        final transactions = values[1];
-
+      builder: (context, latestTransactions) {
         DataSource.instance
-            .refreshWalletBalanceIfNeeded(wallet, transactions)
+            .refreshWalletBalanceIfNeeded(latestTransactions)
             .catchError((error) {
           if (error is Could.FirebaseException &&
               error.code == "permission-denied") {
@@ -199,15 +190,15 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               DailyReportSection(
                 wallet: wallet,
-                transactions: transactions,
+                transactions: latestTransactions.transactions,
               ),
               TransactionsCard(
                 wallet: wallet,
-                transactions: transactions,
+                transactions: latestTransactions.transactions,
               ),
               CategoriesChartCard(
                 wallet: wallet,
-                transactions: transactions,
+                transactions: latestTransactions.transactions,
               ),
             ],
           ),

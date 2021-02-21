@@ -100,14 +100,10 @@ class _WalletPageContentState extends State<_WalletPageContent> {
 
   void onSelectedRefreshBalance(BuildContext context) async {
     setState(() => isBalanceRefreshing = true);
-    final transactions = await DataSource.instance
-        .getTransactionsInTimeRange(
-          wallet: widget.wallet.reference,
-          timeRange: getCurrentMonthTimeRange(),
-        )
+    final latestTransactions = await DataSource.instance
+        .getLatestTransactions(widget.wallet.reference)
         .first;
-    await DataSource.instance
-        .refreshWalletBalanceIfNeeded(widget.wallet, transactions);
+    await DataSource.instance.refreshWalletBalanceIfNeeded(latestTransactions);
     setState(() => isBalanceRefreshing = false);
   }
 
@@ -229,7 +225,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
 
   Widget buildCurrentRangeTime(BuildContext context) {
     final dateFormat = new DateFormat("d.MM.yyyy");
-    final currentDateRange = getCurrentMonthTimeRange();
+    final currentDateRange = widget.wallet.dateRange.dateTimeRange;
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletCurrentTimeRange),
       value: Text(

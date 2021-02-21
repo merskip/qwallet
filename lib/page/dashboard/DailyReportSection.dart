@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/page/dashboard/DailySpendingComputing.dart';
@@ -91,7 +90,7 @@ class DailyReportSection extends StatelessWidget {
   }
 
   DailySpending _computeDailySpending() {
-    final timeRange = getCurrentMonthTimeRange();
+    final timeRange = wallet.dateRange.dateTimeRange;
     final totalDays = timeRange.duration.inDays;
     final currentDay = DateTime.now().day;
 

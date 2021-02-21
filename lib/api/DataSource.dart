@@ -63,8 +63,10 @@ extension WalletsDataSource on DataSource {
 
     final categories = DataSource.instance.getCategories(wallet: walletRef);
 
-    return CombineLatestStream.combine2(walletSnapshots, categories,
-        (walletSnapshot, categories) => Wallet(walletSnapshot, categories));
+    return Rx.combineLatest2(walletSnapshots, categories,
+        (walletSnapshot, categories) {
+      return Wallet(walletSnapshot, categories);
+    });
   }
 
   Future<Reference<Wallet>> addWallet(
@@ -95,9 +97,10 @@ extension WalletsDataSource on DataSource {
   }
 
   Future<void> refreshWalletBalanceIfNeeded(
-    Wallet wallet,
-    List<Transaction> transactions,
+    LatestTransactions latestTransactions,
   ) async {
+    final wallet = latestTransactions.wallet;
+    final transactions = latestTransactions.transactions;
     double totalExpense = 0.0, totalIncome = 0.0;
     for (final transaction in transactions) {
       transaction.ifType(
@@ -128,14 +131,34 @@ extension WalletsDataSource on DataSource {
 }
 
 extension TransactionsDataSource on DataSource {
-  Stream<List<Transaction>> getTransactionsInTimeRange({
+  Stream<LatestTransactions> getLatestTransactions(
+    Reference<Wallet> wallet,
+  ) {
+    final walletStream = getWallet(wallet).asBroadcastStream();
+
+    final transactionsStream = walletStream.flatMap((wallet) {
+      return _getTransactionsInDateTimeRange(
+        wallet: wallet.reference,
+        dateRange: wallet.dateRange.dateTimeRange,
+      );
+    });
+
+    return Rx.combineLatestList([walletStream, transactionsStream])
+        .map((values) {
+      final wallet = values[0];
+      final transactions = values[1];
+      return LatestTransactions(wallet, transactions);
+    });
+  }
+
+  Stream<List<Transaction>> _getTransactionsInDateTimeRange({
     @required Reference<Wallet> wallet,
-    @required DateTimeRange timeRange,
+    @required DateTimeRange dateRange,
   }) {
     return wallet.documentReference
         .collection("transactions")
-        .where("date", isGreaterThanOrEqualTo: timeRange.start.toTimestamp())
-        .where("date", isLessThanOrEqualTo: timeRange.end.toTimestamp())
+        .where("date", isGreaterThanOrEqualTo: dateRange.start.toTimestamp())
+        .where("date", isLessThanOrEqualTo: dateRange.end.toTimestamp())
         .orderBy("date", descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((s) => Transaction(s)).toList());
@@ -491,6 +514,13 @@ extension UsersDataSource on DataSource {
 
 extension DateTimeUtils on DateTime {
   Firestore.Timestamp toTimestamp() => Firestore.Timestamp.fromDate(this);
+}
+
+class LatestTransactions {
+  final Wallet wallet;
+  final List<Transaction> transactions;
+
+  LatestTransactions(this.wallet, this.transactions);
 }
 
 DateTimeRange getTodayDateTimeRange() {
