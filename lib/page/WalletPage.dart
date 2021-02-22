@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/dialog/EditWalletDateRangeDialog.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/page/UserSelectionPage.dart';
@@ -107,7 +108,18 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     setState(() => isBalanceRefreshing = false);
   }
 
-  onSelectedCategories(BuildContext context) {
+  void onSelectedEditDateRange(BuildContext context) async {
+    final dateRange = showDialog<WalletDateRange>(
+      context: context,
+      builder: (context) => EditWalletDateRangeDialog(),
+    );
+    if (dateRange != null) {
+      // TODO: Update wallet
+      print(dateRange);
+    }
+  }
+
+  void onSelectedCategories(BuildContext context) {
     router.navigateTo(context, "/wallet/${widget.wallet.id}/categories");
   }
 
@@ -229,6 +241,8 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       value: Text(_getWalletDateRangeTypeText(widget.wallet.dateRange.type) +
           "\n" +
           _getTimeDateRangeText(widget.wallet.dateRange.dateTimeRange)),
+      editIcon: Icons.edit,
+      onEdit: (context) => onSelectedEditDateRange(context),
     );
   }
 
