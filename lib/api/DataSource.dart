@@ -562,6 +562,17 @@ DateTimeRange getCurrentMonthTimeRange({DateTime now}) {
   return DateTimeRange(start: startDay, end: endDay);
 }
 
+DateTimeRange getCurrentWeekTimeRange({DateTime now}) {
+  final dateNow = getDateWithoutTime(now ?? DateTime.now().toUtc());
+  DateTime startDay = getDateWithoutTime(Utils.firstDayOfWeek(dateNow));
+  final almostDay = Duration(hours: 23, minutes: 59, seconds: 59);
+  final endDay = getDateWithoutTime(Utils.lastDayOfWeek(dateNow))
+      .add(almostDay)
+      .subtract(Duration(days: 1));
+
+  return DateTimeRange(start: startDay, end: endDay);
+}
+
 int compareWithNullAtEnd(lhs, rhs) {
   if (lhs == null) return 1;
   if (rhs == null) return -1;

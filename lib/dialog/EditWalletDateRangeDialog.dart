@@ -52,7 +52,11 @@ class _DialogContentState extends State<_DialogContent> {
           DropdownMenuItem(
             child: Text("#Current month"),
             value: WalletDateRangeType.currentMonth,
-          )
+          ),
+          DropdownMenuItem(
+            child: Text("#Current week"),
+            value: WalletDateRangeType.currentWeek,
+          ),
         ],
         onChanged: (newValue) => setState(() {
           this.type = newValue;
