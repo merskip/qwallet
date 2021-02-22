@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
@@ -240,7 +239,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       title: Text(AppLocalizations.of(context).walletCurrentDateRange),
       value: Text(_getWalletDateRangeTypeText(widget.wallet.dateRange.type) +
           "\n" +
-          _getTimeDateRangeText(widget.wallet.dateRange.dateTimeRange)),
+          widget.wallet.dateRange.dateTimeRange.formatted()),
       editIcon: Icons.edit,
       onEdit: (context) => onSelectedEditDateRange(context),
     );
@@ -253,13 +252,6 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       default:
         return null;
     }
-  }
-
-  String _getTimeDateRangeText(DateTimeRange dateTimeRange) {
-    final dateFormat = new DateFormat("d.MM.yyyy");
-    return dateFormat.format(dateTimeRange.start) +
-        " - " +
-        dateFormat.format(dateTimeRange.end);
   }
 
   Widget buildCategories(BuildContext context) {

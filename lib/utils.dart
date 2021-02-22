@@ -94,3 +94,16 @@ extension CompareWithAccuracy on double {
   bool isEqual(double value, {double accuracy}) =>
       (this - value).abs() <= (accuracy ?? 0.0);
 }
+
+extension DateTimeRangeFormatting on DateTimeRange {
+  String formatted({
+    DateFormat dateFormat,
+    String separator,
+  }) {
+    final effectiveDateFormat = dateFormat ?? DateFormat("d.MM.yyyy");
+    final effectiveSeparator = separator ?? " - ";
+    return effectiveDateFormat.format(start) +
+        effectiveSeparator +
+        effectiveDateFormat.format(end);
+  }
+}

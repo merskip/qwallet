@@ -46,14 +46,16 @@ class WalletDateRange {
 
   WalletDateRange({
     this.type,
-  }) : this.dateTimeRange = _getDateTimeRange(type: type);
+  }) : this.dateTimeRange = getDateTimeRange(type: type);
 
-  static DateTimeRange _getDateTimeRange({
+  static DateTimeRange getDateTimeRange({
     @required WalletDateRangeType type,
+    DateTime now,
   }) {
+    now = now ?? DateTime.now();
     switch (type) {
       case WalletDateRangeType.currentMonth:
-        return getCurrentMonthTimeRange();
+        return getCurrentMonthTimeRange(now: now);
       default:
         return null;
     }

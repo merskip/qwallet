@@ -554,11 +554,11 @@ DateTimeRange getLastMonthDateTimeRange() {
   return DateTimeRange(start: startDay, end: endDay);
 }
 
-DateTimeRange getCurrentMonthTimeRange() {
-  final now = getDateWithoutTime(DateTime.now());
-  final startDay = Utils.firstDayOfMonth(now);
+DateTimeRange getCurrentMonthTimeRange({DateTime now}) {
+  final dateNow = getDateWithoutTime(now ?? DateTime.now());
+  final startDay = Utils.firstDayOfMonth(dateNow);
   final almostDay = Duration(hours: 23, minutes: 59, seconds: 59);
-  final endDay = Utils.lastDayOfMonth(now).add(almostDay);
+  final endDay = Utils.lastDayOfMonth(dateNow).add(almostDay);
   return DateTimeRange(start: startDay, end: endDay);
 }
 
