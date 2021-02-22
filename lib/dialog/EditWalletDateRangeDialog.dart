@@ -57,6 +57,10 @@ class _DialogContentState extends State<_DialogContent> {
             child: Text("#Current week"),
             value: WalletDateRangeType.currentWeek,
           ),
+          DropdownMenuItem(
+            child: Text("#Last 30 days"),
+            value: WalletDateRangeType.last30Days,
+          ),
         ],
         onChanged: (newValue) => setState(() {
           this.type = newValue;
@@ -66,30 +70,62 @@ class _DialogContentState extends State<_DialogContent> {
   }
 
   Widget buildDateTimeRangeExamples(BuildContext context) {
-    final nowDateTimeRange = WalletDateRange.getDateTimeRange(
-      type: type,
-      now: DateTime.now(),
-    );
-    final previousDateTimeRange = WalletDateRange.getDateTimeRange(
-      type: type,
-      now: nowDateTimeRange.start.subtract(Duration(days: 1)),
-    );
-    final nextDateTimeRange = WalletDateRange.getDateTimeRange(
-      type: type,
-      now: nowDateTimeRange.end.add(Duration(days: 1)),
-    );
-    final next2DateTimeRange = WalletDateRange.getDateTimeRange(
-      type: type,
-      now: nextDateTimeRange.end.add(Duration(days: 1)),
-    );
     return DetailsItemTile(
       title: Text("#Exmples"),
-      value: Text([
-        previousDateTimeRange.formatted(),
-        nowDateTimeRange.formatted(),
-        nextDateTimeRange.formatted(),
-        next2DateTimeRange.formatted()
-      ].join("\n")),
+      value: Text(getExamplesDateRanges().map((r) => r.formatted()).join("\n")),
     );
+  }
+
+  List<DateTimeRange> getExamplesDateRanges() {
+    if (type == WalletDateRangeType.currentMonth ||
+        type == WalletDateRangeType.currentWeek) {
+      final nowDateTimeRange = WalletDateRange.getDateTimeRange(
+        type: type,
+        now: DateTime.now(),
+      );
+      final previousDateTimeRange = WalletDateRange.getDateTimeRange(
+        type: type,
+        now: nowDateTimeRange.start.subtract(Duration(days: 1)),
+      );
+      final nextDateTimeRange = WalletDateRange.getDateTimeRange(
+        type: type,
+        now: nowDateTimeRange.end.add(Duration(days: 1)),
+      );
+      final next2DateTimeRange = WalletDateRange.getDateTimeRange(
+        type: type,
+        now: nextDateTimeRange.end.add(Duration(days: 1)),
+      );
+      return [
+        previousDateTimeRange,
+        nowDateTimeRange,
+        nextDateTimeRange,
+        next2DateTimeRange
+      ];
+    } else if (type == WalletDateRangeType.last30Days) {
+      final nowDateTimeRange = WalletDateRange.getDateTimeRange(
+        type: type,
+        now: DateTime.now(),
+      );
+      final previousDateTimeRange = WalletDateRange.getDateTimeRange(
+        type: type,
+        now: nowDateTimeRange.end.subtract(Duration(days: 1)),
+      );
+      final nextDateTimeRange = WalletDateRange.getDateTimeRange(
+        type: type,
+        now: nowDateTimeRange.end.add(Duration(days: 1)),
+      );
+      final next2DateTimeRange = WalletDateRange.getDateTimeRange(
+        type: type,
+        now: nextDateTimeRange.end.add(Duration(days: 1)),
+      );
+      return [
+        previousDateTimeRange,
+        nowDateTimeRange,
+        nextDateTimeRange,
+        next2DateTimeRange
+      ];
+    } else {
+      return [];
+    }
   }
 }

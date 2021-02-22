@@ -52,12 +52,13 @@ class WalletDateRange {
     @required WalletDateRangeType type,
     DateTime now,
   }) {
-    now = now ?? DateTime.now();
     switch (type) {
       case WalletDateRangeType.currentMonth:
         return getCurrentMonthTimeRange(now: now);
       case WalletDateRangeType.currentWeek:
         return getCurrentWeekTimeRange(now: now);
+      case WalletDateRangeType.last30Days:
+        return getLast30DaysTimeRange(now: now);
       default:
         return null;
     }
@@ -67,6 +68,7 @@ class WalletDateRange {
 enum WalletDateRangeType {
   currentMonth,
   currentWeek,
+  last30Days,
 }
 
 extension DocumentSnapshotWalletTimeRangeConverting on DocumentSnapshot {
@@ -84,6 +86,8 @@ extension DocumentSnapshotWalletTimeRangeConverting on DocumentSnapshot {
         return WalletDateRangeType.currentMonth;
       case "currentWeek":
         return WalletDateRangeType.currentWeek;
+      case "last30Days":
+        return WalletDateRangeType.last30Days;
       default:
         return null;
     }
