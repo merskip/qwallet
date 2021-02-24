@@ -139,7 +139,7 @@ extension TransactionsDataSource on DataSource {
     final transactionsStream = walletStream.flatMap((wallet) {
       return _getTransactionsInDateTimeRange(
         wallet: wallet.reference,
-        dateRange: wallet.dateRange.dateTimeRange,
+        dateRange: wallet.dateRange.getDateTimeRange(),
       );
     });
 

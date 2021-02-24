@@ -91,55 +91,13 @@ class _DialogContentState extends State<_DialogContent> {
   }
 
   List<DateTimeRange> getExamplesDateRanges() {
-    if (type == WalletDateRangeType.currentMonth ||
-        type == WalletDateRangeType.currentWeek) {
-      final nowDateTimeRange = WalletDateRange.getDateTimeRange(
-        type: type,
-        now: DateTime.now(),
-      );
-      final previousDateTimeRange = WalletDateRange.getDateTimeRange(
-        type: type,
-        now: nowDateTimeRange.start.subtract(Duration(days: 1)),
-      );
-      final nextDateTimeRange = WalletDateRange.getDateTimeRange(
-        type: type,
-        now: nowDateTimeRange.end.add(Duration(days: 1)),
-      );
-      final next2DateTimeRange = WalletDateRange.getDateTimeRange(
-        type: type,
-        now: nextDateTimeRange.end.add(Duration(days: 1)),
-      );
-      return [
-        previousDateTimeRange,
-        nowDateTimeRange,
-        nextDateTimeRange,
-        next2DateTimeRange
-      ];
-    } else if (type == WalletDateRangeType.last30Days) {
-      final nowDateTimeRange = WalletDateRange.getDateTimeRange(
-        type: type,
-        now: DateTime.now(),
-      );
-      final previousDateTimeRange = WalletDateRange.getDateTimeRange(
-        type: type,
-        now: nowDateTimeRange.end.subtract(Duration(days: 1)),
-      );
-      final nextDateTimeRange = WalletDateRange.getDateTimeRange(
-        type: type,
-        now: nowDateTimeRange.end.add(Duration(days: 1)),
-      );
-      final next2DateTimeRange = WalletDateRange.getDateTimeRange(
-        type: type,
-        now: nextDateTimeRange.end.add(Duration(days: 1)),
-      );
-      return [
-        previousDateTimeRange,
-        nowDateTimeRange,
-        nextDateTimeRange,
-        next2DateTimeRange
-      ];
-    } else {
-      return [];
-    }
+    final dateRange = WalletDateRange(type: type);
+    return [
+      dateRange.getDateTimeRange(index: -2),
+      dateRange.getDateTimeRange(index: -1),
+      dateRange.getDateTimeRange(index: 0),
+      dateRange.getDateTimeRange(index: 1),
+      dateRange.getDateTimeRange(index: 2),
+    ];
   }
 }

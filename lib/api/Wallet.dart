@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/WalletDateRangeProvider.dart';
 import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/api/DataSource.dart';
 
 import '../Currency.dart';
 import '../Money.dart';
@@ -42,27 +42,15 @@ class Wallet extends Model<Wallet> {
 class WalletDateRange {
   final WalletDateRangeType type;
 
-  final DateTimeRange dateTimeRange;
-
   WalletDateRange({
     this.type,
-  }) : this.dateTimeRange = getDateTimeRange(type: type);
+  });
 
-  @deprecated
-  static DateTimeRange getDateTimeRange({
-    @required WalletDateRangeType type,
-    DateTime now,
-  }) {
-    switch (type) {
-      case WalletDateRangeType.currentMonth:
-        return getCurrentMonthTimeRange(now: now);
-      case WalletDateRangeType.currentWeek:
-        return getCurrentWeekTimeRange(now: now);
-      case WalletDateRangeType.last30Days:
-        return getLast30DaysTimeRange(now: now);
-      default:
-        return null;
-    }
+  DateTimeRange getDateTimeRange({DateTime now, int index = 0}) {
+    return WalletDateRangeCalculator(this).getDateTimeRangeFor(
+      now: now ?? DateTime.now(),
+      index: index,
+    );
   }
 }
 

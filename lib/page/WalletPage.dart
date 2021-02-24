@@ -237,9 +237,11 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   Widget buildCurrentDateRange(BuildContext context) {
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletCurrentDateRange),
-      value: Text(_getWalletDateRangeTypeText(widget.wallet.dateRange.type) +
-          "\n" +
-          widget.wallet.dateRange.dateTimeRange.formatted()),
+      value: Text(
+        _getWalletDateRangeTypeText(widget.wallet.dateRange.type) +
+            "\n" +
+            widget.wallet.dateRange.getDateTimeRange().formatted(),
+      ),
       editIcon: Icons.edit,
       onEdit: (context) => onSelectedEditDateRange(context),
     );

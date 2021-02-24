@@ -90,7 +90,7 @@ class DailyReportSection extends StatelessWidget {
   }
 
   DailySpending _computeDailySpending() {
-    final timeRange = wallet.dateRange.dateTimeRange;
+    final timeRange = wallet.dateRange.getDateTimeRange();
     final totalDays = timeRange.duration.inDays;
     final currentDay = DateTime.now().day;
 
