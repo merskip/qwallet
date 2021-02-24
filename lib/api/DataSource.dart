@@ -557,7 +557,12 @@ DateTimeRange getLastMonthDateTimeRange() {
 DateTimeRange getCurrentMonthTimeRange({DateTime now}) {
   final dateNow = getDateWithoutTime(now ?? DateTime.now());
   final startDay = Utils.firstDayOfMonth(dateNow);
-  final almostDay = Duration(hours: 23, minutes: 59, seconds: 59);
+  final almostDay = Duration(
+      hours: 23,
+      minutes: 59,
+      seconds: 59,
+      milliseconds: 999,
+      microseconds: 999);
   final endDay = Utils.lastDayOfMonth(dateNow).add(almostDay);
   return DateTimeRange(start: startDay, end: endDay);
 }
@@ -565,7 +570,12 @@ DateTimeRange getCurrentMonthTimeRange({DateTime now}) {
 DateTimeRange getCurrentWeekTimeRange({DateTime now}) {
   final dateNow = getDateWithoutTime(now ?? DateTime.now());
   DateTime startDay = getDateWithoutTime(Utils.firstDayOfWeek(dateNow));
-  final almostDay = Duration(hours: 23, minutes: 59, seconds: 59);
+  final almostDay = Duration(
+      hours: 23,
+      minutes: 59,
+      seconds: 59,
+      milliseconds: 999,
+      microseconds: 999);
   final endDay = getDateWithoutTime(Utils.lastDayOfWeek(dateNow))
       .add(almostDay)
       .subtract(Duration(days: 1));
@@ -575,10 +585,14 @@ DateTimeRange getCurrentWeekTimeRange({DateTime now}) {
 
 DateTimeRange getLast30DaysTimeRange({DateTime now}) {
   final dateNow = getDateWithoutTime(now ?? DateTime.now());
-  final almostDay = Duration(hours: 23, minutes: 59, seconds: 59);
+  final almostDay = Duration(
+      hours: 23,
+      minutes: 59,
+      seconds: 59,
+      milliseconds: 999,
+      microseconds: 999);
   final endDay = dateNow.add(almostDay);
-  final startDay =
-      getDateWithoutTime(dateNow).subtract(Duration(days: 30)).add(almostDay);
+  final startDay = getDateWithoutTime(dateNow).subtract(Duration(days: 30));
   return DateTimeRange(start: startDay, end: endDay);
 }
 

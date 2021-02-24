@@ -48,6 +48,7 @@ class WalletDateRange {
     this.type,
   }) : this.dateTimeRange = getDateTimeRange(type: type);
 
+  @deprecated
   static DateTimeRange getDateTimeRange({
     @required WalletDateRangeType type,
     DateTime now,
