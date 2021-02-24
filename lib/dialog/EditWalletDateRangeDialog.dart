@@ -30,6 +30,7 @@ class _DialogContent extends StatefulWidget {
 
 class _DialogContentState extends State<_DialogContent> {
   WalletDateRangeType type = WalletDateRangeType.currentMonth;
+  double offset = 0.5;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +39,19 @@ class _DialogContentState extends State<_DialogContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         buildTypeSelection(context),
+        DetailsItemTile(
+          title: Text("#Offset"),
+          value: Slider(
+            min: 0,
+            max: 30,
+            divisions: 30,
+            value: offset,
+            label: offset.toInt().toString(),
+            onChanged: (double value) => setState(() {
+              this.offset = value;
+            }),
+          ),
+        ),
         buildDateTimeRangeExamples(context),
       ],
     );
