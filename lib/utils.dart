@@ -16,6 +16,71 @@ DateTime getNowPlusOneMonth() {
 DateTime getDateWithoutTime(DateTime dateTime) =>
     DateTime(dateTime.year, dateTime.month, dateTime.day);
 
+extension DateTimeUtils on DateTime {
+  /// Returns the first moment of the day
+  /// For 2021-02-24T13:51:23.514324 returns 2021-02-24T00:00.000000
+  DateTime get beginningOfDay => DateTime(year, month, day);
+
+  /// Returns the last moment of the day
+  /// For 2021-02-24T13:51:23.514324 returns 2021-02-24T23:59:59.999999
+  DateTime get endingOfDay => DateTime(year, month, day, 23, 59, 59, 999, 999);
+
+  DateTime get firstDayOfWeek {
+    final durationToBeginningOfWeek = Duration(days: this.weekday % 7);
+    return subtract(durationToBeginningOfWeek).beginningOfDay;
+  }
+
+  DateTime get lastDayOfWeek {
+    final durationToEndingOfWeek = Duration(days: 7 - this.weekday % 7 - 1);
+    return add(durationToEndingOfWeek).beginningOfDay;
+  }
+
+  DateTime get firstDayOfMonth => DateTime(year, month);
+
+  DateTime get lastDayOfMonth {
+    var beginningNextMonth = (month < 12)
+        ? new DateTime(year, month + 1, 1)
+        : new DateTime(year + 1, 1, 1);
+    return beginningNextMonth.subtract(new Duration(days: 1));
+  }
+
+  DateTimeRange getRangeOfMonth() {
+    return DateTimeRange(
+      start: firstDayOfMonth.beginningOfDay,
+      end: lastDayOfMonth.endingOfDay,
+    );
+  }
+
+  DateTimeRange getRangeOfWeek() {
+    return DateTimeRange(
+      start: firstDayOfWeek.beginningOfDay,
+      end: lastDayOfWeek.endingOfDay,
+    );
+  }
+
+  DateTime adding({
+    int year = 0,
+    int month = 0,
+    int day = 0,
+    int hour = 0,
+    int minute = 0,
+    int second = 0,
+    int millisecond = 0,
+    int microsecond = 0,
+  }) {
+    return DateTime(
+      this.year + year,
+      this.month + month,
+      this.day + day,
+      this.hour + hour,
+      this.minute + minute,
+      this.second + second,
+      this.millisecond + millisecond,
+      this.microsecond + microsecond,
+    );
+  }
+}
+
 double toDouble(dynamic value, {double defaultValue = 0.0}) {
   if (value is double)
     return value;

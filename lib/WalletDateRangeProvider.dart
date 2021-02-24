@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/utils.dart';
 
 import 'api/DataSource.dart';
 
-class WalletDateRangeProvider {
+class WalletDateRangeCalculator {
   final WalletDateRange dateRange;
 
-  WalletDateRangeProvider(this.dateRange);
+  WalletDateRangeCalculator(this.dateRange);
 
-  DateTimeRange getDateTimeRangeFor({@required DateTime now}) {
+  DateTimeRange getDateTimeRangeFor({@required DateTime now, int index = 0}) {
     switch (dateRange.type) {
       case WalletDateRangeType.currentMonth:
-        return getCurrentMonthTimeRange(now: now);
+        return now.adding(month: index).getRangeOfMonth();
       case WalletDateRangeType.currentWeek:
-        return getCurrentWeekTimeRange(now: now);
+        return now.adding(day: 7 * index).getRangeOfWeek();
       case WalletDateRangeType.last30Days:
         return getLast30DaysTimeRange(now: now);
       default:
