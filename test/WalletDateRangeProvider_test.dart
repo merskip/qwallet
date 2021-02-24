@@ -97,6 +97,26 @@ void main() {
     expect(dateTimeRange.start, DateTime(2021, 1, 25).beginningOfDay);
     expect(dateTimeRange.end, DateTime(2021, 2, 24).endingOfDay);
   });
+
+  test("Test yesterday last 30 days", () {
+    final dateTimeRange = _getDateTimeRange(
+      dateRange: WalletDateRange(type: WalletDateRangeType.last30Days),
+      now: DateTime(2021, 2, 24),
+      index: -1,
+    );
+    expect(dateTimeRange.start, DateTime(2021, 1, 24).beginningOfDay);
+    expect(dateTimeRange.end, DateTime(2021, 2, 23).endingOfDay);
+  });
+
+  test("Test tomorrow last 30 days", () {
+    final dateTimeRange = _getDateTimeRange(
+      dateRange: WalletDateRange(type: WalletDateRangeType.last30Days),
+      now: DateTime(2021, 2, 24),
+      index: 1,
+    );
+    expect(dateTimeRange.start, DateTime(2021, 1, 26).beginningOfDay);
+    expect(dateTimeRange.end, DateTime(2021, 2, 25).endingOfDay);
+  });
 }
 
 DateTimeRange _getDateTimeRange({

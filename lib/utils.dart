@@ -58,6 +58,13 @@ extension DateTimeUtils on DateTime {
     );
   }
 
+  DateTimeRange getRangeFromDaysAgo(int daysAgo) {
+    return DateTimeRange(
+      start: this.subtract(Duration(days: daysAgo)).beginningOfDay,
+      end: this.endingOfDay,
+    );
+  }
+
   DateTime adding({
     int year = 0,
     int month = 0,
