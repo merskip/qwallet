@@ -30,6 +30,7 @@ class _DialogContent extends StatefulWidget {
 
 class _DialogContentState extends State<_DialogContent> {
   WalletDateRangeType type = WalletDateRangeType.currentMonth;
+  int weekdayStart = DateTime.monday;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +39,7 @@ class _DialogContentState extends State<_DialogContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         buildTypeSelection(context),
+        if (type == WalletDateRangeType.currentWeek) buildWeekdayStart(context),
         buildDateTimeRangeExamples(context),
       ],
     );
@@ -64,6 +66,48 @@ class _DialogContentState extends State<_DialogContent> {
         ],
         onChanged: (newValue) => setState(() {
           this.type = newValue;
+        }),
+      ),
+    );
+  }
+
+  Widget buildWeekdayStart(BuildContext context) {
+    return DetailsItemTile(
+      title: Text("#Weekday start"),
+      value: DropdownButton<int>(
+        value: this.weekdayStart,
+        items: [
+          DropdownMenuItem(
+            child: Text("#Monday"),
+            value: DateTime.monday,
+          ),
+          DropdownMenuItem(
+            child: Text("#Tuesday"),
+            value: DateTime.tuesday,
+          ),
+          DropdownMenuItem(
+            child: Text("#Wednesday"),
+            value: DateTime.wednesday,
+          ),
+          DropdownMenuItem(
+            child: Text("#Thursday"),
+            value: DateTime.thursday,
+          ),
+          DropdownMenuItem(
+            child: Text("#Friday"),
+            value: DateTime.friday,
+          ),
+          DropdownMenuItem(
+            child: Text("#Saturday"),
+            value: DateTime.saturday,
+          ),
+          DropdownMenuItem(
+            child: Text("#Sunday"),
+            value: DateTime.sunday,
+          ),
+        ],
+        onChanged: (newValue) => setState(() {
+          this.weekdayStart = newValue;
         }),
       ),
     );
