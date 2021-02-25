@@ -89,6 +89,10 @@ extension DateTimeUtils on DateTime {
 }
 
 extension DateTimeRangeUtils on DateTimeRange {
+  bool contains(DateTime dateTime) {
+    return dateTime.isAfter(start) && dateTime.isBefore(end);
+  }
+
   DateTimeRange adding({
     int year = 0,
     int month = 0,

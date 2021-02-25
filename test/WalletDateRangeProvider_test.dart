@@ -38,6 +38,7 @@ void main() {
     );
     expect(dateTimeRange.start, DateTime(2021, 2, 1).beginningOfDay);
     expect(dateTimeRange.end, DateTime(2021, 2, 28).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), true);
   });
 
   test("Test previous month", () {
@@ -48,6 +49,7 @@ void main() {
     );
     expect(dateTimeRange.start, DateTime(2021, 1, 1).beginningOfDay);
     expect(dateTimeRange.end, DateTime(2021, 1, 31).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
   });
 
   test("Test next month", () {
@@ -58,6 +60,7 @@ void main() {
     );
     expect(dateTimeRange.start, DateTime(2021, 3, 1).beginningOfDay);
     expect(dateTimeRange.end, DateTime(2021, 3, 31).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
   });
 
   test("Test current week", () {
@@ -67,6 +70,7 @@ void main() {
     );
     expect(dateTimeRange.start, DateTime(2021, 2, 21).beginningOfDay);
     expect(dateTimeRange.end, DateTime(2021, 2, 27).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), true);
   });
 
   test("Test previous week", () {
@@ -77,6 +81,7 @@ void main() {
     );
     expect(dateTimeRange.start, DateTime(2021, 2, 14).beginningOfDay);
     expect(dateTimeRange.end, DateTime(2021, 2, 20).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
   });
 
   test("Test next week", () {
@@ -87,6 +92,7 @@ void main() {
     );
     expect(dateTimeRange.start, DateTime(2021, 2, 28).beginningOfDay);
     expect(dateTimeRange.end, DateTime(2021, 3, 6).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
   });
 
   test("Test last 30 days", () {
@@ -96,6 +102,7 @@ void main() {
     );
     expect(dateTimeRange.start, DateTime(2021, 1, 25).beginningOfDay);
     expect(dateTimeRange.end, DateTime(2021, 2, 24).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), true);
   });
 
   test("Test yesterday last 30 days", () {
@@ -106,6 +113,7 @@ void main() {
     );
     expect(dateTimeRange.start, DateTime(2021, 1, 24).beginningOfDay);
     expect(dateTimeRange.end, DateTime(2021, 2, 23).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
   });
 
   test("Test tomorrow last 30 days", () {
@@ -116,6 +124,7 @@ void main() {
     );
     expect(dateTimeRange.start, DateTime(2021, 1, 26).beginningOfDay);
     expect(dateTimeRange.end, DateTime(2021, 2, 25).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), true);
   });
 }
 
