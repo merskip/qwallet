@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/WalletDateRangeProvider.dart';
 import 'package:qwallet/api/Category.dart';
+import 'package:qwallet/utils.dart';
 
 import '../Currency.dart';
 import '../Money.dart';
@@ -41,9 +42,11 @@ class Wallet extends Model<Wallet> {
 
 class WalletDateRange {
   final WalletDateRangeType type;
+  final int weekdayStart;
 
   WalletDateRange({
     this.type,
+    this.weekdayStart,
   });
 
   DateTimeRange getDateTimeRange({DateTime now, int index = 0}) {
@@ -61,24 +64,14 @@ enum WalletDateRangeType {
 }
 
 extension DocumentSnapshotWalletTimeRangeConverting on DocumentSnapshot {
-  WalletDateRange getWalletTimeRange(String field) {
-    final data = getMap<String, dynamic>(field);
-    final type = getDateRangeType(rawValue: data['type']);
+  WalletDateRange getWalletTimeRange(dynamic field) {
+    final fieldPath = toFieldPath(field);
+    final type =
+        getOneOf(fieldPath.adding("type"), WalletDateRangeType.values);
+    final weekdayStart = getInt(fieldPath.adding("weekdayStart"));
     return WalletDateRange(
-      type: type,
+      type: type ?? WalletDateRangeType.currentMonth,
+      weekdayStart: weekdayStart ?? 0,
     );
-  }
-
-  static WalletDateRangeType getDateRangeType({@required String rawValue}) {
-    switch (rawValue) {
-      case "currentMonth":
-        return WalletDateRangeType.currentMonth;
-      case "currentWeek":
-        return WalletDateRangeType.currentWeek;
-      case "last30Days":
-        return WalletDateRangeType.last30Days;
-      default:
-        return null;
-    }
   }
 }

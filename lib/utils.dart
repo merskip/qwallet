@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -218,4 +219,29 @@ extension DateTimeRangeFormatting on DateTimeRange {
         effectiveSeparator +
         effectiveDateFormat.format(end);
   }
+}
+
+extension FieldPathAdding on FieldPath {
+  FieldPath adding(dynamic components) {
+    List<String> addComponents;
+    if (components is String)
+      addComponents = [components];
+    else if (components is List<String>)
+      addComponents = addComponents;
+    else if (components is FieldPath)
+      addComponents = components.components;
+    else
+      throw ArgumentError.value(
+          components, "Must be String or List<String> or FieldPath");
+    return FieldPath(this.components + addComponents);
+  }
+}
+
+FieldPath toFieldPath(dynamic field) {
+  if (field is String)
+    return FieldPath.fromString(field);
+  else if (field is FieldPath)
+    return field;
+  else
+    return null;
 }

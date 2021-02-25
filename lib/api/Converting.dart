@@ -9,19 +9,19 @@ import '../utils.dart';
 import 'Model.dart';
 
 extension DocumentSnapshotConverting on DocumentSnapshot {
-  String getString(String field) {
+  String getString(dynamic field) {
     return _getOrNull(field);
   }
 
-  int getInt(String field) {
+  int getInt(dynamic field) {
     return _getOrNull(field);
   }
 
-  bool getBool(String field) {
+  bool getBool(dynamic field) {
     return _getOrNull(field);
   }
 
-  double getDouble(String field) {
+  double getDouble(dynamic field) {
     final value = _getOrNull(field);
     if (value is double)
       return value;
@@ -31,7 +31,7 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
       return null;
   }
 
-  Map<K, V> getMap<K, V>(String field) {
+  Map<K, V> getMap<K, V>(dynamic field) {
     final value = _getOrNull(field);
     if (value is Map<K, V>)
       return value;
@@ -39,16 +39,16 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
       return null;
   }
 
-  Reference<T> getReference<T>(String field) {
+  Reference<T> getReference<T>(dynamic field) {
     final value = _getOrNull(field) as DocumentReference;
     return value != null ? Reference(value) : null;
   }
 
-  List<T> getList<T>(String field) {
+  List<T> getList<T>(dynamic field) {
     return _getOrNull(field)?.cast<T>();
   }
 
-  T getOneOf<T>(String field, List<T> values) {
+  T getOneOf<T>(dynamic field, List<T> values) {
     final prefix = T.toString();
     final value = _getOrNull(field);
     final prefixedValue = prefix + "." + value;
@@ -58,33 +58,33 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
     );
   }
 
-  Money getMoney(String amountField, String currencyField) {
+  Money getMoney(dynamic amountField, dynamic currencyField) {
     return Money(getDouble(amountField), getCurrency(currencyField));
   }
 
-  Currency getCurrency(String field) {
+  Currency getCurrency(dynamic field) {
     return Currency.fromCode(getString(field));
   }
 
-  DateTime getDateTime(String field) {
+  DateTime getDateTime(dynamic field) {
     final value = _getOrNull(field) as Timestamp;
     return value?.toDate();
   }
 
-  Color getColorHex(String field) {
+  Color getColorHex(dynamic field) {
     return colorFromHex(_getOrNull(field));
   }
 
-  IconData getIconData(String field) {
+  IconData getIconData(dynamic field) {
     final value = _getOrNull(field);
     return deserializeIcon(value);
   }
 
-  User getUser(String field, List<User> users) {
+  User getUser(dynamic field, List<User> users) {
     return users.getByUid(getString(field));
   }
 
-  dynamic _getOrNull(String field) {
+  dynamic _getOrNull(dynamic field) {
     try {
       return exists ? get(field) : null;
     } on StateError {
