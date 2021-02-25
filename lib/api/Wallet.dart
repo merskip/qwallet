@@ -45,7 +45,7 @@ class WalletDateRange {
 
   WalletDateRange({
     this.type,
-    this.weekdayStart,
+    this.weekdayStart = 1,
   });
 
   DateTimeRange getDateTimeRange({DateTime now, int index = 0}) {

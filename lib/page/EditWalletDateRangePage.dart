@@ -132,6 +132,7 @@ class _EditWalletDateRangePageContentState
   String getExampleDateRange(int index) {
     final dateRange = WalletDateRange(
       type: type,
+      weekdayStart: weekdayStart,
     );
     return dateRange.getDateTimeRange(index: index).formatted();
   }

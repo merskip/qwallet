@@ -99,6 +99,86 @@ void main() {
     expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
   });
 
+  test("Test current week when week start with sunday", () {
+    final dateTimeRange = _getDateTimeRange(
+      dateRange: WalletDateRange(
+        type: WalletDateRangeType.currentWeek,
+        weekdayStart: DateTime.sunday,
+      ),
+      now: DateTime(2021, 2, 24),
+    );
+    expect(dateTimeRange.start, DateTime(2021, 2, 21).beginningOfDay);
+    expect(dateTimeRange.end, DateTime(2021, 2, 27).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), true);
+  });
+
+  test("Test previous week when week start with sunday", () {
+    final dateTimeRange = _getDateTimeRange(
+      dateRange: WalletDateRange(
+        type: WalletDateRangeType.currentWeek,
+        weekdayStart: DateTime.sunday,
+      ),
+      now: DateTime(2021, 2, 24),
+      index: -1,
+    );
+    expect(dateTimeRange.start, DateTime(2021, 2, 14).beginningOfDay);
+    expect(dateTimeRange.end, DateTime(2021, 2, 20).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
+  });
+
+  test("Test next week when week start with sunday", () {
+    final dateTimeRange = _getDateTimeRange(
+      dateRange: WalletDateRange(
+        type: WalletDateRangeType.currentWeek,
+        weekdayStart: DateTime.sunday,
+      ),
+      now: DateTime(2021, 2, 24),
+      index: 1,
+    );
+    expect(dateTimeRange.start, DateTime(2021, 2, 28).beginningOfDay);
+    expect(dateTimeRange.end, DateTime(2021, 3, 6).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
+  });
+
+  test("Test result of calculation for a week contains now", () {
+    final dateRange = DateTimeRange(
+      start: DateTime(2021, 1, 1),
+      end: DateTime(2021, 12, 31),
+    );
+    final dates = List.generate(
+      dateRange.duration.inDays,
+      (i) => dateRange.start.adding(day: i),
+    );
+    final weekdays = [
+      DateTime.monday,
+      DateTime.tuesday,
+      DateTime.wednesday,
+      DateTime.thursday,
+      DateTime.friday,
+      DateTime.saturday,
+      DateTime.sunday
+    ];
+
+    for (final now in dates) {
+      for (final weekdayStart in weekdays) {
+        final dateTimeRange = _getDateTimeRange(
+          dateRange: WalletDateRange(
+            type: WalletDateRangeType.currentWeek,
+            weekdayStart: weekdayStart,
+          ),
+          now: now,
+        );
+        expect(
+          dateTimeRange.contains(now),
+          true,
+          reason:
+              "now=$now, weekdayStart=$weekdayStart doesn't contains today,\n"
+              "returned $dateTimeRange.",
+        );
+      }
+    }
+  });
+
   test("Test last 30 days", () {
     final dateTimeRange = _getDateTimeRange(
       dateRange: WalletDateRange(type: WalletDateRangeType.last30Days),

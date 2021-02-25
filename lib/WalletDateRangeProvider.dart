@@ -21,6 +21,9 @@ class WalletDateRangeCalculator {
   }
 
   DateTimeRange _getDateRangeCurrentWeek(DateTime now, int index) {
-    return now.adding(day: 7 * index).getRangeOfWeek();
+    var week = now.getRangeOfWeek();
+    week = week.adding(day: dateRange.weekdayStart - 1);
+    if (now.weekday < dateRange.weekdayStart) week = week.adding(day: -7);
+    return week.adding(day: 7 * index);
   }
 }

@@ -91,7 +91,8 @@ extension DateTimeUtils on DateTime {
 
 extension DateTimeRangeUtils on DateTimeRange {
   bool contains(DateTime dateTime) {
-    return dateTime.isAfter(start) && dateTime.isBefore(end);
+    return (dateTime == start || dateTime.isAfter(start)) &&
+        (dateTime == end || dateTime.isBefore(end));
   }
 
   DateTimeRange adding({
