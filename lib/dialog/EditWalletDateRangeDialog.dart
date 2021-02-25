@@ -30,7 +30,7 @@ class _DialogContent extends StatefulWidget {
 
 class _DialogContentState extends State<_DialogContent> {
   WalletDateRangeType type = WalletDateRangeType.currentMonth;
-  double offset = 0.5;
+  double offset = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +42,9 @@ class _DialogContentState extends State<_DialogContent> {
         DetailsItemTile(
           title: Text("#Offset"),
           value: Slider(
-            min: 0,
-            max: 30,
-            divisions: 30,
+            min: -31,
+            max: 31,
+            divisions: 62,
             value: offset,
             label: offset.toInt().toString(),
             onChanged: (double value) => setState(() {
@@ -86,18 +86,30 @@ class _DialogContentState extends State<_DialogContent> {
   Widget buildDateTimeRangeExamples(BuildContext context) {
     return DetailsItemTile(
       title: Text("#Exmples"),
-      value: Text(getExamplesDateRanges().map((r) => r.formatted()).join("\n")),
+      value: RichText(
+        text: TextSpan(
+          style: DefaultTextStyle.of(context).style,
+          children: [
+            TextSpan(text: getExampleDateRange(-2) + "\n"),
+            TextSpan(text: getExampleDateRange(-1) + "\n"),
+            TextSpan(
+              text: getExampleDateRange(0) + "\n",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            TextSpan(text: getExampleDateRange(1) + "\n"),
+            TextSpan(text: getExampleDateRange(2) + "\n"),
+          ],
+        ),
+      ),
+      // value: Text(getExamplesDateRanges().map((r) => r.formatted()).join("\n")),
     );
   }
 
-  List<DateTimeRange> getExamplesDateRanges() {
-    final dateRange = WalletDateRange(type: type);
-    return [
-      dateRange.getDateTimeRange(index: -2),
-      dateRange.getDateTimeRange(index: -1),
-      dateRange.getDateTimeRange(index: 0),
-      dateRange.getDateTimeRange(index: 1),
-      dateRange.getDateTimeRange(index: 2),
-    ];
+  String getExampleDateRange(int index) {
+    final dateRange = WalletDateRange(
+      type: type,
+      daysOffset: offset.toInt(),
+    );
+    return dateRange.getDateTimeRange(index: index).formatted();
   }
 }

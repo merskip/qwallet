@@ -88,6 +88,42 @@ extension DateTimeUtils on DateTime {
   }
 }
 
+extension DateTimeRangeUtils on DateTimeRange {
+  DateTimeRange adding({
+    int year = 0,
+    int month = 0,
+    int day = 0,
+    int hour = 0,
+    int minute = 0,
+    int second = 0,
+    int millisecond = 0,
+    int microsecond = 0,
+  }) {
+    return DateTimeRange(
+      start: start.adding(
+        year: year,
+        month: month,
+        day: day,
+        hour: hour,
+        minute: minute,
+        second: second,
+        millisecond: millisecond,
+        microsecond: microsecond,
+      ),
+      end: end.adding(
+        year: year,
+        month: month,
+        day: day,
+        hour: hour,
+        minute: minute,
+        second: second,
+        millisecond: millisecond,
+        microsecond: microsecond,
+      ),
+    );
+  }
+}
+
 double toDouble(dynamic value, {double defaultValue = 0.0}) {
   if (value is double)
     return value;
@@ -172,7 +208,7 @@ extension DateTimeRangeFormatting on DateTimeRange {
     DateFormat dateFormat,
     String separator,
   }) {
-    final effectiveDateFormat = dateFormat ?? DateFormat("d.MM.yyyy");
+    final effectiveDateFormat = dateFormat ?? DateFormat("dd.MM.yyyy");
     final effectiveSeparator = separator ?? " - ";
     return effectiveDateFormat.format(start) +
         effectiveSeparator +
