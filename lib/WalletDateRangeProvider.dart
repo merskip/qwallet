@@ -12,11 +12,15 @@ class WalletDateRangeCalculator {
       case WalletDateRangeType.currentMonth:
         return now.adding(month: index).getRangeOfMonth();
       case WalletDateRangeType.currentWeek:
-        return now.adding(day: 7 * index).getRangeOfWeek();
+        return _getDateRangeCurrentWeek(now, index);
       case WalletDateRangeType.last30Days:
         return now.adding(day: index).getRangeFromDaysAgo(30);
       default:
         return null;
     }
+  }
+
+  DateTimeRange _getDateRangeCurrentWeek(DateTime now, int index) {
+    return now.adding(day: 7 * index).getRangeOfWeek();
   }
 }

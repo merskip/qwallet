@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/WalletDateRangeProvider.dart';
 import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/utils.dart';
 
 import '../Currency.dart';
 import '../Money.dart';
@@ -42,20 +41,16 @@ class Wallet extends Model<Wallet> {
 
 class WalletDateRange {
   final WalletDateRangeType type;
-  final int daysOffset;
 
   WalletDateRange({
     this.type,
-    this.daysOffset,
   });
 
   DateTimeRange getDateTimeRange({DateTime now, int index = 0}) {
-    return WalletDateRangeCalculator(this)
-        .getDateTimeRangeFor(
-          now: now ?? DateTime.now(),
-          index: index,
-        )
-        .adding(day: daysOffset ?? 0);
+    return WalletDateRangeCalculator(this).getDateTimeRangeFor(
+      now: now ?? DateTime.now(),
+      index: index,
+    );
   }
 }
 
