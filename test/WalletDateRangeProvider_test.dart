@@ -20,15 +20,19 @@ void main() {
   });
 
   test("Test first day of week", () {
-    expect(DateTime(2021, 2, 24).firstDayOfWeek, DateTime(2021, 2, 21));
-    expect(DateTime(2021, 2, 21).firstDayOfWeek, DateTime(2021, 2, 21));
-    expect(DateTime(2021, 2, 27).firstDayOfWeek, DateTime(2021, 2, 21));
+    expect(DateTime(2021, 2, 24).firstDayOfWeek, DateTime(2021, 2, 22));
+    expect(DateTime(2021, 2, 22).firstDayOfWeek, DateTime(2021, 2, 22));
+    expect(DateTime(2021, 2, 28).firstDayOfWeek, DateTime(2021, 2, 22));
+    expect(DateTime(2021, 2, 21).firstDayOfWeek, DateTime(2021, 2, 15));
+    expect(DateTime(2021, 2, 29).firstDayOfWeek, DateTime(2021, 2, 29));
   });
 
   test("Test last day of week", () {
-    expect(DateTime(2021, 2, 24).lastDayOfWeek, DateTime(2021, 2, 27));
-    expect(DateTime(2021, 2, 21).lastDayOfWeek, DateTime(2021, 2, 27));
-    expect(DateTime(2021, 2, 27).lastDayOfWeek, DateTime(2021, 2, 27));
+    expect(DateTime(2021, 2, 24).lastDayOfWeek, DateTime(2021, 2, 28));
+    expect(DateTime(2021, 2, 22).lastDayOfWeek, DateTime(2021, 2, 28));
+    expect(DateTime(2021, 2, 28).lastDayOfWeek, DateTime(2021, 2, 28));
+    expect(DateTime(2021, 2, 21).lastDayOfWeek, DateTime(2021, 2, 21));
+    expect(DateTime(2021, 2, 29).lastDayOfWeek, DateTime(2021, 3, 7));
   });
 
   test("Test current month", () {
@@ -68,8 +72,8 @@ void main() {
       dateRange: WalletDateRange(type: WalletDateRangeType.currentWeek),
       now: DateTime(2021, 2, 24),
     );
-    expect(dateTimeRange.start, DateTime(2021, 2, 21).beginningOfDay);
-    expect(dateTimeRange.end, DateTime(2021, 2, 27).endingOfDay);
+    expect(dateTimeRange.start, DateTime(2021, 2, 22).beginningOfDay);
+    expect(dateTimeRange.end, DateTime(2021, 2, 28).endingOfDay);
     expect(dateTimeRange.contains(DateTime(2021, 2, 24)), true);
   });
 
@@ -79,8 +83,8 @@ void main() {
       now: DateTime(2021, 2, 24),
       index: -1,
     );
-    expect(dateTimeRange.start, DateTime(2021, 2, 14).beginningOfDay);
-    expect(dateTimeRange.end, DateTime(2021, 2, 20).endingOfDay);
+    expect(dateTimeRange.start, DateTime(2021, 2, 15).beginningOfDay);
+    expect(dateTimeRange.end, DateTime(2021, 2, 21).endingOfDay);
     expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
   });
 
@@ -90,8 +94,8 @@ void main() {
       now: DateTime(2021, 2, 24),
       index: 1,
     );
-    expect(dateTimeRange.start, DateTime(2021, 2, 28).beginningOfDay);
-    expect(dateTimeRange.end, DateTime(2021, 3, 6).endingOfDay);
+    expect(dateTimeRange.start, DateTime(2021, 2, 29).beginningOfDay);
+    expect(dateTimeRange.end, DateTime(2021, 3, 7).endingOfDay);
     expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
   });
 

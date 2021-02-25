@@ -27,12 +27,12 @@ extension DateTimeUtils on DateTime {
   DateTime get endingOfDay => DateTime(year, month, day, 23, 59, 59, 999, 999);
 
   DateTime get firstDayOfWeek {
-    final durationToBeginningOfWeek = Duration(days: this.weekday % 7);
+    final durationToBeginningOfWeek = Duration(days: weekday - 1);
     return subtract(durationToBeginningOfWeek).beginningOfDay;
   }
 
   DateTime get lastDayOfWeek {
-    final durationToEndingOfWeek = Duration(days: 7 - this.weekday % 7 - 1);
+    final durationToEndingOfWeek = Duration(days: 7 - weekday);
     return add(durationToEndingOfWeek).beginningOfDay;
   }
 

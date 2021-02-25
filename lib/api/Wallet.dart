@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/WalletDateRangeProvider.dart';
 import 'package:qwallet/api/Category.dart';
@@ -66,8 +65,7 @@ enum WalletDateRangeType {
 extension DocumentSnapshotWalletTimeRangeConverting on DocumentSnapshot {
   WalletDateRange getWalletTimeRange(dynamic field) {
     final fieldPath = toFieldPath(field);
-    final type =
-        getOneOf(fieldPath.adding("type"), WalletDateRangeType.values);
+    final type = getOneOf(fieldPath.adding("type"), WalletDateRangeType.values);
     final weekdayStart = getInt(fieldPath.adding("weekdayStart"));
     return WalletDateRange(
       type: type ?? WalletDateRangeType.currentMonth,
