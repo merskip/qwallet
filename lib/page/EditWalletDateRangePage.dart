@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/utils.dart';
-import 'package:qwallet/widget/DetailsItemTile.dart';
 
 class EditWalletDateRangePage extends StatelessWidget {
   @override
@@ -29,103 +28,129 @@ class _EditWalletDateRangePageContentState
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         buildTypeSelection(context),
-        if (type == WalletDateRangeType.currentWeek) buildWeekdayStart(context),
+        if (type == WalletDateRangeType.currentWeek)
+          buildWeekdayStartSelection(context),
+        Divider(),
         buildDateTimeRangeExamples(context),
       ],
     );
   }
 
   Widget buildTypeSelection(BuildContext context) {
-    return DetailsItemTile(
-      title: Text("#Type"),
-      value: DropdownButton<WalletDateRangeType>(
-        value: this.type,
-        items: [
-          DropdownMenuItem(
-            child: Text("#Current month"),
-            value: WalletDateRangeType.currentMonth,
-          ),
-          DropdownMenuItem(
-            child: Text("#Current week"),
-            value: WalletDateRangeType.currentWeek,
-          ),
-          DropdownMenuItem(
-            child: Text("#Last 30 days"),
-            value: WalletDateRangeType.last30Days,
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("#Type"),
+          Wrap(
+            spacing: 8,
+            children: [
+              buildDateRangeTypeChip(context, WalletDateRangeType.currentMonth),
+              buildDateRangeTypeChip(context, WalletDateRangeType.currentWeek),
+              buildDateRangeTypeChip(context, WalletDateRangeType.last30Days),
+            ],
           ),
         ],
-        onChanged: (newValue) => setState(() {
-          this.type = newValue;
-        }),
       ),
     );
   }
 
-  Widget buildWeekdayStart(BuildContext context) {
-    return DetailsItemTile(
-      title: Text("#Weekday start"),
-      value: DropdownButton<int>(
-        value: this.weekdayStart,
-        items: [
-          DropdownMenuItem(
-            child: Text("#Monday"),
-            value: DateTime.monday,
-          ),
-          DropdownMenuItem(
-            child: Text("#Tuesday"),
-            value: DateTime.tuesday,
-          ),
-          DropdownMenuItem(
-            child: Text("#Wednesday"),
-            value: DateTime.wednesday,
-          ),
-          DropdownMenuItem(
-            child: Text("#Thursday"),
-            value: DateTime.thursday,
-          ),
-          DropdownMenuItem(
-            child: Text("#Friday"),
-            value: DateTime.friday,
-          ),
-          DropdownMenuItem(
-            child: Text("#Saturday"),
-            value: DateTime.saturday,
-          ),
-          DropdownMenuItem(
-            child: Text("#Sunday"),
-            value: DateTime.sunday,
+  Widget buildDateRangeTypeChip(
+      BuildContext context, WalletDateRangeType type) {
+    return ChoiceChip(
+      label: Text({
+        WalletDateRangeType.currentMonth: "#Current month",
+        WalletDateRangeType.currentWeek: "#Current week",
+        WalletDateRangeType.last30Days: "#Last 30 days",
+      }[type]),
+      selected: this.type == type,
+      onSelected: (isSelected) {
+        if (isSelected) {
+          setState(() {
+            this.type = type;
+          });
+        }
+      },
+    );
+  }
+
+  Widget buildWeekdayStartSelection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("#Weekdaty start"),
+          Wrap(
+            spacing: 8,
+            children: [
+              buildWeekdayChip(context, DateTime.monday),
+              buildWeekdayChip(context, DateTime.tuesday),
+              buildWeekdayChip(context, DateTime.wednesday),
+              buildWeekdayChip(context, DateTime.thursday),
+              buildWeekdayChip(context, DateTime.friday),
+              buildWeekdayChip(context, DateTime.saturday),
+              buildWeekdayChip(context, DateTime.sunday),
+            ],
           ),
         ],
-        onChanged: (newValue) => setState(() {
-          this.weekdayStart = newValue;
-        }),
       ),
+    );
+  }
+
+  Widget buildWeekdayChip(BuildContext context, int weekday) {
+    return ChoiceChip(
+      label: Text({
+        DateTime.monday: "#Monday",
+        DateTime.tuesday: "#Tuesday",
+        DateTime.wednesday: "#Wednesday",
+        DateTime.thursday: "#Thursday",
+        DateTime.friday: "#Friday",
+        DateTime.saturday: "#Saturday",
+        DateTime.sunday: "#Sunday",
+      }[weekday]),
+      selected: this.weekdayStart == weekday,
+      onSelected: (isSelected) {
+        if (isSelected) {
+          setState(() {
+            this.weekdayStart = weekday;
+          });
+        }
+      },
     );
   }
 
   Widget buildDateTimeRangeExamples(BuildContext context) {
-    return DetailsItemTile(
-      title: Text("#Exmples"),
-      value: RichText(
-        text: TextSpan(
-          style: DefaultTextStyle.of(context).style,
-          children: [
-            TextSpan(text: getExampleDateRange(-2) + "\n"),
-            TextSpan(text: getExampleDateRange(-1) + "\n"),
-            TextSpan(
-              text: getExampleDateRange(0) + "\n",
-              style: TextStyle(fontWeight: FontWeight.bold),
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        children: [
+          Text(
+            "#Examples",
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+          SizedBox(height: 4),
+          RichText(
+            text: TextSpan(
+              style: DefaultTextStyle.of(context).style,
+              children: [
+                TextSpan(text: getExampleDateRange(-2) + "\n"),
+                TextSpan(text: getExampleDateRange(-1) + "\n"),
+                TextSpan(
+                  text: getExampleDateRange(0) + "\n",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextSpan(text: getExampleDateRange(1) + "\n"),
+                TextSpan(text: getExampleDateRange(2) + "\n"),
+              ],
             ),
-            TextSpan(text: getExampleDateRange(1) + "\n"),
-            TextSpan(text: getExampleDateRange(2) + "\n"),
-          ],
-        ),
+          ),
+        ],
       ),
-      // value: Text(getExamplesDateRanges().map((r) => r.formatted()).join("\n")),
     );
   }
 
