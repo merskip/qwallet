@@ -3,32 +3,26 @@ import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
 
-class EditWalletDateRangeDialog extends StatelessWidget {
+class EditWalletDateRangePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text("#Edit date range of wallet"),
-      content: _DialogContent(),
-      actions: [
-        TextButton(
-          child: Text("#Cancel"),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        TextButton(
-          child: Text("#Apply"),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("#Edit date range of wallet"),
+      ),
+      body: _EditWalletDateRangePageContent(),
     );
   }
 }
 
-class _DialogContent extends StatefulWidget {
+class _EditWalletDateRangePageContent extends StatefulWidget {
   @override
-  _DialogContentState createState() => _DialogContentState();
+  _EditWalletDateRangePageContentState createState() =>
+      _EditWalletDateRangePageContentState();
 }
 
-class _DialogContentState extends State<_DialogContent> {
+class _EditWalletDateRangePageContentState
+    extends State<_EditWalletDateRangePageContent> {
   WalletDateRangeType type = WalletDateRangeType.currentMonth;
   int weekdayStart = DateTime.monday;
 

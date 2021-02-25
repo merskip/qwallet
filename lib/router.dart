@@ -17,6 +17,7 @@ import 'page/AddCategoryPage.dart';
 import 'page/AddWalletPage.dart';
 import 'page/CategoriesPage.dart';
 import 'page/EditCategoryPage.dart';
+import 'page/EditWalletDateRangePage.dart';
 import 'page/ReportsPage.dart';
 import 'page/SettingsPage.dart';
 import 'page/TransactionsListPage.dart';
@@ -173,6 +174,16 @@ void initRoutes(fluro.Router router) {
       return TransactionsListPage(
         walletRef: DataSource.instance.getWalletReference(walletId),
       );
+    }),
+  );
+
+  router.define(
+    "/wallet/:walletId/editDateRange",
+    transitionType: fluro.TransitionType.nativeModal,
+    handler: fluro.Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      final walletId = params["walletId"][0];
+      return EditWalletDateRangePage();
     }),
   );
 

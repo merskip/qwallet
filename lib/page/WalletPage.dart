@@ -108,10 +108,8 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   }
 
   void onSelectedEditDateRange(BuildContext context) async {
-    final dateRange = showDialog<WalletDateRange>(
-      context: context,
-      builder: (context) => EditWalletDateRangeDialog(),
-    );
+    final dateRange = await router.navigateTo(
+        context, "/wallet/${widget.wallet.id}/editDateRange");
     if (dateRange != null) {
       // TODO: Update wallet
       print(dateRange);
