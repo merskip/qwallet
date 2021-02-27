@@ -43,11 +43,13 @@ class WalletDateRange {
   final WalletDateRangeType type;
   final int monthStartDay;
   final int weekdayStart;
+  final int numberOfLastDays;
 
   WalletDateRange({
     this.type,
     this.monthStartDay = 1,
     this.weekdayStart = 1,
+    this.numberOfLastDays = 30,
   });
 
   DateTimeRange getDateTimeRange({DateTime now, int index = 0}) {
@@ -61,7 +63,7 @@ class WalletDateRange {
 enum WalletDateRangeType {
   currentMonth,
   currentWeek,
-  last30Days,
+  lastDays,
 }
 
 extension DocumentSnapshotWalletTimeRangeConverting on DocumentSnapshot {
@@ -70,10 +72,12 @@ extension DocumentSnapshotWalletTimeRangeConverting on DocumentSnapshot {
     final type = getOneOf(fieldPath.adding("type"), WalletDateRangeType.values);
     final monthStartDay = getInt(fieldPath.adding("monthStartDay"));
     final weekdayStart = getInt(fieldPath.adding("weekdayStart"));
+    final numberOfLastDays = getInt(fieldPath.adding("numberOfLastDays"));
     return WalletDateRange(
       type: type ?? WalletDateRangeType.currentMonth,
       monthStartDay: monthStartDay ?? 1,
       weekdayStart: weekdayStart ?? 1,
+      numberOfLastDays: numberOfLastDays ?? 30,
     );
   }
 }

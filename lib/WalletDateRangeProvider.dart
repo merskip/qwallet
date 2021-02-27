@@ -15,8 +15,8 @@ class WalletDateRangeCalculator {
         return _getDateRangeCurrentMonth(now, index);
       case WalletDateRangeType.currentWeek:
         return _getDateRangeCurrentWeek(now, index);
-      case WalletDateRangeType.last30Days:
-        return now.adding(day: index).getRangeFromDaysAgo(30);
+      case WalletDateRangeType.lastDays:
+        return getDateRangeLastDays(now, index);
       default:
         return null;
     }
@@ -51,5 +51,11 @@ class WalletDateRangeCalculator {
     week = week.adding(day: dateRange.weekdayStart - 1);
     if (now.weekday < dateRange.weekdayStart) week = week.adding(day: -7);
     return week.adding(day: 7 * index);
+  }
+
+  DateTimeRange getDateRangeLastDays(DateTime now, int index) {
+    return now
+        .adding(day: index)
+        .getRangeFromDaysAgo(dateRange.numberOfLastDays);
   }
 }

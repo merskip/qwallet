@@ -26,6 +26,7 @@ class _EditWalletDateRangePageContentState
   WalletDateRangeType type = WalletDateRangeType.currentMonth;
   int monthStartDay = 1;
   int weekdayStart = DateTime.monday;
+  int numberOfLastDays = 30;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +38,8 @@ class _EditWalletDateRangePageContentState
           buildMonthStartDayPicker(context),
         if (type == WalletDateRangeType.currentWeek)
           buildWeekdayStartSelection(context),
+        if (type == WalletDateRangeType.lastDays)
+          buildNumberOfDaysSelection(context),
         Divider(),
         buildDateTimeRangeExamples(context),
       ],
@@ -55,7 +58,7 @@ class _EditWalletDateRangePageContentState
             children: [
               buildDateRangeTypeChip(context, WalletDateRangeType.currentMonth),
               buildDateRangeTypeChip(context, WalletDateRangeType.currentWeek),
-              buildDateRangeTypeChip(context, WalletDateRangeType.last30Days),
+              buildDateRangeTypeChip(context, WalletDateRangeType.lastDays),
             ],
           ),
         ],
@@ -69,7 +72,7 @@ class _EditWalletDateRangePageContentState
       label: Text({
         WalletDateRangeType.currentMonth: "#Current month",
         WalletDateRangeType.currentWeek: "#Current week",
-        WalletDateRangeType.last30Days: "#Last 30 days",
+        WalletDateRangeType.lastDays: "#Last days",
       }[type]),
       selected: this.type == type,
       onSelected: (isSelected) {
@@ -90,6 +93,7 @@ class _EditWalletDateRangePageContentState
         children: [
           Text("#First day of month"),
           HorizontalDrawablePicker(
+            key: Key("firstDayOfMonth"),
             selectedIndex: monthStartDay - 1,
             itemCount: 31,
             itemWidth: 54,
@@ -152,6 +156,31 @@ class _EditWalletDateRangePageContentState
     );
   }
 
+  Widget buildNumberOfDaysSelection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("#Number of last days"),
+          HorizontalDrawablePicker(
+            key: Key("numberOfDays"),
+            selectedIndex: numberOfLastDays - 1,
+            itemCount: 90,
+            itemWidth: 54,
+            itemBuilder: (context, index) {
+              final day = index + 1;
+              return Text("$day");
+            },
+            onSelected: (index) => setState(() {
+              this.numberOfLastDays = index + 1;
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget buildDateTimeRangeExamples(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
@@ -187,6 +216,7 @@ class _EditWalletDateRangePageContentState
       type: type,
       weekdayStart: weekdayStart,
       monthStartDay: monthStartDay,
+      numberOfLastDays: numberOfLastDays,
     );
     return dateRange.getDateTimeRange(index: index).formatted();
   }
