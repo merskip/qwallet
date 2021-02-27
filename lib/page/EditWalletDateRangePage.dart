@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/HorizontalDrawablePicker.dart';
@@ -30,19 +31,21 @@ class _EditWalletDateRangePageContentState
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        buildTypeSelection(context),
-        if (type == WalletDateRangeType.currentMonth)
-          buildMonthStartDayPicker(context),
-        if (type == WalletDateRangeType.currentWeek)
-          buildWeekdayStartSelection(context),
-        if (type == WalletDateRangeType.lastDays)
-          buildNumberOfDaysSelection(context),
-        Divider(),
-        buildDateTimeRangeExamples(context),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildTypeSelection(context),
+          if (type == WalletDateRangeType.currentMonth)
+            buildMonthStartDayPicker(context),
+          if (type == WalletDateRangeType.currentWeek)
+            buildWeekdayStartSelection(context),
+          if (type == WalletDateRangeType.lastDays)
+            buildNumberOfDaysSelection(context),
+          Divider(),
+          buildExampleCalendar(context),
+        ],
+      ),
     );
   }
 
@@ -181,43 +184,91 @@ class _EditWalletDateRangePageContentState
     );
   }
 
-  Widget buildDateTimeRangeExamples(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
+  Widget buildExampleCalendar(BuildContext context) {
+    List<DateTimeRange> ranges = [
+      getExampleDateTimeRange(-1),
+      getExampleDateTimeRange(0),
+      getExampleDateTimeRange(1),
+    ];
+    final primaryColor = Theme.of(context).primaryColor as MaterialColor;
+    List<Color> rangesColors = [
+      primaryColor.shade50,
+      primaryColor.shade100,
+      primaryColor.shade400,
+      primaryColor.shade600,
+      primaryColor.shade900,
+    ];
+
+    final calendarRange = DateTimeRange(
+      start: ranges.first.start.firstDayOfWeek,
+      end: ranges.last.end.lastDayOfWeek.adding(day: 1).beginningOfDay,
+    );
+
+    final items = List<Widget>();
+    int lastMonth;
+    final weeks = calendarRange.getDays().split(DateTime.daysPerWeek);
+    for (final weekDays in weeks) {
+      if (lastMonth != weekDays.last.month) {
+        final monthFormat = DateFormat("MMMM");
+        items.add(Text(
+          monthFormat.format(weekDays.last),
+          textAlign: TextAlign.center,
+        ));
+      }
+      lastMonth = weekDays.last.month;
+
+      items.add(Row(
         children: [
-          Text(
-            "#Examples",
-            style: Theme.of(context).textTheme.subtitle1,
-          ),
-          SizedBox(height: 4),
-          RichText(
-            text: TextSpan(
-              style: DefaultTextStyle.of(context).style,
-              children: [
-                TextSpan(text: getExampleDateRange(-2) + "\n"),
-                TextSpan(text: getExampleDateRange(-1) + "\n"),
-                TextSpan(
-                  text: getExampleDateRange(0) + "\n",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+          ...weekDays.map((day) {
+            final range = ranges.firstWhere(
+              (range) => range.contains(day),
+              orElse: () => null,
+            );
+            Color color;
+            if (range != null) {
+              color = rangesColors[ranges.indexOf(range) + 1];
+            } else if (day.isBefore(ranges.first.start)) {
+              color = rangesColors.first;
+            } else if (day.isAfter(ranges.last.end)) {
+              color = rangesColors.last;
+            }
+
+            final isToday = day == DateTime.now().beginningOfDay;
+            return Flexible(
+              child: AnimatedContainer(
+                color: color,
+                duration: Duration(milliseconds: 100),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "${day.day}",
+                      style: TextStyle(
+                        fontWeight: isToday ? FontWeight.bold : null,
+                        color: isToday ? Colors.orange : null,
+                      ),
+                    ),
+                  ),
                 ),
-                TextSpan(text: getExampleDateRange(1) + "\n"),
-                TextSpan(text: getExampleDateRange(2) + "\n"),
-              ],
-            ),
-          ),
+              ),
+            );
+          }),
         ],
-      ),
+      ));
+    }
+
+    return Column(
+      children: items,
     );
   }
 
-  String getExampleDateRange(int index) {
+  DateTimeRange getExampleDateTimeRange(int index) {
     final dateRange = WalletDateRange(
       type: type,
       weekdayStart: weekdayStart,
       monthStartDay: monthStartDay,
       numberOfLastDays: numberOfLastDays,
     );
-    return dateRange.getDateTimeRange(index: index).formatted();
+    return dateRange.getDateTimeRange(index: index);
   }
 }

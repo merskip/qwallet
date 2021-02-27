@@ -95,6 +95,10 @@ extension DateTimeRangeUtils on DateTimeRange {
         (dateTime == end || dateTime.isBefore(end));
   }
 
+  List<DateTime> getDays() {
+    return List.generate(duration.inDays, (index) => start.adding(day: index));
+  }
+
   DateTimeRange adding({
     int year = 0,
     int month = 0,
@@ -245,4 +249,14 @@ FieldPath toFieldPath(dynamic field) {
     return field;
   else
     return null;
+}
+
+extension ListSplitting<T> on List<T> {
+  List<List<T>> split(int size) {
+    var chunks = List<List<T>>();
+    for (var i = 0; i < length; i += size) {
+      chunks.add(sublist(i, i + size > length ? length : i + size));
+    }
+    return chunks;
+  }
 }
