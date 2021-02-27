@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/HorizontalDrawablePicker.dart';
 
 class EditWalletDateRangePage extends StatelessWidget {
   @override
@@ -23,6 +24,7 @@ class _EditWalletDateRangePageContent extends StatefulWidget {
 class _EditWalletDateRangePageContentState
     extends State<_EditWalletDateRangePageContent> {
   WalletDateRangeType type = WalletDateRangeType.currentMonth;
+  int monthStartDay = 31;
   int weekdayStart = DateTime.monday;
 
   @override
@@ -31,11 +33,56 @@ class _EditWalletDateRangePageContentState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         buildTypeSelection(context),
+        if (type == WalletDateRangeType.currentMonth)
+          buildMonthStartDayPicker(context),
         if (type == WalletDateRangeType.currentWeek)
           buildWeekdayStartSelection(context),
         Divider(),
         buildDateTimeRangeExamples(context),
       ],
+    );
+  }
+
+  Widget buildMonthStartDayPicker(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("#First day of month"),
+          HorizontalDrawablePicker(
+            selectedIndex: monthStartDay - 1,
+            itemCount: 31,
+            itemWidth: 54,
+            itemBuilder: (context, index) {
+              final day = index + 1;
+              return buildMonthDayPickerItem(
+                  context, day, day == monthStartDay);
+            },
+            onSelected: (index) => setState(() {
+              this.monthStartDay = index + 1;
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildMonthDayPickerItem(
+      BuildContext context, int day, bool isSelected) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      child: Text(
+        "$day",
+        textAlign: TextAlign.center,
+        style: isSelected
+            ? TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                color: Theme.of(context).primaryColor,
+              )
+            : null,
+      ),
     );
   }
 

@@ -41,10 +41,12 @@ class Wallet extends Model<Wallet> {
 
 class WalletDateRange {
   final WalletDateRangeType type;
+  final int monthStartDay;
   final int weekdayStart;
 
   WalletDateRange({
     this.type,
+    this.monthStartDay = 1,
     this.weekdayStart = 1,
   });
 
@@ -66,10 +68,12 @@ extension DocumentSnapshotWalletTimeRangeConverting on DocumentSnapshot {
   WalletDateRange getWalletTimeRange(dynamic field) {
     final fieldPath = toFieldPath(field);
     final type = getOneOf(fieldPath.adding("type"), WalletDateRangeType.values);
+    final monthStartDay = getInt(fieldPath.adding("monthStartDay"));
     final weekdayStart = getInt(fieldPath.adding("weekdayStart"));
     return WalletDateRange(
       type: type ?? WalletDateRangeType.currentMonth,
-      weekdayStart: weekdayStart ?? 0,
+      monthStartDay: monthStartDay ?? 1,
+      weekdayStart: weekdayStart ?? 1,
     );
   }
 }
