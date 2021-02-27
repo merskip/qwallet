@@ -72,16 +72,21 @@ class _EditWalletDateRangePageContentState
       BuildContext context, int day, bool isSelected) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      child: Text(
-        "$day",
-        textAlign: TextAlign.center,
-        style: isSelected
-            ? TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                color: Theme.of(context).primaryColor,
-              )
-            : null,
+      child: Container(
+        height: MediaQuery.of(context).textScaleFactor * 24,
+        child: Center(
+          child: AnimatedDefaultTextStyle(
+            style: TextStyle(
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              fontSize: isSelected ? 24 : 16,
+              color: isSelected
+                  ? Theme.of(context).primaryColor
+                  : Theme.of(context).textTheme.bodyText1.color,
+            ),
+            duration: Duration(milliseconds: 100),
+            child: Text("$day"),
+          ),
+        ),
       ),
     );
   }
