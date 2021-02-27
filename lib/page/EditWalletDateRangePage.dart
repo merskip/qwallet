@@ -24,7 +24,7 @@ class _EditWalletDateRangePageContent extends StatefulWidget {
 class _EditWalletDateRangePageContentState
     extends State<_EditWalletDateRangePageContent> {
   WalletDateRangeType type = WalletDateRangeType.currentMonth;
-  int monthStartDay = 31;
+  int monthStartDay = 1;
   int weekdayStart = DateTime.monday;
 
   @override
@@ -40,54 +40,6 @@ class _EditWalletDateRangePageContentState
         Divider(),
         buildDateTimeRangeExamples(context),
       ],
-    );
-  }
-
-  Widget buildMonthStartDayPicker(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("#First day of month"),
-          HorizontalDrawablePicker(
-            selectedIndex: monthStartDay - 1,
-            itemCount: 31,
-            itemWidth: 54,
-            itemBuilder: (context, index) {
-              final day = index + 1;
-              return buildMonthDayPickerItem(
-                  context, day, day == monthStartDay);
-            },
-            onSelected: (index) => setState(() {
-              this.monthStartDay = index + 1;
-            }),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildMonthDayPickerItem(
-      BuildContext context, int day, bool isSelected) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      child: Container(
-        height: MediaQuery.of(context).textScaleFactor * 24,
-        child: Center(
-          child: AnimatedDefaultTextStyle(
-            style: TextStyle(
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              fontSize: isSelected ? 24 : 16,
-              color: isSelected
-                  ? Theme.of(context).primaryColor
-                  : Theme.of(context).textTheme.bodyText1.color,
-            ),
-            duration: Duration(milliseconds: 100),
-            child: Text("$day"),
-          ),
-        ),
-      ),
     );
   }
 
@@ -127,6 +79,30 @@ class _EditWalletDateRangePageContentState
           });
         }
       },
+    );
+  }
+
+  Widget buildMonthStartDayPicker(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("#First day of month"),
+          HorizontalDrawablePicker(
+            selectedIndex: monthStartDay - 1,
+            itemCount: 31,
+            itemWidth: 54,
+            itemBuilder: (context, index) {
+              final day = index + 1;
+              return Text("$day");
+            },
+            onSelected: (index) => setState(() {
+              this.monthStartDay = index + 1;
+            }),
+          ),
+        ],
+      ),
     );
   }
 

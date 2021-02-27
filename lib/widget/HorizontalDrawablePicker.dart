@@ -69,7 +69,7 @@ class _HorizontalDrawablePickerState extends State<HorizontalDrawablePicker> {
               widget.itemCount,
               (index) => SizedBox(
                 width: widget.itemWidth,
-                child: widget.itemBuilder(context, index),
+                child: buildItem(context, index, index == widget.selectedIndex),
               ),
             ),
           ),
@@ -78,6 +78,25 @@ class _HorizontalDrawablePickerState extends State<HorizontalDrawablePicker> {
       buildVerticalMarker(context, -widget.itemWidth),
       buildVerticalMarker(context, widget.itemWidth),
     ]);
+  }
+
+  Widget buildItem(BuildContext context, int index, bool isSelected) {
+    return Container(
+      height: MediaQuery.of(context).textScaleFactor * 44,
+      child: Center(
+        child: AnimatedDefaultTextStyle(
+          style: TextStyle(
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            fontSize: isSelected ? 22 : 16,
+            color: isSelected
+                ? Theme.of(context).primaryColor
+                : Theme.of(context).textTheme.bodyText1.color,
+          ),
+          duration: Duration(milliseconds: 100),
+          child: widget.itemBuilder(context, index),
+        ),
+      ),
+    );
   }
 
   Widget buildVerticalMarker(BuildContext context, double offset) {
