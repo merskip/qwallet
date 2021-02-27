@@ -186,6 +186,7 @@ class _EditWalletDateRangePageContentState
     final dateRange = WalletDateRange(
       type: type,
       weekdayStart: weekdayStart,
+      monthStartDay: monthStartDay,
     );
     return dateRange.getDateTimeRange(index: index).formatted();
   }

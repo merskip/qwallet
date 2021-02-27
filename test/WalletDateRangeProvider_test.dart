@@ -67,6 +67,60 @@ void main() {
     expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
   });
 
+  test("Test current month when start from 10th", () {
+    final dateTimeRange = _getDateTimeRange(
+      dateRange: WalletDateRange(
+        type: WalletDateRangeType.currentMonth,
+        monthStartDay: 10,
+      ),
+      now: DateTime(2021, 2, 24),
+    );
+    expect(dateTimeRange.start, DateTime(2021, 2, 10).beginningOfDay);
+    expect(dateTimeRange.end, DateTime(2021, 3, 9).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), true);
+  });
+
+  test("Test current month when start from 31th and this is February", () {
+    final dateTimeRange = _getDateTimeRange(
+      dateRange: WalletDateRange(
+        type: WalletDateRangeType.currentMonth,
+        monthStartDay: 31,
+      ),
+      now: DateTime(2021, 2, 24),
+    );
+    expect(dateTimeRange.start, DateTime(2021, 1, 31).beginningOfDay);
+    expect(dateTimeRange.end, DateTime(2021, 2, 27).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), true);
+  });
+
+  test("Test next month when start from 31th and this is February", () {
+    final dateTimeRange = _getDateTimeRange(
+      dateRange: WalletDateRange(
+        type: WalletDateRangeType.currentMonth,
+        monthStartDay: 31,
+      ),
+      now: DateTime(2021, 2, 24),
+      index: 1,
+    );
+    expect(dateTimeRange.start, DateTime(2021, 2, 28).beginningOfDay);
+    expect(dateTimeRange.end, DateTime(2021, 3, 30).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
+  });
+
+  test("Test next next month when start from 31th", () {
+    final dateTimeRange = _getDateTimeRange(
+      dateRange: WalletDateRange(
+        type: WalletDateRangeType.currentMonth,
+        monthStartDay: 31,
+      ),
+      now: DateTime(2021, 2, 24),
+      index: 2,
+    );
+    expect(dateTimeRange.start, DateTime(2021, 3, 31).beginningOfDay);
+    expect(dateTimeRange.end, DateTime(2021, 4, 29).endingOfDay);
+    expect(dateTimeRange.contains(DateTime(2021, 2, 24)), false);
+  });
+
   test("Test current week", () {
     final dateTimeRange = _getDateTimeRange(
       dateRange: WalletDateRange(type: WalletDateRangeType.currentWeek),
