@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/CalendarRangesPreview.dart';
 import 'package:qwallet/widget/HorizontalDrawablePicker.dart';
 
@@ -184,15 +185,81 @@ class _EditWalletDateRangePageContentState
   }
 
   Widget buildExampleCalendar(BuildContext context) {
+    switch (this.type) {
+      case WalletDateRangeType.currentMonth:
+        return buildExampleCalendarForCurrentMonth(context);
+      case WalletDateRangeType.currentWeek:
+        return buildExampleCalendarForCurrentWeek(context);
+      case WalletDateRangeType.lastDays:
+        return buildExampleCalendarForLastDays(context);
+      default:
+        return null;
+    }
+  }
+
+  Widget buildExampleCalendarForCurrentMonth(BuildContext context) {
+    final now = DateTime.now();
+    final currentRange = getExampleDateTimeRange(0);
+    final calendarRange = DateTimeRange(
+      start: now.adding(month: -1).firstDayOfMonth,
+      end: now.adding(month: 2).lastDayOfMonth,
+    );
     List<DateTimeRange> ranges = [
       getExampleDateTimeRange(-1),
-      getExampleDateTimeRange(0),
+      currentRange,
       getExampleDateTimeRange(1),
+      getExampleDateTimeRange(2),
+      getExampleDateTimeRange(3),
     ];
 
     return CalendarRangesPreview(
       ranges: ranges,
-      selectedRange: ranges[1],
+      selectedRange: currentRange,
+      showingRange: calendarRange,
+    );
+  }
+
+  Widget buildExampleCalendarForCurrentWeek(BuildContext context) {
+    final currentRange = getExampleDateTimeRange(0);
+    final calendarRange = DateTimeRange(
+      start: currentRange.start.firstDayOfWeek,
+      end: currentRange.end.lastDayOfMonth,
+    );
+    List<DateTimeRange> ranges = [
+      getExampleDateTimeRange(-5),
+      getExampleDateTimeRange(-4),
+      getExampleDateTimeRange(-3),
+      getExampleDateTimeRange(-2),
+      getExampleDateTimeRange(-1),
+      currentRange,
+      getExampleDateTimeRange(1),
+      getExampleDateTimeRange(2),
+      getExampleDateTimeRange(3),
+      getExampleDateTimeRange(4),
+      getExampleDateTimeRange(5),
+    ];
+
+    return CalendarRangesPreview(
+      ranges: ranges,
+      selectedRange: currentRange,
+      showingRange: calendarRange,
+    );
+  }
+
+  Widget buildExampleCalendarForLastDays(BuildContext context) {
+    final currentRange = getExampleDateTimeRange(0);
+    final calendarRange = DateTimeRange(
+      start: currentRange.start,
+      end: currentRange.end,
+    );
+    List<DateTimeRange> ranges = [
+      currentRange,
+    ];
+
+    return CalendarRangesPreview(
+      ranges: ranges,
+      selectedRange: currentRange,
+      showingRange: calendarRange,
     );
   }
 

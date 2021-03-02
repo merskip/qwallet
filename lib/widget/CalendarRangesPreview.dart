@@ -6,20 +6,22 @@ class CalendarRangesPreview extends StatelessWidget {
   final DateTime now;
   final List<DateTimeRange> ranges;
   final DateTimeRange selectedRange;
+  final DateTimeRange showingRange;
 
   CalendarRangesPreview({
     Key key,
     DateTime now,
     this.ranges,
     this.selectedRange,
+    this.showingRange,
   })  : this.now = now ?? DateTime.now(),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final calendarRange = DateTimeRange(
-      start: ranges.first.start.firstDayOfWeek,
-      end: ranges.last.end.lastDayOfWeek.adding(day: 1).beginningOfDay,
+      start: this.showingRange.start.firstDayOfWeek,
+      end: this.showingRange.end.lastDayOfWeek.adding(day: 1).beginningOfDay,
     );
 
     final items = List<Widget>();
@@ -65,7 +67,8 @@ class CalendarRangesPreview extends StatelessWidget {
         : Theme.of(context).primaryColorLight;
 
     return Flexible(
-      child: Container(
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 100),
         margin: EdgeInsets.only(
           left: isFirstDayOfRange ? 1 : 0,
           right: isLastDayOfRange ? 1 : 0,
@@ -106,7 +109,8 @@ class CalendarRangesPreview extends StatelessWidget {
     if (selectedRange == range) {
       return primaryColor;
     } else if (range != null) {
-      return primaryColor.shade100;
+      final isOdd = ranges.indexOf(range).isEven;
+      return isOdd ? primaryColor.shade50 : primaryColor.shade100;
     } else {
       return Theme.of(context).scaffoldBackgroundColor;
     }
