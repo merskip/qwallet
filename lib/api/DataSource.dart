@@ -81,19 +81,27 @@ extension WalletsDataSource on DataSource {
   }
 
   Future<Reference<Wallet>> updateWallet(
-    Wallet wallet, {
+    Reference<Wallet> walletRef, {
     String name,
     Currency currency,
     List<String> ownersUid,
+    WalletDateRange dateRange,
   }) async {
     await firestore.runTransaction((transaction) async {
-      transaction.update(wallet.reference.documentReference, {
+      transaction.update(walletRef.documentReference, {
         if (name != null) 'name': name,
         if (currency != null) 'currency': currency.code,
         if (ownersUid != null) 'ownersUid': ownersUid,
+        if (dateRange != null)
+          'dateRange': {
+            'type': dateRange.type.rawValue,
+            'monthStartDay': dateRange.monthStartDay,
+            'weekdayStart': dateRange.weekdayStart,
+            'numberOfLastDays': dateRange.numberOfLastDays,
+          }
       });
     });
-    return wallet.reference;
+    return walletRef;
   }
 
   Future<void> refreshWalletBalanceIfNeeded(

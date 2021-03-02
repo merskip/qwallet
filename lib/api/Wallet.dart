@@ -66,6 +66,21 @@ enum WalletDateRangeType {
   lastDays,
 }
 
+extension WalletDateRangeTypeConverting on WalletDateRangeType {
+  String get rawValue {
+    switch (this) {
+      case WalletDateRangeType.currentMonth:
+        return "currentMonth";
+      case WalletDateRangeType.currentWeek:
+        return "currentWeek";
+      case WalletDateRangeType.lastDays:
+        return "lastDays";
+      default:
+        return null;
+    }
+  }
+}
+
 extension DocumentSnapshotWalletTimeRangeConverting on DocumentSnapshot {
   WalletDateRange getWalletTimeRange(dynamic field) {
     final fieldPath = toFieldPath(field);

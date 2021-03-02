@@ -76,7 +76,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     );
     if (owners != null && owners.contains(DataSource.instance.currentUser)) {
       DataSource.instance.updateWallet(
-        widget.wallet,
+        widget.wallet.reference,
         ownersUid: owners.map((user) => user.uid).toList(),
       );
     }
@@ -91,7 +91,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     );
     if (currency != null) {
       DataSource.instance.updateWallet(
-        widget.wallet,
+        widget.wallet.reference,
         currency: currency,
       );
     }
@@ -167,7 +167,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
         final name = nameController.text.trim();
         if (name.isNotEmpty) {
           DataSource.instance.updateWallet(
-            widget.wallet,
+            widget.wallet.reference,
             name: name,
           );
         }
@@ -248,6 +248,10 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     switch (dateRangeType) {
       case WalletDateRangeType.currentMonth:
         return AppLocalizations.of(context).walletDateRangeCurrentMonth;
+      case WalletDateRangeType.currentWeek:
+        return "#The current week";
+      case WalletDateRangeType.lastDays:
+        return "#The selected number of last days";
       default:
         return null;
     }

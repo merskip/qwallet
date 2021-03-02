@@ -235,7 +235,7 @@ void main() {
 
   test("Test last 30 days", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(type: WalletDateRangeType.last30Days),
+      dateRange: WalletDateRange(type: WalletDateRangeType.lastDays),
       now: DateTime(2021, 2, 24),
     );
     expect(dateTimeRange.start, DateTime(2021, 1, 25).beginningOfDay);
@@ -245,7 +245,7 @@ void main() {
 
   test("Test yesterday last 30 days", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(type: WalletDateRangeType.last30Days),
+      dateRange: WalletDateRange(type: WalletDateRangeType.lastDays),
       now: DateTime(2021, 2, 24),
       index: -1,
     );
@@ -256,7 +256,7 @@ void main() {
 
   test("Test tomorrow last 30 days", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(type: WalletDateRangeType.last30Days),
+      dateRange: WalletDateRange(type: WalletDateRangeType.lastDays),
       now: DateTime(2021, 2, 24),
       index: 1,
     );

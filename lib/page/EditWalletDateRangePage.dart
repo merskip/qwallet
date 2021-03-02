@@ -1,22 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/DataSource.dart';
+import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/CalendarRangesPreview.dart';
 import 'package:qwallet/widget/HorizontalDrawablePicker.dart';
+import 'package:qwallet/widget/PrimaryButton.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 class EditWalletDateRangePage extends StatelessWidget {
+  final Reference<Wallet> wallet;
+
+  const EditWalletDateRangePage({
+    Key key,
+    this.wallet,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("#Edit date range of wallet"),
       ),
-      body: _EditWalletDateRangePageContent(),
+      body: SimpleStreamWidget(
+        stream: DataSource.instance.getWallet(wallet),
+        builder: (context, wallet) => _EditWalletDateRangePageContent(
+          wallet: wallet,
+        ),
+      ),
     );
   }
 }
 
 class _EditWalletDateRangePageContent extends StatefulWidget {
+  final Wallet wallet;
+
+  const _EditWalletDateRangePageContent({
+    Key key,
+    this.wallet,
+  }) : super(key: key);
+
   @override
   _EditWalletDateRangePageContentState createState() =>
       _EditWalletDateRangePageContentState();
@@ -28,6 +52,23 @@ class _EditWalletDateRangePageContentState
   int monthStartDay = 1;
   int weekdayStart = DateTime.monday;
   int numberOfLastDays = 30;
+
+  @override
+  void initState() {
+    this.type = widget.wallet.dateRange.type;
+    this.monthStartDay = widget.wallet.dateRange.monthStartDay;
+    this.weekdayStart = widget.wallet.dateRange.weekdayStart;
+    this.numberOfLastDays = widget.wallet.dateRange.numberOfLastDays;
+    super.initState();
+  }
+
+  void onSelectedSubmit(BuildContext context) {
+    DataSource.instance.updateWallet(
+      widget.wallet.reference,
+      dateRange: _getWalletDateRange(),
+    );
+    router.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +85,7 @@ class _EditWalletDateRangePageContentState
             buildNumberOfDaysSelection(context),
           Divider(),
           buildExampleCalendar(context),
+          buildSubmit(context),
         ],
       ),
     );
@@ -264,12 +306,25 @@ class _EditWalletDateRangePageContentState
   }
 
   DateTimeRange getExampleDateTimeRange(int index) {
-    final dateRange = WalletDateRange(
+    return _getWalletDateRange().getDateTimeRange(index: index);
+  }
+
+  Widget buildSubmit(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 36),
+      child: PrimaryButton(
+        child: Text("#Save changes"),
+        onPressed: () => onSelectedSubmit(context),
+      ),
+    );
+  }
+
+  WalletDateRange _getWalletDateRange() {
+    return WalletDateRange(
       type: type,
       weekdayStart: weekdayStart,
       monthStartDay: monthStartDay,
       numberOfLastDays: numberOfLastDays,
     );
-    return dateRange.getDateTimeRange(index: index);
   }
 }

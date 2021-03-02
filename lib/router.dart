@@ -183,7 +183,9 @@ void initRoutes(fluro.Router router) {
     handler: fluro.Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
       final walletId = params["walletId"][0];
-      return EditWalletDateRangePage();
+      return EditWalletDateRangePage(
+        wallet: DataSource.instance.getWalletReference(walletId),
+      );
     }),
   );
 

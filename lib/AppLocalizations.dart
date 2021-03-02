@@ -353,7 +353,7 @@ extension WalletLocalizations on AppLocalizations {
       );
 
   String get walletDateRangeCurrentMonth => _locale(
-        en: "Current month",
+        en: "The current month",
         pl: "Aktualny miesiąc",
       );
 
