@@ -118,12 +118,17 @@ class _GaugePainter extends CustomPainter {
   }
 
   void _paintMarker(Canvas canvas, Size size) {
-    if (markerPosition == null) return;
+    if (this.markerPosition == null) return;
+    final markerPosition =
+        max(segments.last.start, min(segments.first.end, this.markerPosition));
     canvas.save();
+
+    final markerSegment = segments.lastWhere(
+      (s) => markerPosition >= s.start && markerPosition <= s.end,
+      orElse: () => null,
+    );
     _translate(canvas, size, markerPosition);
 
-    final markerSegment = segments.lastWhere((s) =>
-        markerPosition >= s.start && markerPosition <= s.start + s.sweep);
     final circlePaint = Paint()
       ..color = markerSegment.color.shade100
       ..style = PaintingStyle.fill;
