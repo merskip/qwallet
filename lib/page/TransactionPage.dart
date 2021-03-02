@@ -71,10 +71,19 @@ class _TransactionPageState extends State<TransactionPage> {
       lastDate: DateTime(2100),
     );
     if (selectedDate != null) {
+      final now = DateTime.now();
+      final dateTime = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        now.hour,
+        now.minute,
+        now.second,
+      );
       DataSource.instance.updateTransaction(
         widget.walletRef,
         widget.transaction,
-        date: selectedDate,
+        date: dateTime,
       );
     }
   }
