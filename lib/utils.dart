@@ -66,6 +66,9 @@ extension DateTimeUtils on DateTime {
     );
   }
 
+  bool isSameDate(DateTime other) =>
+      year == other?.year && month == other?.month && day == other?.day;
+
   DateTime adding({
     int year = 0,
     int month = 0,

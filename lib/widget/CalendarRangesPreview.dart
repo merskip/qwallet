@@ -22,15 +22,6 @@ class CalendarRangesPreview extends StatelessWidget {
       end: ranges.last.end.lastDayOfWeek.adding(day: 1).beginningOfDay,
     );
 
-    final primaryColor = Theme.of(context).primaryColor as MaterialColor;
-    List<Color> rangesColors = [
-      primaryColor.shade50,
-      primaryColor.shade100,
-      primaryColor.shade400,
-      primaryColor.shade600,
-      primaryColor.shade900,
-    ];
-
     final items = List<Widget>();
     int lastMonth;
     final weeks = calendarRange.getDays().split(DateTime.daysPerWeek);
@@ -44,48 +35,80 @@ class CalendarRangesPreview extends StatelessWidget {
       }
       lastMonth = weekDays.last.month;
 
-      items.add(Row(
-        children: [
-          ...weekDays.map((day) {
-            final range = ranges.firstWhere(
-              (range) => range.contains(day),
-              orElse: () => null,
-            );
-            Color color;
-            if (range != null) {
-              color = rangesColors[ranges.indexOf(range) + 1];
-            } else if (day.isBefore(ranges.first.start)) {
-              color = rangesColors.first;
-            } else if (day.isAfter(ranges.last.end)) {
-              color = rangesColors.last;
-            }
-
-            final isToday = day == DateTime.now().beginningOfDay;
-            return Flexible(
-              child: AnimatedContainer(
-                color: color,
-                duration: Duration(milliseconds: 100),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "${day.day}",
-                      style: TextStyle(
-                        fontWeight: isToday ? FontWeight.bold : null,
-                        color: isToday ? Colors.orange : null,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
-        ],
+      items.add(Padding(
+        padding: const EdgeInsets.symmetric(vertical: 1),
+        child: Row(
+          children: [
+            ...weekDays.map((day) => buildCell(context, day)),
+          ],
+        ),
       ));
     }
 
     return Column(
       children: items,
     );
+  }
+
+  Widget buildCell(BuildContext context, DateTime day) {
+    final isToday = day.isSameDate(DateTime.now());
+    final currentRange = ranges.firstWhere(
+      (range) => range.contains(day),
+      orElse: () => null,
+    );
+    final isFirstDayOfRange = day.isSameDate(currentRange?.start);
+    final isLastDayOfRange = day.isSameDate(currentRange?.end);
+    final backgroundColor = _getColorBackground(context, day, currentRange);
+    final textColor = ThemeData.estimateBrightnessForColor(backgroundColor) ==
+            Brightness.light
+        ? Theme.of(context).textTheme.bodyText1.color
+        : Theme.of(context).primaryColorLight;
+
+    return Flexible(
+      child: Container(
+        margin: EdgeInsets.only(
+          left: isFirstDayOfRange ? 1 : 0,
+          right: isLastDayOfRange ? 1 : 0,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.horizontal(
+            left: isFirstDayOfRange ? Radius.circular(16) : Radius.zero,
+            right: isLastDayOfRange ? Radius.circular(16) : Radius.zero,
+          ),
+          color: backgroundColor,
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: isToday ? Theme.of(context).hintColor : null,
+            shape: BoxShape.circle,
+          ),
+          margin: const EdgeInsets.all(2),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(6.0),
+              child: Text(
+                "${day.day}",
+                style: TextStyle(
+                  fontWeight: isToday ? FontWeight.bold : null,
+                  color: textColor,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _getColorBackground(
+      BuildContext context, DateTime day, DateTimeRange range) {
+    final primaryColor = Theme.of(context).primaryColor as MaterialColor;
+    if (selectedRange == range) {
+      return primaryColor;
+    } else if (range != null) {
+      return primaryColor.shade100;
+    } else {
+      return Theme.of(context).scaffoldBackgroundColor;
+    }
   }
 }
