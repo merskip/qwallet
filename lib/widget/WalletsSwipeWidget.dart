@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/utils.dart';
 
 class WalletsSwipeWidget extends StatefulWidget {
   final List<Wallet> wallets;
@@ -113,8 +112,6 @@ class _WalletSinglePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = new DateFormat("d.MM.yyyy");
-    final currentDateRange = getCurrentMonthTimeRange();
     return Padding(
       padding: EdgeInsets.only(left: 16),
       child: DefaultTextStyle(
@@ -134,10 +131,7 @@ class _WalletSinglePage extends StatelessWidget {
             ),
             SizedBox(height: 4),
             Text(
-              dateFormat.format(currentDateRange.start) +
-                  " - " +
-                  dateFormat
-                      .format(currentDateRange.end.subtract(Duration(days: 1))),
+              wallet.dateRange.getDateTimeRange().formatted(),
               style: TextStyle(
                 fontSize: 12.0,
                 color: Colors.white.withAlpha(223),

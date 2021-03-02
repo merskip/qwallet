@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
@@ -77,7 +76,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     );
     if (owners != null && owners.contains(DataSource.instance.currentUser)) {
       DataSource.instance.updateWallet(
-        widget.wallet,
+        widget.wallet.reference,
         ownersUid: owners.map((user) => user.uid).toList(),
       );
     }
@@ -92,7 +91,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     );
     if (currency != null) {
       DataSource.instance.updateWallet(
-        widget.wallet,
+        widget.wallet.reference,
         currency: currency,
       );
     }
@@ -100,18 +99,23 @@ class _WalletPageContentState extends State<_WalletPageContent> {
 
   void onSelectedRefreshBalance(BuildContext context) async {
     setState(() => isBalanceRefreshing = true);
-    final transactions = await DataSource.instance
-        .getTransactionsInTimeRange(
-          wallet: widget.wallet.reference,
-          timeRange: getCurrentMonthTimeRange(),
-        )
+    final latestTransactions = await DataSource.instance
+        .getLatestTransactions(widget.wallet.reference)
         .first;
-    await DataSource.instance
-        .refreshWalletBalanceIfNeeded(widget.wallet, transactions);
+    await DataSource.instance.refreshWalletBalanceIfNeeded(latestTransactions);
     setState(() => isBalanceRefreshing = false);
   }
 
-  onSelectedCategories(BuildContext context) {
+  void onSelectedEditDateRange(BuildContext context) async {
+    final dateRange = await router.navigateTo(
+        context, "/wallet/${widget.wallet.id}/editDateRange");
+    if (dateRange != null) {
+      // TODO: Update wallet
+      print(dateRange);
+    }
+  }
+
+  void onSelectedCategories(BuildContext context) {
     router.navigateTo(context, "/wallet/${widget.wallet.id}/categories");
   }
 
@@ -136,7 +140,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           buildTotalExpense(context),
           buildTotalIncome(context),
           buildBalance(context),
-          buildCurrentRangeTime(context),
+          buildCurrentDateRange(context),
           Divider(),
           buildCategories(context)
         ],
@@ -163,7 +167,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
         final name = nameController.text.trim();
         if (name.isNotEmpty) {
           DataSource.instance.updateWallet(
-            widget.wallet,
+            widget.wallet.reference,
             name: name,
           );
         }
@@ -227,17 +231,30 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     );
   }
 
-  Widget buildCurrentRangeTime(BuildContext context) {
-    final dateFormat = new DateFormat("d.MM.yyyy");
-    final currentDateRange = getCurrentMonthTimeRange();
+  Widget buildCurrentDateRange(BuildContext context) {
     return DetailsItemTile(
-      title: Text(AppLocalizations.of(context).walletCurrentTimeRange),
+      title: Text(AppLocalizations.of(context).walletCurrentDateRange),
       value: Text(
-        dateFormat.format(currentDateRange.start) +
-            " - " +
-            dateFormat.format(currentDateRange.end.subtract(Duration(days: 1))),
+        _getWalletDateRangeTypeText(widget.wallet.dateRange.type) +
+            "\n" +
+            widget.wallet.dateRange.getDateTimeRange().formatted(),
       ),
+      editIcon: Icons.edit,
+      onEdit: (context) => onSelectedEditDateRange(context),
     );
+  }
+
+  String _getWalletDateRangeTypeText(WalletDateRangeType dateRangeType) {
+    switch (dateRangeType) {
+      case WalletDateRangeType.currentMonth:
+        return AppLocalizations.of(context).walletDateRangeCurrentMonth;
+      case WalletDateRangeType.currentWeek:
+        return "#The current week";
+      case WalletDateRangeType.lastDays:
+        return "#The selected number of last days";
+      default:
+        return null;
+    }
   }
 
   Widget buildCategories(BuildContext context) {

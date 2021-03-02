@@ -10,7 +10,6 @@ import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/CatgegoryIcon.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../AppLocalizations.dart';
 import '../Money.dart';
@@ -29,18 +28,12 @@ class _ReportsPageState extends State<ReportsPage> {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: Rx.combineLatestList([
-        DataSource.instance.getWallet(widget.walletRef),
-        DataSource.instance.getTransactionsInTimeRange(
-          wallet: widget.walletRef,
-          timeRange: getCurrentMonthTimeRange(),
-        )
-      ]),
-      builder: (context, values) {
-        final wallet = values[0];
-        final transactions = values[1];
-        return buildTabController(context, wallet, transactions);
-      },
+      stream: DataSource.instance.getLatestTransactions(widget.walletRef),
+      builder: (context, latestTransactions) => buildTabController(
+        context,
+        latestTransactions.wallet,
+        latestTransactions.transactions,
+      ),
     );
   }
 

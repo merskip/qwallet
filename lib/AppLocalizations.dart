@@ -347,9 +347,14 @@ extension WalletLocalizations on AppLocalizations {
         pl: "Saldo",
       );
 
-  String get walletCurrentTimeRange => _locale(
-        en: "Current time period",
-        pl: "Aktualny okres czasu",
+  String get walletCurrentDateRange => _locale(
+        en: "Current date range",
+        pl: "Bieżący zakres czasu",
+      );
+
+  String get walletDateRangeCurrentMonth => _locale(
+        en: "The current month",
+        pl: "Aktualny miesiąc",
       );
 
   String get walletBalanceRefresh => _locale(

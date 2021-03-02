@@ -63,8 +63,10 @@ extension WalletsDataSource on DataSource {
 
     final categories = DataSource.instance.getCategories(wallet: walletRef);
 
-    return CombineLatestStream.combine2(walletSnapshots, categories,
-        (walletSnapshot, categories) => Wallet(walletSnapshot, categories));
+    return Rx.combineLatest2(walletSnapshots, categories,
+        (walletSnapshot, categories) {
+      return Wallet(walletSnapshot, categories);
+    });
   }
 
   Future<Reference<Wallet>> addWallet(
@@ -79,25 +81,34 @@ extension WalletsDataSource on DataSource {
   }
 
   Future<Reference<Wallet>> updateWallet(
-    Wallet wallet, {
+    Reference<Wallet> walletRef, {
     String name,
     Currency currency,
     List<String> ownersUid,
+    WalletDateRange dateRange,
   }) async {
     await firestore.runTransaction((transaction) async {
-      transaction.update(wallet.reference.documentReference, {
+      transaction.update(walletRef.documentReference, {
         if (name != null) 'name': name,
         if (currency != null) 'currency': currency.code,
         if (ownersUid != null) 'ownersUid': ownersUid,
+        if (dateRange != null)
+          'dateRange': {
+            'type': dateRange.type.rawValue,
+            'monthStartDay': dateRange.monthStartDay,
+            'weekdayStart': dateRange.weekdayStart,
+            'numberOfLastDays': dateRange.numberOfLastDays,
+          }
       });
     });
-    return wallet.reference;
+    return walletRef;
   }
 
   Future<void> refreshWalletBalanceIfNeeded(
-    Wallet wallet,
-    List<Transaction> transactions,
+    LatestTransactions latestTransactions,
   ) async {
+    final wallet = latestTransactions.wallet;
+    final transactions = latestTransactions.transactions;
     double totalExpense = 0.0, totalIncome = 0.0;
     for (final transaction in transactions) {
       transaction.ifType(
@@ -128,14 +139,34 @@ extension WalletsDataSource on DataSource {
 }
 
 extension TransactionsDataSource on DataSource {
-  Stream<List<Transaction>> getTransactionsInTimeRange({
+  Stream<LatestTransactions> getLatestTransactions(
+    Reference<Wallet> wallet,
+  ) {
+    final walletStream = getWallet(wallet).asBroadcastStream();
+
+    final transactionsStream = walletStream.flatMap((wallet) {
+      return _getTransactionsInDateTimeRange(
+        wallet: wallet.reference,
+        dateRange: wallet.dateRange.getDateTimeRange(),
+      );
+    });
+
+    return Rx.combineLatestList([walletStream, transactionsStream])
+        .map((values) {
+      final wallet = values[0];
+      final transactions = values[1];
+      return LatestTransactions(wallet, transactions);
+    });
+  }
+
+  Stream<List<Transaction>> _getTransactionsInDateTimeRange({
     @required Reference<Wallet> wallet,
-    @required DateTimeRange timeRange,
+    @required DateTimeRange dateRange,
   }) {
     return wallet.documentReference
         .collection("transactions")
-        .where("date", isGreaterThanOrEqualTo: timeRange.start.toTimestamp())
-        .where("date", isLessThanOrEqualTo: timeRange.end.toTimestamp())
+        .where("date", isGreaterThanOrEqualTo: dateRange.start.toTimestamp())
+        .where("date", isLessThanOrEqualTo: dateRange.end.toTimestamp())
         .orderBy("date", descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((s) => Transaction(s)).toList());
@@ -493,6 +524,13 @@ extension DateTimeUtils on DateTime {
   Firestore.Timestamp toTimestamp() => Firestore.Timestamp.fromDate(this);
 }
 
+class LatestTransactions {
+  final Wallet wallet;
+  final List<Transaction> transactions;
+
+  LatestTransactions(this.wallet, this.transactions);
+}
+
 DateTimeRange getTodayDateTimeRange() {
   final now = DateTime.now();
   final startDay = DateTime(now.year, now.month, now.day);
@@ -524,10 +562,45 @@ DateTimeRange getLastMonthDateTimeRange() {
   return DateTimeRange(start: startDay, end: endDay);
 }
 
-DateTimeRange getCurrentMonthTimeRange() {
-  final now = getDateWithoutTime(DateTime.now());
-  final startDay = Utils.firstDayOfMonth(now);
-  final endDay = Utils.lastDayOfMonth(now).add(Duration(hours: 24));
+DateTimeRange getCurrentMonthTimeRange({DateTime now}) {
+  final dateNow = getDateWithoutTime(now ?? DateTime.now());
+  final startDay = Utils.firstDayOfMonth(dateNow);
+  final almostDay = Duration(
+      hours: 23,
+      minutes: 59,
+      seconds: 59,
+      milliseconds: 999,
+      microseconds: 999);
+  final endDay = Utils.lastDayOfMonth(dateNow).add(almostDay);
+  return DateTimeRange(start: startDay, end: endDay);
+}
+
+DateTimeRange getCurrentWeekTimeRange({DateTime now}) {
+  final dateNow = getDateWithoutTime(now ?? DateTime.now());
+  DateTime startDay = getDateWithoutTime(Utils.firstDayOfWeek(dateNow));
+  final almostDay = Duration(
+      hours: 23,
+      minutes: 59,
+      seconds: 59,
+      milliseconds: 999,
+      microseconds: 999);
+  final endDay = getDateWithoutTime(Utils.lastDayOfWeek(dateNow))
+      .add(almostDay)
+      .subtract(Duration(days: 1));
+
+  return DateTimeRange(start: startDay, end: endDay);
+}
+
+DateTimeRange getLast30DaysTimeRange({DateTime now}) {
+  final dateNow = getDateWithoutTime(now ?? DateTime.now());
+  final almostDay = Duration(
+      hours: 23,
+      minutes: 59,
+      seconds: 59,
+      milliseconds: 999,
+      microseconds: 999);
+  final endDay = dateNow.add(almostDay);
+  final startDay = getDateWithoutTime(dateNow).subtract(Duration(days: 30));
   return DateTimeRange(start: startDay, end: endDay);
 }
 
