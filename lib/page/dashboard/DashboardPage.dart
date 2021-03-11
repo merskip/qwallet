@@ -20,7 +20,6 @@ import 'package:rxdart/rxdart.dart';
 import '../../Money.dart';
 import '../../PushNotificationService.dart';
 import '../../router.dart';
-import '../../widget_utils.dart';
 import 'CategoriesChartCard.dart';
 import 'DailyReportSection.dart';
 import 'TransactionsCard.dart';
@@ -160,7 +159,7 @@ class _DashboardPageState extends State<DashboardPage> {
         if (_selectedWallet.value != null)
           buildWalletCards(context, _selectedWallet.value)
         else
-          silverProgressIndicator(),
+          SliverToBoxAdapter(child: CircularProgressIndicator()),
         SliverPadding(
           padding: EdgeInsets.only(bottom: 88),
         ),
@@ -172,7 +171,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget buildWalletCards(BuildContext context, Wallet wallet) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getLatestTransactions(wallet.reference),
-      loadingBuilder: (context) => silverProgressIndicator(),
+      loadingBuilder: (context) =>
+          SliverToBoxAdapter(child: CircularProgressIndicator()),
       builder: (context, latestTransactions) {
         DataSource.instance
             .refreshWalletBalanceIfNeeded(latestTransactions)

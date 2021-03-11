@@ -104,7 +104,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
       ),
     );
 
-    final existsScaffold = Scaffold.of(context, nullOk: true) != null;
+    final existsScaffold = Scaffold.maybeOf(context) != null;
     return existsScaffold
         ? content
         : Scaffold(

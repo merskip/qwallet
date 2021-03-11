@@ -49,8 +49,10 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
   }
 
   T getOneOf<T>(dynamic field, List<T> values) {
-    final prefix = T.toString();
     final value = _getOrNull(field);
+    if (value == null) return null;
+
+    final prefix = T.toString();
     final prefixedValue = prefix + "." + value;
     return values.firstWhere(
       (e) => e.toString() == prefixedValue,

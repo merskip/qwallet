@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
@@ -115,10 +114,10 @@ class _ScanReceiptPageState extends State<ScanReceiptPage> {
     controller.stopImageStream();
 
     final documents = await getApplicationDocumentsDirectory();
-    final photoFile = File(
-        "${documents.path}/receipt_photo-${Random().nextInt(1 << 32)}.jpg");
-    if (await photoFile.exists()) await photoFile.delete();
-    await controller.takePicture(photoFile.path);
+    // final photoFile = File(
+    //     "${documents.path}/receipt_photo-${Random().nextInt(1 << 32)}.jpg");
+    // if (await photoFile.exists()) await photoFile.delete();
+    await controller.takePicture();
     // TODO: open ReceiptRecognizingPage
   }
 
