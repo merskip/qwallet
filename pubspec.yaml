@@ -58,6 +58,7 @@ dependencies:
   camera: ^0.8.0
   android_notification_listener2: ^2.0.1
   badges: ^1.2.0
+  flutter_markdown: ^0.6.0
 
 dev_dependencies:
   flutter_test:
