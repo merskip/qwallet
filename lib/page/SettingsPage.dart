@@ -206,7 +206,8 @@ class SettingsPage extends StatelessWidget {
           child: ListTile(
             title:
                 Text(AppLocalizations.of(context).settingsApplicationVersion),
-            subtitle: Text("${info.data?.version} (${info.data?.buildNumber})"),
+            subtitle: Text(
+                "${info.data?.version ?? "?"} (${info.data?.buildNumber ?? "?"})"),
             dense: true,
             visualDensity: VisualDensity.compact,
           ),

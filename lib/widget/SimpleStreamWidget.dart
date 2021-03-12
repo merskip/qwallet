@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Model.dart';
@@ -82,7 +81,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
             SelectableText(
               "Error: $description",
               style: TextStyle(
-                fontFamily: Platform.isIOS ? "Courier" : "monospace",
+                fontFamily: "monospace",
                 color: Colors.red.shade500,
                 fontSize: 12,
               ),
@@ -93,7 +92,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
                 child: Text(
                   stackTrace.toString(),
                   style: TextStyle(
-                    fontFamily: Platform.isIOS ? "Courier" : "monospace",
+                    fontFamily: "monospace",
                     color: Colors.red.shade300,
                     fontSize: 8,
                   ),
