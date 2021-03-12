@@ -340,6 +340,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  flutter_svg:
+    dependency: "direct main"
+    description:
+      name: flutter_svg
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.21.0-nullsafety.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
