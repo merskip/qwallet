@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:date_utils/date_utils.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -234,7 +233,7 @@ class _ReportByDatePage extends StatelessWidget {
               ),
             ],
             minX: 1,
-            maxX: Utils.lastDayOfMonth(DateTime.now()).day.toDouble(),
+            maxX: DateTime.now().lastDayOfMonth.day.toDouble(),
             titlesData: FlTitlesData(
               leftTitles: SideTitles(
                 showTitles: true,

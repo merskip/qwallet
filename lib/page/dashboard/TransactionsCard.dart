@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:date_utils/date_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/api/Transaction.dart';
@@ -135,12 +134,17 @@ class _TransactionsCardState extends State<TransactionsCard> {
   String getDateSectionTitle(DateTime date) {
     final locale = AppLocalizations.of(context).locale.toString();
     String dateText = DateFormat("EEEE, d MMMM", locale).format(date);
-    if (Utils.isSameDay(date, DateTime.now()))
+
+    final today = DateTime.now();
+    if (date.isSameDate(today)) {
       dateText +=
           " (${AppLocalizations.of(context).transactionsCardTodayHint})";
-    if (Utils.isSameDay(date, DateTime.now().subtract(Duration(days: 1))))
+    }
+    final yesterday = today.adding(day: -1);
+    if (date.isSameDate(yesterday)) {
       dateText +=
           " (${AppLocalizations.of(context).transactionsCardYesterdayHint})";
+    }
     return dateText[0].toUpperCase() +
         dateText.substring(1); // Uppercase first letter
   }

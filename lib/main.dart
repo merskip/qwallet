@@ -33,7 +33,7 @@ void main() async {
 
       FlutterError.onError = (details) {
         FlutterError.dumpErrorToConsole(details);
-        Crashlytics.instance.recordFlutterError(details);
+        FirebaseCrashlytics.instance.recordFlutterError(details);
       };
 
       runApp(MyApp());
@@ -41,7 +41,7 @@ void main() async {
     (error, stackTrace) {
       print("Error: $error");
       print("Stack trace: $stackTrace");
-      return Crashlytics.instance.recordError(error, stackTrace);
+      return FirebaseCrashlytics.instance.recordError(error, stackTrace);
     },
   );
 }

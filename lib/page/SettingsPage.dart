@@ -5,7 +5,7 @@ import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/dialog/UserDialog.dart';
 import 'package:qwallet/utils.dart';
-import 'package:qwallet/widget/LocalWebsitePage.dart';
+import 'package:qwallet/widget/MarkdownPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/vector_image.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -206,7 +206,8 @@ class SettingsPage extends StatelessWidget {
           child: ListTile(
             title:
                 Text(AppLocalizations.of(context).settingsApplicationVersion),
-            subtitle: Text("${info.data?.version} (${info.data?.buildNumber})"),
+            subtitle: Text(
+                "${info.data?.version ?? "?"} (${info.data?.buildNumber ?? "?"})"),
             dense: true,
             visualDensity: VisualDensity.compact,
           ),
@@ -223,9 +224,9 @@ class SettingsPage extends StatelessWidget {
       visualDensity: VisualDensity.compact,
       onTap: () => pushPage(
         context,
-        builder: (context) => LocalWebsitePage(
+        builder: (context) => MarkdownPage(
           title: AppLocalizations.of(context).settingsPrivacyPolicy,
-          htmlFile: "assets/privacy_policy.html",
+          file: "assets/privacy_policy.md",
         ),
       ),
     );
@@ -238,9 +239,9 @@ class SettingsPage extends StatelessWidget {
       visualDensity: VisualDensity.compact,
       onTap: () => pushPage(
         context,
-        builder: (context) => LocalWebsitePage(
+        builder: (context) => MarkdownPage(
           title: AppLocalizations.of(context).settingsTermsOfService,
-          htmlFile: "assets/terms_of_service.html",
+          file: "assets/terms_of_service.md",
         ),
       ),
     );

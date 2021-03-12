@@ -1,4 +1,5 @@
 import 'package:fluro/fluro.dart' as fluro;
+import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
@@ -23,9 +24,9 @@ import 'page/SettingsPage.dart';
 import 'page/TransactionsListPage.dart';
 import 'page/landing_page.dart';
 
-final router = new fluro.Router();
+final router = new FluroRouter();
 
-void initRoutes(fluro.Router router) {
+void initRoutes(FluroRouter router) {
   router.define(
     "/",
     handler: fluro.Handler(

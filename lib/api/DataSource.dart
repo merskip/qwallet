@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart' as Firestore;
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:date_utils/date_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/IconsSerialization.dart';
@@ -492,9 +491,8 @@ extension UsersDataSource on DataSource {
   }
 
   Future<List<User>> _fetchUsers() async {
-    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-      functionName: "getUsers",
-    );
+    final HttpsCallable callable =
+        FirebaseFunctions.instance.httpsCallable("getUsers");
     dynamic response = await callable.call();
     final content = response.data as List;
 
@@ -529,79 +527,6 @@ class LatestTransactions {
   final List<Transaction> transactions;
 
   LatestTransactions(this.wallet, this.transactions);
-}
-
-DateTimeRange getTodayDateTimeRange() {
-  final now = DateTime.now();
-  final startDay = DateTime(now.year, now.month, now.day);
-  final endDay = DateTime(now.year, now.month, now.day, 23, 59, 59, 999, 999);
-  return DateTimeRange(start: startDay, end: endDay);
-}
-
-DateTimeRange getYesterdayDateTimeRange() {
-  final now = DateTime.now();
-  final startDay = DateTime(now.year, now.month, now.day - 1);
-  final endDay =
-      DateTime(now.year, now.month, now.day - 1, 23, 59, 59, 999, 999);
-  return DateTimeRange(start: startDay, end: endDay);
-}
-
-DateTimeRange getLastWeekDateTimeRange() {
-  final now = DateTime.now();
-  final startDay =
-      DateTime(now.year, now.month, now.day - 6, 23, 59, 59, 999, 999);
-  final endDay = DateTime(now.year, now.month, now.day);
-  return DateTimeRange(start: startDay, end: endDay);
-}
-
-DateTimeRange getLastMonthDateTimeRange() {
-  final now = DateTime.now();
-  final startDay =
-      DateTime(now.year, now.month - 1, now.day, 23, 59, 59, 999, 999);
-  final endDay = DateTime(now.year, now.month, now.day);
-  return DateTimeRange(start: startDay, end: endDay);
-}
-
-DateTimeRange getCurrentMonthTimeRange({DateTime now}) {
-  final dateNow = getDateWithoutTime(now ?? DateTime.now());
-  final startDay = Utils.firstDayOfMonth(dateNow);
-  final almostDay = Duration(
-      hours: 23,
-      minutes: 59,
-      seconds: 59,
-      milliseconds: 999,
-      microseconds: 999);
-  final endDay = Utils.lastDayOfMonth(dateNow).add(almostDay);
-  return DateTimeRange(start: startDay, end: endDay);
-}
-
-DateTimeRange getCurrentWeekTimeRange({DateTime now}) {
-  final dateNow = getDateWithoutTime(now ?? DateTime.now());
-  DateTime startDay = getDateWithoutTime(Utils.firstDayOfWeek(dateNow));
-  final almostDay = Duration(
-      hours: 23,
-      minutes: 59,
-      seconds: 59,
-      milliseconds: 999,
-      microseconds: 999);
-  final endDay = getDateWithoutTime(Utils.lastDayOfWeek(dateNow))
-      .add(almostDay)
-      .subtract(Duration(days: 1));
-
-  return DateTimeRange(start: startDay, end: endDay);
-}
-
-DateTimeRange getLast30DaysTimeRange({DateTime now}) {
-  final dateNow = getDateWithoutTime(now ?? DateTime.now());
-  final almostDay = Duration(
-      hours: 23,
-      minutes: 59,
-      seconds: 59,
-      milliseconds: 999,
-      microseconds: 999);
-  final endDay = dateNow.add(almostDay);
-  final startDay = getDateWithoutTime(dateNow).subtract(Duration(days: 30));
-  return DateTimeRange(start: startDay, end: endDay);
 }
 
 int compareWithNullAtEnd(lhs, rhs) {
