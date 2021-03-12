@@ -152,14 +152,21 @@ class _CategoriesChartWithLegendState
               showAllTitles: showAllTitles,
               selectedItem: selectedItem,
               onSelectedItem: (selectedItem) {
-                final effectiveSelectedItem =
-                    this.selectedItem != selectedItem ? selectedItem : null;
-                setState(() => this.selectedItem = effectiveSelectedItem);
+                setState(() {
+                  this.selectedItem = selectedItem;
+                });
               },
             ),
-            selectedItem == null
-                ? buildSummary(context)
-                : buildCategorySummary(context, selectedItem),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  this.selectedItem = null;
+                });
+              },
+              child: selectedItem == null
+                  ? buildSummary(context)
+                  : buildCategorySummary(context, selectedItem),
+            ),
           ],
         ),
         buildLegend(context, widget.items),
@@ -254,23 +261,26 @@ class _CategoriesChart extends StatelessWidget {
     if (items.isEmpty)
       return Container();
     else
-      return PieChart(
-        PieChartData(
-          sections: [
-            ...items.map((item) => createSection(context, item)),
-          ],
-          borderData: FlBorderData(show: false),
-          pieTouchData: PieTouchData(
-            enabled: !showAllTitles,
-            touchCallback: (touch) {
-              if (touch.touchedSectionIndex != null) {
-                final selectedItem = items[touch.touchedSectionIndex];
-                onSelectedItem(selectedItem);
-              }
-            },
+      return AspectRatio(
+        aspectRatio: 1,
+        child: PieChart(
+          PieChartData(
+            sections: [
+              ...items.map((item) => createSection(context, item)),
+            ],
+            borderData: FlBorderData(show: false),
+            pieTouchData: PieTouchData(
+              enabled: !showAllTitles,
+              touchCallback: (touch) {
+                if (touch.touchedSectionIndex >= 0) {
+                  final selectedItem = items[touch.touchedSectionIndex];
+                  onSelectedItem(selectedItem);
+                }
+              },
+            ),
+            centerSpaceRadius: 72,
+            startDegreeOffset: -90,
           ),
-          centerSpaceRadius: 72,
-          startDegreeOffset: -90,
         ),
       );
   }
