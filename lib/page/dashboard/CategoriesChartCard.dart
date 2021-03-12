@@ -261,25 +261,28 @@ class _CategoriesChart extends StatelessWidget {
     if (items.isEmpty)
       return Container();
     else
-      return AspectRatio(
-        aspectRatio: 1,
-        child: PieChart(
-          PieChartData(
-            sections: [
-              ...items.map((item) => createSection(context, item)),
-            ],
-            borderData: FlBorderData(show: false),
-            pieTouchData: PieTouchData(
-              enabled: !showAllTitles,
-              touchCallback: (touch) {
-                if (touch.touchedSectionIndex >= 0) {
-                  final selectedItem = items[touch.touchedSectionIndex];
-                  onSelectedItem(selectedItem);
-                }
-              },
+      return SizedBox(
+        height: 292,
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: PieChart(
+            PieChartData(
+              sections: [
+                ...items.map((item) => createSection(context, item)),
+              ],
+              borderData: FlBorderData(show: false),
+              pieTouchData: PieTouchData(
+                enabled: !showAllTitles,
+                touchCallback: (touch) {
+                  if (touch.touchedSectionIndex >= 0) {
+                    final selectedItem = items[touch.touchedSectionIndex];
+                    onSelectedItem(selectedItem);
+                  }
+                },
+              ),
+              centerSpaceRadius: 72,
+              startDegreeOffset: -90,
             ),
-            centerSpaceRadius: 72,
-            startDegreeOffset: -90,
           ),
         ),
       );
