@@ -33,9 +33,11 @@ class Wallet extends Model<Wallet> {
         super(snapshot);
 
   Category getCategory(Reference<Category> category) {
-    return category != null
-        ? categories.firstWhere((c) => c.id == category.id)
-        : null;
+    if (category == null) return null;
+    return categories.firstWhere(
+      (c) => c.id == category.id,
+      orElse: () => null,
+    );
   }
 }
 
