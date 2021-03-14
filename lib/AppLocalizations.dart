@@ -131,6 +131,11 @@ extension DashbaordLocalizations on AppLocalizations {
         pl: "Raporty",
       );
 
+  String get dashboardSettings => _locale(
+        en: "Settings",
+        pl: "Ustawienia",
+      );
+
   String get dashboardWalletsEmpty => _locale(
         en: "There are no wallets in your account",
         pl: "Na twoim koncie nie ma żadnych portfeli",

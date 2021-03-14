@@ -50,6 +50,9 @@ extension WalletsDataSource on DataSource {
     });
   }
 
+  Stream<Wallet> getWalletById(String walletId) =>
+      getWallet(getWalletReference(walletId));
+
   Reference<Wallet> getWalletReference(String id) {
     return Reference(firestore.collection("wallets").doc(id));
   }

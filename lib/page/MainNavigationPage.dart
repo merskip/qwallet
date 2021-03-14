@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/page/SettingsPage.dart';
 import 'package:qwallet/page/dashboard/DashboardPage.dart';
 import 'package:qwallet/page/loans/LoansTabPage.dart';
+import 'package:qwallet/widget/vector_image.dart';
 
 import '../AppLocalizations.dart';
+import '../router.dart';
 
 class MainNavigationPage extends StatefulWidget {
   @override
@@ -13,32 +14,50 @@ class MainNavigationPage extends StatefulWidget {
 class _MainNavigationPageState extends State<MainNavigationPage> {
   int selectedIndex = 0;
 
+  final dashboardKey = GlobalKey<DashboardPageState>();
+
+  void onSelectedAddTransaction(BuildContext context) {
+    final wallet = dashboardKey.currentState.getSelectedWallet();
+    router.navigateTo(context, "/wallet/${wallet.id}/addTransaction");
+  }
+
+  void onSelectedAddPrivateLoan(BuildContext context) {
+    router.navigateTo(context, "/privateLoans/add");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Builder(builder: (context) => buildBody(context)),
+      body: Builder(builder: buildBody),
       bottomNavigationBar: buildNavigationBar(context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: buildAddTransactionButton(context),
     );
+  }
+
+  Widget buildBody(BuildContext context) {
+    switch (selectedIndex) {
+      case 0:
+        return DashboardPage(
+          key: dashboardKey,
+        );
+      case 1:
+        return LoansTabPage();
+      default:
+        return Container();
+    }
   }
 
   Widget buildNavigationBar(BuildContext context) {
     return BottomNavigationBar(
-      type: BottomNavigationBarType.shifting,
       items: [
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: AppLocalizations.of(context).bottomNavigationDashboard,
-          backgroundColor: Theme.of(context).primaryColor,
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.attach_money),
           label: AppLocalizations.of(context).bottomNavigationLoans,
-          backgroundColor: Colors.deepOrange,
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: AppLocalizations.of(context).bottomNavigationSettings,
-          backgroundColor: Colors.blueGrey,
         ),
       ],
       currentIndex: selectedIndex,
@@ -46,26 +65,28 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     );
   }
 
-  Widget buildBody(BuildContext context) {
+  Widget buildAddTransactionButton(BuildContext context) {
     switch (selectedIndex) {
       case 0:
-        return DashboardPage();
-      case 1:
-        return Theme(
-          data: ThemeData(
-            primarySwatch: Colors.deepOrange,
+        return FloatingActionButton(
+          key: Key("add-transaction"),
+          child: VectorImage(
+            "assets/ic-add-transaction.svg",
+            // color: Colors.white,
+            // size: Size.square(32),
           ),
-          child: LoansTabPage(),
+          tooltip: AppLocalizations.of(context).dashboardAddTransactionButton,
+          onPressed: () => onSelectedAddTransaction(context),
         );
-      case 2:
-        return Theme(
-          data: ThemeData(
-            primarySwatch: Colors.blueGrey,
-          ),
-          child: SettingsPage(),
+      case 1:
+        return FloatingActionButton(
+          key: Key("add-private-loan"),
+          child: Icon(Icons.add),
+          tooltip: AppLocalizations.of(context).privateLoanAddLoan,
+          onPressed: () => onSelectedAddPrivateLoan(context),
         );
       default:
-        return Container();
+        return null;
     }
   }
 }

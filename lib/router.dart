@@ -14,6 +14,7 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import 'api/Model.dart';
 import 'api/Transaction.dart';
+import 'features/transactions_add_series/AddSeriesTransactionsPage.dart';
 import 'page/AddCategoryPage.dart';
 import 'page/AddWalletPage.dart';
 import 'page/CategoriesPage.dart';
@@ -70,6 +71,21 @@ void initRoutes(FluroRouter router) {
       final walletId = params["walletId"][0];
       return WalletPage(
           walletRef: DataSource.instance.getWalletReference(walletId));
+    }),
+  );
+
+  router.define(
+    "/wallet/:walletId/addSeriesTransactions",
+    transitionType: fluro.TransitionType.nativeModal,
+    handler: fluro.Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      final walletId = params["walletId"][0];
+      return SimpleStreamWidget(
+        stream: DataSource.instance.getWalletById(walletId),
+        builder: (context, wallet) => AddSeriesTransactionsPage(
+          wallet: wallet,
+        ),
+      );
     }),
   );
 

@@ -14,7 +14,6 @@ import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
-import 'package:qwallet/widget/vector_image.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../Money.dart';
@@ -25,12 +24,18 @@ import 'DailyReportSection.dart';
 import 'TransactionsCard.dart';
 
 class DashboardPage extends StatefulWidget {
+  DashboardPage({Key key}) : super(key: key);
+
   @override
-  _DashboardPageState createState() => _DashboardPageState();
+  DashboardPageState createState() => DashboardPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class DashboardPageState extends State<DashboardPage> {
   final _selectedWallet = BehaviorSubject<Wallet>();
+
+  Wallet getSelectedWallet() {
+    return _selectedWallet.value;
+  }
 
   void onSelectedWallet(BuildContext context, Wallet wallet) {
     setState(() {
@@ -120,9 +125,8 @@ class _DashboardPageState extends State<DashboardPage> {
     router.navigateTo(context, "/wallet/${_selectedWallet.value.id}/report");
   }
 
-  void onSelectedAddTransaction(BuildContext context) {
-    final wallet = _selectedWallet.value;
-    router.navigateTo(context, "/wallet/${wallet.id}/addTransaction");
+  void onSelectedSettings(BuildContext context) {
+    router.navigateTo(context, "/settings");
   }
 
   @override
@@ -154,7 +158,7 @@ class _DashboardPageState extends State<DashboardPage> {
               onSelectedWallet: (wallet) => onSelectedWallet(context, wallet),
             ),
           ),
-          actions: buildAppBarActions(context),
+          actions: buildAppBarActions(context, true),
         ),
         if (_selectedWallet.value != null)
           buildWalletCards(context, _selectedWallet.value)
@@ -164,7 +168,6 @@ class _DashboardPageState extends State<DashboardPage> {
           padding: EdgeInsets.only(bottom: 88),
         ),
       ]),
-      floatingActionButton: buildAddTransactionButton(context),
     );
   }
 
@@ -207,22 +210,11 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget buildAddTransactionButton(BuildContext context) {
-    return FloatingActionButton(
-      child: VectorImage(
-        "assets/ic-add-income.svg",
-        color: Colors.white,
-        size: Size.square(32),
-      ),
-      tooltip: AppLocalizations.of(context).dashboardAddTransactionButton,
-      onPressed: () => onSelectedAddTransaction(context),
-    );
-  }
-
   Widget buildContentWithNoWallets(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).dashboardTitle),
+        actions: buildAppBarActions(context, false),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -234,23 +226,31 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  List<Widget> buildAppBarActions(BuildContext context) {
+  List<Widget> buildAppBarActions(BuildContext context, bool hasWallets) {
     return <Widget>[
-      buildPushNotificationsButton(context),
-      IconButton(
-        icon: Icon(Icons.edit_outlined),
-        tooltip: AppLocalizations.of(context).dashboardEditBalance,
-        onPressed: () => onSelectedEditBalance(context, _selectedWallet.value),
-      ),
+      if (hasWallets) buildPushNotificationsButton(context),
+      if (hasWallets)
+        IconButton(
+          icon: Icon(Icons.edit_outlined),
+          tooltip: AppLocalizations.of(context).dashboardEditBalance,
+          onPressed: () =>
+              onSelectedEditBalance(context, _selectedWallet.value),
+        ),
       PopupMenuButton(
         itemBuilder: (context) => [
+          if (hasWallets)
+            PopupMenuItem(
+              child: Text(AppLocalizations.of(context).dashboardEditWallet),
+              value: "edit-wallet",
+            ),
+          if (hasWallets)
+            PopupMenuItem(
+              child: Text(AppLocalizations.of(context).dashboardReports),
+              value: "report",
+            ),
           PopupMenuItem(
-            child: Text(AppLocalizations.of(context).dashboardEditWallet),
-            value: "edit-wallet",
-          ),
-          PopupMenuItem(
-            child: Text(AppLocalizations.of(context).dashboardReports),
-            value: "report",
+            child: Text(AppLocalizations.of(context).dashboardSettings),
+            value: "settings",
           ),
         ],
         onSelected: (id) {
@@ -260,6 +260,10 @@ class _DashboardPageState extends State<DashboardPage> {
               break;
             case "report":
               onSelectedReport(context, _selectedWallet.value);
+              break;
+            case "settings":
+              onSelectedSettings(context);
+              break;
           }
         },
       )

@@ -12,11 +12,12 @@ class VectorImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconTheme = IconTheme.of(context);
     return SvgPicture.asset(
       assetName,
-      width: size?.width,
-      height: size?.height,
-      color: color,
+      width: size?.width ?? iconTheme.size,
+      height: size?.height ?? iconTheme.size,
+      color: color ?? iconTheme.color,
     );
   }
 }

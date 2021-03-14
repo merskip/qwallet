@@ -3,7 +3,6 @@ import 'package:qwallet/page/loans/LoansListPage.dart';
 import 'package:qwallet/page/loans/LoansPage.dart';
 
 import '../../AppLocalizations.dart';
-import '../../router.dart';
 
 class LoansTabPage extends StatelessWidget {
   @override
@@ -24,11 +23,6 @@ class LoansTabPage extends StatelessWidget {
             LoansPage(),
             LoansListPage(),
           ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          tooltip: AppLocalizations.of(context).privateLoanAddLoan,
-          onPressed: () => router.navigateTo(context, "/privateLoans/add"),
         ),
       ),
     );
