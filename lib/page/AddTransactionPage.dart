@@ -14,8 +14,10 @@ import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
+import 'package:qwallet/widget/vector_image.dart';
 
 import '../AppLocalizations.dart';
+import '../router.dart';
 
 class AddTransactionPage extends StatelessWidget {
   final Reference<Wallet> initialWalletRef;
@@ -42,23 +44,40 @@ class AddTransactionPage extends StatelessWidget {
 class _AddTransactionPageContent extends StatelessWidget {
   final Wallet initialWallet;
   final double initialAmount;
+  final formKey = GlobalKey<_AddTransactionFormState>();
 
-  const _AddTransactionPageContent({
+  _AddTransactionPageContent({
     Key key,
     this.initialWallet,
     this.initialAmount,
   }) : super(key: key);
+
+  void onSelectedAddSeriesTransactions(BuildContext context) {
+    final wallet = formKey.currentState.wallet;
+    router.pop(context, null);
+    router.navigateTo(context, "/wallet/${wallet.id}/addSeriesTransactions");
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).addTransaction),
+        actions: [
+          IconButton(
+            icon: VectorImage(
+              "assets/ic-add-series-transactions.svg",
+            ),
+            tooltip: AppLocalizations.of(context).addSeriesTransactionsTooltip,
+            onPressed: () => onSelectedAddSeriesTransactions(context),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16),
           child: _AddTransactionForm(
+            key: formKey,
             initialWallet: initialWallet,
             initialAmount: initialAmount?.abs(),
             initialTransactionType: (initialAmount ?? 0) <= 0

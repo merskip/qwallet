@@ -506,8 +506,13 @@ extension TransactionLocalizations on AppLocalizations {
 
 extension AddTransactionLocalizations on AppLocalizations {
   String get addTransaction => _locale(
-        en: "Add expense or income",
-        pl: "Dodaj wydatek lub przychód",
+        en: "Add transaction",
+        pl: "Dodaj transakcję",
+      );
+
+  String get addSeriesTransactionsTooltip => _locale(
+        en: "Add series transactions",
+        pl: "Dodaj serię transakcji",
       );
 
   String get addTransactionSelectWallet => _locale(
