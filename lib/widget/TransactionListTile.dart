@@ -17,9 +17,9 @@ class TransactionListTile extends StatelessWidget {
     Key key,
     @required this.wallet,
     @required this.transaction,
-    @required this.category,
     this.visualDensity,
-  }) : super(key: key);
+  })  : category = wallet.getCategory(transaction.category),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {

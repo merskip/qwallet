@@ -75,21 +75,6 @@ void initRoutes(FluroRouter router) {
   );
 
   router.define(
-    "/wallet/:walletId/addSeriesTransactions",
-    transitionType: fluro.TransitionType.nativeModal,
-    handler: fluro.Handler(
-        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
-      final walletId = params["walletId"][0];
-      return SimpleStreamWidget(
-        stream: DataSource.instance.getWalletById(walletId),
-        builder: (context, wallet) => AddSeriesTransactionsPage(
-          wallet: wallet,
-        ),
-      );
-    }),
-  );
-
-  router.define(
     "/wallet/:walletId/addTransaction/amount/:amount",
     transitionType: fluro.TransitionType.nativeModal,
     handler: fluro.Handler(
@@ -111,6 +96,29 @@ void initRoutes(FluroRouter router) {
       final walletId = params["walletId"][0];
       return AddTransactionPage(
         initialWalletRef: DataSource.instance.getWalletReference(walletId),
+      );
+    }),
+  );
+
+  router.define(
+    "/wallet/:walletId/addSeriesTransactions",
+    transitionType: fluro.TransitionType.nativeModal,
+    handler: fluro.Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      final walletId = params["walletId"][0];
+      final initialTotalAmount = params.containsKey("initialTotalAmount")
+          ? double.tryParse(params["initialTotalAmount"][0])
+          : null;
+      final initialDate = params.containsKey("initialDate")
+          ? DateTime.tryParse(params["initialDate"][0])
+          : null;
+      return SimpleStreamWidget(
+        stream: DataSource.instance.getWalletById(walletId),
+        builder: (context, wallet) => AddSeriesTransactionsPage(
+          initialWallet: wallet,
+          initialTotalAmount: initialTotalAmount,
+          initialDate: initialDate,
+        ),
       );
     }),
   );

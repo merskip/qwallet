@@ -114,8 +114,10 @@ class _TransactionsCardState extends State<TransactionsCard> {
       result.add(buildSectionHeader(context, date));
 
       final transactions = transactionsByDate[date];
-      result.addAll(transactions.map(
-          (transaction) => buildTransactionListItem(context, transaction)));
+      result.addAll(
+        transactions.map((transaction) =>
+            TransactionListTile(wallet: wallet, transaction: transaction)),
+      );
     }
 
     return result;
@@ -147,20 +149,6 @@ class _TransactionsCardState extends State<TransactionsCard> {
     }
     return dateText[0].toUpperCase() +
         dateText.substring(1); // Uppercase first letter
-  }
-
-  Widget buildTransactionListItem(
-      BuildContext context, Transaction transaction) {
-    final category = widget.wallet.categories.firstWhere(
-      (category) => category.reference == transaction.category,
-      orElse: () => null,
-    );
-    return TransactionListTile(
-      wallet: widget.wallet,
-      transaction: transaction,
-      category: category,
-      visualDensity: VisualDensity.compact,
-    );
   }
 
   Widget buildEmptyTransactions(BuildContext context) {

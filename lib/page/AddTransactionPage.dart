@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart' as Foundation;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/LocalPreferences.dart';
@@ -9,6 +10,7 @@ import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/dialog/SelectWalletDialog.dart';
+import 'package:qwallet/features/transactions_add_series/AddSeriesTransactionsPage.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
@@ -54,8 +56,14 @@ class _AddTransactionPageContent extends StatelessWidget {
 
   void onSelectedAddSeriesTransactions(BuildContext context) {
     final wallet = formKey.currentState.wallet;
+    final amount = formKey.currentState.amountController.value.amount;
+    final date = formKey.currentState.date;
     router.pop(context, null);
-    router.navigateTo(context, "/wallet/${wallet.id}/addSeriesTransactions");
+    router.navigateTo(
+        context,
+        "/wallet/${wallet.id}/addSeriesTransactions"
+        "?initialTotalAmount=$amount"
+        "&initialDate=${date.toIso8601String()}");
   }
 
   @override

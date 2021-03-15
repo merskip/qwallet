@@ -10,6 +10,7 @@ import '../Money.dart';
 class AmountFormField extends FormField<Money> {
   final AmountEditingController controller;
   final FocusNode focusNode;
+  final bool isCurrencySelectable;
 
   AmountFormField({
     @required Money initialMoney,
@@ -17,6 +18,7 @@ class AmountFormField extends FormField<Money> {
     InputDecoration decoration = const InputDecoration(),
     this.focusNode,
     bool autofocus = false,
+    this.isCurrencySelectable = false,
     FormFieldValidator<Money> validator,
   }) : super(
           initialValue: initialMoney,
@@ -64,13 +66,14 @@ class AmountFormFieldState extends FormFieldState<Money> {
     controller.addListener(() {
       widget.controller.value = _getEnteredMoney();
     });
+    widget.controller.addListener(onChangedValue);
     if (widget.focusNode == null) {
       _focusNode = FocusNode();
     }
     initAmountField(
       focusNode: effectiveFocusNode,
       controller: controller,
-      isCurrencySelectable: true,
+      isCurrencySelectable: widget.isCurrencySelectable,
       getValue: () => value,
       onEnter: (amount) => setState(() {
         controller.text = amount.formattedOnlyAmount;
@@ -82,9 +85,16 @@ class AmountFormFieldState extends FormFieldState<Money> {
 
   @override
   void dispose() {
+    widget.controller?.removeListener(onChangedValue);
     controller?.dispose();
     _focusNode?.dispose();
     super.dispose();
+  }
+
+  void onChangedValue() {
+    final amount = widget.controller.value;
+    controller.text = amount.formattedOnlyAmount;
+    didChange(amount);
   }
 
   void initAmountField({
