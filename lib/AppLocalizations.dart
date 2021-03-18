@@ -359,12 +359,12 @@ extension WalletLocalizations on AppLocalizations {
 
   String get walletDateRangeCurrentMonth => _locale(
         en: "The current month",
-        pl: "Aktualny miesiąc",
+        pl: "Bieżący miesiąc",
       );
 
   String get walletDateRangeCurrentWeek => _locale(
         en: "The current week",
-        pl: "Aktualny tydzień",
+        pl: "Bieżący tydzień",
       );
 
   String get walletDateRangeLastDays => _locale(
@@ -398,7 +398,7 @@ extension WalletLocalizations on AppLocalizations {
 extension EditWalletDateRangeLocalizations on AppLocalizations {
   String get editWalletDateRangeTitle => _locale(
         en: "Edit date range of wallet",
-        pl: "Edycja zakresu dat portfela",
+        pl: "Edycja zakresu czasu portfela",
       );
 
   String get editWalletDateRangeType => _locale(

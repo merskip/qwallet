@@ -110,8 +110,10 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     final dateRange = await router.navigateTo(
         context, "/wallet/${widget.wallet.id}/editDateRange");
     if (dateRange != null) {
-      // TODO: Update wallet
-      print(dateRange);
+      DataSource.instance.updateWallet(
+        widget.wallet.reference,
+        dateRange: dateRange,
+      );
     }
   }
 
