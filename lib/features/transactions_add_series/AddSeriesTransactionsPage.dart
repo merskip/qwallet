@@ -8,6 +8,7 @@ import 'package:qwallet/dialog/SelectWalletDialog.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
+import 'package:qwallet/widget/SecondaryButton.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
 
 import '../../AppLocalizations.dart';
@@ -48,9 +49,10 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   Money get transactionsAmount =>
       Money(transactions.fold(0.0, (v, t) => v + t.amount), wallet.currency);
 
-  Money get remainingAmount => Money(
-      (totalAmountController.value.amount ?? 0.0) - transactionsAmount.amount,
-      wallet.currency);
+  Money get remainingAmount {
+    final totalAmount = totalAmountController.value?.amount ?? 0.0;
+    return Money(totalAmount - transactionsAmount.amount, wallet.currency);
+  }
 
   _AddSeriesTransactionsPageState(this.wallet);
 
@@ -136,8 +138,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
       date: date,
     );
     setState(() {
-      transactionAmountController.value =
-          remainingAmount - transactionAmountController.value.amount;
+      transactionAmountController.value = Money(null, wallet.currency);
       transactionCategory = null;
     });
 
@@ -281,20 +282,37 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   }
 
   Widget buildTransactionAmount(BuildContext context) {
-    return AmountFormField(
-      initialMoney: Money(null, widget.initialWallet.currency),
-      decoration: InputDecoration(
-        labelText: "#Transaction amount",
-      ),
-      controller: transactionAmountController,
-      validator: (amount) {
-        if (amount.amount == null)
-          return AppLocalizations.of(context).addTransactionAmountErrorIsEmpty;
-        if (amount.amount <= 0)
-          return AppLocalizations.of(context)
-              .addTransactionAmountErrorZeroOrNegative;
-        return null;
-      },
+    return Row(
+      children: [
+        Expanded(
+          child: AmountFormField(
+            initialMoney: Money(null, widget.initialWallet.currency),
+            decoration: InputDecoration(
+              labelText: "#Transaction amount",
+            ),
+            controller: transactionAmountController,
+            validator: (amount) {
+              if (amount.amount == null)
+                return AppLocalizations.of(context)
+                    .addTransactionAmountErrorIsEmpty;
+              if (amount.amount <= 0)
+                return AppLocalizations.of(context)
+                    .addTransactionAmountErrorZeroOrNegative;
+              return null;
+            },
+          ),
+        ),
+        SizedBox(width: 8),
+        SecondaryButton(
+          child: Text(remainingAmount.formatted),
+          onPressed: () {
+            setState(() {
+              transactionAmountController.value = remainingAmount;
+            });
+          },
+          shrinkWrap: true,
+        ),
+      ],
     );
   }
 
