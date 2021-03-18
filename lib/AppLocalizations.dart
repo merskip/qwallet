@@ -515,6 +515,11 @@ extension AddTransactionLocalizations on AppLocalizations {
         pl: "Dodaj serię transakcji",
       );
 
+  String get addSeriesTransactionsExpensesOnly => _locale(
+        en: "Add series of transactions is supported only for expenses",
+        pl: "Dodawanie serii transakcji jest wspierane tylko dla wydatków",
+      );
+
   String get addTransactionSelectWallet => _locale(
         en: "Select wallet",
         pl: "Wybierz portfel",
@@ -558,6 +563,89 @@ extension AddTransactionLocalizations on AppLocalizations {
   String get addTransactionSubmit => _locale(
         en: "Add",
         pl: "Dodaj",
+      );
+}
+
+extension AddSeriesTransactionsLocalizations on AppLocalizations {
+  String get addSeriesTransactionsTitle => _locale(
+        en: "Add series of transactions",
+        pl: "Dodaj serię transakcji",
+      );
+
+  String get addSeriesTransactionsExitConfirmTitle => _locale(
+        en: "Are you sure to exit?",
+        pl: "Czy na pewno chcesz wyjść?",
+      );
+
+  String get addSeriesTransactionsExitRemainingAmountGreater => _locale(
+        en: "The remaining amount is greater then zero",
+        pl: "Pozostała kwota jest większa niż zero",
+      );
+
+  String get addSeriesTransactionsExitRemainingAmountLower => _locale(
+        en: "The remaining amount is lower then zero",
+        pl: "Pozostała kwota jest mnniejszą niż zero",
+      );
+
+  String get addSeriesTransactionsTotalAmount => _locale(
+        en: "Total amount",
+        pl: "Całkowita kwota",
+      );
+
+  String get addSeriesTransactionsAddedTransactions => _locale(
+        en: "Added transactions",
+        pl: "Dodane transakcje",
+      );
+
+  String get addSeriesTransactionsAddedTransactionsHint => _locale(
+        en: "These transactions are added to your wallet. Exiting doesn't delete them.",
+        pl: "Te transakcje są dodawane do Twojego portfela. Wyjście nie powoduje ich usunięcia.",
+      );
+
+  String get addSeriesTransactionsNoTransactions => _locale(
+        en: "There are not added transactions",
+        pl: "Nie ma dodanych transakcji",
+      );
+
+  String Function(Money amount) get addSeriesTransactionsRemainingAmount =>
+      (Money amount) => _locale(
+            en: "Remaining amount: ${amount.formatted}",
+            pl: "Pozostała kwota: ${amount.formatted}",
+          );
+
+  String get addSeriesTransactionsTotalAmountEmpty => _locale(
+        en: "Enter total amount to add new transactions.",
+        pl: "Wprowadź całkowitą kwotę, aby dodawać nowe transakcje.",
+      );
+
+  String get addSeriesTransactionsRemainingAmountZero => _locale(
+        en: "The Sum of transactions is equal to the total amount. Tap on Done button to exit.",
+        pl: "Suma transakcji jest równa całkowitej kwocie. Naciśnij na przycisk Zakończ, aby wyjść.",
+      );
+
+  String get addSeriesTransactionsRemainingAmountLower => _locale(
+        en: "The Sum of transactions is lower to the total amount.",
+        pl: "Suma transakcji jest mniejsza niż całkowita kwota.",
+      );
+
+  String get addSeriesTransactionsNewTransaction => _locale(
+        en: "New transaction",
+        pl: "Nowa transakcja",
+      );
+
+  String get addSeriesTransactionsTransactionAmount => _locale(
+        en: "Transaction amount",
+        pl: "Kwota transakcji",
+      );
+
+  String get addSeriesTransactionsAddTransaction => _locale(
+        en: "Add transaction",
+        pl: "Dodaj transakcję",
+      );
+
+  String get addSeriesTransactionsDone => _locale(
+        en: "Done",
+        pl: "Zakończ",
       );
 }
 

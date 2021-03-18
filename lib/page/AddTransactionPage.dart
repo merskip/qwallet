@@ -56,8 +56,8 @@ class _AddTransactionPageContent extends StatelessWidget {
     final type = formKey.currentState.type;
     if (type == TransactionType.income) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content:
-            Text("#Add series of transactions is supported only for expenses"),
+        content: Text(
+            AppLocalizations.of(context).addSeriesTransactionsExpensesOnly),
         duration: Duration(seconds: 1),
       ));
       return;
