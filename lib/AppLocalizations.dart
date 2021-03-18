@@ -362,6 +362,16 @@ extension WalletLocalizations on AppLocalizations {
         pl: "Aktualny miesiąc",
       );
 
+  String get walletDateRangeCurrentWeek => _locale(
+        en: "The current week",
+        pl: "Aktualny tydzień",
+      );
+
+  String get walletDateRangeLastDays => _locale(
+        en: "Last days",
+        pl: "Ostatnie dni",
+      );
+
   String get walletBalanceRefresh => _locale(
         en: "Refresh",
         pl: "Odśwież",
@@ -383,6 +393,88 @@ extension WalletLocalizations on AppLocalizations {
             en: "Are you sure remove the wallet \"$walletName\"? This operation cannot be undone.",
             pl: "Czy jesteś pewny, że chcesz usunąć portfel \"$walletName\"? Tej operacji nie można cofnąć.",
           );
+}
+
+extension EditWalletDateRangeLocalizations on AppLocalizations {
+  String get editWalletDateRangeTitle => _locale(
+        en: "Edit date range of wallet",
+        pl: "Edycja zakresu dat portfela",
+      );
+
+  String get editWalletDateRangeType => _locale(
+        en: "Type",
+        pl: "Typ",
+      );
+
+  String get editWalletDateRangeTypeCurrentMonth => _locale(
+        en: "Current month",
+        pl: "Bieżący miesiąc",
+      );
+
+  String get editWalletDateRangeTypeCurrentWeek => _locale(
+        en: "Current week",
+        pl: "Bieżący tydzień",
+      );
+
+  String get editWalletDateRangeTypeLastDays => _locale(
+        en: "Last days",
+        pl: "Ostatnie dni",
+      );
+
+  String get editWalletDateRangeTypeMonthStartDay => _locale(
+        en: "First day of the month",
+        pl: "Pierwszy dzień miesiąca",
+      );
+
+  String get editWalletDateRangeTypeWeekStartDay => _locale(
+        en: "First weekday of week",
+        pl: "Pierwszy dzień tygodnia",
+      );
+
+  String get editWalletDateRangeTypeWeekdayMonday => _locale(
+        en: "Monday",
+        pl: "Poniedziałek",
+      );
+
+  String get editWalletDateRangeTypeWeekdayTuesday => _locale(
+        en: "Tuesday",
+        pl: "Wtorek",
+      );
+
+  String get editWalletDateRangeTypeWeekdayWednesday => _locale(
+        en: "Wednesday",
+        pl: "Środa",
+      );
+
+  String get editWalletDateRangeTypeWeekdayThursday => _locale(
+        en: "Thursday",
+        pl: "Czwartek",
+      );
+
+  String get editWalletDateRangeTypeWeekdayFriday => _locale(
+        en: "Friday",
+        pl: "Piątek",
+      );
+
+  String get editWalletDateRangeTypeWeekdaySaturday => _locale(
+        en: "Saturday",
+        pl: "Sobota",
+      );
+
+  String get editWalletDateRangeTypeWeekdaySunday => _locale(
+        en: "Sunday",
+        pl: "Niedziela",
+      );
+
+  String get editWalletDateRangeTypeNumberOfLastDays => _locale(
+        en: "Number of last days",
+        pl: "Liczba ostatnich dni",
+      );
+
+  String get editWalletDateRangeTypeSaveChanges => _locale(
+        en: "Saved changes",
+        pl: "Zapisz zmiany",
+      );
 }
 
 extension ConfirmationLocalizations on AppLocalizations {

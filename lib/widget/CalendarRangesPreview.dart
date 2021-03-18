@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/utils.dart';
 
+import '../AppLocalizations.dart';
+
 class CalendarRangesPreview extends StatelessWidget {
   final DateTime now;
   final List<DateTimeRange> ranges;
@@ -29,10 +31,14 @@ class CalendarRangesPreview extends StatelessWidget {
     final weeks = calendarRange.getDays().split(DateTime.daysPerWeek);
     for (final weekDays in weeks) {
       if (lastMonth != weekDays.last.month) {
-        final monthFormat = DateFormat("MMMM");
-        items.add(Text(
-          monthFormat.format(weekDays.last),
-          textAlign: TextAlign.center,
+        final locale = AppLocalizations.of(context).locale;
+        final monthFormat = DateFormat("MMMM", locale.toString());
+        items.add(Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text(
+            monthFormat.format(weekDays.last).firstUppercase(),
+            textAlign: TextAlign.center,
+          ),
         ));
       }
       lastMonth = weekDays.last.month;

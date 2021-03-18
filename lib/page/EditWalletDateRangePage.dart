@@ -9,6 +9,8 @@ import 'package:qwallet/widget/HorizontalDrawablePicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
+import '../AppLocalizations.dart';
+
 class EditWalletDateRangePage extends StatelessWidget {
   final Reference<Wallet> wallet;
 
@@ -21,7 +23,7 @@ class EditWalletDateRangePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Edit date range of wallet"),
+        title: Text(AppLocalizations.of(context).editWalletDateRangeTitle),
       ),
       body: SimpleStreamWidget(
         stream: DataSource.instance.getWallet(wallet),
@@ -97,7 +99,7 @@ class _EditWalletDateRangePageContentState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("#Type"),
+          Text(AppLocalizations.of(context).editWalletDateRangeType),
           Wrap(
             spacing: 8,
             children: [
@@ -115,9 +117,12 @@ class _EditWalletDateRangePageContentState
       BuildContext context, WalletDateRangeType type) {
     return ChoiceChip(
       label: Text({
-        WalletDateRangeType.currentMonth: "#Current month",
-        WalletDateRangeType.currentWeek: "#Current week",
-        WalletDateRangeType.lastDays: "#Last days",
+        WalletDateRangeType.currentMonth:
+            AppLocalizations.of(context).editWalletDateRangeTypeCurrentMonth,
+        WalletDateRangeType.currentWeek:
+            AppLocalizations.of(context).editWalletDateRangeTypeCurrentWeek,
+        WalletDateRangeType.lastDays:
+            AppLocalizations.of(context).editWalletDateRangeTypeLastDays,
       }[type]),
       selected: this.type == type,
       onSelected: (isSelected) {
@@ -136,7 +141,8 @@ class _EditWalletDateRangePageContentState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("#First day of the month"),
+          Text(AppLocalizations.of(context)
+              .editWalletDateRangeTypeMonthStartDay),
           HorizontalDrawablePicker(
             key: Key("firstDayOfMonth"),
             selectedIndex: monthStartDay - 1,
@@ -161,7 +167,8 @@ class _EditWalletDateRangePageContentState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("#Weekdaty start"),
+          Text(
+              AppLocalizations.of(context).editWalletDateRangeTypeWeekStartDay),
           Wrap(
             spacing: 8,
             children: [
@@ -182,13 +189,20 @@ class _EditWalletDateRangePageContentState
   Widget buildWeekdayChip(BuildContext context, int weekday) {
     return ChoiceChip(
       label: Text({
-        DateTime.monday: "#Monday",
-        DateTime.tuesday: "#Tuesday",
-        DateTime.wednesday: "#Wednesday",
-        DateTime.thursday: "#Thursday",
-        DateTime.friday: "#Friday",
-        DateTime.saturday: "#Saturday",
-        DateTime.sunday: "#Sunday",
+        DateTime.monday:
+            AppLocalizations.of(context).editWalletDateRangeTypeWeekdayMonday,
+        DateTime.tuesday:
+            AppLocalizations.of(context).editWalletDateRangeTypeWeekdayTuesday,
+        DateTime.wednesday: AppLocalizations.of(context)
+            .editWalletDateRangeTypeWeekdayWednesday,
+        DateTime.thursday:
+            AppLocalizations.of(context).editWalletDateRangeTypeWeekdayThursday,
+        DateTime.friday:
+            AppLocalizations.of(context).editWalletDateRangeTypeWeekdayFriday,
+        DateTime.saturday:
+            AppLocalizations.of(context).editWalletDateRangeTypeWeekdaySaturday,
+        DateTime.sunday:
+            AppLocalizations.of(context).editWalletDateRangeTypeWeekdaySunday,
       }[weekday]),
       selected: this.weekdayStart == weekday,
       onSelected: (isSelected) {
@@ -207,7 +221,8 @@ class _EditWalletDateRangePageContentState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("#Number of last days"),
+          Text(AppLocalizations.of(context)
+              .editWalletDateRangeTypeNumberOfLastDays),
           HorizontalDrawablePicker(
             key: Key("numberOfDays"),
             selectedIndex: numberOfLastDays - 1,
@@ -313,7 +328,8 @@ class _EditWalletDateRangePageContentState
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 36),
       child: PrimaryButton(
-        child: Text("#Save changes"),
+        child: Text(
+            AppLocalizations.of(context).editWalletDateRangeTypeSaveChanges),
         onPressed: () => onSelectedSubmit(context),
       ),
     );

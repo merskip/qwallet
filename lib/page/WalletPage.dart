@@ -249,9 +249,9 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       case WalletDateRangeType.currentMonth:
         return AppLocalizations.of(context).walletDateRangeCurrentMonth;
       case WalletDateRangeType.currentWeek:
-        return "#The current week";
+        return AppLocalizations.of(context).walletDateRangeCurrentWeek;
       case WalletDateRangeType.lastDays:
-        return "#The selected number of last days";
+        return AppLocalizations.of(context).walletDateRangeLastDays;
       default:
         return null;
     }
