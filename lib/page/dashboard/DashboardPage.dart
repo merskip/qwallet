@@ -49,7 +49,10 @@ class DashboardPageState extends State<DashboardPage> {
       builder: (context) => EnterMoneyDialog(currency: wallet.currency),
     ) as Money;
     if (newBalance != null) {
-      final initialAmount = newBalance.amount - wallet.balance.amount;
+      // Fixes #44 bug
+      final freshWallet =
+          await DataSource.instance.getWallet(wallet.reference).first;
+      final initialAmount = newBalance.amount - freshWallet.balance.amount;
       router.navigateTo(
           context, "/wallet/${wallet.id}/addTransaction/amount/$initialAmount");
     }
