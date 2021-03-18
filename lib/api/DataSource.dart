@@ -213,7 +213,7 @@ extension TransactionsDataSource on DataSource {
     final addingTransaction =
         wallet.documentReference.collection("transactions").add({
       "type": type.rawValue,
-      "title": title.nullIfEmpty(),
+      "title": title?.nullIfEmpty(),
       "amount": amount,
       "category": category?.documentReference,
       "date": Firestore.Timestamp.fromDate(date),

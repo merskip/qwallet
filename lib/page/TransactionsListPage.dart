@@ -226,10 +226,9 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
 
       listItems.add(SectionHeaderListItem(date));
       listItems.addAll([
-        ...transactionsByDate[date].map((transaction) => TransactionListItem(
-            widget.wallet,
-            transaction,
-            transaction.getCategory(widget.categories)))
+        ...transactionsByDate[date].map(
+          (transaction) => TransactionListItem(widget.wallet, transaction),
+        )
       ]);
       lastMonth = date.month;
     }
@@ -385,12 +384,12 @@ class SectionHeaderListItem extends _ListItem {
     final today = DateTime.now();
     if (date.isSameDate(today)) {
       dateText +=
-      " (${AppLocalizations.of(context).transactionsCardTodayHint})";
+          " (${AppLocalizations.of(context).transactionsCardTodayHint})";
     }
     final yesterday = today.adding(day: -1);
     if (date.isSameDate(yesterday)) {
       dateText +=
-      " (${AppLocalizations.of(context).transactionsCardYesterdayHint})";
+          " (${AppLocalizations.of(context).transactionsCardYesterdayHint})";
     }
 
     return dateText[0].toUpperCase() +
@@ -401,16 +400,12 @@ class SectionHeaderListItem extends _ListItem {
 class TransactionListItem extends _ListItem {
   final Wallet wallet;
   final Transaction transaction;
-  final Category category;
 
-  TransactionListItem(this.wallet, this.transaction, this.category);
+  TransactionListItem(this.wallet, this.transaction);
 
   @override
-  Widget build(BuildContext context) => TransactionListTile(
-        wallet: wallet,
-        transaction: transaction,
-        category: category,
-      );
+  Widget build(BuildContext context) =>
+      TransactionListTile(wallet: wallet, transaction: transaction);
 }
 
 class ShowMoreListItem extends _ListItem {
