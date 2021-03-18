@@ -11,7 +11,12 @@ class ConfirmationDialog extends StatelessWidget {
   final VoidCallback onCancel;
 
   const ConfirmationDialog(
-      {Key key, this.title, this.content, this.isDestructive = false, this.onConfirm, this.onCancel})
+      {Key key,
+      this.title,
+      this.content,
+      this.isDestructive = false,
+      this.onConfirm,
+      this.onCancel})
       : super(key: key);
 
   show(BuildContext context) {
@@ -41,7 +46,9 @@ class ConfirmationDialog extends StatelessWidget {
   }
 
   Widget buildTitle(BuildContext context) {
-    final style = Theme.of(context).textTheme.subtitle1
+    final style = Theme.of(context)
+        .textTheme
+        .subtitle1
         .copyWith(fontWeight: FontWeight.w500);
     return DefaultTextStyle(style: style, child: title);
   }
@@ -65,7 +72,8 @@ class ConfirmationDialog extends StatelessWidget {
           },
         ),
         FlatButton(
-          textColor: isDestructive ? Colors.red : Theme.of(context).primaryColor,
+          textColor:
+              isDestructive ? Colors.red : Theme.of(context).primaryColor,
           child: Text(AppLocalizations.of(context).confirmationConfirm),
           onPressed: () {
             if (onConfirm != null) onConfirm();

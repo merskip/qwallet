@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/api/Category.dart';
@@ -5,8 +6,10 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/dialog/SelectWalletDialog.dart';
+import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
+import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SecondaryButton.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
@@ -46,12 +49,17 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
 
   List<Transaction> transactions = [];
 
+  Money get totalAmount =>
+      totalAmountController.value ?? Money(null, wallet.currency);
+
   Money get transactionsAmount =>
       Money(transactions.fold(0.0, (v, t) => v + t.amount), wallet.currency);
 
   Money get remainingAmount {
-    final totalAmount = totalAmountController.value?.amount ?? 0.0;
-    return Money(totalAmount - transactionsAmount.amount, wallet.currency);
+    return Money(
+      (totalAmount.amount ?? 0.0) - transactionsAmount.amount,
+      wallet.currency,
+    );
   }
 
   _AddSeriesTransactionsPageState(this.wallet);
@@ -152,6 +160,24 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
     });
   }
 
+  void onSelectedDone(BuildContext context) {
+    if (remainingAmount.amount > 0) {
+      ConfirmationDialog(
+        title: Text("#Are you sure to exit?"),
+        content: Text("#The remaining amount is greater then zero"),
+        onConfirm: () => router.pop(context),
+      ).show(context);
+    } else if (remainingAmount.amount < 0) {
+      ConfirmationDialog(
+        title: Text("#Are you sure to exit?"),
+        content: Text("#The remaining amount is lower then zero"),
+        onConfirm: () => router.pop(context),
+      ).show(context);
+    } else {
+      router.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -171,38 +197,24 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
     return Form(
       key: _formKey,
       child: Column(children: [
-        buildWallet(context),
-        SizedBox(height: 24),
-        buildTotalAmount(context),
-        SizedBox(height: 16),
-        buildDate(context),
-        SizedBox(height: 16),
+        buildCommonSection(context),
         Divider(),
-        Align(
-          alignment: AlignmentDirectional.topStart,
-          child: Text(
-            "#Transactions",
-            style: Theme.of(context).textTheme.bodyText2,
-          ),
-        ),
-        SizedBox(height: 8),
-        if (transactions.isEmpty) buildNoTransactionsHint(context),
-        for (final transaction in transactions)
-          TransactionListTile(wallet: wallet, transaction: transaction),
-        SizedBox(height: 8),
-        buildAmountIndicator(context),
+        buildTransactionsSection(context),
         Divider(),
-        SizedBox(height: 16),
-        buildTransactionAmount(context),
-        SizedBox(height: 16),
-        buildTransactionCategoryPicker(context, wallet.categories),
-        SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: buildAddTransactionButton(context),
-        )
+        buildNewTransactionSection(context),
       ]),
     );
+  }
+
+  Widget buildCommonSection(BuildContext context) {
+    return Column(children: [
+      buildWallet(context),
+      SizedBox(height: 16),
+      buildTotalAmount(context),
+      SizedBox(height: 24),
+      buildDate(context),
+      SizedBox(height: 8),
+    ]);
   }
 
   Widget buildWallet(BuildContext context) {
@@ -246,13 +258,38 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
     );
   }
 
+  Widget buildTransactionsSection(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(
+            "#Added transactions",
+            style: Theme.of(context).textTheme.bodyText2,
+          ),
+          SizedBox(height: 4),
+          Text(
+            "#These transactions are added to your wallet. Exiting doesn't delete them.",
+            style: Theme.of(context).textTheme.caption,
+          ),
+          SizedBox(height: 8),
+          if (transactions.isEmpty) buildNoTransactionsHint(context),
+          for (final transaction in transactions)
+            TransactionListTile(wallet: wallet, transaction: transaction),
+          SizedBox(height: 8),
+          buildAmountIndicator(context),
+        ]),
+      ),
+    );
+  }
+
   Widget buildNoTransactionsHint(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Align(
         alignment: AlignmentDirectional.centerStart,
         child: Text(
-          "There are not transactions",
+          "#There are not added transactions",
           style: Theme.of(context).textTheme.caption,
         ),
       ),
@@ -274,10 +311,93 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
           alignment: AlignmentDirectional.topEnd,
           child: Text(
             "#Remaining amount: " + remainingAmount.formatted,
-            style: Theme.of(context).textTheme.caption,
+            style: Theme.of(context).textTheme.caption.copyWith(
+                  color: remainingAmount.amount >= 0 ? null : Colors.deepOrange,
+                ),
           ),
         )
       ]),
+    );
+  }
+
+  Widget buildNewTransactionSection(BuildContext context) {
+    if (totalAmount.amount == null) {
+      return buildPanel(
+        context,
+        icon: Icons.info_outline,
+        text: "#Enter total amount to add new transactions",
+        color: Colors.grey,
+      );
+    } else if (remainingAmount.amount == 0) {
+      return Column(children: [
+        buildPanel(
+          context,
+          icon: Icons.check,
+          text:
+              "#The Sum of transactions is equal to the total amount. Tap on Done button to exit.",
+          color: Colors.green,
+        ),
+        buildDoneButton(context, isPrimary: true),
+      ]);
+    } else if (remainingAmount.amount < 0) {
+      return Column(children: [
+        buildPanel(
+          context,
+          icon: Icons.warning_outlined,
+          text: "#The Sum of transactions is lower to the total amount",
+          color: Colors.deepOrange,
+        ),
+        buildDoneButton(context, isPrimary: false),
+      ]);
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 8),
+        Text(
+          "#New transaction",
+          style: Theme.of(context).textTheme.subtitle1,
+        ),
+        SizedBox(height: 16),
+        buildTransactionAmount(context),
+        SizedBox(height: 16),
+        buildTransactionCategoryPicker(context, wallet.categories),
+        SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: buildAddTransactionButton(context),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: buildDoneButton(context, isPrimary: false),
+        )
+      ],
+    );
+  }
+
+  Widget buildPanel(
+    BuildContext context, {
+    IconData icon,
+    String text,
+    Color color,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color),
+          SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              text,
+              style: Theme.of(context).textTheme.bodyText2.copyWith(
+                    color: color,
+                  ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -337,5 +457,17 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
       child: Text("#Add transaction"),
       onPressed: () => onSelectedAddTransaction(context),
     );
+  }
+
+  Widget buildDoneButton(BuildContext context, {@required bool isPrimary}) {
+    return isPrimary
+        ? PrimaryButton(
+            child: Text("#Done"),
+            onPressed: () => onSelectedDone(context),
+          )
+        : SecondaryButton(
+            child: Text("#Done"),
+            onPressed: () => onSelectedDone(context),
+          );
   }
 }
