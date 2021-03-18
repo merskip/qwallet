@@ -140,7 +140,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
     final transactionRef = await DataSource.instance.addTransaction(
       wallet.reference,
       type: TransactionType.expense,
-      title: "",
+      title: null,
       amount: transactionAmountController.value.amount,
       category: transactionCategory?.reference,
       date: date,

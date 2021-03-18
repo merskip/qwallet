@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart' as Foundation;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/LocalPreferences.dart';
@@ -10,7 +9,6 @@ import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/dialog/SelectWalletDialog.dart';
-import 'package:qwallet/features/transactions_add_series/AddSeriesTransactionsPage.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
@@ -55,6 +53,15 @@ class _AddTransactionPageContent extends StatelessWidget {
   }) : super(key: key);
 
   void onSelectedAddSeriesTransactions(BuildContext context) {
+    final type = formKey.currentState.type;
+    if (type == TransactionType.income) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content:
+            Text("#Add series of transactions is supported only for expenses"),
+        duration: Duration(seconds: 1),
+      ));
+      return;
+    }
     final wallet = formKey.currentState.wallet;
     final amount = formKey.currentState.amountController.value.amount;
     final date = formKey.currentState.date;
