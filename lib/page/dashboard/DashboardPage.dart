@@ -33,6 +33,8 @@ class DashboardPage extends StatefulWidget {
 class DashboardPageState extends State<DashboardPage> {
   final _selectedWallet = BehaviorSubject<Wallet>();
 
+  final notificationService = PushNotificationService();
+
   Wallet getSelectedWallet() {
     return _selectedWallet.value;
   }
@@ -293,7 +295,34 @@ class DashboardPageState extends State<DashboardPage> {
 
   Widget buildPushNotificationsButton(BuildContext context) {
     return FutureBuilder(
-      future: PushNotificationService().getActivePushNotifications(),
+        future: notificationService.isPermissionGranted(),
+        builder: (context, AsyncSnapshot<bool> snapshot) {
+          if (snapshot.hasData) {
+            final isPermissionGranted = snapshot.data;
+            if (isPermissionGranted) {
+              return buildPushNotificationsButtonWithNotifications(context);
+            } else {
+              return Badge(
+                position: BadgePosition.topEnd(top: 8, end: 8),
+                badgeColor: Colors.orangeAccent,
+                child: IconButton(
+                  icon: Icon(Icons.notifications_outlined),
+                  onPressed: () async {
+                    final notifications =
+                        await notificationService.requestPermission();
+                  },
+                ),
+              );
+            }
+          } else {
+            return Container();
+          }
+        });
+  }
+
+  Widget buildPushNotificationsButtonWithNotifications(BuildContext context) {
+    return FutureBuilder(
+      future: notificationService.getActivePushNotifications(),
       builder: (context, AsyncSnapshot<List<PushNotification>> snapshot) {
         if (snapshot.hasData) {
           final notifications = snapshot.data;
@@ -316,7 +345,12 @@ class DashboardPageState extends State<DashboardPage> {
             );
           }
         }
-        return Container();
+        return IconButton(
+          icon: Icon(Icons.notifications_outlined),
+          onPressed: () async {
+            final notifications = await notificationService.requestPermission();
+          },
+        );
       },
     );
   }

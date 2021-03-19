@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notifications_permission">Zezwól aplikacji na odczytanie powiadomień w celu wykrywania transakcji</string>
+</resources>

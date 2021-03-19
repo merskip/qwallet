@@ -1,14 +1,15 @@
-package pl.merskip.QWallet
+package pl.merskip.qwallet
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.Icon
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.provider.Settings
 import android.service.notification.NotificationListenerService
 import androidx.annotation.RequiresApi
 import java.io.ByteArrayOutputStream
@@ -20,6 +21,19 @@ class PushNotificationsService : NotificationListenerService() {
     override fun onBind(intent: Intent): IBinder? {
         val action = intent.action
         return if (SERVICE_INTERFACE == action) super.onBind(intent) else binder
+    }
+
+    fun isPermissionGranted(): Boolean {
+        return isNotificationServiceEnabled()
+    }
+
+    private fun isNotificationServiceEnabled(): Boolean {
+        val components = Settings.Secure.getString(contentResolver, "enabled_notification_listeners")
+                .split(':')
+                .mapNotNull { ComponentName.unflattenFromString(it) }
+        return components.any {
+            it.packageName == packageName && it.className == this::class.java.name
+        }
     }
 
     fun getActivePushNotifications(): List<PushNotification> {

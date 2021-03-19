@@ -1,11 +1,28 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class PushNotificationService {
   static const _platform =
       const MethodChannel('pl.merskip.qwallet/push_notification_service');
+
+  Future<bool> isPermissionGranted() async {
+    try {
+      final result = await _platform.invokeMapMethod("isPermissionGranted");
+      return result["isPermissionGranted"] as bool;
+    } on PlatformException catch (_) {
+      return null;
+    }
+  }
+
+  Future<bool> requestPermission() async {
+    try {
+      final result = await _platform.invokeMapMethod("requestPermission");
+      return result["isPermissionGranted"] as bool;
+    } on PlatformException catch (_) {
+      return null;
+    }
+  }
 
   Future<List<PushNotification>> getActivePushNotifications() async {
     try {
