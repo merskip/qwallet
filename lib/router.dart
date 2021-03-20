@@ -196,8 +196,11 @@ void initRoutes(FluroRouter router) {
     handler: fluro.Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> params) {
       final walletId = params["walletId"][0];
-      return TransactionsListPage(
-        walletRef: DataSource.instance.getWalletReference(walletId),
+      return SimpleStreamWidget(
+        stream: DataSource.instance.getWalletById(walletId),
+        builder: (context, wallet) => TransactionsListPage(
+          wallet: wallet,
+        ),
       );
     }),
   );

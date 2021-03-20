@@ -832,6 +832,11 @@ extension TransactionsListLocalizations on AppLocalizations {
         en: "Category: ",
         pl: "Kwota ",
       );
+
+  String get transactionsListChipFilterWithoutCategory => _locale(
+        en: "Without category",
+        pl: "Bez categorii",
+      );
 }
 
 extension TransactionsListFilterLocalizations on AppLocalizations {
@@ -875,19 +880,24 @@ extension TransactionsListFilterLocalizations on AppLocalizations {
         pl: "Dowolna kategoria",
       );
 
-  String get transactionsListFilterSelectCategoriesTitle => _locale(
-        en: "Select categories to filtering",
-        pl: "Wybierz kategorie do filtrowania",
+  String get transactionsListFilterWithoutCategory => _locale(
+        en: "Without category",
+        pl: "Bez kategorii",
       );
 
-  String get transactionsListFilterSelectCategoriesDeselectAll => _locale(
-        en: "Deselect all categories",
-        pl: "Odznacz wszystkie kategorie",
+  String get transactionsListFilterSelectCategoriesTitle => _locale(
+        en: "Categories for  filtering",
+        pl: "Kategorie do filtrowania",
       );
 
   String get transactionsListFilterSelectCategoriesSelectAll => _locale(
         en: "Select all categories",
-        pl: "Zaznatrz wszystkie kategorie",
+        pl: "Zaznacz wszystkie kategorie",
+      );
+
+  String get transactionsListFilterSelectCategoriesWithoutCategory => _locale(
+        en: "Without category",
+        pl: "Bez kategorii",
       );
 
   String get transactionsListFilterSubmit => _locale(

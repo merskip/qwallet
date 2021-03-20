@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -18,11 +17,11 @@ import '../../utils.dart';
 import 'TransactionsListFilter.dart';
 
 class TransactionsListPage extends StatefulWidget {
-  final Reference<Wallet> walletRef;
+  final Wallet wallet;
 
   TransactionsListPage({
     Key key,
-    this.walletRef,
+    this.wallet,
   }) : super(key: key);
 
   @override
@@ -30,7 +29,21 @@ class TransactionsListPage extends StatefulWidget {
 }
 
 class _TransactionsListPageState extends State<TransactionsListPage> {
-  TransactionsFilter filter = TransactionsFilter();
+  TransactionsFilter filter;
+
+  @override
+  void initState() {
+    filter = TransactionsFilter(
+      transactionType: null,
+      amountType: null,
+      amount: null,
+      amountAccuracy: null,
+      isAllCategories: true,
+      categories: widget.wallet.categories,
+      includeWithoutCategory: true,
+    );
+    super.initState();
+  }
 
   void onSelectedFilter(BuildContext context, Wallet wallet) async {
     final filter = await showModalBottomSheet(
@@ -51,35 +64,21 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SimpleStreamWidget(
-      stream: DataSource.instance.getWallet(widget.walletRef),
-      builder: (context, Wallet wallet) => Scaffold(
-        appBar: AppBar(
-          title: Text(wallet.name),
-          actions: [
-            Builder(
-              builder: (context) => IconButton(
-                icon: Icon(Icons.filter_list),
-                onPressed: () => onSelectedFilter(context, wallet),
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.wallet.name),
+        actions: [
+          Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.filter_list),
+              onPressed: () => onSelectedFilter(context, widget.wallet),
             ),
-          ],
-        ),
-        body: SimpleStreamWidget(
-          stream: CombineLatestStream.list([
-            DataSource.instance.getWallet(widget.walletRef),
-            DataSource.instance.getCategories(wallet: widget.walletRef),
-          ]),
-          builder: (context, values) {
-            final wallet = values[0] as Wallet;
-            final categories = values[1] as List<Category>;
-            return _TransactionsContentPage(
-              wallet: wallet,
-              categories: categories,
-              filter: filter,
-            );
-          },
-        ),
+          ),
+        ],
+      ),
+      body: _TransactionsContentPage(
+        wallet: widget.wallet,
+        filter: filter,
       ),
     );
   }
@@ -87,13 +86,11 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
 
 class _TransactionsContentPage extends StatefulWidget {
   final Wallet wallet;
-  final List<Category> categories;
   final TransactionsFilter filter;
 
   _TransactionsContentPage({
     Key key,
     this.wallet,
-    this.categories,
     this.filter,
   }) : super(key: key);
 
@@ -182,10 +179,13 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
             TransactionsFilterAmountType.isGreaterOrEqual) {
           if (transaction.amount < filter.amount) return false;
         }
-        if (filter.categories.isNotEmpty) {
-          if (!filter.categories.any((c) => c.id == transaction.category?.id))
-            return false;
-        }
+
+        if (!filter.categories.any((c) {
+          if (transaction.category == null)
+            return filter.includeWithoutCategory;
+          return c.id == transaction.category.id;
+        })) return false;
+
         return true;
       }).toList();
 
@@ -269,7 +269,11 @@ class FiltersListItem extends _ListItem {
           if (filter.isEmpty()) buildNoFilersChip(context),
           if (filter.transactionType != null) buildTypeFilterChip(context),
           if (filter.amountType != null) buildAmountFilterChip(context),
-          ...filter.categories.map((c) => buildCategoryFilterChip(context, c)),
+          if (!filter.isAllCategories)
+            ...filter.categories
+                .map((c) => buildCategoryFilterChip(context, c)),
+          if (!filter.isAllCategories && filter.includeWithoutCategory)
+            buildWithoutCategoryFilterChip(context),
         ],
       ),
     );
@@ -349,7 +353,8 @@ class FiltersListItem extends _ListItem {
           style: TextStyle(color: Theme.of(context).primaryColorDark),
           children: [
             TextSpan(
-              text: AppLocalizations.of(context).transactionsListChipFilterCategory,
+              text: AppLocalizations.of(context)
+                  .transactionsListChipFilterCategory,
             ),
             TextSpan(
               text: category.titleText,
@@ -357,6 +362,18 @@ class FiltersListItem extends _ListItem {
             ),
           ],
         ),
+      ),
+      visualDensity: VisualDensity.compact,
+      backgroundColor: Theme.of(context).backgroundColor,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    );
+  }
+
+  Widget buildWithoutCategoryFilterChip(BuildContext context) {
+    return Chip(
+      label: Text(
+        AppLocalizations.of(context).transactionsListChipFilterWithoutCategory,
+        style: TextStyle(color: Theme.of(context).primaryColorDark),
       ),
       visualDensity: VisualDensity.compact,
       backgroundColor: Theme.of(context).backgroundColor,

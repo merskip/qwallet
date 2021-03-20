@@ -15,6 +15,37 @@ class CategoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return RawCategoryButton(
+      title: category.titleText,
+      icon: category.icon,
+      primaryColor: category.primaryColor,
+      backgroundColor: category.backgroundColor,
+      isSelected: isSelected,
+      onPressed: onPressed,
+    );
+  }
+}
+
+class RawCategoryButton extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color primaryColor;
+  final Color backgroundColor;
+  final bool isSelected;
+  final VoidCallback onPressed;
+
+  const RawCategoryButton({
+    Key key,
+    this.title,
+    this.icon,
+    this.primaryColor,
+    this.backgroundColor,
+    this.isSelected,
+    this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         RawMaterialButton(
@@ -23,18 +54,18 @@ class CategoryButton extends StatelessWidget {
           shape: CircleBorder(
             side: isSelected
                 ? BorderSide(
-                    color: category.primaryColor,
+                    color: primaryColor,
                     width: 3,
                   )
                 : BorderSide.none,
           ),
-          fillColor: category.backgroundColor,
+          fillColor: backgroundColor,
           child: SizedBox(
             width: 56,
             height: 56,
             child: Icon(
-              category.icon,
-              color: category.primaryColor.withOpacity(isSelected ? 1.0 : 0.5),
+              icon,
+              color: primaryColor.withOpacity(isSelected ? 1.0 : 0.5),
               size: 28,
             ),
           ),
@@ -44,9 +75,9 @@ class CategoryButton extends StatelessWidget {
         SizedBox(
           width: 64,
           child: Text(
-            category.titleText,
+            title,
             style: Theme.of(context).textTheme.caption.copyWith(
-                  color: isSelected ? category.primaryColor : null,
+                  color: isSelected ? primaryColor : null,
                   fontWeight: isSelected ? FontWeight.bold : null,
                 ),
             textAlign: TextAlign.center,
