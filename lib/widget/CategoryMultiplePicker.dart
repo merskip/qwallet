@@ -4,36 +4,26 @@ import 'package:qwallet/api/Category.dart';
 
 import 'CategoryButton.dart';
 
-class CategoryPicker extends StatelessWidget {
+class CategoryMultiplePicker extends StatelessWidget {
   final List<Category> categories;
-  final Category selectedCategory;
+  final List<Category> selectedCategories;
   final Widget title;
-  final Function(Category) onChangeCategory;
+  final Function(List<Category>) onChangeSelectedCategories;
 
-  const CategoryPicker({
+  const CategoryMultiplePicker({
     Key key,
     this.categories,
-    this.selectedCategory,
+    this.selectedCategories,
     this.title,
-    this.onChangeCategory,
+    this.onChangeSelectedCategories,
   }) : super(key: key);
 
-  onSwipeLeft() {
-    onChangeCategory(_getCategoryBy(offset: -1));
-  }
-
-  onSwipeRight() {
-    onChangeCategory(_getCategoryBy(offset: 1));
-  }
-
-  Category _getCategoryBy({int offset}) {
-    if (selectedCategory == null)
-      return offset > 0 ? categories.first : categories.last;
-    final targetIndex = categories.indexOf(selectedCategory) + offset;
-    if (targetIndex >= 0 && targetIndex < categories.length)
-      return categories[targetIndex];
-    else
-      return null;
+  void onSelectedCategory(BuildContext context, Category category) {
+    final isSelected = selectedCategories.contains(category);
+    var newCategories = [...selectedCategories];
+    isSelected ? newCategories.remove(category) : newCategories.add(category);
+    newCategories..sort((lhs, rhs) => lhs.compareTo(rhs));
+    onChangeSelectedCategories(newCategories);
   }
 
   @override
@@ -66,30 +56,21 @@ class CategoryPicker extends StatelessWidget {
   }
 
   Widget buildCategories(BuildContext context) {
-    return GestureDetector(
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 12,
-        children: [
-          ...categories
-              .map((category) => buildCategoryButton(context, category)),
-        ],
-      ),
-      onHorizontalDragEnd: (details) {
-        final dx = details.velocity.pixelsPerSecond.dx;
-        if (dx < 0)
-          onSwipeLeft();
-        else if (dx > 0) onSwipeRight();
-      },
+    return Wrap(
+      spacing: 8,
+      runSpacing: 12,
+      children: [
+        ...categories.map((category) => buildCategoryButton(context, category)),
+      ],
     );
   }
 
   Widget buildCategoryButton(BuildContext context, Category category) {
-    final isSelected = selectedCategory == category;
+    final isSelected = selectedCategories.contains(category);
     return CategoryButton(
       category: category,
       isSelected: isSelected,
-      onPressed: () => onChangeCategory(category),
+      onPressed: () => onSelectedCategory(context, category),
     );
   }
 }

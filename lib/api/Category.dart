@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'Converting.dart';
 import 'Model.dart';
 
-class Category extends Model<Category> {
+class Category extends Model<Category> implements Comparable<Category> {
   final String title;
   final IconData icon;
   final Color primaryColor;
@@ -26,4 +26,13 @@ class Category extends Model<Category> {
             snapshot.getBool("isExcludedFromDailyBalance") ?? false,
         order = snapshot.getInt("order"),
         super(snapshot);
+
+  @override
+  int compareTo(other) => _compareWithNullAtEnd(order, other.order);
+
+  int _compareWithNullAtEnd(lhs, rhs) {
+    if (lhs == null) return 1;
+    if (rhs == null) return -1;
+    return lhs.compareTo(rhs);
+  }
 }

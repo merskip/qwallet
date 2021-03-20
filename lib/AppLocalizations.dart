@@ -856,6 +856,11 @@ extension TransactionsListFilterLocalizations on AppLocalizations {
         pl: "Dowolna",
       );
 
+  String get transactionsListFilterCategories => _locale(
+        en: "Categories",
+        pl: "Kategorie",
+      );
+
   String get transactionsListFilterSubmit => _locale(
         en: "Apply",
         pl: "Zastosuj",

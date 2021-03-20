@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart' as Foundation;
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/widget/CategoryMultiplePicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../../AppLocalizations.dart';
@@ -19,11 +21,11 @@ class TransactionsFilter {
     this.amountType,
     this.amount,
     this.amountAccuracy,
-    this.categories,
-  });
+    List<Category> categories,
+  }) : categories = categories ?? [];
 
   bool isEmpty() =>
-      transactionType == null && amountType == null && categories == null;
+      transactionType == null && amountType == null && categories.isEmpty;
 }
 
 enum TransactionsFilterAmountType {
@@ -76,6 +78,9 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
   final amountController = TextEditingController();
   final amountAccuracyController = TextEditingController();
 
+  List<Category> selectedCategories = [];
+  bool _isCategoriesSelect = false;
+
   @override
   void initState() {
     transactionType = widget.initialFilter.transactionType;
@@ -100,22 +105,28 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
       amountType: amount != null ? amountType : null,
       amount: amount,
       amountAccuracy: parseAmount(amountAccuracyController.text),
+      categories: selectedCategories,
     ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: MediaQuery.of(context).viewInsets,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          buildTitle(context),
-          buildTransactionType(context),
-          buildAmount(context),
-          buildSubmit(context),
-        ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: !_isCategoriesSelect
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  buildTitle(context),
+                  buildTransactionType(context),
+                  buildAmount(context),
+                  buildCategories(context),
+                  buildSubmit(context),
+                ],
+              )
+            : buildCategoriesSelect(context),
       ),
     );
   }
@@ -248,6 +259,116 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
         ),
         textAlign: TextAlign.end,
       ),
+    );
+  }
+
+  Widget buildCategories(BuildContext context) {
+    return ListTile(
+      title:
+          Text(AppLocalizations.of(context).transactionsListFilterCategories),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Wrap(
+            spacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              buildSelectCategoriesChip(context),
+              if (selectedCategories.isEmpty)
+                buildAnyCategoryChip(context, null),
+              ...selectedCategories.map((c) => buildCategoryChip(context, c)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildSelectCategoriesChip(BuildContext context) {
+    return ActionChip(
+      label: Text(
+        "#Select categories",
+      ),
+      onPressed: () => setState(() {
+        _isCategoriesSelect = true;
+      }),
+    );
+  }
+
+  Widget buildAnyCategoryChip(BuildContext context, Category category) {
+    return FilterChip(
+      label: Text(
+        category?.titleText ?? "#Any category",
+        style: TextStyle(
+          color: Theme.of(context).primaryColorDark,
+        ),
+      ),
+      selectedColor: Theme.of(context).backgroundColor,
+      checkmarkColor: Theme.of(context).primaryColor,
+      onSelected: (bool value) {},
+      selected: true,
+    );
+  }
+
+  Widget buildCategoryChip(BuildContext context, Category category) {
+    return Chip(
+      label: Text(
+        category.titleText,
+        style: TextStyle(
+          color: Theme.of(context).primaryColorDark,
+        ),
+      ),
+      backgroundColor: Theme.of(context).backgroundColor,
+      visualDensity: VisualDensity.compact,
+    );
+  }
+
+  Widget buildCategoriesSelect(BuildContext context) {
+    final isSelectedAllCategories =
+        Foundation.listEquals(selectedCategories, widget.wallet.categories);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          textTheme: Theme.of(context).textTheme,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            color: Theme.of(context).textTheme.subtitle1.color,
+            onPressed: () => setState(() {
+              _isCategoriesSelect = false;
+            }),
+          ),
+          title: Text("Select categories to filter"),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.select_all),
+              color: Theme.of(context).textTheme.subtitle1.color,
+              tooltip: isSelectedAllCategories
+                  ? "#Deselect all categories"
+                  : "#Select all categories",
+              onPressed: () {
+                setState(() {
+                  selectedCategories =
+                      isSelectedAllCategories ? [] : widget.wallet.categories;
+                });
+              },
+            )
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: CategoryMultiplePicker(
+            categories: widget.wallet.categories,
+            selectedCategories: selectedCategories,
+            onChangeSelectedCategories: (categories) => setState(() {
+              this.selectedCategories = categories;
+            }),
+          ),
+        ),
+      ],
     );
   }
 
