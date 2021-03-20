@@ -828,6 +828,10 @@ extension TransactionsListLocalizations on AppLocalizations {
         en: "Amount ",
         pl: "Kwota ",
       );
+  String get transactionsListChipFilterCategory => _locale(
+        en: "Category: ",
+        pl: "Kwota ",
+      );
 }
 
 extension TransactionsListFilterLocalizations on AppLocalizations {
@@ -859,6 +863,31 @@ extension TransactionsListFilterLocalizations on AppLocalizations {
   String get transactionsListFilterCategories => _locale(
         en: "Categories",
         pl: "Kategorie",
+      );
+
+  String get transactionsListFilterSelectCategories => _locale(
+        en: "Select categories",
+        pl: "Wybierz kategorie",
+      );
+
+  String get transactionsListFilterAnyCategory => _locale(
+        en: "Any category",
+        pl: "Dowolna kategoria",
+      );
+
+  String get transactionsListFilterSelectCategoriesTitle => _locale(
+        en: "Select categories to filtering",
+        pl: "Wybierz kategorie do filtrowania",
+      );
+
+  String get transactionsListFilterSelectCategoriesDeselectAll => _locale(
+        en: "Deselect all categories",
+        pl: "Odznacz wszystkie kategorie",
+      );
+
+  String get transactionsListFilterSelectCategoriesSelectAll => _locale(
+        en: "Select all categories",
+        pl: "Zaznatrz wszystkie kategorie",
       );
 
   String get transactionsListFilterSubmit => _locale(

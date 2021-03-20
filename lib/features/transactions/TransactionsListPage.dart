@@ -349,8 +349,7 @@ class FiltersListItem extends _ListItem {
           style: TextStyle(color: Theme.of(context).primaryColorDark),
           children: [
             TextSpan(
-              text:
-               "#Category: ",
+              text: AppLocalizations.of(context).transactionsListChipFilterCategory,
             ),
             TextSpan(
               text: category.titleText,

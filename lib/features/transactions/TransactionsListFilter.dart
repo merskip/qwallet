@@ -289,8 +289,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
   Widget buildSelectCategoriesChip(BuildContext context) {
     return ActionChip(
       label: Text(
-        "#Select categories",
-      ),
+          AppLocalizations.of(context).transactionsListFilterSelectCategories),
       onPressed: () => setState(() {
         _isCategoriesSelect = true;
       }),
@@ -300,7 +299,8 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
   Widget buildAnyCategoryChip(BuildContext context, Category category) {
     return FilterChip(
       label: Text(
-        category?.titleText ?? "#Any category",
+        category?.titleText ??
+            AppLocalizations.of(context).transactionsListFilterAnyCategory,
         style: TextStyle(
           color: Theme.of(context).primaryColorDark,
         ),
@@ -342,14 +342,17 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
               _isCategoriesSelect = false;
             }),
           ),
-          title: Text("Select categories to filter"),
+          title: Text(AppLocalizations.of(context)
+              .transactionsListFilterSelectCategoriesTitle),
           actions: [
             IconButton(
               icon: Icon(Icons.select_all),
               color: Theme.of(context).textTheme.subtitle1.color,
               tooltip: isSelectedAllCategories
-                  ? "#Deselect all categories"
-                  : "#Select all categories",
+                  ? AppLocalizations.of(context)
+                      .transactionsListFilterSelectCategoriesDeselectAll
+                  : AppLocalizations.of(context)
+                      .transactionsListFilterSelectCategoriesSelectAll,
               onPressed: () {
                 setState(() {
                   selectedCategories =
