@@ -168,7 +168,9 @@ class DashboardPageState extends State<DashboardPage> {
         if (_selectedWallet.value != null)
           buildWalletCards(context, _selectedWallet.value)
         else
-          SliverToBoxAdapter(child: CircularProgressIndicator()),
+          SliverToBoxAdapter(
+            child: Center(child: CircularProgressIndicator()),
+          ),
         SliverPadding(
           padding: EdgeInsets.only(bottom: 88),
         ),
@@ -307,10 +309,7 @@ class DashboardPageState extends State<DashboardPage> {
                 badgeColor: Colors.orangeAccent,
                 child: IconButton(
                   icon: Icon(Icons.notifications_outlined),
-                  onPressed: () async {
-                    final notifications =
-                        await notificationService.requestPermission();
-                  },
+                  onPressed: () => notificationService.requestPermission(),
                 ),
               );
             }
@@ -345,12 +344,7 @@ class DashboardPageState extends State<DashboardPage> {
             );
           }
         }
-        return IconButton(
-          icon: Icon(Icons.notifications_outlined),
-          onPressed: () async {
-            final notifications = await notificationService.requestPermission();
-          },
-        );
+        return Container();
       },
     );
   }
