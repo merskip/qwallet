@@ -88,6 +88,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
     amountController.text = widget.initialFilter.amount?.toStringAsFixed(2);
     amountAccuracyController.text =
         widget.initialFilter.amountAccuracy?.toStringAsFixed(2);
+    selectedCategories = widget.initialFilter.categories;
     super.initState();
   }
 

@@ -182,6 +182,10 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
             TransactionsFilterAmountType.isGreaterOrEqual) {
           if (transaction.amount < filter.amount) return false;
         }
+        if (filter.categories.isNotEmpty) {
+          if (!filter.categories.any((c) => c.id == transaction.category?.id))
+            return false;
+        }
         return true;
       }).toList();
 
@@ -265,6 +269,7 @@ class FiltersListItem extends _ListItem {
           if (filter.isEmpty()) buildNoFilersChip(context),
           if (filter.transactionType != null) buildTypeFilterChip(context),
           if (filter.amountType != null) buildAmountFilterChip(context),
+          ...filter.categories.map((c) => buildCategoryFilterChip(context, c)),
         ],
       ),
     );
@@ -335,6 +340,29 @@ class FiltersListItem extends _ListItem {
       }
     }
     return text;
+  }
+
+  Widget buildCategoryFilterChip(BuildContext context, Category category) {
+    return Chip(
+      label: RichText(
+        text: TextSpan(
+          style: TextStyle(color: Theme.of(context).primaryColorDark),
+          children: [
+            TextSpan(
+              text:
+               "#Category: ",
+            ),
+            TextSpan(
+              text: category.titleText,
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+      ),
+      visualDensity: VisualDensity.compact,
+      backgroundColor: Theme.of(context).backgroundColor,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    );
   }
 }
 
