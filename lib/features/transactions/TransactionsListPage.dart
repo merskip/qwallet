@@ -14,7 +14,7 @@ import 'package:qwallet/widget/TransactionListTile.dart';
 import 'package:qwallet/widget/empty_state_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../utils.dart';
+import '../../utils.dart';
 import 'TransactionsListFilter.dart';
 
 class TransactionsListPage extends StatefulWidget {

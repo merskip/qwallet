@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
-import '../AppLocalizations.dart';
-import '../utils.dart';
+import '../../AppLocalizations.dart';
+import '../../utils.dart';
 
 class TransactionsFilter {
   final TransactionType transactionType;
   final TransactionsFilterAmountType amountType;
   final double amount;
   final double amountAccuracy;
+  final List<Category> categories;
 
   TransactionsFilter({
     this.transactionType,
     this.amountType,
     this.amount,
     this.amountAccuracy,
+    this.categories,
   });
 
-  bool isEmpty() => transactionType == null && amountType == null;
+  bool isEmpty() =>
+      transactionType == null && amountType == null && categories == null;
 }
 
 enum TransactionsFilterAmountType {

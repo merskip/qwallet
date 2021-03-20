@@ -16,8 +16,8 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 import 'package:qwallet/widget/vector_image.dart';
 
-import '../AppLocalizations.dart';
-import '../router.dart';
+import '../../AppLocalizations.dart';
+import '../../router.dart';
 
 class AddTransactionPage extends StatelessWidget {
   final Reference<Wallet> initialWalletRef;

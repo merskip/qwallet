@@ -4,8 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/page/AddTransactionPage.dart';
-import 'package:qwallet/page/TransactionPage.dart';
 import 'package:qwallet/page/WalletPage.dart';
 import 'package:qwallet/page/WalletsPage.dart';
 import 'package:qwallet/page/loans/AddLoanPage.dart';
@@ -14,7 +12,10 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import 'api/Model.dart';
 import 'api/Transaction.dart';
-import 'features/transactions_add_series/AddSeriesTransactionsPage.dart';
+import 'features/transactions/AddSeriesTransactionsPage.dart';
+import 'features/transactions/AddTransactionPage.dart';
+import 'features/transactions/TransactionPage.dart';
+import 'features/transactions/TransactionsListPage.dart';
 import 'page/AddCategoryPage.dart';
 import 'page/AddWalletPage.dart';
 import 'page/CategoriesPage.dart';
@@ -22,7 +23,6 @@ import 'page/EditCategoryPage.dart';
 import 'page/EditWalletDateRangePage.dart';
 import 'page/ReportsPage.dart';
 import 'page/SettingsPage.dart';
-import 'page/TransactionsListPage.dart';
 import 'page/landing_page.dart';
 
 final router = new FluroRouter();
