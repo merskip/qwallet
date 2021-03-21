@@ -201,7 +201,7 @@ class _ReportByDatePage extends StatelessWidget {
       child: Column(
         children: items.isNotEmpty
             ? [
-                buildChart(context, items),
+                buildChart(context, items.reversed.toList()),
                 buildTable(context, items),
               ]
             : [],
@@ -214,26 +214,20 @@ class _ReportByDatePage extends StatelessWidget {
       width: double.infinity,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: LineChart(
-          LineChartData(
-            lineBarsData: [
-              LineChartBarData(
-                spots: items
-                    .map((item) => FlSpot(
-                          item.date.day.toDouble(),
-                          (item.totalAmount.amount * 10).roundToDouble() / 10,
-                        ))
-                    .toList(),
-                dotData: FlDotData(show: false),
-                barWidth: 2,
-                colors: [Theme.of(context).primaryColor],
-                isCurved: true,
-                curveSmoothness: 0.2,
-                isStrokeCapRound: true,
-              ),
-            ],
-            minX: 1,
-            maxX: DateTime.now().lastDayOfMonth.day.toDouble(),
+        child: BarChart(
+          BarChartData(
+            barGroups: items
+                .map(
+                  (item) => BarChartGroupData(
+                    x: item.date.day,
+                    barRods: [
+                      BarChartRodData(
+                          y: (item.totalAmount.amount * 10).roundToDouble() /
+                              10),
+                    ],
+                  ),
+                )
+                .toList(),
             titlesData: FlTitlesData(
               leftTitles: SideTitles(
                 showTitles: true,
@@ -325,7 +319,8 @@ class _ReportByDatePage extends StatelessWidget {
   List<_ByDateItem> getByDateItems() {
     final groupedTransactions = Map<DateTime, List<Transaction>>();
     transactions.where((t) {
-      return t.type == TransactionType.expense && !t.excludedFromDailyStatistics;
+      return t.type == TransactionType.expense &&
+          !t.excludedFromDailyStatistics;
     }).forEach((t) {
       final date = getDateWithoutTime(t.date);
       groupedTransactions.putIfAbsent(date, () => []);
