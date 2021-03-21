@@ -105,9 +105,8 @@ class DailyReportSection extends StatelessWidget {
   }
 
   double _getTotalExpensesExcludedFromDailyBalance() {
-    return transactions.where((transaction) {
-      // TODO: Check if transaction should be excluded from daily stats
-      return transaction.type == TransactionType.expense && false;
+    return transactions.where((t) {
+      return t.type == TransactionType.expense && t.excludedFromDailyStatistics;
     }).fold(0.0, (a, t) => a + t.amount);
   }
 }

@@ -324,7 +324,9 @@ class _ReportByDatePage extends StatelessWidget {
 
   List<_ByDateItem> getByDateItems() {
     final groupedTransactions = Map<DateTime, List<Transaction>>();
-    transactions.where((t) => t.type == TransactionType.expense).forEach((t) {
+    transactions.where((t) {
+      return t.type == TransactionType.expense && !t.excludedFromDailyStatistics;
+    }).forEach((t) {
       final date = getDateWithoutTime(t.date);
       groupedTransactions.putIfAbsent(date, () => []);
       groupedTransactions[date].add(t);
@@ -346,7 +348,6 @@ class _ReportByDatePage extends StatelessWidget {
 
     items..sort((lhs, rhs) => rhs.date.compareTo(lhs.date));
     return items;
-    // return items.where((c) => c.totalAmount.amount > 0).toList();
   }
 }
 
