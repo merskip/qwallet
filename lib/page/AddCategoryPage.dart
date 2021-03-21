@@ -22,15 +22,14 @@ class AddCategoryPage extends StatelessWidget {
           padding: EdgeInsets.all(16),
           child: CategoryForm(
             submitChild: Text(AppLocalizations.of(context).addCategorySubmit),
-            onSubmit: (context, title, primaryColor, backgroundColor, icon,
-                isExcludedFromDailyBalance) {
+            onSubmit: (context, title, primaryColor, backgroundColor, icon) {
               DataSource.instance.addCategory(
-                  wallet: walletRef,
-                  title: title,
-                  primaryColor: primaryColor,
-                  backgroundColor: backgroundColor,
-                  icon: icon,
-                  isExcludedFromDailyBalance: isExcludedFromDailyBalance);
+                wallet: walletRef,
+                title: title,
+                primaryColor: primaryColor,
+                backgroundColor: backgroundColor,
+                icon: icon,
+              );
               Navigator.of(context).pop();
             },
           ),

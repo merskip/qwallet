@@ -317,19 +317,18 @@ extension CategoriesDataSource on DataSource {
   }) =>
       category.documentReference.snapshots().map((s) => Category(s));
 
-  Future<void> addCategory(
-      {@required Reference<Wallet> wallet,
-      String title,
-      Color primaryColor,
-      Color backgroundColor,
-      IconData icon,
-      bool isExcludedFromDailyBalance}) {
+  Future<void> addCategory({
+    @required Reference<Wallet> wallet,
+    String title,
+    Color primaryColor,
+    Color backgroundColor,
+    IconData icon,
+  }) {
     return wallet.documentReference.collection("categories").add({
       "title": title,
       "primaryColor": primaryColor.toHex(),
       "backgroundColor": backgroundColor.toHex(),
       "icon": serializeIcon(icon),
-      "isExcludedFromDailyBalance": isExcludedFromDailyBalance,
       "order": null
     });
   }
@@ -340,14 +339,12 @@ extension CategoriesDataSource on DataSource {
     Color primaryColor,
     Color backgroundColor,
     IconData icon,
-    bool isExcludedFromDailyBalance,
   }) {
     return category.documentReference.update({
       "title": title,
       "primaryColor": primaryColor.toHex(),
       "backgroundColor": backgroundColor.toHex(),
       "icon": serializeIcon(icon),
-      "isExcludedFromDailyBalance": isExcludedFromDailyBalance,
     });
   }
 
