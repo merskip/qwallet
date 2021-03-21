@@ -17,6 +17,7 @@ class Transaction extends Model<Transaction> {
   double amount;
   DateTime date;
   Reference<Category> category;
+  bool excludedFromDailyStatistics;
 
   Transaction(DocumentSnapshot snapshot)
       : type = snapshot.getOneOf("type", TransactionType.values),
@@ -24,6 +25,8 @@ class Transaction extends Model<Transaction> {
         amount = snapshot.getDouble("amount"),
         date = snapshot.getDateTime("date"),
         category = snapshot.getReference("category"),
+        excludedFromDailyStatistics =
+            snapshot.getBool("excludedFromDailyStatistics") ?? false,
         super(snapshot);
 
   String getTypeLocalizedText(BuildContext context) => ifType(

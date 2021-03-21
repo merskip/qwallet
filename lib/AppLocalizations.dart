@@ -974,6 +974,27 @@ extension TransactionDetailsLocalizations on AppLocalizations {
         pl: "Data",
       );
 
+  String get transactionDetailsExcludedFromDailyStatistics => _locale(
+        en: "Daily statistics",
+        pl: "Statystyki dzienne",
+      );
+
+  String get transactionDetailsExcludedFromDailyStatisticsIncluded => _locale(
+        en: "Transaction included",
+        pl: "Transakcja jest względniona",
+      );
+
+  String get transactionDetailsExcludedFromDailyStatisticsExcluded => _locale(
+        en: "Transaction excluded",
+        pl: "Transakcja jest wykluczona",
+      );
+
+  String get transactionDetailsExcludedFromDailyStatisticsDescription =>
+      _locale(
+        en: "If this options is enabled, then expenses won't be included in the calculation of the daily balance. That hasn't effect for wallet's balance.",
+        pl: "Jeśli ta opcja jest włączona, wydatki nie będą uwzględniane przy obliczaniu dziennego salda. Nie ma to wpływu na saldo portfela.",
+      );
+
   String get transactionDetailsRemoveConfirmation => _locale(
         en: "Remove this transaction?",
         pl: "Czy usunąć tę transakcję?",
@@ -1118,16 +1139,6 @@ extension CategoriesLocalizations on AppLocalizations {
   String get categoryNoSelected => _locale(
         en: "No selected category",
         pl: "Nie wybrano kategorii",
-      );
-
-  String get categoryExcludedFromDailyBalance => _locale(
-        en: "Excluded from the daily balance",
-        pl: "Wyłączone z dziennego salda",
-      );
-
-  String get categoryExcludedFromDailyBalanceDescription => _locale(
-        en: "If this options is enabled, then expenses won't be included in the calculation of the daily balance. That hasn't effect for wallet's balance.",
-        pl: "Jeśli ta opcja jest włączona, wydatki nie będą uwzględniane przy obliczaniu dziennego salda. Nie ma to wpływu na saldo portfela.",
       );
 }
 

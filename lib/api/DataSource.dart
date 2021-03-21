@@ -240,6 +240,7 @@ extension TransactionsDataSource on DataSource {
     String title,
     double amount,
     DateTime date,
+    bool excludedFromDailyStatistics,
   }) async {
     await firestore.runTransaction((updateTransaction) async {
       updateTransaction.update(transaction.reference.documentReference, {
@@ -248,6 +249,8 @@ extension TransactionsDataSource on DataSource {
         if (title != null) 'title': title,
         if (amount != null) 'amount': amount,
         if (date != null) 'date': Firestore.Timestamp.fromDate(date),
+        if (excludedFromDailyStatistics != null)
+          'excludedFromDailyStatistics': excludedFromDailyStatistics
       });
 
       if (amount != null || type != null) {
@@ -286,6 +289,13 @@ extension TransactionsDataSource on DataSource {
     return transaction.reference;
   }
 
+  Future<void> updateTransactionCategory(
+      Transaction transaction, Reference<Category> category) {
+    return transaction.reference.documentReference.update({
+      "category": category?.documentReference,
+    });
+  }
+
   Future<void> removeTransaction(
     Reference<Wallet> walletRef,
     Transaction transaction,
@@ -317,19 +327,18 @@ extension CategoriesDataSource on DataSource {
   }) =>
       category.documentReference.snapshots().map((s) => Category(s));
 
-  Future<void> addCategory(
-      {@required Reference<Wallet> wallet,
-      String title,
-      Color primaryColor,
-      Color backgroundColor,
-      IconData icon,
-      bool isExcludedFromDailyBalance}) {
+  Future<void> addCategory({
+    @required Reference<Wallet> wallet,
+    String title,
+    Color primaryColor,
+    Color backgroundColor,
+    IconData icon,
+  }) {
     return wallet.documentReference.collection("categories").add({
       "title": title,
       "primaryColor": primaryColor.toHex(),
       "backgroundColor": backgroundColor.toHex(),
       "icon": serializeIcon(icon),
-      "isExcludedFromDailyBalance": isExcludedFromDailyBalance,
       "order": null
     });
   }
@@ -340,14 +349,12 @@ extension CategoriesDataSource on DataSource {
     Color primaryColor,
     Color backgroundColor,
     IconData icon,
-    bool isExcludedFromDailyBalance,
   }) {
     return category.documentReference.update({
       "title": title,
       "primaryColor": primaryColor.toHex(),
       "backgroundColor": backgroundColor.toHex(),
       "icon": serializeIcon(icon),
-      "isExcludedFromDailyBalance": isExcludedFromDailyBalance,
     });
   }
 

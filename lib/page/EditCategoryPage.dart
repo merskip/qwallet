@@ -53,15 +53,13 @@ class EditCategoryPage extends StatelessWidget {
           child: CategoryForm(
             category: category,
             submitChild: Text(AppLocalizations.of(context).categoryEditSubmit),
-            onSubmit: (context, title, primaryColor, backgroundColor, icon,
-                isExcludedFromDailyBalance) {
+            onSubmit: (context, title, primaryColor, backgroundColor, icon) {
               DataSource.instance.updateCategory(
                 category: categoryRef,
                 title: title,
                 primaryColor: primaryColor,
                 backgroundColor: backgroundColor,
                 icon: icon,
-                isExcludedFromDailyBalance: isExcludedFromDailyBalance,
               );
               Navigator.of(context).pop();
             },

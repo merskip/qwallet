@@ -105,11 +105,8 @@ class DailyReportSection extends StatelessWidget {
   }
 
   double _getTotalExpensesExcludedFromDailyBalance() {
-    return transactions.where((transaction) {
-      final category = wallet.getCategory(transaction.category);
-      return transaction.type == TransactionType.expense &&
-          category != null &&
-          category.isExcludedFromDailyBalance;
+    return transactions.where((t) {
+      return t.type == TransactionType.expense && t.excludedFromDailyStatistics;
     }).fold(0.0, (a, t) => a + t.amount);
   }
 }

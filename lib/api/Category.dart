@@ -9,7 +9,6 @@ class Category extends Model<Category> implements Comparable<Category> {
   final IconData icon;
   final Color primaryColor;
   final Color backgroundColor;
-  final bool isExcludedFromDailyBalance;
   final int order;
 
   String get titleText => title.replaceAllMapped(
@@ -22,8 +21,6 @@ class Category extends Model<Category> implements Comparable<Category> {
         icon = snapshot.getIconData("icon"),
         primaryColor = snapshot.getColorHex("primaryColor"),
         backgroundColor = snapshot.getColorHex("backgroundColor"),
-        isExcludedFromDailyBalance =
-            snapshot.getBool("isExcludedFromDailyBalance") ?? false,
         order = snapshot.getInt("order"),
         super(snapshot);
 

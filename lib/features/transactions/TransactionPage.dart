@@ -33,6 +33,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
   Category _selectedCategory;
   TransactionType _selectedType;
+  bool _excludedFromDailyStatistics;
 
   _TransactionPageState(Transaction transaction)
       : titleController = TextEditingController(text: transaction.title),
@@ -113,6 +114,7 @@ class _TransactionPageState extends State<TransactionPage> {
             buildTitle(context),
             buildAmount(context, wallet),
             buildDate(context),
+            buildExcludedFromDailyStatistics(context),
           ],
         ),
       ),
@@ -182,10 +184,9 @@ class _TransactionPageState extends State<TransactionPage> {
         },
       ),
       editingSave: () {
-        DataSource.instance.updateTransaction(
-          widget.walletRef,
+        DataSource.instance.updateTransactionCategory(
           widget.transaction,
-          category: _selectedCategory.reference,
+          _selectedCategory?.reference,
         );
       },
     );
@@ -281,6 +282,36 @@ class _TransactionPageState extends State<TransactionPage> {
       title: Text(AppLocalizations.of(context).transactionDetailsDate),
       value: Text(format.format(widget.transaction.date)),
       onEdit: (context) => onSelectedDate(context),
+    );
+  }
+
+  Widget buildExcludedFromDailyStatistics(BuildContext context) {
+    return DetailsItemTile(
+      title: Text(AppLocalizations.of(context)
+          .transactionDetailsExcludedFromDailyStatistics),
+      value: Text(widget.transaction.excludedFromDailyStatistics
+          ? AppLocalizations.of(context)
+              .transactionDetailsExcludedFromDailyStatisticsExcluded
+          : AppLocalizations.of(context)
+              .transactionDetailsExcludedFromDailyStatisticsIncluded),
+      editingBegin: () {
+        _excludedFromDailyStatistics =
+            widget.transaction.excludedFromDailyStatistics;
+      },
+      editingContent: (context) => CheckboxListTile(
+        title: Text("Include to daily statistics"),
+        value: !_excludedFromDailyStatistics,
+        onChanged: (value) => setState(() {
+          _excludedFromDailyStatistics = !value;
+        }),
+      ),
+      editingSave: () {
+        DataSource.instance.updateTransaction(
+          widget.walletRef,
+          widget.transaction,
+          excludedFromDailyStatistics: _excludedFromDailyStatistics,
+        );
+      },
     );
   }
 }
