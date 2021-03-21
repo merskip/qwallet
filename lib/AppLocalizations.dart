@@ -890,9 +890,9 @@ extension TransactionsListFilterLocalizations on AppLocalizations {
         pl: "Kategorie do filtrowania",
       );
 
-  String get transactionsListFilterSelectCategoriesSelectAll => _locale(
-        en: "Select all categories",
-        pl: "Zaznacz wszystkie kategorie",
+  String get transactionsListFilterSelectCategoriesToggleAll => _locale(
+        en: "Toggle selecting all categories",
+        pl: "Przełącz zaznacznie wszystkich kategorii",
       );
 
   String get transactionsListFilterSelectCategoriesWithoutCategory => _locale(

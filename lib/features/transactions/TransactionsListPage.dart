@@ -38,9 +38,8 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
       amountType: null,
       amount: null,
       amountAccuracy: null,
-      isAllCategories: true,
-      categories: widget.wallet.categories,
-      includeWithoutCategory: true,
+      categories: null,
+      includeWithoutCategory: null,
     );
     super.initState();
   }
@@ -180,11 +179,15 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
           if (transaction.amount < filter.amount) return false;
         }
 
-        if (!filter.categories.any((c) {
-          if (transaction.category == null)
-            return filter.includeWithoutCategory;
-          return c.id == transaction.category.id;
-        })) return false;
+        if (filter.categories != null) {
+          assert(filter.includeWithoutCategory != null);
+
+          if (!filter.categories.any((c) => c.id == transaction.category?.id)) {
+            if (transaction.category == null)
+              return filter.includeWithoutCategory;
+            return false;
+          }
+        }
 
         return true;
       }).toList();
@@ -269,10 +272,10 @@ class FiltersListItem extends _ListItem {
           if (filter.isEmpty()) buildNoFilersChip(context),
           if (filter.transactionType != null) buildTypeFilterChip(context),
           if (filter.amountType != null) buildAmountFilterChip(context),
-          if (!filter.isAllCategories)
+          if (filter.categories != null)
             ...filter.categories
                 .map((c) => buildCategoryFilterChip(context, c)),
-          if (!filter.isAllCategories && filter.includeWithoutCategory)
+          if (filter.categories != null && filter.includeWithoutCategory)
             buildWithoutCategoryFilterChip(context),
         ],
       ),

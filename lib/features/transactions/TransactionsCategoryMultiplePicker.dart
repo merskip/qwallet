@@ -6,13 +6,11 @@ import 'package:qwallet/utils.dart';
 import '../../AppLocalizations.dart';
 import '../../widget/CategoryButton.dart';
 
-class TransactionsCategoryMultiplePicker extends StatelessWidget {
+class TransactionsCategoryMultiplePicker extends StatefulWidget {
   final List<Category> categories;
   final List<Category> selectedCategories;
   final bool includeWithoutCategory;
   final Widget title;
-  final Function(List<Category>, bool includeWithoutCategory)
-      onChangeSelectedCategories;
 
   const TransactionsCategoryMultiplePicker({
     Key key,
@@ -20,8 +18,31 @@ class TransactionsCategoryMultiplePicker extends StatelessWidget {
     this.selectedCategories,
     this.includeWithoutCategory,
     this.title,
-    this.onChangeSelectedCategories,
   }) : super(key: key);
+
+  @override
+  TransactionsCategoryMultiplePickerState createState() =>
+      TransactionsCategoryMultiplePickerState();
+}
+
+class TransactionsCategoryMultiplePickerState
+    extends State<TransactionsCategoryMultiplePicker> {
+  List<Category> selectedCategories;
+  bool includeWithoutCategory;
+
+  @override
+  void initState() {
+    this.selectedCategories = widget.selectedCategories;
+    this.includeWithoutCategory = widget.includeWithoutCategory;
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant TransactionsCategoryMultiplePicker oldWidget) {
+    this.selectedCategories = widget.selectedCategories;
+    this.includeWithoutCategory = widget.includeWithoutCategory;
+    super.didUpdateWidget(oldWidget);
+  }
 
   void onSelectedCategory(BuildContext context, Category category) {
     var newCategories = [...selectedCategories];
@@ -30,11 +51,15 @@ class TransactionsCategoryMultiplePicker extends StatelessWidget {
     isSelected ? newCategories.remove(category) : newCategories.add(category);
     newCategories..sort((lhs, rhs) => lhs.compareTo(rhs));
 
-    onChangeSelectedCategories(newCategories, includeWithoutCategory);
+    setState(() {
+      selectedCategories = newCategories;
+    });
   }
 
   void onSelectedWithoutCategory(BuildContext context) {
-    onChangeSelectedCategories(selectedCategories, !includeWithoutCategory);
+    setState(() {
+      includeWithoutCategory = !includeWithoutCategory;
+    });
   }
 
   @override
@@ -45,7 +70,7 @@ class TransactionsCategoryMultiplePicker extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (title != null) buildTitle(context),
+          if (widget.title != null) buildTitle(context),
           buildCategories(context)
         ],
       ),
@@ -60,7 +85,7 @@ class TransactionsCategoryMultiplePicker extends StatelessWidget {
             .copyWith(bottom: 12),
         child: DefaultTextStyle(
           style: Theme.of(context).textTheme.bodyText2,
-          child: title,
+          child: widget.title,
         ),
       ),
     );
@@ -71,7 +96,8 @@ class TransactionsCategoryMultiplePicker extends StatelessWidget {
       spacing: 8,
       runSpacing: 12,
       children: [
-        ...categories.map((category) => buildCategoryButton(context, category)),
+        ...widget.categories
+            .map((category) => buildCategoryButton(context, category)),
         buildWithoutCategoryButton(context),
       ],
     );
