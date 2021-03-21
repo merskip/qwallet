@@ -289,6 +289,13 @@ extension TransactionsDataSource on DataSource {
     return transaction.reference;
   }
 
+  Future<void> updateTransactionCategory(
+      Transaction transaction, Reference<Category> category) {
+    return transaction.reference.documentReference.update({
+      "category": category?.documentReference,
+    });
+  }
+
   Future<void> removeTransaction(
     Reference<Wallet> walletRef,
     Transaction transaction,

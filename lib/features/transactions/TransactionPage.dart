@@ -184,10 +184,9 @@ class _TransactionPageState extends State<TransactionPage> {
         },
       ),
       editingSave: () {
-        DataSource.instance.updateTransaction(
-          widget.walletRef,
+        DataSource.instance.updateTransactionCategory(
           widget.transaction,
-          category: _selectedCategory.reference,
+          _selectedCategory?.reference,
         );
       },
     );
