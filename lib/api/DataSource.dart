@@ -240,6 +240,7 @@ extension TransactionsDataSource on DataSource {
     String title,
     double amount,
     DateTime date,
+    bool excludedFromDailyStatistics,
   }) async {
     await firestore.runTransaction((updateTransaction) async {
       updateTransaction.update(transaction.reference.documentReference, {
@@ -248,6 +249,8 @@ extension TransactionsDataSource on DataSource {
         if (title != null) 'title': title,
         if (amount != null) 'amount': amount,
         if (date != null) 'date': Firestore.Timestamp.fromDate(date),
+        if (excludedFromDailyStatistics != null)
+          'excludedFromDailyStatistics': excludedFromDailyStatistics
       });
 
       if (amount != null || type != null) {
