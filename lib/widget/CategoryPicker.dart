@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
 
+import 'CategoryButton.dart';
+
 class CategoryPicker extends StatelessWidget {
   final List<Category> categories;
   final Category selectedCategory;
@@ -40,9 +42,9 @@ class CategoryPicker extends StatelessWidget {
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          buildTitle(context),
-          SizedBox(height: 8),
+          if (title != null) buildTitle(context),
           buildCategories(context)
         ],
       ),
@@ -53,7 +55,8 @@ class CategoryPicker extends StatelessWidget {
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8)
+            .copyWith(bottom: 12),
         child: DefaultTextStyle(
           style: Theme.of(context).textTheme.bodyText2,
           child: title,
@@ -68,8 +71,8 @@ class CategoryPicker extends StatelessWidget {
         spacing: 8,
         runSpacing: 12,
         children: [
-          ...categories.map((category) => buildCategoryButton(
-              context, category, this.selectedCategory == category)),
+          ...categories
+              .map((category) => buildCategoryButton(context, category)),
         ],
       ),
       onHorizontalDragEnd: (details) {
@@ -81,50 +84,12 @@ class CategoryPicker extends StatelessWidget {
     );
   }
 
-  Widget buildCategoryButton(
-    BuildContext context,
-    Category category,
-    bool isSelected,
-  ) {
-    return Column(
-      children: [
-        RawMaterialButton(
-          elevation: isSelected ? 8 : 4,
-          constraints: BoxConstraints(),
-          shape: CircleBorder(
-            side: isSelected
-                ? BorderSide(
-                    color: category.primaryColor,
-                    width: 3,
-                  )
-                : BorderSide.none,
-          ),
-          fillColor: category.backgroundColor,
-          child: SizedBox(
-            width: 56,
-            height: 56,
-            child: Icon(
-              category.icon,
-              color: category.primaryColor.withOpacity(isSelected ? 1.0 : 0.5),
-              size: 28,
-            ),
-          ),
-          onPressed: () => onChangeCategory(category),
-        ),
-        SizedBox(height: 4),
-        SizedBox(
-          width: 64,
-          child: Text(
-            category.titleText,
-            style: Theme.of(context).textTheme.caption.copyWith(
-                  color: isSelected ? category.primaryColor : null,
-                  fontWeight: isSelected ? FontWeight.bold : null,
-                ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-          ),
-        ),
-      ],
+  Widget buildCategoryButton(BuildContext context, Category category) {
+    final isSelected = selectedCategory == category;
+    return CategoryButton(
+      category: category,
+      isSelected: isSelected,
+      onPressed: () => onChangeCategory(category),
     );
   }
 }

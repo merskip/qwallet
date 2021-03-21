@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' as Foundation;
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/Transaction.dart';
@@ -6,6 +7,7 @@ import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../../AppLocalizations.dart';
 import '../../utils.dart';
+import 'TransactionsCategoryMultiplePicker.dart';
 
 class TransactionsFilter {
   final TransactionType transactionType;
@@ -13,6 +15,7 @@ class TransactionsFilter {
   final double amount;
   final double amountAccuracy;
   final List<Category> categories;
+  final bool includeWithoutCategory;
 
   TransactionsFilter({
     this.transactionType,
@@ -20,10 +23,14 @@ class TransactionsFilter {
     this.amount,
     this.amountAccuracy,
     this.categories,
+    this.includeWithoutCategory,
   });
 
   bool isEmpty() =>
-      transactionType == null && amountType == null && categories == null;
+      transactionType == null &&
+      amountType == null &&
+      categories == null &&
+      includeWithoutCategory == null;
 }
 
 enum TransactionsFilterAmountType {
@@ -76,6 +83,23 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
   final amountController = TextEditingController();
   final amountAccuracyController = TextEditingController();
 
+  List<Category> selectedCategories;
+  bool includeWithoutCategory;
+
+  bool get isSelectedAllOrNoAnyCategories =>
+      isSelectedAllCategories || isNoSelectedAnyCategory;
+
+  bool get isSelectedAllCategories =>
+      includeWithoutCategory &&
+      Foundation.listEquals(selectedCategories, widget.wallet.categories);
+  bool get isNoSelectedAnyCategory =>
+      !includeWithoutCategory && selectedCategories.isEmpty;
+
+  bool _isCategoriesSelect = false;
+
+  final categoriesPickerKey =
+      GlobalKey<TransactionsCategoryMultiplePickerState>();
+
   @override
   void initState() {
     transactionType = widget.initialFilter.transactionType;
@@ -83,6 +107,9 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
     amountController.text = widget.initialFilter.amount?.toStringAsFixed(2);
     amountAccuracyController.text =
         widget.initialFilter.amountAccuracy?.toStringAsFixed(2);
+    selectedCategories = widget.initialFilter.categories ?? [];
+    includeWithoutCategory =
+        widget.initialFilter.includeWithoutCategory ?? false;
     super.initState();
   }
 
@@ -100,22 +127,30 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
       amountType: amount != null ? amountType : null,
       amount: amount,
       amountAccuracy: parseAmount(amountAccuracyController.text),
+      categories: isSelectedAllOrNoAnyCategories ? null : selectedCategories,
+      includeWithoutCategory:
+          isSelectedAllOrNoAnyCategories ? null : includeWithoutCategory,
     ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: MediaQuery.of(context).viewInsets,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          buildTitle(context),
-          buildTransactionType(context),
-          buildAmount(context),
-          buildSubmit(context),
-        ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: !_isCategoriesSelect
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  buildTitle(context),
+                  buildTransactionType(context),
+                  buildAmount(context),
+                  buildCategories(context),
+                  buildSubmit(context),
+                ],
+              )
+            : buildCategoriesSelect(context),
       ),
     );
   }
@@ -248,6 +283,131 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
         ),
         textAlign: TextAlign.end,
       ),
+    );
+  }
+
+  Widget buildCategories(BuildContext context) {
+    return ListTile(
+      title:
+          Text(AppLocalizations.of(context).transactionsListFilterCategories),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Wrap(
+            spacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              buildSelectCategoriesChip(context),
+              if (isSelectedAllOrNoAnyCategories)
+                buildAnyCategoryChip(context, null),
+              if (!isSelectedAllOrNoAnyCategories)
+                ...selectedCategories.map((c) => buildCategoryChip(context, c)),
+              if (!isSelectedAllOrNoAnyCategories && includeWithoutCategory)
+                buildWithoutCategoryChip(context),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildSelectCategoriesChip(BuildContext context) {
+    return ActionChip(
+      label: Text(
+          AppLocalizations.of(context).transactionsListFilterSelectCategories),
+      onPressed: () => setState(() {
+        _isCategoriesSelect = true;
+      }),
+    );
+  }
+
+  Widget buildAnyCategoryChip(BuildContext context, Category category) {
+    return Chip(
+      label: Text(
+        category?.titleText ??
+            AppLocalizations.of(context).transactionsListFilterAnyCategory,
+        style: TextStyle(
+          color: Theme.of(context).primaryColorDark,
+        ),
+      ),
+      backgroundColor: Theme.of(context).backgroundColor,
+    );
+  }
+
+  Widget buildCategoryChip(BuildContext context, Category category) {
+    return Chip(
+      label: Text(
+        category.titleText,
+        style: TextStyle(
+          color: Theme.of(context).primaryColorDark,
+        ),
+      ),
+      backgroundColor: Theme.of(context).backgroundColor,
+    );
+  }
+
+  Widget buildWithoutCategoryChip(BuildContext context) {
+    return Chip(
+      label: Text(
+        AppLocalizations.of(context).transactionsListFilterWithoutCategory,
+        style: TextStyle(
+          color: Theme.of(context).primaryColorDark,
+        ),
+      ),
+      backgroundColor: Theme.of(context).backgroundColor,
+    );
+  }
+
+  Widget buildCategoriesSelect(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          textTheme: Theme.of(context).textTheme,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            color: Theme.of(context).textTheme.subtitle1.color,
+            onPressed: () => setState(() {
+              selectedCategories =
+                  categoriesPickerKey.currentState.selectedCategories;
+              includeWithoutCategory =
+                  categoriesPickerKey.currentState.includeWithoutCategory;
+              _isCategoriesSelect = false;
+            }),
+          ),
+          title: Text(AppLocalizations.of(context)
+              .transactionsListFilterSelectCategoriesTitle),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.select_all),
+              color: Theme.of(context).textTheme.subtitle1.color,
+              tooltip: AppLocalizations.of(context)
+                  .transactionsListFilterSelectCategoriesToggleAll,
+              onPressed: () => setState(() {
+                if (isSelectedAllCategories) {
+                  selectedCategories = [];
+                  includeWithoutCategory = false;
+                } else {
+                  selectedCategories = widget.wallet.categories;
+                  includeWithoutCategory = true;
+                }
+              }),
+            )
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: TransactionsCategoryMultiplePicker(
+            key: categoriesPickerKey,
+            categories: widget.wallet.categories,
+            selectedCategories: selectedCategories,
+            includeWithoutCategory: includeWithoutCategory,
+          ),
+        ),
+      ],
     );
   }
 

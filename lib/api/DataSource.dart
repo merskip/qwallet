@@ -307,13 +307,9 @@ extension CategoriesDataSource on DataSource {
   Stream<List<Category>> getCategories({
     @required Reference<Wallet> wallet,
   }) {
-    return wallet.documentReference
-        .collection("categories")
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((s) => Category(s)).toList()
-          ..sort(
-            (lhs, rhs) => compareWithNullAtEnd(lhs.order, rhs.order),
-          ));
+    return wallet.documentReference.collection("categories").snapshots().map(
+        (snapshot) => snapshot.docs.map((s) => Category(s)).toList()
+          ..sort((lhs, rhs) => lhs.compareTo(rhs)));
   }
 
   Stream<Category> getCategory({
@@ -530,10 +526,4 @@ class LatestTransactions {
   final List<Transaction> transactions;
 
   LatestTransactions(this.wallet, this.transactions);
-}
-
-int compareWithNullAtEnd(lhs, rhs) {
-  if (lhs == null) return 1;
-  if (rhs == null) return -1;
-  return lhs.compareTo(rhs);
 }
