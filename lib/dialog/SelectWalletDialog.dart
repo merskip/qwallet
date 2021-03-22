@@ -4,10 +4,14 @@ import 'package:qwallet/api/Wallet.dart';
 class SelectWalletDialog extends StatelessWidget {
   final String title;
   final List<Wallet> wallets;
-  final Wallet selectedWallet;
+  final Wallet? selectedWallet;
 
-  const SelectWalletDialog({Key key, this.title, this.wallets, this.selectedWallet})
-      : super(key: key);
+  const SelectWalletDialog({
+    Key? key,
+    required this.title,
+    required this.wallets,
+    this.selectedWallet,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

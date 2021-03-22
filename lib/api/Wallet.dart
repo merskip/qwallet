@@ -20,8 +20,7 @@ class Wallet extends Model<Wallet> {
 
   final List<Category> categories;
 
-  Money get balance =>
-      Money(totalIncome.amount - totalExpense.amount, currency);
+  Money get balance => totalIncome - totalExpense.amount;
 
   Wallet(DocumentSnapshot snapshot, List<Category> categories)
       : this.name = snapshot.getString("name")!,

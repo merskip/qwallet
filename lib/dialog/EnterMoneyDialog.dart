@@ -13,14 +13,14 @@ import '../utils.dart';
 const buttonHeight = 56.0;
 
 class EnterMoneyDialog extends StatefulWidget {
-  final Money initialMoney;
+  final Money? initialMoney;
   final Currency currency;
   final bool isCurrencySelectable;
 
   const EnterMoneyDialog({
-    Key key,
+    Key? key,
     this.initialMoney,
-    @required this.currency,
+    required this.currency,
     this.isCurrencySelectable = false,
   }) : super(key: key);
 
@@ -29,8 +29,8 @@ class EnterMoneyDialog extends StatefulWidget {
 }
 
 class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
-  Currency currency;
-  String expression;
+  late Currency currency;
+  late String expression;
   final displayController = TextEditingController();
 
   final evaluator = const ExpressionEvaluator();
@@ -105,11 +105,11 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
     });
   }
 
-  List<String> _getDisplayText(Money result) {
+  List<String> _getDisplayText(Money? result) {
     final displayExpression = this
         .expression
         .replaceAllMapped(RegExp("([^0-9\.])"),
-            (m) => " " + _operatorToText(context, m.group(1)) + " ")
+            (m) => " " + _operatorToText(context, m.group(1)!) + " ")
         .replaceAll("  ", " ");
 
     if (result != null) {
@@ -120,18 +120,17 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
     }
   }
 
-  Money calculateExpression() {
+  Money? calculateExpression() {
     if (this.expression.isEmpty) return Money(null, currency);
 
     try {
       Expression expression = Expression.parse(this.expression);
-      if (expression != null) {
-        final result = evaluator.eval(expression, {});
-        if (result is double && result.isFinite) {
-          return Money(result, currency);
-        } else if (result is int) {
-          return Money(result.toDouble(), currency);
-        }
+      final result = evaluator.eval(expression, {});
+
+      if (result is double && result.isFinite) {
+        return Money(result, currency);
+      } else if (result is int) {
+        return Money(result.toDouble(), currency);
       }
     } catch (e) {}
     return null;
@@ -244,7 +243,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
               digit,
               style: TextStyle(
                 fontSize: 24,
-                color: Theme.of(context).primaryTextTheme.button.color,
+                color: Theme.of(context).primaryTextTheme.button!.color,
               ),
             ),
             shape: RoundedRectangleBorder(

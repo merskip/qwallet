@@ -5,11 +5,13 @@ import 'package:intl/number_symbols_data.dart';
 import 'Currency.dart';
 
 class Money {
-  final double amount;
+  final double? amount;
   final Currency currency;
 
   String get formatted => format();
+
   String get formattedWithCode => formatWithCode();
+
   String get formattedOnlyAmount => formatOnlyAmount();
 
   Money(this.amount, this.currency);
@@ -19,12 +21,20 @@ class Money {
 }
 
 extension MoneyOperators on Money {
-  Money operator +(double amount) => Money(this.amount + amount, currency);
-  Money operator -(double amount) => Money(this.amount - amount, currency);
-  Money operator *(double factor) => Money(this.amount * factor, currency);
-  Money operator /(double factor) => Money(this.amount / factor, currency);
+  // TODO: Make amount non-optional
+  Money operator +(double? amount) =>
+      Money(this.amount! + (amount ?? 0), currency);
 
-  Money operator -() => Money(-amount, currency);
+  Money operator -(double? amount) =>
+      Money(this.amount! - (amount ?? 0), currency);
+
+  Money operator *(double? factor) =>
+      Money(this.amount! * (factor ?? 1), currency);
+
+  Money operator /(double? factor) =>
+      Money(this.amount! / (factor ?? 1), currency);
+
+  Money operator -() => Money(-amount!, currency);
 }
 
 extension MoneyFormatting on Money {
@@ -56,7 +66,7 @@ extension MoneyFormatting on Money {
 
   String formatForEditing() {
     return _formatAmountUsing(() {
-      final hasDecimalPart = amount.remainder(1) != 0.0;
+      final hasDecimalPart = amount!.remainder(1) != 0.0;
       return NumberFormat.currency(
         locale: _locale,
         name: currency.code,
@@ -84,12 +94,20 @@ extension MoneyFormatting on Money {
           MINUS_SIGN: '-',
           CURRENCY_PATTERN: currency.pattern,
           DEF_CURRENCY_CODE: currency.code,
+          NAN: '',
+          EXP_SYMBOL: '',
+          PERCENT: '',
+          PERMILL: '',
+          PERCENT_PATTERN: '',
+          SCIENTIFIC_PATTERN: '',
+          INFINITY: '',
+          DECIMAL_PATTERN: '',
         ),
       );
 }
 
 extension MoneyList on Iterable<Money> {
-  Money sum() {
+  Money? sum() {
     if (isEmpty) return null;
 
     double sum = 0.0;
@@ -99,7 +117,7 @@ extension MoneyList on Iterable<Money> {
         throw ArgumentError(
             "All money must have the same currency. Or try use sumByCurrency().");
 
-      sum += money.amount;
+      sum += money.amount!;
     }
     return Money(sum, currency);
   }
@@ -111,7 +129,7 @@ extension MoneyList on Iterable<Money> {
     for (final money in this) {
       result.update(
         money.currency,
-        (value) => value + money.amount,
+        (value) => value + money.amount!,
         ifAbsent: () => money,
       );
     }

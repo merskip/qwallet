@@ -17,8 +17,7 @@ class PrivateLoan extends Model<PrivateLoan> {
   final Money repaidAmount;
   final bool isFullyRepaid;
 
-  Money get remainingAmount =>
-      Money(amount.amount - repaidAmount.amount, amount.currency);
+  Money get remainingAmount => amount - repaidAmount.amount;
 
   bool get currentUserIsLender => lenderUser?.isCurrentUser ?? false;
 

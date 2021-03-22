@@ -35,7 +35,7 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
   User? getUser(dynamic field, List<User> users) {
     final uid = getString(field);
     if (uid == null) return null;
-    return users.getByUid(uid);
+    return users.findByUid(uid);
   }
 
   Map<K, V>? getMap<K, V>(dynamic field) {
