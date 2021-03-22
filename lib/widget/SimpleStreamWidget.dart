@@ -8,12 +8,12 @@ typedef ValueWidgetBuilder<T> = Widget Function(BuildContext context, T value);
 class SimpleStreamWidget<T> extends StatelessWidget {
   final Stream<T> stream;
   final ValueWidgetBuilder<T> builder;
-  final WidgetBuilder loadingBuilder;
+  final WidgetBuilder? loadingBuilder;
 
   const SimpleStreamWidget(
       {Key? key,
-      @required this.stream,
-      @required this.builder,
+      required this.stream,
+      required this.builder,
       this.loadingBuilder})
       : super(key: key);
 
@@ -29,7 +29,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
           final data = snapshot.data;
           if (data is Model && !data.documentSnapshot.exists)
             return buildLoading(context);
-          return builder(context, data);
+          return builder(context, data!);
         } else
           return buildLoading(context);
       },
@@ -50,7 +50,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
       ConnectionState.waiting: "⏳",
       ConnectionState.active: "🔁",
       ConnectionState.done: "✅",
-    })[snapshot.connectionState];
+    })[snapshot.connectionState]!;
     final state =
         snapshot.connectionState.toString().replaceFirst("ConnectionState", "");
 
@@ -70,7 +70,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
   }
 
   Widget buildError(
-      BuildContext context, String description, StackTrace stackTrace) {
+      BuildContext context, String description, StackTrace? stackTrace) {
     final content = SafeArea(
       child: SingleChildScrollView(
         child: Padding(
@@ -114,7 +114,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
 
   Widget buildLoading(BuildContext context) {
     if (loadingBuilder != null) {
-      return loadingBuilder(context);
+      return loadingBuilder!(context);
     } else {
       return Center(
         child: CircularProgressIndicator(),

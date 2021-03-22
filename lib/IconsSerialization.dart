@@ -10,8 +10,8 @@ import 'package:flutter_iconpicker/IconPicker/Packs/MaterialOutline.dart'
     as MaterialOutline;
 import 'package:flutter_iconpicker/Models/IconPack.dart';
 
-Map<String, dynamic> serializeIcon(IconData icon, {IconPack iconPack}) {
-  iconPack = iconPack ?? _getInferredIconPack(icon);
+Map<String, dynamic> serializeIcon(IconData icon, {IconPack? iconPack}) {
+  iconPack = iconPack ?? _getInferredIconPack(icon)!;
   final iconKey = _getInferredIconKey(iconPack, icon);
   if (iconKey != null) {
     return {
@@ -31,7 +31,7 @@ Map<String, dynamic> serializeIcon(IconData icon, {IconPack iconPack}) {
   }
 }
 
-IconData deserializeIcon(Map<String, dynamic> iconMap) {
+IconData? deserializeIcon(Map<String, dynamic> iconMap) {
   try {
     final pack = iconMap['pack'];
     final iconKey = iconMap['key'];
@@ -56,7 +56,7 @@ IconData deserializeIcon(Map<String, dynamic> iconMap) {
 }
 
 String getIconDescription(IconData icon) {
-  final iconPack = _getInferredIconPack(icon);
+  final iconPack = _getInferredIconPack(icon)!;
   final iconPackName = _iconPackToString(iconPack);
   final iconKey = _getInferredIconKey(iconPack, icon);
   if (iconKey != null) {
@@ -74,7 +74,7 @@ String getIconDescription(IconData icon) {
   }
 }
 
-IconPack _getInferredIconPack(IconData icon) {
+IconPack? _getInferredIconPack(IconData icon) {
   if (icon.fontFamily == "MaterialIcons")
     return IconPack.material;
   else if (icon.fontFamily == "outline_material_icons")
@@ -107,7 +107,7 @@ String _iconPackToString(IconPack iconPack) {
   }
 }
 
-String _getInferredIconKey(IconPack iconPack, IconData icon) {
+String? _getInferredIconKey(IconPack iconPack, IconData icon) {
   switch (iconPack) {
     case IconPack.material:
       return _getIconKey(Material.icons, icon);
@@ -117,7 +117,6 @@ String _getInferredIconKey(IconPack iconPack, IconData icon) {
       return _getIconKey(Cupertino.cupertinoIcons, icon);
     case IconPack.fontAwesomeIcons:
       return _getIconKey(FontAwesome.fontAwesomeIcons, icon);
-      break;
     case IconPack.lineAwesomeIcons:
       return _getIconKey(LineAwesome.lineAwesomeIcons, icon);
     default:

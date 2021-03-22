@@ -26,10 +26,10 @@ class AppLocalizations {
   final Locale locale;
 
   static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
-  String _locale({@required String en, @required String pl}) {
+  String _locale({required String en, required String pl}) {
     switch (locale.languageCode) {
       case "en":
         return en;

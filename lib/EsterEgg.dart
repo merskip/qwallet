@@ -3,7 +3,7 @@ class EasterEgg {
 
   static int _currentIndex = 0;
 
-  static final _messages = <String>[
+  static final _messages = <String?>[
     null,
     null,
     "Klikanie tutaj nie sprawi, że będziesz programistą.",
@@ -81,7 +81,7 @@ class EasterEgg {
     "assets/scala_the_cat.png|Scala: The cat",
   ];
 
-  static String nextMessage() {
+  static String? nextMessage() {
     if (_currentIndex < _messages.length) {
       final message = _messages[_currentIndex];
       _currentIndex++;

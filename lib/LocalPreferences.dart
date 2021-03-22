@@ -5,11 +5,13 @@ import 'package:qwallet/api/Wallet.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'utils/IterableFinding.dart';
+
 class UserPreferences {
   final ThemeMode themeMode;
-  final Locale locale;
+  final Locale? locale;
 
-  UserPreferences({@required this.themeMode, this.locale});
+  UserPreferences({required this.themeMode, this.locale});
 
   factory UserPreferences.empty() =>
       UserPreferences(themeMode: ThemeMode.light, locale: null);
@@ -38,13 +40,13 @@ class LocalPreferences {
 
       final preferences = await SharedPreferences.getInstance();
       final walletsOrderIds = preferences.containsKey("walletsOrder")
-          ? preferences.getStringList("walletsOrder")
+          ? preferences.getStringList("walletsOrder")!
           : [];
 
-      final result = List<Wallet>();
+      final result = <Wallet>[];
       for (final walletId in walletsOrderIds) {
-        final foundWallet = remainingWallets
-            .firstWhere((wallet) => wallet.id == walletId, orElse: () => null);
+        final foundWallet =
+            remainingWallets.findFirstOrNull((wallet) => wallet.id == walletId);
         if (foundWallet != null) {
           result.add(foundWallet);
           remainingWallets.remove(foundWallet);
@@ -78,12 +80,12 @@ class LocalPreferences {
 
   static ThemeMode _userThemeMode(SharedPreferences preferences) =>
       preferences.containsKey("user.themeMode")
-          ? _parseThemeMode(preferences.getString("user.themeMode"))
+          ? _parseThemeMode(preferences.getString("user.themeMode")!)
           : UserPreferences.empty().themeMode;
 
-  static Locale _userLocaleOrNull(SharedPreferences preferences) =>
+  static Locale? _userLocaleOrNull(SharedPreferences preferences) =>
       preferences.containsKey("user.locale")
-          ? _parseLocale(preferences.getString("user.locale"))
+          ? _parseLocale(preferences.getString("user.locale")!)
           : null;
 
   static ThemeMode _parseThemeMode(String themeMode) {

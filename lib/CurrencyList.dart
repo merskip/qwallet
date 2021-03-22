@@ -377,6 +377,7 @@ extension CurrencyList on Currency {
 
   // ignore: non_constant_identifier_names
   static final CBL = Currency(
+    iso4217: null,
     code: "CBL",
     symbols: ["🧅"],
     name: {'en': "Oniollars", 'pl': "Cebuliony"},

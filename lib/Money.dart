@@ -88,7 +88,7 @@ extension MoneyFormatting on Money {
         () => NumberSymbols(
           NAME: _locale,
           GROUP_SEP: currency.groupSeparator,
-          DECIMAL_SEP: currency.decimalSeparator,
+          DECIMAL_SEP: currency.decimalSeparator ?? "",
           ZERO_DIGIT: '0',
           PLUS_SIGN: '+',
           MINUS_SIGN: '-',

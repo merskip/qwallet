@@ -9,7 +9,7 @@ class WalletDateRangeCalculator {
 
   WalletDateRangeCalculator(this.dateRange);
 
-  DateTimeRange getDateTimeRangeFor({@required DateTime now, int index = 0}) {
+  DateTimeRange getDateTimeRangeFor({required DateTime now, int index = 0}) {
     switch (dateRange.type) {
       case WalletDateRangeType.currentMonth:
         return _getDateRangeCurrentMonth(now, index);
@@ -17,8 +17,6 @@ class WalletDateRangeCalculator {
         return _getDateRangeCurrentWeek(now, index);
       case WalletDateRangeType.lastDays:
         return getDateRangeLastDays(now, index);
-      default:
-        return null;
     }
   }
 

@@ -9,7 +9,7 @@ import 'CurrencyList.dart';
 /// A class contains information about single currency
 class Currency {
   /// Number in ISO 4217 eg. 840 - USD, United States dollar
-  final String iso4217;
+  final String? iso4217;
 
   /// An code, eg. "USD"
   final String code;
@@ -27,7 +27,7 @@ class Currency {
   final String groupSeparator;
 
   /// Using decimal separator, eg. . (for 123,456.78)
-  final String decimalSeparator;
+  final String? decimalSeparator;
 
   /// Number of decimal digits, eg. 2 (for 123,456.78)
   final int decimalDigits;
@@ -36,20 +36,20 @@ class Currency {
   final List<String> countries;
 
   /// The url to wikipedia about this currency, eg. "https://en.wikipedia.org/wiki/United_States_dollar"
-  String wikiUrl;
+  String? wikiUrl;
 
   /// The url to website about this currency
-  String websiteUrl;
+  String? websiteUrl;
 
   Currency({
-    this.iso4217,
-    @required this.code,
-    @required this.symbols,
-    @required this.name,
-    @required this.pattern,
-    @required this.groupSeparator,
+    required this.iso4217,
+    required this.code,
+    required this.symbols,
+    required this.name,
+    required this.pattern,
+    required this.groupSeparator,
     this.decimalSeparator,
-    @required this.decimalDigits,
+    required this.decimalDigits,
     this.countries = const [],
     this.wikiUrl,
     this.websiteUrl,
@@ -61,17 +61,17 @@ class Currency {
 
   String getName(BuildContext context) {
     final locale = AppLocalizations.of(context).locale;
-    return name[locale.languageCode];
+    return name[locale.languageCode]!;
   }
 
-  factory Currency.fromCode(String code) => CurrencyList.codeToCurrency[code];
+  factory Currency.fromCode(String code) => CurrencyList.codeToCurrency[code]!;
 
   factory Currency.getDefaultBasedOnLocale() {
     final systemLocale = Platform.localeName;
     final localeChunks = systemLocale.split("_");
     if (localeChunks.length >= 2) {
       final country = localeChunks[1].toLowerCase();
-      return CurrencyList.countryToCurrency[country];
+      return CurrencyList.countryToCurrency[country]!;
     } else {
       return CurrencyList.USD;
     }

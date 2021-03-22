@@ -1,8 +1,6 @@
-
 class BusinessEntity {
-
   final String nip;
   final String name;
 
-  BusinessEntity({this.nip, this.name});
+  BusinessEntity({required this.nip, required this.name});
 }
