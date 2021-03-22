@@ -7,7 +7,7 @@ class UserAvatar extends StatelessWidget {
 
   const UserAvatar({
     Key? key,
-    @required this.user,
+    required this.user,
     this.isSelected = false,
   }) : super(key: key);
 
@@ -19,8 +19,8 @@ class UserAvatar extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColor,
       );
     } else {
-      final avatarImage =
-          user.avatarUrl != null ? NetworkImage(user.avatarUrl) : null;
+      final avatarUrl = user.avatarUrl;
+      final avatarImage = avatarUrl != null ? NetworkImage(avatarUrl) : null;
       final avatarPlaceholderIcon = user.displayName != null
           ? Icon(Icons.person)
           : Icon(Icons.alternate_email);

@@ -7,7 +7,7 @@ import 'package:qwallet/dialog/UserDialog.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/MarkdownPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
-import 'package:qwallet/widget/vector_image.dart';
+import 'package:qwallet/widget/VectorImage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../EsterEgg.dart';

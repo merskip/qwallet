@@ -10,13 +10,13 @@ import 'CatgegoryIcon.dart';
 class TransactionListTile extends StatelessWidget {
   final Wallet wallet;
   final Transaction transaction;
-  final Category category;
-  final VisualDensity visualDensity;
+  final Category? category;
+  final VisualDensity? visualDensity;
 
   TransactionListTile({
     Key? key,
-    @required this.wallet,
-    @required this.transaction,
+    required this.wallet,
+    required this.transaction,
     this.visualDensity,
   })  : category = wallet.getCategory(transaction.category),
         super(key: key);
@@ -30,8 +30,7 @@ class TransactionListTile extends StatelessWidget {
     final String title = transaction.title ??
         category?.titleText ??
         transaction.getTypeLocalizedText(context);
-    final String subTitle =
-        transaction.title != null ? category?.titleText : null;
+    final subTitle = transaction.title != null ? category?.titleText : null;
 
     return ListTile(
       key: Key(transaction.id),

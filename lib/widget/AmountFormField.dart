@@ -9,34 +9,37 @@ import '../Money.dart';
 
 class AmountFormField extends FormField<Money> {
   final AmountEditingController controller;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final bool isCurrencySelectable;
 
   AmountFormField({
-    @required Money initialMoney,
-    this.controller,
+    required Money initialMoney,
+    required this.controller,
     InputDecoration decoration = const InputDecoration(),
     this.focusNode,
     bool autofocus = false,
     this.isCurrencySelectable = false,
-    FormFieldValidator<Money> validator,
+    FormFieldValidator<Money>? validator,
   }) : super(
           initialValue: initialMoney,
           builder: (FormFieldState<Money> fieldState) {
-            final AmountFormFieldState state = fieldState;
+            final AmountFormFieldState state =
+                fieldState as AmountFormFieldState;
             return TextFormField(
               controller: state.controller,
               decoration: decoration.copyWith(
-                suffixText: state.value.currency.code,
+                suffixText: state.value?.currency.code,
               ),
               textAlign: TextAlign.end,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               focusNode: state.effectiveFocusNode,
               autofocus: autofocus,
               readOnly: true,
-              validator: (text) => validator(state.value),
+              validator:
+                  validator != null ? (text) => validator(state.value) : null,
               inputFormatters: [
-                NumericTextFormatter(state.value.currency),
+                if (state.value != null)
+                  NumericTextFormatter(state.value!.currency),
               ],
             );
           },
@@ -48,10 +51,10 @@ class AmountFormField extends FormField<Money> {
 
 class AmountFormFieldState extends FormFieldState<Money> {
   @override
-  AmountFormField get widget => super.widget;
+  AmountFormField get widget => super.widget as AmountFormField;
 
-  TextEditingController controller;
-  FocusNode _focusNode;
+  late TextEditingController controller;
+  late FocusNode _focusNode;
 
   FocusNode get effectiveFocusNode => widget.focusNode ?? _focusNode;
 
@@ -60,7 +63,7 @@ class AmountFormFieldState extends FormFieldState<Money> {
     super.initState();
     controller = TextEditingController();
     if (value != null) {
-      controller.text = value.formattedOnlyAmount;
+      controller.text = value!.formattedOnlyAmount;
       widget.controller.value = value;
     }
     controller.addListener(() {
@@ -74,7 +77,7 @@ class AmountFormFieldState extends FormFieldState<Money> {
       focusNode: effectiveFocusNode,
       controller: controller,
       isCurrencySelectable: widget.isCurrencySelectable,
-      getValue: () => value,
+      getValue: () => value!,
       onEnter: (amount) => setState(() {
         controller.text = amount.formattedOnlyAmount;
         didChange(amount);
@@ -85,24 +88,24 @@ class AmountFormFieldState extends FormFieldState<Money> {
 
   @override
   void dispose() {
-    widget.controller?.removeListener(onChangedValue);
-    controller?.dispose();
-    _focusNode?.dispose();
+    widget.controller.removeListener(onChangedValue);
+    controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   void onChangedValue() {
     final amount = widget.controller.value;
-    controller.text = amount.formattedOnlyAmount;
+    controller.text = amount!.formattedOnlyAmount;
     didChange(amount);
   }
 
   void initAmountField({
-    FocusNode focusNode,
-    TextEditingController controller,
-    bool isCurrencySelectable,
-    Money getValue(),
-    void onEnter(Money money),
+    required FocusNode focusNode,
+    required TextEditingController controller,
+    required bool isCurrencySelectable,
+    required Money getValue(),
+    required void onEnter(Money money),
   }) {
     focusNode.addListener(() async {
       if (focusNode.hasFocus) {
@@ -115,7 +118,7 @@ class AmountFormFieldState extends FormFieldState<Money> {
             currency: initialMoney.currency,
             isCurrencySelectable: isCurrencySelectable,
           ),
-        ) as Money;
+        ) as Money?;
         if (money != null) {
           controller.text = money.formattedOnlyAmount;
           onEnter(money);
@@ -126,14 +129,14 @@ class AmountFormFieldState extends FormFieldState<Money> {
 
   Money _getEnteredMoney() {
     final text =
-        controller.text.replaceAll(value.currency.decimalSeparator, ".");
-    final amount = round(double.tryParse(text), value.currency.decimalDigits);
-    return Money(amount, value.currency);
+        controller.text.replaceAll(value!.currency.decimalSeparator!, ".");
+    final amount = round(double.tryParse(text), value!.currency.decimalDigits);
+    return Money(amount, value!.currency);
   }
 
-  double round(double value, int places) {
+  double? round(double? value, num places) {
     if (value == null) return null;
-    double mod = pow(10.0, places);
+    final mod = pow(10.0, places);
     return ((value * mod).round().toDouble() / mod);
   }
 }
@@ -145,7 +148,7 @@ class AmountEditingController extends ValueNotifier<Money?> {
 class NumericTextFormatter extends TextInputFormatter {
   final Currency currency;
 
-  String get decimalSeparator => currency.decimalSeparator;
+  String get decimalSeparator => currency.decimalSeparator!;
 
   NumericTextFormatter(this.currency);
 

@@ -7,17 +7,17 @@ class ConfirmationDialog extends StatelessWidget {
   final Widget content;
   final bool isDestructive;
 
-  final VoidCallback onConfirm;
-  final VoidCallback onCancel;
+  final VoidCallback? onConfirm;
+  final VoidCallback? onCancel;
 
-  const ConfirmationDialog(
-      {Key? key,
-      this.title,
-      this.content,
-      this.isDestructive = false,
-      this.onConfirm,
-      this.onCancel})
-      : super(key: key);
+  const ConfirmationDialog({
+    Key? key,
+    required this.title,
+    required this.content,
+    this.isDestructive = false,
+    this.onConfirm,
+    this.onCancel,
+  }) : super(key: key);
 
   show(BuildContext context) {
     showModalBottomSheet(
@@ -48,13 +48,13 @@ class ConfirmationDialog extends StatelessWidget {
   Widget buildTitle(BuildContext context) {
     final style = Theme.of(context)
         .textTheme
-        .subtitle1
+        .subtitle1!
         .copyWith(fontWeight: FontWeight.w500);
     return DefaultTextStyle(style: style, child: title);
   }
 
   Widget buildContent(BuildContext context) {
-    final style = Theme.of(context).textTheme.bodyText2;
+    final style = Theme.of(context).textTheme.bodyText2!;
     return DefaultTextStyle(style: style, child: content);
   }
 
@@ -66,7 +66,7 @@ class ConfirmationDialog extends StatelessWidget {
           child: Text(AppLocalizations.of(context).confirmationCancel),
           onPressed: () {
             if (onCancel != null)
-              onCancel();
+              onCancel!();
             else
               Navigator.of(context).pop();
           },
@@ -76,7 +76,7 @@ class ConfirmationDialog extends StatelessWidget {
               isDestructive ? Colors.red : Theme.of(context).primaryColor,
           child: Text(AppLocalizations.of(context).confirmationConfirm),
           onPressed: () {
-            if (onConfirm != null) onConfirm();
+            if (onConfirm != null) onConfirm!();
           },
         ),
       ],

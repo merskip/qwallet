@@ -8,9 +8,9 @@ import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
-import 'package:qwallet/widget/empty_state_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../utils.dart';

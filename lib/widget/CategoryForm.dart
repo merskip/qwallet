@@ -5,11 +5,12 @@ import 'package:qwallet/IconsSerialization.dart';
 import 'package:qwallet/api/Category.dart';
 
 import '../AppLocalizations.dart';
+import '../utils/IterableFinding.dart';
 import 'ColorPicker.dart';
 import 'PrimaryButton.dart';
 
 class CategoryForm extends StatefulWidget {
-  final Category category;
+  final Category? category;
 
   final Function(
     BuildContext context,
@@ -17,15 +18,15 @@ class CategoryForm extends StatefulWidget {
     Color primaryColor,
     Color backgroundColor,
     IconData icon,
-  ) onSubmit;
+  )? onSubmit;
 
   final Widget submitChild;
 
   const CategoryForm({
     Key? key,
-    this.category,
+    required this.category,
     this.onSubmit,
-    this.submitChild,
+    required this.submitChild,
   }) : super(key: key);
 
   @override
@@ -39,11 +40,11 @@ class _CategoryFormState extends State<CategoryForm> {
   final titleFocus = FocusNode();
 
   MaterialColor primaryColor = Colors.primaries.first;
-  bool backgroundColorIsPrimary;
+  late bool backgroundColorIsPrimary;
   MaterialColor backgroundColor;
   IconData icon;
 
-  _CategoryFormState({Category category})
+  _CategoryFormState({required Category? category})
       : titleController = TextEditingController(text: category?.title),
         primaryColor = _findMaterialColor(category?.primaryColor, 800) ??
             Colors.primaries.first,
@@ -53,12 +54,10 @@ class _CategoryFormState extends State<CategoryForm> {
     backgroundColorIsPrimary = (primaryColor == backgroundColor);
   }
 
-  static MaterialColor _findMaterialColor(Color color, int shade) {
-    if (color == null) return color;
-    return Colors.primaries.firstWhere(
-      (materialColor) => materialColor[shade] == color,
-      orElse: () => null,
-    );
+  static MaterialColor? _findMaterialColor(Color? color, int shade) {
+    if (color == null) return null;
+    return Colors.primaries
+        .findFirstOrNull((materialColor) => materialColor[shade] == color);
   }
 
   @override
@@ -69,7 +68,7 @@ class _CategoryFormState extends State<CategoryForm> {
   }
 
   onSelectedIcon(BuildContext context) async {
-    IconData icon = await _showIconPicker(context);
+    final icon = await _showIconPicker(context);
     if (icon != null) {
       iconDataToMap(icon);
       setState(() => this.icon = icon);
@@ -77,9 +76,9 @@ class _CategoryFormState extends State<CategoryForm> {
   }
 
   onSelectedSubmit(BuildContext context) async {
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       if (widget.onSubmit != null)
-        widget.onSubmit(
+        widget.onSubmit!(
           context,
           titleController.text.trim(),
           primaryColor.shade800,
@@ -116,7 +115,7 @@ class _CategoryFormState extends State<CategoryForm> {
       textCapitalization: TextCapitalization.sentences,
       textInputAction: TextInputAction.done,
       validator: (title) {
-        if (title.trim().isEmpty) {
+        if (title!.trim().isEmpty) {
           return AppLocalizations.of(context).categoryTitleErrorEmpty;
         }
         return null;
@@ -203,8 +202,8 @@ class _CategoryFormState extends State<CategoryForm> {
     );
   }
 
-  Future<IconData> _showIconPicker(BuildContext context) async {
-    final IconPack iconPack = await showDialog(
+  Future<IconData?> _showIconPicker(BuildContext context) async {
+    final IconPack? iconPack = await showDialog(
       context: context,
       builder: (context) => SimpleDialog(
         title: Text(AppLocalizations.of(context).categoryIconPackSelect),
@@ -253,7 +252,7 @@ class _CategoryFormState extends State<CategoryForm> {
       case IconPack.lineAwesomeIcons:
         return AppLocalizations.of(context).categoryIconPackLineAwesome;
       default:
-        return null;
+        throw("Unknown iconPack: $iconPack");
     }
   }
 }

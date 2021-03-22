@@ -5,17 +5,17 @@ import '../AppLocalizations.dart';
 
 class TransactionTypeButton extends StatelessWidget {
   final TransactionType type;
-  final Widget title;
+  final Widget? title;
   final bool isSelected;
   final VoidCallback onPressed;
-  final VisualDensity visualDensity;
+  final VisualDensity? visualDensity;
 
   const TransactionTypeButton({
     Key? key,
-    this.type,
+    required this.type,
     this.title,
-    this.isSelected,
-    this.onPressed,
+    required this.isSelected,
+    required this.onPressed,
     this.visualDensity,
   }) : super(key: key);
 

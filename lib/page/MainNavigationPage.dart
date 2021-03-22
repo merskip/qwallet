@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/page/dashboard/DashboardPage.dart';
 import 'package:qwallet/page/loans/LoansTabPage.dart';
-import 'package:qwallet/widget/vector_image.dart';
+import 'package:qwallet/widget/VectorImage.dart';
 
 import '../AppLocalizations.dart';
 import '../router.dart';

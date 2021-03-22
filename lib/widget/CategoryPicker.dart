@@ -8,7 +8,7 @@ class CategoryPicker extends StatelessWidget {
   final List<Category> categories;
   final Category? selectedCategory;
   final Widget? title;
-  final Function(Category) onChangeCategory;
+  final Function(Category?) onChangeCategory;
 
   const CategoryPicker({
     Key? key,
@@ -26,10 +26,10 @@ class CategoryPicker extends StatelessWidget {
     onChangeCategory(_getCategoryBy(offset: 1));
   }
 
-  Category _getCategoryBy({int offset}) {
+  Category? _getCategoryBy({required int offset}) {
     if (selectedCategory == null)
       return offset > 0 ? categories.first : categories.last;
-    final targetIndex = categories.indexOf(selectedCategory) + offset;
+    final targetIndex = categories.indexOf(selectedCategory!) + offset;
     if (targetIndex >= 0 && targetIndex < categories.length)
       return categories[targetIndex];
     else
@@ -58,8 +58,8 @@ class CategoryPicker extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8)
             .copyWith(bottom: 12),
         child: DefaultTextStyle(
-          style: Theme.of(context).textTheme.bodyText2,
-          child: title,
+          style: Theme.of(context).textTheme.bodyText2!,
+          child: title!,
         ),
       ),
     );

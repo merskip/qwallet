@@ -5,7 +5,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
-import 'package:qwallet/widget/vector_image.dart';
+import 'package:qwallet/widget/VectorImage.dart';
 
 class WalletsPage extends StatefulWidget {
   @override

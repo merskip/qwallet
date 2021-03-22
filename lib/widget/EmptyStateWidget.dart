@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-import 'vector_image.dart';
+import 'VectorImage.dart';
 
 class EmptyStateWidget extends StatelessWidget {
-  final IconData icon;
-  final String iconAsset;
+  final IconData? icon;
+  final String? iconAsset;
   final String text;
 
   const EmptyStateWidget({
     Key? key,
     this.icon,
     this.iconAsset,
-    this.text,
-  })  : assert(icon != null || iconAsset != null),
+    required this.text,
+  })   : assert(icon != null || iconAsset != null),
         super(key: key);
 
   @override
@@ -29,7 +29,7 @@ class EmptyStateWidget extends StatelessWidget {
             )
           else
             VectorImage(
-              iconAsset,
+              iconAsset!,
               size: Size.square(72),
               color: Colors.grey,
             ),

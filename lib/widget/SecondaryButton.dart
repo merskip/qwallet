@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'hand_cursor.dart';
+import 'HandCursor.dart';
 
 class SecondaryButton extends StatelessWidget {
   final VoidCallback? onPressed;

@@ -5,4 +5,12 @@ extension IterableFinding<E> on Iterable<E> {
     }
     return null;
   }
+
+  E? findLastOrNull(bool test(E element)) {
+    E? last;
+    for (final element in this) {
+      if (test(element)) last = element;
+    }
+    return last;
+  }
 }

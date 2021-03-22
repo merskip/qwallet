@@ -14,7 +14,7 @@ import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
-import 'package:qwallet/widget/vector_image.dart';
+import 'package:qwallet/widget/VectorImage.dart';
 
 import '../../AppLocalizations.dart';
 import '../../router.dart';

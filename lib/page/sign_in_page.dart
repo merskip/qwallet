@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
+import 'package:qwallet/widget/VectorImage.dart';
 import 'package:qwallet/widget/hand_cursor.dart';
-import 'package:qwallet/widget/vector_image.dart';
 
 import '../AppLocalizations.dart';
 import '../LocalPreferences.dart';

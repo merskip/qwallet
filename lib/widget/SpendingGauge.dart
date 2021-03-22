@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../Money.dart';
+import '../utils/IterableFinding.dart';
 
 class SpendingGauge extends StatefulWidget {
   final Money midLow;
@@ -12,10 +13,10 @@ class SpendingGauge extends StatefulWidget {
 
   const SpendingGauge({
     Key? key,
-    @required this.midLow,
-    @required this.midHigh,
-    @required this.max,
-    @required this.current,
+    required this.midLow,
+    required this.midHigh,
+    required this.max,
+    required this.current,
   }) : super(key: key);
 
   @override
@@ -29,9 +30,9 @@ class _SpendingGaugeState extends State<SpendingGauge> {
       return buildEmptyGauge(context);
     }
 
-    final normalizedMidLow = widget.midLow.amount / widget.max.amount;
-    final normalizedMidHigh = widget.midHigh.amount / widget.max.amount;
-    final normalizedCurrent = widget.current.amount / widget.max.amount;
+    final normalizedMidLow = widget.midLow.amount! / widget.max.amount!;
+    final normalizedMidHigh = widget.midHigh.amount! / widget.max.amount!;
+    final normalizedCurrent = widget.current.amount! / widget.max.amount!;
 
     return CustomPaint(
       painter: _GaugePainter(
@@ -46,14 +47,14 @@ class _SpendingGaugeState extends State<SpendingGauge> {
               widget.midHigh.formatted,
               Theme.of(context)
                   .textTheme
-                  .bodyText1
+                  .bodyText1!
                   .copyWith(color: Colors.red)),
           _GaugeLabel(
               normalizedMidLow,
               widget.midLow.formatted,
               Theme.of(context)
                   .textTheme
-                  .bodyText1
+                  .bodyText1!
                   .copyWith(color: Colors.orange)),
         ],
         markerPosition: normalizedCurrent,
@@ -77,12 +78,16 @@ class _SpendingGaugeState extends State<SpendingGauge> {
 class _GaugePainter extends CustomPainter {
   final List<_GaugeSegment> segments;
   final List<_GaugeLabel> labels;
-  final double markerPosition;
+  final double? markerPosition;
 
   final double segmentWidth = 7.5;
   final double markerRadius = 6;
 
-  _GaugePainter({this.segments, this.labels, this.markerPosition});
+  _GaugePainter({
+    required this.segments,
+    required this.labels,
+    this.markerPosition,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -120,13 +125,13 @@ class _GaugePainter extends CustomPainter {
   void _paintMarker(Canvas canvas, Size size) {
     if (this.markerPosition == null) return;
     final markerPosition =
-        max(segments.last.start, min(segments.first.end, this.markerPosition));
+        max(segments.last.start, min(segments.first.end, this.markerPosition!));
     canvas.save();
 
-    final markerSegment = segments.lastWhere(
+    final markerSegment = segments.findLastOrNull(
       (s) => markerPosition >= s.start && markerPosition <= s.end,
-      orElse: () => null,
     );
+    if (markerSegment == null) return;
     _translate(canvas, size, markerPosition);
 
     final circlePaint = Paint()

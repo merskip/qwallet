@@ -1,18 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'hand_cursor.dart';
+import 'HandCursor.dart';
 
 class PrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
-  final Widget child;
-  final Color color;
+  final Widget? child;
+  final Color? color;
   final bool shrinkWrap;
   final bool isLoading;
 
   const PrimaryButton({
     Key? key,
-    @required this.onPressed,
+    required this.onPressed,
     this.child,
     this.color,
     this.shrinkWrap = false,

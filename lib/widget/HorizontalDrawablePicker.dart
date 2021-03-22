@@ -9,11 +9,11 @@ class HorizontalDrawablePicker extends StatefulWidget {
 
   const HorizontalDrawablePicker({
     Key? key,
-    @required this.itemBuilder,
-    this.itemCount,
-    this.selectedIndex,
-    this.onSelected,
-    this.itemWidth,
+    required this.itemBuilder,
+    required this.itemCount,
+    required this.selectedIndex,
+    required this.onSelected,
+    required this.itemWidth,
   }) : super(key: key);
 
   @override
@@ -22,7 +22,7 @@ class HorizontalDrawablePicker extends StatefulWidget {
 }
 
 class _HorizontalDrawablePickerState extends State<HorizontalDrawablePicker> {
-  _SnappingScrollController scrollController;
+  late _SnappingScrollController scrollController;
 
   @override
   void initState() {
@@ -90,7 +90,7 @@ class _HorizontalDrawablePickerState extends State<HorizontalDrawablePicker> {
             fontSize: isSelected ? 22 : 16,
             color: isSelected
                 ? Theme.of(context).primaryColor
-                : Theme.of(context).textTheme.bodyText1.color,
+                : Theme.of(context).textTheme.bodyText1!.color,
           ),
           duration: Duration(milliseconds: 100),
           child: widget.itemBuilder(context, index),
@@ -117,13 +117,13 @@ class _SnappingScrollController extends ScrollController {
   final int initialItemIndex;
 
   _SnappingScrollController({
-    @required this.itemWidth,
-    this.initialItemIndex,
+    required this.itemWidth,
+    required this.initialItemIndex,
   }) : super();
 
   @override
   ScrollPosition createScrollPosition(ScrollPhysics physics,
-      ScrollContext context, ScrollPosition oldPosition) {
+      ScrollContext context, ScrollPosition? oldPosition) {
     return _ItemPosition(
       physics: physics,
       context: context,
@@ -143,11 +143,11 @@ class _ItemPosition extends ScrollPositionWithSingleContext {
   final int initialItemIndex;
 
   _ItemPosition({
-    ScrollPhysics physics,
-    ScrollContext context,
-    ScrollPosition oldPosition,
-    this.itemWidth,
-    this.initialItemIndex,
+    required ScrollPhysics physics,
+    required ScrollContext context,
+    ScrollPosition? oldPosition,
+    required this.itemWidth,
+    required this.initialItemIndex,
   }) : super(
           physics: physics,
           context: context,
@@ -161,14 +161,14 @@ class _ItemPosition extends ScrollPositionWithSingleContext {
 }
 
 class _SnappingScrollPhysics extends ScrollPhysics {
-  const _SnappingScrollPhysics({ScrollPhysics parent}) : super(parent: parent);
+  const _SnappingScrollPhysics({ScrollPhysics? parent}) : super(parent: parent);
 
   @override
-  ScrollPhysics applyTo(ScrollPhysics ancestor) =>
+  ScrollPhysics applyTo(ScrollPhysics? ancestor) =>
       _SnappingScrollPhysics(parent: ancestor);
 
   @override
-  Simulation createBallisticSimulation(
+  Simulation? createBallisticSimulation(
       ScrollMetrics position, double velocity) {
     if ((velocity <= 0.0 && position.pixels <= position.minScrollExtent) ||
         (velocity >= 0.0 && position.pixels >= position.maxScrollExtent))

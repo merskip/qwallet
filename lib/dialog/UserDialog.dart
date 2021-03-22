@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/model/user.dart';
-import 'package:qwallet/widget/hand_cursor.dart';
-import 'package:qwallet/widget/vector_image.dart';
+import 'package:qwallet/widget/HandCursor.dart';
+import 'package:qwallet/widget/VectorImage.dart';
 
 import '../utils/IterableFinding.dart';
 

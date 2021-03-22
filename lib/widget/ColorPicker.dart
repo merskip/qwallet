@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class ColorPicker extends StatelessWidget {
-  final List<Color> colors;
-  final Color selectedColor;
-  final Function(Color) onChangeColor;
+  final List<MaterialColor> colors;
+  final MaterialColor selectedColor;
+  final Function(MaterialColor) onChangeColor;
 
   const ColorPicker({
     Key? key,
-    this.colors,
-    this.selectedColor,
-    this.onChangeColor,
+    required this.colors,
+    required this.selectedColor,
+    required this.onChangeColor,
   }) : super(key: key);
 
   @override
@@ -35,9 +35,12 @@ class _CircleColorButton extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onPressed;
 
-  const _CircleColorButton(
-      {Key? key, this.color, this.isSelected, this.onPressed})
-      : super(key: key);
+  const _CircleColorButton({
+    Key? key,
+    required this.color,
+    required this.isSelected,
+    required this.onPressed,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

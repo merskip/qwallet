@@ -7,7 +7,11 @@ class MarkdownPage extends StatelessWidget {
   final String title;
   final String file;
 
-  const MarkdownPage({Key? key, this.title, this.file}) : super(key: key);
+  const MarkdownPage({
+    Key? key,
+    required this.title,
+    required this.file,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +25,9 @@ class MarkdownPage extends StatelessWidget {
             if (snapshot.hasData) {
               return Markdown(
                 selectable: true,
-                data: snapshot.data,
+                data: snapshot.data!,
                 onTapLink: (text, href, title) async {
+                  if (href == null) return;
                   if (await canLaunch(href)) {
                     await launch(href);
                   }
