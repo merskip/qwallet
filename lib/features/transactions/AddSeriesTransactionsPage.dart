@@ -20,12 +20,12 @@ import '../../Money.dart';
 
 class AddSeriesTransactionsPage extends StatefulWidget {
   final Wallet initialWallet;
-  final double initialTotalAmount;
-  final DateTime initialDate;
+  final double? initialTotalAmount;
+  final DateTime? initialDate;
 
   const AddSeriesTransactionsPage({
-    Key key,
-    @required this.initialWallet,
+    Key? key,
+    required this.initialWallet,
     this.initialTotalAmount,
     this.initialDate,
   }) : super(key: key);
@@ -45,22 +45,17 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   DateTime date = DateTime.now();
 
   final transactionAmountController = AmountEditingController();
-  Category transactionCategory;
+  Category? transactionCategory;
 
   List<Transaction> transactions = [];
 
   Money get totalAmount =>
       totalAmountController.value ?? Money(null, wallet.currency);
 
-  Money get transactionsAmount =>
-      Money(transactions.fold(0.0, (v, t) => v + t.amount), wallet.currency);
+  Money get transactionsAmount => Money(
+      transactions.fold<double>(0, (v, t) => v + t.amount), wallet.currency);
 
-  Money get remainingAmount {
-    return Money(
-      (totalAmount.amount ?? 0.0) - transactionsAmount.amount,
-      wallet.currency,
-    );
-  }
+  Money get remainingAmount => totalAmount - transactionsAmount.amount;
 
   _AddSeriesTransactionsPageState(this.wallet);
 
@@ -68,7 +63,9 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   void initState() {
     _configureDate();
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+
+    // Refresh total amount
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       totalAmountController.addListener(() => setState(() {}));
     });
   }
@@ -135,13 +132,13 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   }
 
   void onSelectedAddTransaction(BuildContext context) async {
-    if (!_formKey.currentState.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
     final transactionRef = await DataSource.instance.addTransaction(
       wallet.reference,
       type: TransactionType.expense,
       title: null,
-      amount: transactionAmountController.value.amount,
+      amount: transactionAmountController.value!.amount!,
       category: transactionCategory?.reference,
       date: date,
     );
@@ -161,7 +158,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   }
 
   void onSelectedDone(BuildContext context) {
-    if (remainingAmount.amount > 0) {
+    if (remainingAmount.amount! > 0) {
       ConfirmationDialog(
         title: Text(
             AppLocalizations.of(context).addSeriesTransactionsExitConfirmTitle),
@@ -169,7 +166,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
             .addSeriesTransactionsExitRemainingAmountGreater),
         onConfirm: () => router.pop(context),
       ).show(context);
-    } else if (remainingAmount.amount < 0) {
+    } else if (remainingAmount.amount! < 0) {
       ConfirmationDialog(
         title: Text(
             AppLocalizations.of(context).addSeriesTransactionsExitConfirmTitle),
@@ -241,7 +238,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
       ),
       controller: totalAmountController,
       validator: (amount) {
-        if (amount.amount < 0)
+        if (amount!.amount! < 0)
           return AppLocalizations.of(context)
               .addTransactionAmountErrorZeroOrNegative;
         return null;
@@ -305,7 +302,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   Widget buildAmountIndicator(BuildContext context) {
     final totalAmount = totalAmountController.value?.amount ?? 0.0;
     final progress =
-        totalAmount > 0.0 ? transactionsAmount.amount / totalAmount : 0.0;
+        totalAmount > 0.0 ? transactionsAmount.amount! / totalAmount : 0.0;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(children: [
@@ -318,8 +315,9 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
           child: Text(
             AppLocalizations.of(context)
                 .addSeriesTransactionsRemainingAmount(remainingAmount),
-            style: Theme.of(context).textTheme.caption.copyWith(
-                  color: remainingAmount.amount >= 0 ? null : Colors.deepOrange,
+            style: Theme.of(context).textTheme.caption!.copyWith(
+                  color:
+                      remainingAmount.amount! >= 0 ? null : Colors.deepOrange,
                 ),
           ),
         )
@@ -347,7 +345,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
         ),
         buildDoneButton(context, isPrimary: true),
       ]);
-    } else if (remainingAmount.amount < 0) {
+    } else if (remainingAmount.amount! < 0) {
       return Column(children: [
         buildPanel(
           context,
@@ -386,9 +384,9 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
 
   Widget buildPanel(
     BuildContext context, {
-    IconData icon,
-    String text,
-    Color color,
+    required IconData icon,
+    required String text,
+    required Color color,
   }) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -400,7 +398,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
           Flexible(
             child: Text(
               text,
-              style: Theme.of(context).textTheme.bodyText2.copyWith(
+              style: Theme.of(context).textTheme.bodyText2!.copyWith(
                     color: color,
                   ),
             ),
@@ -422,10 +420,10 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
             ),
             controller: transactionAmountController,
             validator: (amount) {
-              if (amount.amount == null)
+              if (amount!.amount == null)
                 return AppLocalizations.of(context)
                     .addTransactionAmountErrorIsEmpty;
-              if (amount.amount <= 0)
+              if (amount.amount! <= 0)
                 return AppLocalizations.of(context)
                     .addTransactionAmountErrorZeroOrNegative;
               return null;
@@ -470,7 +468,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
     );
   }
 
-  Widget buildDoneButton(BuildContext context, {@required bool isPrimary}) {
+  Widget buildDoneButton(BuildContext context, {required bool isPrimary}) {
     return isPrimary
         ? PrimaryButton(
             child: Text(AppLocalizations.of(context).addSeriesTransactionsDone),

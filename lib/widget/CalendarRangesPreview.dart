@@ -11,7 +11,7 @@ class CalendarRangesPreview extends StatelessWidget {
   final DateTimeRange showingRange;
 
   CalendarRangesPreview({
-    Key key,
+    Key? key,
     DateTime now,
     this.ranges,
     this.selectedRange,

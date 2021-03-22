@@ -14,7 +14,7 @@ class TransactionListTile extends StatelessWidget {
   final VisualDensity visualDensity;
 
   TransactionListTile({
-    Key key,
+    Key? key,
     @required this.wallet,
     @required this.transaction,
     this.visualDensity,

@@ -31,7 +31,7 @@ class LoanForm extends StatefulWidget {
   ) onSubmit;
 
   const LoanForm({
-    Key key,
+    Key? key,
     this.initialLoan,
     @required this.submitText,
     this.onSubmit,

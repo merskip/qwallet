@@ -14,7 +14,7 @@ import '../../Money.dart';
 class RepaidLoanPage extends StatelessWidget {
   final LoansGroup loansGroup;
 
-  const RepaidLoanPage({Key key, this.loansGroup}) : super(key: key);
+  const RepaidLoanPage({Key? key, this.loansGroup}) : super(key: key);
 
   void onSelectedApply(
     BuildContext context,
@@ -71,7 +71,7 @@ class RepaidLoanPage extends StatelessWidget {
 class RepayingLoanCard extends StatelessWidget {
   final MutatingPrivateLoan repayingLoan;
 
-  const RepayingLoanCard({Key key, this.repayingLoan}) : super(key: key);
+  const RepayingLoanCard({Key? key, this.repayingLoan}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

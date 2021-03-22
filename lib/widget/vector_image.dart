@@ -7,7 +7,7 @@ class VectorImage extends StatelessWidget {
   final Size size;
   final Color color;
 
-  const VectorImage(this.assetName, {Key key, this.size, this.color})
+  const VectorImage(this.assetName, {Key? key, this.size, this.color})
       : super(key: key);
 
   @override

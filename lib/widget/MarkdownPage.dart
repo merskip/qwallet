@@ -7,7 +7,7 @@ class MarkdownPage extends StatelessWidget {
   final String title;
   final String file;
 
-  const MarkdownPage({Key key, this.title, this.file}) : super(key: key);
+  const MarkdownPage({Key? key, this.title, this.file}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

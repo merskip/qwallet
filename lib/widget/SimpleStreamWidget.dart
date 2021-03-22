@@ -11,7 +11,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
   final WidgetBuilder loadingBuilder;
 
   const SimpleStreamWidget(
-      {Key key,
+      {Key? key,
       @required this.stream,
       @required this.builder,
       this.loadingBuilder})

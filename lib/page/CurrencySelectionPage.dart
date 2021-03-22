@@ -10,7 +10,7 @@ import '../Money.dart';
 class CurrencySelectionPage extends StatefulWidget {
   final Currency selectedCurrency;
 
-  const CurrencySelectionPage({Key key, this.selectedCurrency})
+  const CurrencySelectionPage({Key? key, this.selectedCurrency})
       : super(key: key);
 
   @override
@@ -74,7 +74,7 @@ class _CurrencySelectionPageState extends State<CurrencySelectionPage> {
 class _CurrencyInfoPage extends StatelessWidget {
   final Currency currency;
 
-  const _CurrencyInfoPage({Key key, this.currency}) : super(key: key);
+  const _CurrencyInfoPage({Key? key, this.currency}) : super(key: key);
 
   onSelectedOpenUrl(String url) async {
     if (await canLaunch(url)) {

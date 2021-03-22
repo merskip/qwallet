@@ -9,7 +9,7 @@ class WalletsSwipeWidget extends StatefulWidget {
   final List<Wallet> wallets;
   final void Function(Wallet wallet) onSelectedWallet;
 
-  const WalletsSwipeWidget({Key key, this.wallets, this.onSelectedWallet})
+  const WalletsSwipeWidget({Key? key, this.wallets, this.onSelectedWallet})
       : super(key: key);
 
   @override
@@ -108,7 +108,7 @@ class _WalletsSwipeWidgetState extends State<WalletsSwipeWidget> {
 class _WalletSinglePage extends StatelessWidget {
   final Wallet wallet;
 
-  const _WalletSinglePage({Key key, this.wallet}) : super(key: key);
+  const _WalletSinglePage({Key? key, this.wallet}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

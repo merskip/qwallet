@@ -7,7 +7,7 @@ class CategoryButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const CategoryButton({
-    Key key,
+    Key? key,
     @required this.category,
     this.isSelected = false,
     @required this.onPressed,
@@ -35,7 +35,7 @@ class RawCategoryButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const RawCategoryButton({
-    Key key,
+    Key? key,
     this.title,
     this.icon,
     this.primaryColor,

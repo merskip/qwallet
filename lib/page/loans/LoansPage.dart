@@ -153,7 +153,7 @@ class LoansGroup implements Comparable {
 class LoansGroupCard extends StatefulWidget {
   final LoansGroup loansGroup;
 
-  const LoansGroupCard({Key key, this.loansGroup}) : super(key: key);
+  const LoansGroupCard({Key? key, this.loansGroup}) : super(key: key);
 
   @override
   _LoansGroupCardState createState() => _LoansGroupCardState();

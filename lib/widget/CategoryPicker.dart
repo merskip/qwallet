@@ -6,16 +6,16 @@ import 'CategoryButton.dart';
 
 class CategoryPicker extends StatelessWidget {
   final List<Category> categories;
-  final Category selectedCategory;
-  final Widget title;
+  final Category? selectedCategory;
+  final Widget? title;
   final Function(Category) onChangeCategory;
 
   const CategoryPicker({
-    Key key,
-    this.categories,
+    Key? key,
+    required this.categories,
     this.selectedCategory,
     this.title,
-    this.onChangeCategory,
+    required this.onChangeCategory,
   }) : super(key: key);
 
   onSwipeLeft() {

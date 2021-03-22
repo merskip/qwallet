@@ -8,7 +8,7 @@ class HorizontalDrawablePicker extends StatefulWidget {
   final double itemWidth;
 
   const HorizontalDrawablePicker({
-    Key key,
+    Key? key,
     @required this.itemBuilder,
     this.itemCount,
     this.selectedIndex,

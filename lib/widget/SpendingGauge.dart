@@ -11,7 +11,7 @@ class SpendingGauge extends StatefulWidget {
   final Money current;
 
   const SpendingGauge({
-    Key key,
+    Key? key,
     @required this.midLow,
     @required this.midHigh,
     @required this.max,

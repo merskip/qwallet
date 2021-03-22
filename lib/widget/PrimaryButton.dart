@@ -11,7 +11,7 @@ class PrimaryButton extends StatelessWidget {
   final bool isLoading;
 
   const PrimaryButton({
-    Key key,
+    Key? key,
     @required this.onPressed,
     this.child,
     this.color,

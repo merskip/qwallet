@@ -15,7 +15,7 @@ class EditWalletDateRangePage extends StatelessWidget {
   final Reference<Wallet> wallet;
 
   const EditWalletDateRangePage({
-    Key key,
+    Key? key,
     this.wallet,
   }) : super(key: key);
 
@@ -39,7 +39,7 @@ class _EditWalletDateRangePageContent extends StatefulWidget {
   final Wallet wallet;
 
   const _EditWalletDateRangePageContent({
-    Key key,
+    Key? key,
     this.wallet,
   }) : super(key: key);
 

@@ -6,7 +6,7 @@ class ColorPicker extends StatelessWidget {
   final Function(Color) onChangeColor;
 
   const ColorPicker({
-    Key key,
+    Key? key,
     this.colors,
     this.selectedColor,
     this.onChangeColor,
@@ -36,7 +36,7 @@ class _CircleColorButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const _CircleColorButton(
-      {Key key, this.color, this.isSelected, this.onPressed})
+      {Key? key, this.color, this.isSelected, this.onPressed})
       : super(key: key);
 
   @override

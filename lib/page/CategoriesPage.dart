@@ -14,7 +14,7 @@ import '../AppLocalizations.dart';
 class CategoriesPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
 
-  const CategoriesPage({Key key, this.walletRef}) : super(key: key);
+  const CategoriesPage({Key? key, this.walletRef}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class CategoriesPage extends StatelessWidget {
 class _WalletCategoriesPageContent extends StatefulWidget {
   final Wallet wallet;
 
-  const _WalletCategoriesPageContent({Key key, this.wallet}) : super(key: key);
+  const _WalletCategoriesPageContent({Key? key, this.wallet}) : super(key: key);
 
   @override
   __WalletCategoriesPageContentState createState() =>
@@ -175,7 +175,7 @@ class _CategoriesReorderableList extends StatefulWidget {
   final List<Category> categories;
 
   const _CategoriesReorderableList({
-    Key key,
+    Key? key,
     this.categories,
   }) : super(key: key);
 

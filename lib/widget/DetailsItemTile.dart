@@ -17,7 +17,7 @@ class DetailsItemTile extends StatefulWidget {
   final VoidCallback editingSave;
 
   const DetailsItemTile({
-    Key key,
+    Key? key,
     this.leading,
     this.title,
     this.value,

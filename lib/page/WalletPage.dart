@@ -18,7 +18,7 @@ import '../Currency.dart';
 class WalletPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
 
-  const WalletPage({Key key, this.walletRef}) : super(key: key);
+  const WalletPage({Key? key, this.walletRef}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class WalletPage extends StatelessWidget {
 class _WalletPageContent extends StatefulWidget {
   final Wallet wallet;
 
-  _WalletPageContent({Key key, this.wallet}) : super(key: key);
+  _WalletPageContent({Key? key, this.wallet}) : super(key: key);
 
   @override
   _WalletPageContentState createState() => _WalletPageContentState();

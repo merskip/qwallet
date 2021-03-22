@@ -5,7 +5,8 @@ class QueryListWidget<T> extends StatelessWidget {
   final Stream<TypedQuerySnapshot<T>> stream;
   final Widget Function(TypedQuerySnapshot<T>) builder;
 
-  const QueryListWidget({Key key, this.stream, this.builder}) : super(key: key);
+  const QueryListWidget({Key? key, this.stream, this.builder})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

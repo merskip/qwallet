@@ -6,7 +6,7 @@ class UserAvatar extends StatelessWidget {
   final bool isSelected;
 
   const UserAvatar({
-    Key key,
+    Key? key,
     @required this.user,
     this.isSelected = false,
   }) : super(key: key);

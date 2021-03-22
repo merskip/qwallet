@@ -8,7 +8,7 @@ class EmptyStateWidget extends StatelessWidget {
   final String text;
 
   const EmptyStateWidget({
-    Key key,
+    Key? key,
     this.icon,
     this.iconAsset,
     this.text,

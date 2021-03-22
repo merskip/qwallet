@@ -11,7 +11,7 @@ import '../AppLocalizations.dart';
 class EditCategoryPage extends StatelessWidget {
   final Reference<Category> categoryRef;
 
-  const EditCategoryPage({Key key, this.categoryRef}) : super(key: key);
+  const EditCategoryPage({Key? key, this.categoryRef}) : super(key: key);
 
   onSelectedRemove(BuildContext context, Category category) {
     ConfirmationDialog(

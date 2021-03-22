@@ -12,7 +12,7 @@ class DailyReportSection extends StatelessWidget {
   final Wallet wallet;
   final List<Transaction> transactions;
 
-  DailyReportSection({Key key, this.wallet, this.transactions})
+  DailyReportSection({Key? key, this.wallet, this.transactions})
       : super(key: key);
 
   @override

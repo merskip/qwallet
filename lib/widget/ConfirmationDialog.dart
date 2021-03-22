@@ -11,7 +11,7 @@ class ConfirmationDialog extends StatelessWidget {
   final VoidCallback onCancel;
 
   const ConfirmationDialog(
-      {Key key,
+      {Key? key,
       this.title,
       this.content,
       this.isDestructive = false,

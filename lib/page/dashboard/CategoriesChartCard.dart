@@ -15,7 +15,7 @@ class CategoriesChartCard extends StatelessWidget {
   final List<Transaction> transactions;
 
   const CategoriesChartCard({
-    Key key,
+    Key? key,
     this.wallet,
     this.transactions,
   }) : super(key: key);
@@ -36,7 +36,7 @@ class _CategoriesChartContent extends StatefulWidget {
   final Wallet wallet;
   final List<Transaction> transactions;
 
-  const _CategoriesChartContent({Key key, this.wallet, this.transactions})
+  const _CategoriesChartContent({Key? key, this.wallet, this.transactions})
       : super(key: key);
 
   @override
@@ -115,7 +115,7 @@ class _CategoriesChartWithLegend extends StatefulWidget {
   final String summaryTitle;
 
   const _CategoriesChartWithLegend({
-    Key key,
+    Key? key,
     this.wallet,
     this.items,
     this.summaryTitle,
@@ -248,7 +248,7 @@ class _CategoriesChart extends StatelessWidget {
   final double totalAmount;
 
   _CategoriesChart({
-    Key key,
+    Key? key,
     this.items,
     this.showAllTitles,
     this.selectedItem,

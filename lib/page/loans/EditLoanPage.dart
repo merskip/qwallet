@@ -12,7 +12,7 @@ class EditLoanPage extends StatelessWidget {
   final PrivateLoan loan;
 
   const EditLoanPage({
-    Key key,
+    Key? key,
     this.loan,
   }) : super(key: key);
 

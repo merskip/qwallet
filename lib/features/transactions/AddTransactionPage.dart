@@ -21,11 +21,11 @@ import '../../router.dart';
 
 class AddTransactionPage extends StatelessWidget {
   final Reference<Wallet> initialWalletRef;
-  final double initialAmount;
+  final double? initialAmount;
 
   const AddTransactionPage({
-    Key key,
-    this.initialWalletRef,
+    Key? key,
+    required this.initialWalletRef,
     this.initialAmount,
   }) : super(key: key);
 
@@ -33,7 +33,7 @@ class AddTransactionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getWallet(initialWalletRef),
-      builder: (context, wallet) => _AddTransactionPageContent(
+      builder: (context, Wallet wallet) => _AddTransactionPageContent(
         initialWallet: wallet,
         initialAmount: initialAmount,
       ),
@@ -42,18 +42,18 @@ class AddTransactionPage extends StatelessWidget {
 }
 
 class _AddTransactionPageContent extends StatelessWidget {
-  final Wallet initialWallet;
-  final double initialAmount;
   final formKey = GlobalKey<_AddTransactionFormState>();
+  final Wallet initialWallet;
+  final double? initialAmount;
 
   _AddTransactionPageContent({
-    Key key,
-    this.initialWallet,
+    Key? key,
+    required this.initialWallet,
     this.initialAmount,
   }) : super(key: key);
 
   void onSelectedAddSeriesTransactions(BuildContext context) {
-    final type = formKey.currentState.type;
+    final type = formKey.currentState!.type;
     if (type == TransactionType.income) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
@@ -62,9 +62,9 @@ class _AddTransactionPageContent extends StatelessWidget {
       ));
       return;
     }
-    final wallet = formKey.currentState.wallet;
-    final amount = formKey.currentState.amountController.value.amount;
-    final date = formKey.currentState.date;
+    final wallet = formKey.currentState!.wallet;
+    final amount = formKey.currentState!.amountController.value!.amount;
+    final date = formKey.currentState!.date;
     router.pop(context, null);
     router.navigateTo(
         context,
@@ -107,12 +107,12 @@ class _AddTransactionPageContent extends StatelessWidget {
 
 class _AddTransactionForm extends StatefulWidget {
   final Wallet initialWallet;
-  final double initialAmount;
-  final TransactionType initialTransactionType;
+  final double? initialAmount;
+  final TransactionType? initialTransactionType;
 
   const _AddTransactionForm({
-    Key key,
-    this.initialWallet,
+    Key? key,
+    required this.initialWallet,
     this.initialAmount,
     this.initialTransactionType,
   }) : super(key: key);
@@ -133,7 +133,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   final amountController = AmountEditingController();
 
-  Category category;
+  Category? category;
 
   final titleFocus = FocusNode();
   final titleController = TextEditingController();
@@ -214,12 +214,12 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   onSelectedSubmit(BuildContext context) async {
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       final transactionRef = DataSource.instance.addTransaction(
         wallet.reference,
         type: type,
         title: titleController.text.trim(),
-        amount: amountController.value.amount,
+        amount: amountController.value!.amount!,
         category: category?.reference,
         date: date,
       );
@@ -289,9 +289,9 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       ),
       controller: amountController,
       validator: (amount) {
-        if (amount.amount == null)
+        if (amount!.amount == null)
           return AppLocalizations.of(context).addTransactionAmountErrorIsEmpty;
-        if (amount.amount <= 0)
+        if (amount.amount! <= 0)
           return AppLocalizations.of(context)
               .addTransactionAmountErrorZeroOrNegative;
         return null;
@@ -303,8 +303,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     final amount =
         amountController.value?.amount ?? widget.initialAmount ?? 0.0;
     final balanceAfter = type == TransactionType.expense
-        ? wallet.balance.amount - amount
-        : wallet.balance.amount + amount;
+        ? wallet.balance.amount! - amount
+        : wallet.balance.amount! + amount;
     final balanceAfterMoney = Money(balanceAfter, wallet.currency);
     return AppLocalizations.of(context)
         .addTransactionBalanceAfter(balanceAfterMoney);

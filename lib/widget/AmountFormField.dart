@@ -138,7 +138,7 @@ class AmountFormFieldState extends FormFieldState<Money> {
   }
 }
 
-class AmountEditingController extends ValueNotifier<Money> {
+class AmountEditingController extends ValueNotifier<Money?> {
   AmountEditingController() : super(null);
 }
 

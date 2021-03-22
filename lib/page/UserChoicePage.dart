@@ -7,7 +7,7 @@ class UserChoicePage extends StatefulWidget {
   final User selectedUser;
 
   const UserChoicePage({
-    Key key,
+    Key? key,
     @required this.title,
     @required this.selectedUser,
   }) : super(key: key);

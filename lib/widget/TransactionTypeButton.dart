@@ -11,7 +11,7 @@ class TransactionTypeButton extends StatelessWidget {
   final VisualDensity visualDensity;
 
   const TransactionTypeButton({
-    Key key,
+    Key? key,
     this.type,
     this.title,
     this.isSelected,

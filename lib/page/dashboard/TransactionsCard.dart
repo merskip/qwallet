@@ -17,7 +17,7 @@ class TransactionsCard extends StatefulWidget {
   final List<Transaction> transactions;
 
   const TransactionsCard({
-    Key key,
+    Key? key,
     this.wallet,
     this.transactions,
   }) : super(key: key);

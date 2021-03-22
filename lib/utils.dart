@@ -176,15 +176,7 @@ String formatNIP(String nip, {String separator = "-"}) {
   ].join(separator);
 }
 
-FormFieldValidator<String> amountValidator() {
-  return (value) {
-    if (value.isEmpty) return "Please enter a amount";
-    if (parseAmount(value) == null) return "Invalid amount format";
-    return null;
-  };
-}
-
-double parseAmount(String text) {
+double? parseAmount(String text) {
   final pureText = text.replaceAll(",", "").replaceAll(RegExp("[^-0-9\.]"), "");
   return double.tryParse(pureText) ?? null;
 }

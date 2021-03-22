@@ -22,7 +22,7 @@ class CategoryForm extends StatefulWidget {
   final Widget submitChild;
 
   const CategoryForm({
-    Key key,
+    Key? key,
     this.category,
     this.onSubmit,
     this.submitChild,

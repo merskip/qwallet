@@ -17,7 +17,7 @@ import '../utils.dart';
 class ReportsPage extends StatefulWidget {
   final Reference<Wallet> walletRef;
 
-  const ReportsPage({Key key, this.walletRef}) : super(key: key);
+  const ReportsPage({Key? key, this.walletRef}) : super(key: key);
 
   @override
   _ReportsPageState createState() => _ReportsPageState();
@@ -75,7 +75,7 @@ class _ReportByCategoriesPage extends StatelessWidget {
   final List<Transaction> transactions;
 
   const _ReportByCategoriesPage({
-    Key key,
+    Key? key,
     this.wallet,
     this.transactions,
   }) : super(key: key);
@@ -189,7 +189,7 @@ class _ReportByDatePage extends StatelessWidget {
   final List<Transaction> transactions;
 
   const _ReportByDatePage({
-    Key key,
+    Key? key,
     this.wallet,
     this.transactions,
   }) : super(key: key);

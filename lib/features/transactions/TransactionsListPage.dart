@@ -20,8 +20,8 @@ class TransactionsListPage extends StatefulWidget {
   final Wallet wallet;
 
   TransactionsListPage({
-    Key key,
-    this.wallet,
+    Key? key,
+    required this.wallet,
   }) : super(key: key);
 
   @override
@@ -29,7 +29,7 @@ class TransactionsListPage extends StatefulWidget {
 }
 
 class _TransactionsListPageState extends State<TransactionsListPage> {
-  TransactionsFilter filter;
+  late TransactionsFilter filter;
 
   @override
   void initState() {
@@ -55,7 +55,7 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
         wallet: wallet,
         initialFilter: this.filter,
       ),
-    ) as TransactionsFilter;
+    ) as TransactionsFilter?;
     if (filter != null) {
       setState(() => this.filter = filter);
     }
@@ -88,9 +88,9 @@ class _TransactionsContentPage extends StatefulWidget {
   final TransactionsFilter filter;
 
   _TransactionsContentPage({
-    Key key,
-    this.wallet,
-    this.filter,
+    Key? key,
+    required this.wallet,
+    required this.filter,
   }) : super(key: key);
 
   @override
@@ -100,8 +100,8 @@ class _TransactionsContentPage extends StatefulWidget {
 
 class _TransactionsContentPageState extends State<_TransactionsContentPage> {
   final itemsPerPage = 20;
-  bool isMorePages;
-  List<Stream<List<Transaction>>> transactionsPages;
+  late bool isMorePages;
+  late List<Stream<List<Transaction>>> transactionsPages;
 
   @override
   void initState() {
@@ -115,7 +115,7 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
     });
   }
 
-  Stream<List<Transaction>> getNextTransactions({Transaction after}) =>
+  Stream<List<Transaction>> getNextTransactions({Transaction? after}) =>
       DataSource.instance.getTransactions(
         wallet: widget.wallet.reference,
         afterTransaction: after,
@@ -164,27 +164,28 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
           if (transaction.type != filter.transactionType) return false;
         }
         if (filter.amountType == TransactionsFilterAmountType.isEqual) {
-          if (!transaction.amount.isEqual(filter.amount,
-              accuracy: filter.amountAccuracy)) return false;
+          if (!transaction.amount.isEqual(filter.amount!,
+              accuracy: filter.amountAccuracy!)) return false;
         }
         if (filter.amountType == TransactionsFilterAmountType.isNotEqual) {
-          if (transaction.amount.isEqual(filter.amount,
-              accuracy: filter.amountAccuracy)) return false;
+          if (transaction.amount.isEqual(filter.amount!,
+              accuracy: filter.amountAccuracy!)) return false;
         }
         if (filter.amountType == TransactionsFilterAmountType.isLessOrEqual) {
-          if (transaction.amount > filter.amount) return false;
+          if (transaction.amount > filter.amount!) return false;
         }
         if (filter.amountType ==
             TransactionsFilterAmountType.isGreaterOrEqual) {
-          if (transaction.amount < filter.amount) return false;
+          if (transaction.amount < filter.amount!) return false;
         }
 
         if (filter.categories != null) {
           assert(filter.includeWithoutCategory != null);
 
-          if (!filter.categories.any((c) => c.id == transaction.category?.id)) {
+          if (!filter.categories!
+              .any((c) => c.id == transaction.category?.id)) {
             if (transaction.category == null)
-              return filter.includeWithoutCategory;
+              return filter.includeWithoutCategory!;
             return false;
           }
         }
@@ -212,8 +213,10 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
   }
 
   Widget buildTransactionsList(
-      BuildContext context, List<Transaction> transactions,
-      {Transaction lastTransaction}) {
+    BuildContext context,
+    List<Transaction> transactions, {
+    required Transaction lastTransaction,
+  }) {
     final transactionsByDate = groupBy(
       transactions,
       (Transaction transaction) => getDateWithoutTime(transaction.date),
@@ -223,7 +226,7 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
 
     List<_ListItem> listItems = [];
     listItems.add(FiltersListItem(widget.filter));
-    int lastMonth;
+    int lastMonth = -1;
     for (final date in dates) {
       if (date.month != lastMonth) {
         listItems.add(MonthListItem(
@@ -233,7 +236,7 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
 
       listItems.add(SectionHeaderListItem(date));
       listItems.addAll([
-        ...transactionsByDate[date].map(
+        ...transactionsByDate[date]!.map(
           (transaction) => TransactionListItem(widget.wallet, transaction),
         )
       ]);
@@ -273,9 +276,9 @@ class FiltersListItem extends _ListItem {
           if (filter.transactionType != null) buildTypeFilterChip(context),
           if (filter.amountType != null) buildAmountFilterChip(context),
           if (filter.categories != null)
-            ...filter.categories
+            ...filter.categories!
                 .map((c) => buildCategoryFilterChip(context, c)),
-          if (filter.categories != null && filter.includeWithoutCategory)
+          if (filter.categories != null && filter.includeWithoutCategory!)
             buildWithoutCategoryFilterChip(context),
         ],
       ),
@@ -338,12 +341,12 @@ class FiltersListItem extends _ListItem {
   }
 
   String formatAmountFilter(TransactionsFilter filter) {
-    String text = filter.amountType.toSymbol();
-    text += " " + filter.amount.toStringAsFixed(2);
+    String text = filter.amountType!.toSymbol();
+    text += " " + filter.amount!.toStringAsFixed(2);
     if (filter.amountType == TransactionsFilterAmountType.isEqual ||
         filter.amountType == TransactionsFilterAmountType.isNotEqual) {
       if (filter.amountAccuracy != null && filter.amountAccuracy != 0.0) {
-        text += " ±" + filter.amountAccuracy.toStringAsFixed(2);
+        text += " ±" + filter.amountAccuracy!.toStringAsFixed(2);
       }
     }
     return text;
@@ -388,7 +391,7 @@ class FiltersListItem extends _ListItem {
 class MonthListItem extends _ListItem {
   int month;
 
-  MonthListItem({this.month});
+  MonthListItem({required this.month});
 
   @override
   Widget build(BuildContext context) {
@@ -458,7 +461,7 @@ class TransactionListItem extends _ListItem {
 class ShowMoreListItem extends _ListItem {
   final VoidCallback onSelected;
 
-  ShowMoreListItem({this.onSelected});
+  ShowMoreListItem({required this.onSelected});
 
   @override
   Widget build(BuildContext context) => FlatButton(
