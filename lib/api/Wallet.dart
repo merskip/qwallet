@@ -6,6 +6,7 @@ import 'package:qwallet/utils.dart';
 
 import '../Currency.dart';
 import '../Money.dart';
+import '../utils/IterableFinding.dart';
 import 'Converting.dart';
 import 'Model.dart';
 
@@ -23,21 +24,18 @@ class Wallet extends Model<Wallet> {
       Money(totalIncome.amount - totalExpense.amount, currency);
 
   Wallet(DocumentSnapshot snapshot, List<Category> categories)
-      : this.name = snapshot.getString("name"),
-        this.ownersUid = snapshot.getList<String>("ownersUid"),
-        this.currency = snapshot.getCurrency("currency"),
-        this.totalExpense = snapshot.getMoney("totalExpense", "currency"),
-        this.totalIncome = snapshot.getMoney("totalIncome", "currency"),
+      : this.name = snapshot.getString("name")!,
+        this.ownersUid = snapshot.getList<String>("ownersUid")!,
+        this.currency = snapshot.getCurrency("currency")!,
+        this.totalExpense = snapshot.getMoney("totalExpense", "currency")!,
+        this.totalIncome = snapshot.getMoney("totalIncome", "currency")!,
         this.dateRange = snapshot.getWalletTimeRange("dateRange"),
         this.categories = categories,
         super(snapshot);
 
-  Category getCategory(Reference<Category> category) {
+  Category? getCategory(Reference<Category>? category) {
     if (category == null) return null;
-    return categories.firstWhere(
-      (c) => c.id == category.id,
-      orElse: () => null,
-    );
+    return categories.findFirstOrNull((c) => c.id == category.id);
   }
 }
 
@@ -48,13 +46,13 @@ class WalletDateRange {
   final int numberOfLastDays;
 
   WalletDateRange({
-    this.type,
+    required this.type,
     this.monthStartDay = 1,
     this.weekdayStart = 1,
     this.numberOfLastDays = 30,
   });
 
-  DateTimeRange getDateTimeRange({DateTime now, int index = 0}) {
+  DateTimeRange getDateTimeRange({DateTime? now, int index = 0}) {
     return WalletDateRangeCalculator(this).getDateTimeRangeFor(
       now: now ?? DateTime.now(),
       index: index,
@@ -77,8 +75,6 @@ extension WalletDateRangeTypeConverting on WalletDateRangeType {
         return "currentWeek";
       case WalletDateRangeType.lastDays:
         return "lastDays";
-      default:
-        return null;
     }
   }
 }

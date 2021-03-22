@@ -17,11 +17,11 @@ class Category extends Model<Category> implements Comparable<Category> {
       );
 
   Category(DocumentSnapshot snapshot)
-      : title = snapshot.getString("title"),
-        icon = snapshot.getIconData("icon"),
-        primaryColor = snapshot.getColorHex("primaryColor"),
-        backgroundColor = snapshot.getColorHex("backgroundColor"),
-        order = snapshot.getInt("order"),
+      : title = snapshot.getString("title")!,
+        icon = snapshot.getIconData("icon")!,
+        primaryColor = snapshot.getColorHex("primaryColor")!,
+        backgroundColor = snapshot.getColorHex("backgroundColor")!,
+        order = snapshot.getInt("order") ?? 0,
         super(snapshot);
 
   @override
