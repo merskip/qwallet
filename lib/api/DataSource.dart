@@ -432,7 +432,7 @@ extension PrivateLoansDataSource on DataSource {
     required double amount,
     required double repaidAmount,
     required Currency currency,
-    required String? title,
+    required String title,
     required DateTime date,
   }) {
     return firestore.collection("privateLoans").add({
@@ -458,7 +458,7 @@ extension PrivateLoansDataSource on DataSource {
     required double amount,
     required double repaidAmount,
     required Currency currency,
-    required String? title,
+    required String title,
     required DateTime date,
   }) {
     return loanRef.documentReference.update({

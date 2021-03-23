@@ -27,7 +27,7 @@ class LoanForm extends StatefulWidget {
     String? borrowerName,
     Money amount,
     Money repaidAmount,
-    String? title,
+    String title,
     DateTime date,
   ) onSubmit;
 
@@ -59,7 +59,7 @@ class LoanFormState extends State<LoanForm> {
 
   final amountTextController = TextEditingController();
   final amountFocus = FocusNode();
-  Money? amount;
+  late Money amount;
 
   final repaidAmountTextController = TextEditingController();
   final repaidAmountFocus = FocusNode();
@@ -155,7 +155,7 @@ class LoanFormState extends State<LoanForm> {
             isCurrencySelectable: isCurrencySelectable,
           ),
         ) as Money?;
-        if (money != null) {
+        if (money != null && money.amount != null) {
           controller.text = money.formattedOnlyAmount;
           onEnter(money);
         }
@@ -203,9 +203,9 @@ class LoanFormState extends State<LoanForm> {
         borrowerUser == null
             ? borrowerTextController.text.trim().nullIfEmpty()
             : null,
-        amount!,
+        amount,
         repaidAmount,
-        titleTextController.text.trim().nullIfEmpty(),
+        titleTextController.text.trim(),
         date!,
       );
     }
@@ -362,14 +362,12 @@ class LoanFormState extends State<LoanForm> {
       focusNode: amountFocus,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).privateLoanAmount,
-        suffix: Text(amount?.currency.symbols.first ?? ""),
+        suffix: Text(amount.currency.symbols.first),
       ),
       textAlign: TextAlign.end,
       readOnly: true,
       validator: (value) {
-        if (this.amount == null)
-          return AppLocalizations.of(context).privateLoanValidationFieldIsEmpty;
-        if (this.amount!.amount! <= 0)
+        if (this.amount.amount! <= 0)
           return AppLocalizations.of(context)
               .privateLoanValidationAmountIsNegativeOrZero;
         return null;
@@ -391,7 +389,7 @@ class LoanFormState extends State<LoanForm> {
         if (this.repaidAmount.amount! < 0)
           return AppLocalizations.of(context)
               .privateLoanValidationAmountIsNegativeOrZero;
-        if (this.repaidAmount.amount! > this.amount!.amount!)
+        if (this.repaidAmount.amount! > this.amount.amount!)
           return AppLocalizations.of(context)
               .privateLoanValidationRepaidAmountGreaterThenAmount;
         return null;
@@ -402,7 +400,7 @@ class LoanFormState extends State<LoanForm> {
   Widget buildRemainingAmount(BuildContext context) {
     return ListTile(
       title: Text(AppLocalizations.of(context).privateLoanRemainingAmount),
-      trailing: Text((amount! - repaidAmount.amount).formatted),
+      trailing: Text((amount - repaidAmount.amount).formatted),
       dense: true,
     );
   }

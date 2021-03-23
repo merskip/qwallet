@@ -70,9 +70,9 @@ class _LoansPageState extends State<LoansPage> {
       } else {
         groups.add(LoansGroup(
           otherPersonName:
-              loan.currentUserIsLender ? loan.borrowerName! : loan.lenderName!,
+              loan.currentUserIsLender ? loan.borrowerName : loan.lenderName,
           otherPersonUser:
-              loan.currentUserIsLender ? loan.borrowerUser! : loan.lenderUser!,
+              loan.currentUserIsLender ? loan.borrowerUser : loan.lenderUser,
           loans: [loan],
         ));
       }

@@ -15,7 +15,7 @@ class AddLoanPage extends StatelessWidget {
     String? borrowerName,
     Money amount,
     Money repaidAmount,
-    String? title,
+    String title,
     DateTime date,
   ) {
     DataSource.instance.addPrivateLoan(

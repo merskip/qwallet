@@ -140,11 +140,13 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       insetPadding: EdgeInsets.all(8),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        buildAmountPreview(context),
-        buildKeyboard(context),
-        buildButtons(context)
-      ]),
+      child: SingleChildScrollView(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          buildAmountPreview(context),
+          buildKeyboard(context),
+          buildButtons(context)
+        ]),
+      ),
     );
   }
 

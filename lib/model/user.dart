@@ -29,9 +29,9 @@ class User {
     return User(
       uid: json['uid'] as String,
       isAnonymous: json['isAnonymous'] as bool,
-      displayName: json['displayName'] as String,
-      email: json['email'] as String,
-      avatarUrl: json['avatarUrl'] as String,
+      displayName: json['displayName'] as String?,
+      email: json['email'] as String?,
+      avatarUrl: json['avatarUrl'] as String?,
       firebaseUser: null,
     );
   }

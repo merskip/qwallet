@@ -23,9 +23,11 @@ class SimpleStreamWidget<T> extends StatelessWidget {
     return StreamBuilder(
       stream: stream,
       builder: (context, AsyncSnapshot<T> snapshot) {
-        _debugSnapshot(snapshot);
+        final debugDescription = _getDebugDescription(snapshot);
+        print(debugDescription);
+
         if (snapshot.hasError)
-          return _error(context, snapshot.error!);
+          return _error(context, snapshot.error!, debugDescription);
         else if (snapshot.hasData) {
           final data = snapshot.data;
           if (data is Model && !data.documentSnapshot.exists)
@@ -37,7 +39,18 @@ class SimpleStreamWidget<T> extends StatelessWidget {
     );
   }
 
-  _debugSnapshot(AsyncSnapshot<T> snapshot) {
+  Widget _error(BuildContext context, Object error, String debugDescription) {
+    if (error is Error) {
+      FirebaseCrashlytics.instance
+          .recordError(error, error.stackTrace, reason: debugDescription);
+      return buildError(context, error.toString(), error.stackTrace);
+    } else {
+      FirebaseCrashlytics.instance.recordError(error, null);
+      return buildError(context, error.toString(), null);
+    }
+  }
+
+  String _getDebugDescription(AsyncSnapshot<T> snapshot) {
     String id = stream.hashCode.toRadixString(16).padLeft(8, '0');
 
     String typeName = "$T";
@@ -55,21 +68,11 @@ class SimpleStreamWidget<T> extends StatelessWidget {
     final state =
         snapshot.connectionState.toString().replaceFirst("ConnectionState", "");
 
-    print("Stream-$id "
-        "type=$typeName "
+    return "\x1B[33mStream-$id\x1B[0m "
+        "type=\x1B[34m$typeName\x1B[0m "
         "state=($stateIcon $state) "
         "hasData=${snapshot.hasData} "
-        "hasError=${snapshot.hasError}");
-  }
-
-  Widget _error(BuildContext context, Object error) {
-    if (error is Error) {
-      FirebaseCrashlytics.instance.recordError(error, error.stackTrace);
-      return buildError(context, error.toString(), error.stackTrace);
-    } else {
-      FirebaseCrashlytics.instance.recordError(error, null);
-      return buildError(context, error.toString(), null);
-    }
+        "hasError=${snapshot.hasError}";
   }
 
   Widget buildError(
@@ -89,6 +92,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
               style: TextStyle(
                 fontFamily: "monospace",
                 color: Colors.red.shade500,
+                fontWeight: FontWeight.w600,
                 fontSize: 12,
               ),
             ),
@@ -100,7 +104,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: "monospace",
                     color: Colors.red.shade300,
-                    fontSize: 8,
+                    fontSize: 11,
                   ),
                 ),
               ),
