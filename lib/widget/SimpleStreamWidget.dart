@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Model.dart';
 
@@ -24,7 +25,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
       builder: (context, AsyncSnapshot<T> snapshot) {
         _debugSnapshot(snapshot);
         if (snapshot.hasError)
-          return _error(context, snapshot);
+          return _error(context, snapshot.error!);
         else if (snapshot.hasData) {
           final data = snapshot.data;
           if (data is Model && !data.documentSnapshot.exists)
@@ -63,14 +64,19 @@ class SimpleStreamWidget<T> extends StatelessWidget {
 
   Widget _error(BuildContext context, Object error) {
     if (error is Error) {
+      FirebaseCrashlytics.instance.recordError(error, error.stackTrace);
       return buildError(context, error.toString(), error.stackTrace);
     } else {
+      FirebaseCrashlytics.instance.recordError(error, null);
       return buildError(context, error.toString(), null);
     }
   }
 
   Widget buildError(
-      BuildContext context, String description, StackTrace? stackTrace) {
+    BuildContext context,
+    String description,
+    StackTrace? stackTrace,
+  ) {
     final content = SafeArea(
       child: SingleChildScrollView(
         child: Padding(
