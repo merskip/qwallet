@@ -23,9 +23,9 @@ import 'page/AddWalletPage.dart';
 import 'page/CategoriesPage.dart';
 import 'page/EditCategoryPage.dart';
 import 'page/EditWalletDateRangePage.dart';
+import 'page/LandingPage.dart';
 import 'page/ReportsPage.dart';
 import 'page/SettingsPage.dart';
-import 'page/landing_page.dart';
 
 final router = new FluroRouter();
 

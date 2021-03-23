@@ -48,8 +48,8 @@ class PushNotification {
   final String id;
   final String title;
   final String text;
-  final Uint8List smallIcon;
-  final Uint8List largeIcon;
+  final Uint8List? smallIcon;
+  final Uint8List? largeIcon;
 
   PushNotification(
     this.id,

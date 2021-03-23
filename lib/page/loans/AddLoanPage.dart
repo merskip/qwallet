@@ -9,13 +9,13 @@ import 'LoanForm.dart';
 class AddLoanPage extends StatelessWidget {
   void onSubmit(
     BuildContext context,
-    User lenderUser,
-    String lenderName,
-    User borrowerUser,
-    String borrowerName,
+    User? lenderUser,
+    String? lenderName,
+    User? borrowerUser,
+    String? borrowerName,
     Money amount,
     Money repaidAmount,
-    String title,
+    String? title,
     DateTime date,
   ) {
     DataSource.instance.addPrivateLoan(
@@ -23,8 +23,8 @@ class AddLoanPage extends StatelessWidget {
       lenderName: lenderUser == null ? lenderName : null,
       borrowerUid: borrowerUser?.uid,
       borrowerName: borrowerUser == null ? borrowerName : null,
-      amount: amount.amount,
-      repaidAmount: repaidAmount.amount,
+      amount: amount.amount!,
+      repaidAmount: repaidAmount.amount!,
       currency: amount.currency,
       title: title,
       date: date,

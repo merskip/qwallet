@@ -35,9 +35,9 @@ class RepayingMatcher {
     MutatingPrivateLoan repayingLoan,
     List<MutatingPrivateLoan> loansToRepaid,
   ) {
-    double remainingAmount = repayingLoan.remainingAmount.amount;
+    double remainingAmount = repayingLoan.remainingAmount.amount!;
     for (final loan in loansToRepaid) {
-      final repayingAmount = min(remainingAmount, loan.remainingAmount.amount);
+      final repayingAmount = min(remainingAmount, loan.remainingAmount.amount!);
       if (repayingAmount > 0.0) {
         remainingAmount -= repayingAmount;
         loan.repaidAmount += repayingAmount;

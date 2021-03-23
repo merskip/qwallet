@@ -5,7 +5,7 @@ import 'package:qwallet/api/Wallet.dart';
 
 import '../Money.dart';
 import '../router.dart';
-import 'CatgegoryIcon.dart';
+import 'CategoryIcon.dart';
 
 class TransactionListTile extends StatelessWidget {
   final Wallet wallet;

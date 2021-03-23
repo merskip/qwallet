@@ -7,8 +7,8 @@ import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
-import 'package:qwallet/widget/empty_state_widget.dart';
 
 import '../../AppLocalizations.dart';
 
@@ -18,8 +18,8 @@ class TransactionsCard extends StatefulWidget {
 
   const TransactionsCard({
     Key? key,
-    this.wallet,
-    this.transactions,
+    required this.wallet,
+    required this.transactions,
   }) : super(key: key);
 
   @override
@@ -27,8 +27,8 @@ class TransactionsCard extends StatefulWidget {
 }
 
 class _TransactionsCardState extends State<TransactionsCard> {
-  Map<DateTime, List<Transaction>> transactionsByDate;
-  List<DateTime> dates;
+  late Map<DateTime, List<Transaction>> transactionsByDate;
+  late List<DateTime> dates;
 
   bool isCollapsable = true;
   bool isCollapsed = true;
@@ -109,11 +109,11 @@ class _TransactionsCardState extends State<TransactionsCard> {
       isCollapsed ? min(2, dates.length) : null,
     );
 
-    final result = List<Widget>();
+    final result = <Widget>[];
     for (final date in effectiveDates) {
       result.add(buildSectionHeader(context, date));
 
-      final transactions = transactionsByDate[date];
+      final transactions = transactionsByDate[date]!;
       result.addAll(
         transactions.map((transaction) =>
             TransactionListTile(wallet: wallet, transaction: transaction)),

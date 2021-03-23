@@ -7,7 +7,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/widget/CatgegoryIcon.dart';
+import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../AppLocalizations.dart';
@@ -17,7 +17,7 @@ import '../utils.dart';
 class ReportsPage extends StatefulWidget {
   final Reference<Wallet> walletRef;
 
-  const ReportsPage({Key? key, this.walletRef}) : super(key: key);
+  const ReportsPage({Key? key, required this.walletRef}) : super(key: key);
 
   @override
   _ReportsPageState createState() => _ReportsPageState();
@@ -28,7 +28,8 @@ class _ReportsPageState extends State<ReportsPage> {
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getLatestTransactions(widget.walletRef),
-      builder: (context, latestTransactions) => buildTabController(
+      builder: (context, LatestTransactions latestTransactions) =>
+          buildTabController(
         context,
         latestTransactions.wallet,
         latestTransactions.transactions,
@@ -76,8 +77,8 @@ class _ReportByCategoriesPage extends StatelessWidget {
 
   const _ReportByCategoriesPage({
     Key? key,
-    this.wallet,
-    this.transactions,
+    required this.wallet,
+    required this.transactions,
   }) : super(key: key);
 
   @override
@@ -145,7 +146,7 @@ class _ReportByCategoriesPage extends StatelessWidget {
     );
   }
 
-  Widget buildContentCell(BuildContext context, {Widget child}) {
+  Widget buildContentCell(BuildContext context, {required Widget child}) {
     return TableCell(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -155,14 +156,16 @@ class _ReportByCategoriesPage extends StatelessWidget {
   }
 
   List<_ByCategoryItem> getByCategoryItems() {
-    final items = List<_ByCategoryItem>();
+    final items = <_ByCategoryItem>[];
     groupBy(transactions, (Transaction t) => t.category)
         .forEach((categoryRef, transactions) {
       final category = wallet.getCategory(categoryRef);
+
       final totalAmount = transactions
           .where((t) => t.type == TransactionType.expense)
-          .fold(0.0, (v, t) => v + t.amount) as double;
-      final percentage = totalAmount / wallet.totalExpense.amount * 100.0;
+          .fold<double>(0, (v, t) => v + t.amount);
+      final percentage = totalAmount / wallet.totalExpense.amount! * 100.0;
+
       items.add(_ByCategoryItem(
         category,
         Money(totalAmount, wallet.currency),
@@ -171,13 +174,13 @@ class _ReportByCategoriesPage extends StatelessWidget {
     });
     items
       ..sort((lhs, rhs) =>
-          rhs.totalAmount.amount.compareTo(lhs.totalAmount.amount));
-    return items.where((c) => c.totalAmount.amount > 0).toList();
+          rhs.totalAmount.amount!.compareTo(lhs.totalAmount.amount!));
+    return items.where((c) => c.totalAmount.amount! > 0).toList();
   }
 }
 
 class _ByCategoryItem {
-  final Category category;
+  final Category? category;
   final Money totalAmount;
   final double percentage;
 
@@ -190,8 +193,8 @@ class _ReportByDatePage extends StatelessWidget {
 
   const _ReportByDatePage({
     Key? key,
-    this.wallet,
-    this.transactions,
+    required this.wallet,
+    required this.transactions,
   }) : super(key: key);
 
   @override
@@ -222,7 +225,7 @@ class _ReportByDatePage extends StatelessWidget {
                     x: item.date.day,
                     barRods: [
                       BarChartRodData(
-                          y: (item.totalAmount.amount * 10).roundToDouble() /
+                          y: (item.totalAmount.amount! * 10).roundToDouble() /
                               10),
                     ],
                   ),
@@ -307,7 +310,7 @@ class _ReportByDatePage extends StatelessWidget {
     );
   }
 
-  Widget buildContentCell(BuildContext context, {Widget child}) {
+  Widget buildContentCell(BuildContext context, {required Widget child}) {
     return TableCell(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -324,16 +327,16 @@ class _ReportByDatePage extends StatelessWidget {
     }).forEach((t) {
       final date = getDateWithoutTime(t.date);
       groupedTransactions.putIfAbsent(date, () => []);
-      groupedTransactions[date].add(t);
+      groupedTransactions[date]!.add(t);
     });
 
-    final items = List<_ByDateItem>();
+    final items = <_ByDateItem>[];
 
     groupedTransactions.forEach((date, transactions) {
       final totalAmount = transactions
           .where((t) => t.type == TransactionType.expense)
-          .fold(0.0, (v, t) => v + t.amount) as double;
-      final percentage = totalAmount / wallet.totalExpense.amount * 100.0;
+          .fold<double>(0, (v, t) => v + t.amount);
+      final percentage = totalAmount / wallet.totalExpense.amount! * 100.0;
       items.add(_ByDateItem(
         date,
         Money(totalAmount, wallet.currency),

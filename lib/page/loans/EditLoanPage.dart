@@ -13,18 +13,18 @@ class EditLoanPage extends StatelessWidget {
 
   const EditLoanPage({
     Key? key,
-    this.loan,
+    required this.loan,
   }) : super(key: key);
 
   void onSelectedSubmit(
     BuildContext context,
-    User lenderUser,
-    String lenderName,
-    User borrowerUser,
-    String borrowerName,
+    User? lenderUser,
+    String? lenderName,
+    User? borrowerUser,
+    String? borrowerName,
     Money amount,
     Money repaidAmount,
-    String title,
+    String? title,
     DateTime date,
   ) {
     DataSource.instance.updatePrivateLoan(
@@ -33,8 +33,8 @@ class EditLoanPage extends StatelessWidget {
       lenderName: lenderUser == null ? lenderName : null,
       borrowerUid: borrowerUser?.uid,
       borrowerName: borrowerUser == null ? borrowerName : null,
-      amount: amount.amount,
-      repaidAmount: repaidAmount.amount,
+      amount: amount.amount!,
+      repaidAmount: repaidAmount.amount!,
       currency: amount.currency,
       title: title,
       date: date,
@@ -43,9 +43,10 @@ class EditLoanPage extends StatelessWidget {
   }
 
   void onSelectedToggleArchive(BuildContext context) {
-    DataSource.instance.updatePrivateLoan(
+    DataSource.instance.updatePrivateLoanRepaidAmount(
       loanRef: loan.reference,
-      repaidAmount: loan.isFullyRepaid ? 0.0 : loan.amount.amount,
+      amount: loan.amount.amount!,
+      repaidAmount: loan.isFullyRepaid ? 0.0 : loan.amount.amount!,
     );
     Navigator.of(context).pop();
   }

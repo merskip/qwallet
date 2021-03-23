@@ -18,13 +18,13 @@ import '../Currency.dart';
 class WalletPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
 
-  const WalletPage({Key? key, this.walletRef}) : super(key: key);
+  const WalletPage({Key? key, required this.walletRef}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getWallet(walletRef),
-      builder: (context, wallet) => _WalletPageContent(wallet: wallet),
+      builder: (context, Wallet wallet) => _WalletPageContent(wallet: wallet),
     );
   }
 }
@@ -32,7 +32,7 @@ class WalletPage extends StatelessWidget {
 class _WalletPageContent extends StatefulWidget {
   final Wallet wallet;
 
-  _WalletPageContent({Key? key, this.wallet}) : super(key: key);
+  _WalletPageContent({Key? key, required this.wallet}) : super(key: key);
 
   @override
   _WalletPageContentState createState() => _WalletPageContentState();
@@ -254,8 +254,6 @@ class _WalletPageContentState extends State<_WalletPageContent> {
         return AppLocalizations.of(context).walletDateRangeCurrentWeek;
       case WalletDateRangeType.lastDays:
         return AppLocalizations.of(context).walletDateRangeLastDays;
-      default:
-        return null;
     }
   }
 

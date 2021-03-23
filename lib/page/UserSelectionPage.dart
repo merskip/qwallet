@@ -8,8 +8,8 @@ class UserSelectionPage extends StatefulWidget {
 
   const UserSelectionPage({
     Key? key,
-    @required this.title,
-    @required this.selectedUsers,
+    required this.title,
+    required this.selectedUsers,
   }) : super(key: key);
 
   @override
@@ -17,7 +17,7 @@ class UserSelectionPage extends StatefulWidget {
 }
 
 class _UserSelectionPageState extends State<UserSelectionPage> {
-  List<User> selectedUsers;
+  late List<User> selectedUsers;
 
   @override
   void initState() {
@@ -49,7 +49,7 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
         future: DataSource.instance.getUsers(),
         builder: (context, AsyncSnapshot<List<User>> snapshot) {
           return snapshot.hasData
-              ? buildUsersList(context, snapshot.data)
+              ? buildUsersList(context, snapshot.data!)
               : Center(child: CircularProgressIndicator());
         },
       ),
@@ -68,7 +68,7 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
     return ListTile(
       leading: buildAvatar(context, user),
       title: Text(user.getCommonName(context)),
-      subtitle: Text(user.getSubtitle()),
+      subtitle: Text(user.getSubtitle() ?? ""),
       onTap: () => toggleSelectUser(user),
     );
   }
@@ -82,7 +82,7 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
       );
     } else {
       final avatarImage =
-          user.avatarUrl != null ? NetworkImage(user.avatarUrl) : null;
+          user.avatarUrl != null ? NetworkImage(user.avatarUrl!) : null;
       final avatarPlaceholderIcon = user.displayName != null
           ? Icon(Icons.person)
           : Icon(Icons.alternate_email);

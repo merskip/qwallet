@@ -12,8 +12,11 @@ class DailyReportSection extends StatelessWidget {
   final Wallet wallet;
   final List<Transaction> transactions;
 
-  DailyReportSection({Key? key, this.wallet, this.transactions})
-      : super(key: key);
+  DailyReportSection({
+    Key? key,
+    required this.wallet,
+    required this.transactions,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -95,8 +98,8 @@ class DailyReportSection extends StatelessWidget {
     final currentDay = DateTime.now().day;
 
     return DailySpendingComputing().compute(
-      totalIncome: wallet.totalIncome.amount,
-      totalExpenses: wallet.totalExpense.amount,
+      totalIncome: wallet.totalIncome.amount!,
+      totalExpenses: wallet.totalExpense.amount!,
       excludedExpenses: _getTotalExpensesExcludedFromDailyBalance(),
       totalDays: totalDays,
       currentDay: currentDay,

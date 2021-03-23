@@ -8,7 +8,7 @@ import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
-import 'package:qwallet/widget/CatgegoryIcon.dart';
+import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';

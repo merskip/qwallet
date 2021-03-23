@@ -4,12 +4,12 @@ import 'package:qwallet/model/user.dart';
 
 class UserChoicePage extends StatefulWidget {
   final String title;
-  final User selectedUser;
+  final User? selectedUser;
 
   const UserChoicePage({
     Key? key,
-    @required this.title,
-    @required this.selectedUser,
+    required this.title,
+    required this.selectedUser,
   }) : super(key: key);
 
   @override
@@ -31,7 +31,7 @@ class _UserChoicePageState extends State<UserChoicePage> {
         future: DataSource.instance.getUsers(),
         builder: (context, AsyncSnapshot<List<User>> snapshot) {
           return snapshot.hasData
-              ? buildUsersList(context, snapshot.data)
+              ? buildUsersList(context, snapshot.data!)
               : Center(child: CircularProgressIndicator());
         },
       ),
@@ -50,7 +50,7 @@ class _UserChoicePageState extends State<UserChoicePage> {
     return ListTile(
       leading: buildAvatar(context, user),
       title: Text(user.getCommonName(context)),
-      subtitle: Text(user.getSubtitle()),
+      subtitle: Text(user.getSubtitle() ?? ""),
       onTap: () => onSelectedUser(context, user),
     );
   }
@@ -64,7 +64,7 @@ class _UserChoicePageState extends State<UserChoicePage> {
       );
     } else {
       final avatarImage =
-          user.avatarUrl != null ? NetworkImage(user.avatarUrl) : null;
+          user.avatarUrl != null ? NetworkImage(user.avatarUrl!) : null;
       final avatarPlaceholderIcon = user.displayName != null
           ? Icon(Icons.person)
           : Icon(Icons.alternate_email);

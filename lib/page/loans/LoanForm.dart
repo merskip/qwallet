@@ -12,29 +12,30 @@ import 'package:qwallet/widget/UserAvatar.dart';
 
 import '../../Money.dart';
 import '../../utils.dart';
+import '../../utils/IterableFinding.dart';
 import '../UserChoicePage.dart';
 
 class LoanForm extends StatefulWidget {
-  final PrivateLoan initialLoan;
+  final PrivateLoan? initialLoan;
 
   final String submitText;
   final Function(
     BuildContext context,
-    User lenderUser,
-    String lenderName,
-    User borrowerUser,
-    String borrowerName,
+    User? lenderUser,
+    String? lenderName,
+    User? borrowerUser,
+    String? borrowerName,
     Money amount,
     Money repaidAmount,
-    String title,
+    String? title,
     DateTime date,
   ) onSubmit;
 
   const LoanForm({
     Key? key,
     this.initialLoan,
-    @required this.submitText,
-    this.onSubmit,
+    required this.submitText,
+    required this.onSubmit,
   }) : super(key: key);
 
   @override
@@ -44,29 +45,29 @@ class LoanForm extends StatefulWidget {
 class LoanFormState extends State<LoanForm> {
   final _formKey = GlobalKey<FormState>();
 
-  List<User> users;
+  List<User>? users;
 
   final borrowerTextController = TextEditingController();
   final borrowerFocus = FocusNode();
-  User borrowerUser;
+  User? borrowerUser;
 
   final lenderTextController = TextEditingController();
   final lenderFocus = FocusNode();
-  User lenderUser;
+  User? lenderUser;
 
-  String personsValidationMessage;
+  String? personsValidationMessage;
 
   final amountTextController = TextEditingController();
   final amountFocus = FocusNode();
-  Money amount;
+  Money? amount;
 
   final repaidAmountTextController = TextEditingController();
   final repaidAmountFocus = FocusNode();
-  Money repaidAmount;
+  late Money repaidAmount;
 
   final titleTextController = TextEditingController();
 
-  DateTime date;
+  late DateTime date;
 
   @override
   void initState() {
@@ -105,7 +106,7 @@ class LoanFormState extends State<LoanForm> {
     );
 
     if (widget.initialLoan != null) {
-      final loan = widget.initialLoan;
+      final loan = widget.initialLoan!;
 
       amountTextController.text = loan.amount.formattedOnlyAmount;
       amount = loan.amount;
@@ -136,11 +137,11 @@ class LoanFormState extends State<LoanForm> {
   }
 
   void initAmountField({
-    FocusNode focusNode,
-    TextEditingController controller,
-    bool isCurrencySelectable,
-    Money getValue(),
-    void onEnter(Money money),
+    required FocusNode focusNode,
+    required TextEditingController controller,
+    required bool isCurrencySelectable,
+    required Money? getValue(),
+    required void onEnter(Money money),
   }) {
     focusNode.addListener(() async {
       if (focusNode.hasFocus) {
@@ -149,11 +150,11 @@ class LoanFormState extends State<LoanForm> {
         final money = await showDialog(
           context: context,
           builder: (context) => EnterMoneyDialog(
-            initialMoney: initialMoney,
-            currency: initialMoney.currency,
+            initialMoney: initialMoney!,
+            currency: initialMoney!.currency,
             isCurrencySelectable: isCurrencySelectable,
           ),
-        ) as Money;
+        ) as Money?;
         if (money != null) {
           controller.text = money.formattedOnlyAmount;
           onEnter(money);
@@ -165,7 +166,7 @@ class LoanFormState extends State<LoanForm> {
   void _formatUserCommonName(
     TextEditingController controller,
     FocusNode focusNode,
-    User getUser(),
+    User? getUser(),
   ) {
     focusNode.addListener(() {
       final user = getUser();
@@ -191,7 +192,7 @@ class LoanFormState extends State<LoanForm> {
 
   void onSelectedSubmit(BuildContext context) async {
     setState(() => personsValidationMessage = null);
-    if (_formKey.currentState.validate() && _validPersons()) {
+    if (_formKey.currentState!.validate() && _validPersons()) {
       widget.onSubmit(
         context,
         lenderUser,
@@ -202,7 +203,7 @@ class LoanFormState extends State<LoanForm> {
         borrowerUser == null
             ? borrowerTextController.text.trim().nullIfEmpty()
             : null,
-        amount,
+        amount!,
         repaidAmount,
         titleTextController.text.trim().nullIfEmpty(),
         date,
@@ -283,16 +284,16 @@ class LoanFormState extends State<LoanForm> {
   }
 
   Widget buildUserTextField({
-    BuildContext context,
-    TextEditingController controller,
-    FocusNode focusNode,
-    String title,
-    String selectTitle,
-    User user,
-    void onSelectedUser(User user),
+    required BuildContext context,
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    required String title,
+    required String selectTitle,
+    required User? user,
+    required void onSelectedUser(User? user),
   }) {
     final onSelectedSelectUser = () async {
-      final selectedUser = await pushPage<User>(
+      final selectedUser = await pushPage<User?>(
         context,
         builder: (context) => UserChoicePage(
           title: selectTitle,
@@ -328,29 +329,28 @@ class LoanFormState extends State<LoanForm> {
         if (user != matchedUser) onSelectedUser(matchedUser);
       },
       validator: (value) {
-        if (value.trim().isEmpty)
+        if (value!.trim().isEmpty)
           return AppLocalizations.of(context).privateLoanValidationFieldIsEmpty;
         return null;
       },
     );
   }
 
-  User getMatchedUser(String text) => users?.firstWhere(
+  User? getMatchedUser(String text) => users?.findFirstOrNull(
         (user) =>
             _equalsIgnoreCase(text, user.getCommonName(context)) ||
             _equalsIgnoreCase(text, user.displayName) ||
             _equalsIgnoreCase(text, user.email),
-        orElse: () => null,
       );
 
-  bool _equalsIgnoreCase(String lhs, String rhs) =>
+  bool _equalsIgnoreCase(String? lhs, String? rhs) =>
       lhs?.toLowerCase() == rhs?.toLowerCase();
 
   Widget buildValidationMessage(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 16.0),
       child: Text(
-        personsValidationMessage,
+        personsValidationMessage!,
         style: TextStyle(color: Theme.of(context).errorColor),
       ),
     );
@@ -362,14 +362,14 @@ class LoanFormState extends State<LoanForm> {
       focusNode: amountFocus,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).privateLoanAmount,
-        suffix: Text(amount.currency.symbols.first),
+        suffix: Text(amount?.currency.symbols.first ?? ""),
       ),
       textAlign: TextAlign.end,
       readOnly: true,
       validator: (value) {
         if (this.amount == null)
           return AppLocalizations.of(context).privateLoanValidationFieldIsEmpty;
-        if (this.amount.amount <= 0)
+        if (this.amount!.amount! <= 0)
           return AppLocalizations.of(context)
               .privateLoanValidationAmountIsNegativeOrZero;
         return null;
@@ -388,12 +388,10 @@ class LoanFormState extends State<LoanForm> {
       textAlign: TextAlign.end,
       readOnly: true,
       validator: (_) {
-        if (this.repaidAmount == null)
-          return AppLocalizations.of(context).privateLoanValidationFieldIsEmpty;
-        if (this.repaidAmount.amount < 0)
+        if (this.repaidAmount.amount! < 0)
           return AppLocalizations.of(context)
               .privateLoanValidationAmountIsNegativeOrZero;
-        if (this.repaidAmount.amount > this.amount.amount)
+        if (this.repaidAmount.amount! > this.amount!.amount!)
           return AppLocalizations.of(context)
               .privateLoanValidationRepaidAmountGreaterThenAmount;
         return null;
@@ -404,7 +402,7 @@ class LoanFormState extends State<LoanForm> {
   Widget buildRemainingAmount(BuildContext context) {
     return ListTile(
       title: Text(AppLocalizations.of(context).privateLoanRemainingAmount),
-      trailing: Text((amount - repaidAmount.amount).formatted),
+      trailing: Text((amount! - repaidAmount.amount).formatted),
       dense: true,
     );
   }
@@ -416,7 +414,7 @@ class LoanFormState extends State<LoanForm> {
         labelText: AppLocalizations.of(context).privateLoanTitle,
       ),
       validator: (value) {
-        if (value.trim().isEmpty)
+        if (value!.trim().isEmpty)
           return AppLocalizations.of(context).privateLoanValidationFieldIsEmpty;
         return null;
       },
@@ -441,7 +439,7 @@ class LoanFormState extends State<LoanForm> {
         firstDate: DateTime(2000),
         lastDate: DateTime(2100),
       ),
-      onChanged: (date) => setState(() => this.date = date),
+      onChanged: (date) => setState(() => this.date = date!),
     );
   }
 

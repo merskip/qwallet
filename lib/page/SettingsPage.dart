@@ -121,11 +121,11 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget buildUserPanel(BuildContext context) {
-    final user = DataSource.instance.currentUser;
+    final user = DataSource.instance.currentUser!;
     return ListTile(
       leading: CircleAvatar(
         backgroundImage:
-            user.avatarUrl != null ? NetworkImage(user.avatarUrl) : null,
+            user.avatarUrl != null ? NetworkImage(user.avatarUrl!) : null,
         backgroundColor: Colors.black12,
         child: user.avatarUrl == null
             ? Icon(
@@ -135,7 +135,7 @@ class SettingsPage extends StatelessWidget {
             : null,
       ),
       title: Text(user.getCommonName(context)),
-      subtitle: user.getSubtitle() != null ? Text(user.getSubtitle()) : null,
+      subtitle: Text(user.getSubtitle() ?? ""),
       onTap: () {
         showDialog(
           context: context,
@@ -273,7 +273,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget buildDeveloper(BuildContext context) {
     final subtitleStyle = TextStyle(
-      color: Theme.of(context).textTheme.caption.color,
+      color: Theme.of(context).textTheme.caption!.color,
       fontSize: 12,
     );
     final linkStyle = TextStyle(

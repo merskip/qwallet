@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/widget/CatgegoryIcon.dart';
+import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 import '../../AppLocalizations.dart';
 import '../../Money.dart';
+import '../../utils/IterableFinding.dart';
 
 class CategoriesChartCard extends StatelessWidget {
   final Wallet wallet;
@@ -16,8 +17,8 @@ class CategoriesChartCard extends StatelessWidget {
 
   const CategoriesChartCard({
     Key? key,
-    this.wallet,
-    this.transactions,
+    required this.wallet,
+    required this.transactions,
   }) : super(key: key);
 
   @override
@@ -36,8 +37,11 @@ class _CategoriesChartContent extends StatefulWidget {
   final Wallet wallet;
   final List<Transaction> transactions;
 
-  const _CategoriesChartContent({Key? key, this.wallet, this.transactions})
-      : super(key: key);
+  const _CategoriesChartContent({
+    Key? key,
+    required this.wallet,
+    required this.transactions,
+  }) : super(key: key);
 
   @override
   _CategoriesChartContentState createState() => _CategoriesChartContentState();
@@ -98,14 +102,12 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
     }
 
     return transactionsByCategory.keys.map((categoryRef) {
-      final category = widget.wallet.categories.firstWhere(
-        (c) => c.reference.id == categoryRef?.id,
-        orElse: () => null,
-      );
-      final transactions = transactionsByCategory[categoryRef];
+      final category = widget.wallet.categories
+          .findFirstOrNull((c) => c.reference.id == categoryRef?.id);
+      final transactions = transactionsByCategory[categoryRef]!;
       return _CategoryChartItem(widget.wallet, category, transactions);
     }).toList()
-      ..sort((lhs, rhs) => rhs.sum.amount.compareTo(lhs.sum.amount));
+      ..sort((lhs, rhs) => rhs.sum.amount!.compareTo(lhs.sum.amount!));
   }
 }
 
@@ -116,9 +118,9 @@ class _CategoriesChartWithLegend extends StatefulWidget {
 
   const _CategoriesChartWithLegend({
     Key? key,
-    this.wallet,
-    this.items,
-    this.summaryTitle,
+    required this.wallet,
+    required this.items,
+    required this.summaryTitle,
   }) : super(key: key);
 
   @override
@@ -128,15 +130,12 @@ class _CategoriesChartWithLegend extends StatefulWidget {
 
 class _CategoriesChartWithLegendState
     extends State<_CategoriesChartWithLegend> {
-  _CategoryChartItem selectedItem;
+  _CategoryChartItem? selectedItem;
   bool showAllTitles = false;
 
   @override
   void didUpdateWidget(_CategoriesChartWithLegend oldWidget) {
-    selectedItem = widget.items.firstWhere(
-      (item) => item == selectedItem,
-      orElse: () => null,
-    );
+    selectedItem = widget.items.findFirstOrNull((item) => item == selectedItem);
     super.didUpdateWidget(oldWidget);
   }
 
@@ -165,7 +164,7 @@ class _CategoriesChartWithLegendState
               },
               child: selectedItem == null
                   ? buildSummary(context)
-                  : buildCategorySummary(context, selectedItem),
+                  : buildCategorySummary(context, selectedItem!),
             ),
           ],
         ),
@@ -178,7 +177,7 @@ class _CategoriesChartWithLegendState
   Widget buildSummary(BuildContext context) {
     final double sum = widget.items.fold(
       0.0,
-      (value, item) => value + item.sum.amount,
+      (value, item) => value + item.sum.amount!,
     );
     return Column(children: [
       Text(
@@ -242,18 +241,18 @@ class _CategoriesChartWithLegendState
 class _CategoriesChart extends StatelessWidget {
   final List<_CategoryChartItem> items;
   final bool showAllTitles;
-  final _CategoryChartItem selectedItem;
+  final _CategoryChartItem? selectedItem;
   final Function(_CategoryChartItem) onSelectedItem;
 
   final double totalAmount;
 
   _CategoriesChart({
     Key? key,
-    this.items,
-    this.showAllTitles,
+    required this.items,
+    required this.showAllTitles,
     this.selectedItem,
-    this.onSelectedItem,
-  })  : totalAmount = items.fold(0.0, (acc, i) => acc + i.sum.amount),
+    required this.onSelectedItem,
+  })   : totalAmount = items.fold(0.0, (acc, i) => acc + i.sum.amount!),
         super(key: key);
 
   @override
@@ -292,14 +291,15 @@ class _CategoriesChart extends StatelessWidget {
     BuildContext context,
     _CategoryChartItem item,
   ) {
-    final percentage =
-        totalAmount > 0.0 ? (item.sum.amount / totalAmount * 100).round() : 0.0;
-    final titleStyle = Theme.of(context).textTheme.bodyText1.copyWith(
+    final percentage = totalAmount > 0.0
+        ? (item.sum.amount! / totalAmount * 100).round()
+        : 0.0;
+    final titleStyle = Theme.of(context).textTheme.bodyText1!.copyWith(
           backgroundColor: item.category?.backgroundColor ?? Colors.grey,
         );
 
     return PieChartSectionData(
-      value: item.sum.amount > 0.0 ? item.sum.amount : 1.0,
+      value: item.sum.amount! > 0.0 ? item.sum.amount : 1.0,
       color: item.category?.primaryColor ?? Colors.black12,
       title: "$percentage%",
       titleStyle: titleStyle,
@@ -311,11 +311,11 @@ class _CategoriesChart extends StatelessWidget {
 
 class _CategoryChartItem {
   final Wallet wallet;
-  final Category category;
+  final Category? category;
   final List<Transaction> transactions;
 
   Money get sum => Money(
-      transactions.fold(0.0, (amount, t) => amount + t.amount),
+      transactions.fold<double>(0, (amount, t) => amount + t.amount),
       wallet.currency);
 
   _CategoryChartItem(this.wallet, this.category, this.transactions);

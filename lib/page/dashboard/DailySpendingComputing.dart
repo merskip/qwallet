@@ -1,16 +1,14 @@
-import 'package:flutter/cupertino.dart';
-
 import '../../Currency.dart';
 import '../../Money.dart';
 
 class DailySpendingComputing {
   DailySpending compute({
-    @required double totalIncome,
-    @required double totalExpenses,
-    @required double excludedExpenses,
-    @required int totalDays,
-    @required int currentDay,
-    @required Currency currency,
+    required double totalIncome,
+    required double totalExpenses,
+    required double excludedExpenses,
+    required int totalDays,
+    required int currentDay,
+    required Currency currency,
   }) {
     assert(totalExpenses >= excludedExpenses);
     final availableDailyBudget = totalIncome - excludedExpenses;

@@ -11,7 +11,10 @@ import '../AppLocalizations.dart';
 class EditCategoryPage extends StatelessWidget {
   final Reference<Category> categoryRef;
 
-  const EditCategoryPage({Key? key, this.categoryRef}) : super(key: key);
+  const EditCategoryPage({
+    Key? key,
+    required this.categoryRef,
+  }) : super(key: key);
 
   onSelectedRemove(BuildContext context, Category category) {
     ConfirmationDialog(
@@ -32,7 +35,7 @@ class EditCategoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getCategory(category: categoryRef),
-      builder: (context, category) => buildContent(context, category),
+      builder: (context, Category category) => buildContent(context, category),
     );
   }
 

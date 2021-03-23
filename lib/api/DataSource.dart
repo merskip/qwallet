@@ -21,7 +21,7 @@ class DataSource {
   static final DataSource instance = DataSource._privateConstructor();
 
   final firestore = Firestore.FirebaseFirestore.instance;
-  late User currentUser;
+  late User? currentUser;
 
   List<User>? _cachedUsers;
 
@@ -35,7 +35,7 @@ extension WalletsDataSource on DataSource {
   Stream<List<Wallet>> getWallets() {
     return firestore
         .collection("wallets")
-        .where("ownersUid", arrayContains: currentUser.uid)
+        .where("ownersUid", arrayContains: currentUser!.uid)
         .snapshots()
         .switchMap((querySnapshot) {
       final wallets = querySnapshot.docs.map((walletSnapshot) {
@@ -395,8 +395,8 @@ extension PrivateLoansDataSource on DataSource {
     };
 
     return CombineLatestStream.combine3(
-      getSnapshots((q) => q.where("lenderUid", isEqualTo: currentUser.uid)),
-      getSnapshots((q) => q.where("borrowerUid", isEqualTo: currentUser.uid)),
+      getSnapshots((q) => q.where("lenderUid", isEqualTo: currentUser!.uid)),
+      getSnapshots((q) => q.where("borrowerUid", isEqualTo: currentUser!.uid)),
       getUsers().asStream(),
       (
         Firestore.QuerySnapshot loansAsLender,
@@ -425,14 +425,14 @@ extension PrivateLoansDataSource on DataSource {
   }
 
   Future<void> addPrivateLoan({
-    required String lenderUid,
-    required String lenderName,
-    required String borrowerUid,
-    required String borrowerName,
+    required String? lenderUid,
+    required String? lenderName,
+    required String? borrowerUid,
+    required String? borrowerName,
     required double amount,
     required double repaidAmount,
     required Currency currency,
-    required String title,
+    required String? title,
     required DateTime date,
   }) {
     return firestore.collection("privateLoans").add({
@@ -451,14 +451,14 @@ extension PrivateLoansDataSource on DataSource {
 
   Future<void> updatePrivateLoan({
     required Reference<PrivateLoan> loanRef,
-    required String lenderUid,
-    required String lenderName,
-    required String borrowerUid,
-    required String borrowerName,
+    required String? lenderUid,
+    required String? lenderName,
+    required String? borrowerUid,
+    required String? borrowerName,
     required double amount,
     required double repaidAmount,
     required Currency currency,
-    required String title,
+    required String? title,
     required DateTime date,
   }) {
     return loanRef.documentReference.update({
@@ -472,6 +472,18 @@ extension PrivateLoansDataSource on DataSource {
       "currency": currency.code,
       "title": title,
       "date": date.toTimestamp(),
+    });
+  }
+
+  Future<void> updatePrivateLoanRepaidAmount({
+    required Reference<PrivateLoan> loanRef,
+    required double amount,
+    required double repaidAmount,
+  }) {
+    return loanRef.documentReference.update({
+      "amount": amount,
+      "repaidAmount": repaidAmount,
+      "isFullyRepaid": repaidAmount >= amount,
     });
   }
 

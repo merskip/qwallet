@@ -12,7 +12,8 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../AppLocalizations.dart';
 import '../../router.dart';
-import '../../widget/empty_state_widget.dart';
+import '../../utils/IterableFinding.dart';
+import '../../widget/EmptyStateWidget.dart';
 
 class LoansPage extends StatefulWidget {
   @override
@@ -60,18 +61,18 @@ class _LoansPageState extends State<LoansPage> {
     List<User> users,
     List<PrivateLoan> loans,
   ) {
-    final groups = List<LoansGroup>();
+    final groups = <LoansGroup>[];
     for (final loan in loans) {
       final matchedGroup =
-          groups.firstWhere((group) => group.isMatch(loan), orElse: () => null);
+          groups.findFirstOrNull((group) => group.isMatch(loan));
       if (matchedGroup != null) {
         matchedGroup.loans.add(loan);
       } else {
         groups.add(LoansGroup(
           otherPersonName:
-              loan.currentUserIsLender ? loan.borrowerName : loan.lenderName,
+              loan.currentUserIsLender ? loan.borrowerName! : loan.lenderName!,
           otherPersonUser:
-              loan.currentUserIsLender ? loan.borrowerUser : loan.lenderUser,
+              loan.currentUserIsLender ? loan.borrowerUser! : loan.lenderUser!,
           loans: [loan],
         ));
       }
@@ -85,29 +86,29 @@ class _LoansPageState extends State<LoansPage> {
 }
 
 class LoansGroup implements Comparable {
-  final String otherPersonName;
-  final User otherPersonUser;
+  final String? otherPersonName;
+  final User? otherPersonUser;
   final List<PrivateLoan> loans;
 
-  double _totalRawAmount;
+  late double _totalRawAmount;
 
-  List<PrivateLoan> loansOfOtherPerson;
-  List<PrivateLoan> loansOfCurrentUser;
+  late List<PrivateLoan> loansOfOtherPerson;
+  late List<PrivateLoan> loansOfCurrentUser;
 
-  List<Money> debtOfOtherPerson;
-  List<Money> debtOfCurrentUser;
-  List<Money> balance;
+  late List<Money> debtOfOtherPerson;
+  late List<Money> debtOfCurrentUser;
+  late List<Money> balance;
 
-  bool canAnyRepay;
+  late bool canAnyRepay;
 
   LoansGroup({
-    this.loans,
+    required this.loans,
     this.otherPersonName,
     this.otherPersonUser,
   });
 
   void finalize() {
-    _totalRawAmount = loans.fold(0, (p, v) => p + v.remainingAmount.amount);
+    _totalRawAmount = loans.fold(0, (p, v) => p + v.remainingAmount.amount!);
     loansOfOtherPerson =
         loans.where((loan) => loan.currentUserIsLender).toList();
     debtOfOtherPerson =
@@ -127,7 +128,7 @@ class LoansGroup implements Comparable {
   }
 
   String getOtherPersonCommonName(BuildContext context) =>
-      otherPersonUser?.getCommonName(context) ?? otherPersonName;
+      otherPersonUser?.getCommonName(context) ?? otherPersonName!;
 
   bool isMatch(PrivateLoan loan) {
     if (loan.currentUserIsLender) {
@@ -153,7 +154,10 @@ class LoansGroup implements Comparable {
 class LoansGroupCard extends StatefulWidget {
   final LoansGroup loansGroup;
 
-  const LoansGroupCard({Key? key, this.loansGroup}) : super(key: key);
+  const LoansGroupCard({
+    Key? key,
+    required this.loansGroup,
+  }) : super(key: key);
 
   @override
   _LoansGroupCardState createState() => _LoansGroupCardState();
@@ -204,7 +208,7 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
               if (loansGroup.otherPersonUser != null)
                 Padding(
                   padding: const EdgeInsets.only(right: 12),
-                  child: UserAvatar(user: loansGroup.otherPersonUser),
+                  child: UserAvatar(user: loansGroup.otherPersonUser!),
                 ),
               Text(
                 loansGroup.getOtherPersonCommonName(context),
@@ -270,9 +274,9 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
 
   Widget buildSummaryItem(
     BuildContext context, {
-    Widget title,
-    List<Money> values,
-    TextStyle defaultStyle,
+    Widget? title,
+    required List<Money> values,
+    TextStyle? defaultStyle,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -286,7 +290,7 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
               return Text(
                 money.formatted,
                 style: (defaultStyle ?? TextStyle()).copyWith(
-                  color: money.amount.isNegative ? Colors.red : null,
+                  color: money.amount!.isNegative ? Colors.red : null,
                   // fontSize: 15,
                   // fontWeight: FontWeight.w500,
                 ),

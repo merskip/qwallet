@@ -17,7 +17,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   final dashboardKey = GlobalKey<DashboardPageState>();
 
   void onSelectedAddTransaction(BuildContext context) {
-    final wallet = dashboardKey.currentState.getSelectedWallet();
+    final wallet = dashboardKey.currentState!.getSelectedWallet();
     router.navigateTo(context, "/wallet/${wallet.id}/addTransaction");
   }
 
@@ -65,7 +65,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     );
   }
 
-  Widget buildAddTransactionButton(BuildContext context) {
+  Widget? buildAddTransactionButton(BuildContext context) {
     switch (selectedIndex) {
       case 0:
         return FloatingActionButton(

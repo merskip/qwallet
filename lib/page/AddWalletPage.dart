@@ -10,6 +10,7 @@ import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../Currency.dart';
+import '../utils/IterableFinding.dart';
 import 'UsersFormField.dart';
 
 class AddWalletPage extends StatelessWidget {
@@ -62,11 +63,11 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   onSelectedOwners(BuildContext context) async {
-    final List<User> selectedUsers = await pushPage(
+    final List<User>? selectedUsers = await pushPage(
       context,
       builder: (context) => UserSelectionPage(
         title: AppLocalizations.of(context).addWalletOwners,
-        selectedUsers: ownersController.value,
+        selectedUsers: ownersController.value!,
       ),
     );
     if (selectedUsers != null) {
@@ -77,7 +78,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   onSelectedCurrency(BuildContext context) async {
-    final Currency currency = await pushPage(
+    final Currency? currency = await pushPage(
       context,
       builder: (context) =>
           CurrencySelectionPage(selectedCurrency: this.currency),
@@ -88,10 +89,10 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   onSelectedSubmit(BuildContext context) async {
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       DataSource.instance.addWallet(
         nameController.text,
-        ownersController.value.map((user) => user.uid).toList(),
+        ownersController.value!.map((user) => user.uid).toList(),
         currency.code,
       );
       Navigator.of(context).pop();
@@ -130,7 +131,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
       textCapitalization: TextCapitalization.sentences,
       textInputAction: TextInputAction.next,
       validator: (name) {
-        if (name.length <= 0 || name.length > 50)
+        if (name!.length <= 0 || name.length > 50)
           return AppLocalizations.of(context).addWalletCurrencyErrorIsEmpty;
         return null;
       },
@@ -149,11 +150,11 @@ class _AddWalletFormState extends State<_AddWalletForm> {
           helperMaxLines: 3,
         ),
         validator: (users) {
-          if (users.isEmpty)
+          if (users!.isEmpty)
             return AppLocalizations.of(context).addWalletOwnersErrorIsEmpty;
-          final currentUserInSelected = users.firstWhere(
-              (user) => user.uid == DataSource.instance.currentUser.uid,
-              orElse: () => null);
+          final currentUserInSelected = users.findFirstOrNull(
+            (user) => user.uid == DataSource.instance.currentUser?.uid,
+          );
           if (currentUserInSelected == null)
             return AppLocalizations.of(context).addWalletOwnersErrorNoYou;
           return null;
@@ -164,8 +165,6 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   }
 
   Widget buildCurrency(BuildContext context) {
-    if (currency == null) return CircularProgressIndicator();
-
     String text = Money(1234.456, currency).formatted;
     return InkWell(
       child: InputDecorator(

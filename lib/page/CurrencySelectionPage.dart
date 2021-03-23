@@ -8,7 +8,7 @@ import '../Currency.dart';
 import '../Money.dart';
 
 class CurrencySelectionPage extends StatefulWidget {
-  final Currency selectedCurrency;
+  final Currency? selectedCurrency;
 
   const CurrencySelectionPage({Key? key, this.selectedCurrency})
       : super(key: key);
@@ -42,7 +42,7 @@ class _CurrencySelectionPageState extends State<CurrencySelectionPage> {
         child: ListView(
           children: [
             if (hasSelectedCurrency)
-              buildCurrency(context, widget.selectedCurrency, selected: true),
+              buildCurrency(context, widget.selectedCurrency!, selected: true),
             if (hasSelectedCurrency) Divider(),
             ...currencies.map((currency) => buildCurrency(
                   context,
@@ -74,7 +74,10 @@ class _CurrencySelectionPageState extends State<CurrencySelectionPage> {
 class _CurrencyInfoPage extends StatelessWidget {
   final Currency currency;
 
-  const _CurrencyInfoPage({Key? key, this.currency}) : super(key: key);
+  const _CurrencyInfoPage({
+    Key? key,
+    required this.currency,
+  }) : super(key: key);
 
   onSelectedOpenUrl(String url) async {
     if (await canLaunch(url)) {
@@ -92,7 +95,7 @@ class _CurrencyInfoPage extends StatelessWidget {
         if (currency.iso4217 != null)
           ListTile(
             title: Text(AppLocalizations.of(context).selectCurrencyISO4217),
-            subtitle: Text(currency.iso4217),
+            subtitle: Text(currency.iso4217!),
           ),
         ListTile(
           title: Text(AppLocalizations.of(context).selectCurrencyCode),
@@ -115,25 +118,25 @@ class _CurrencyInfoPage extends StatelessWidget {
           ListTile(
             title: Text(AppLocalizations.of(context).selectCurrencyWiki),
             subtitle: Text(
-              currency.wikiUrl,
+              currency.wikiUrl!,
               style: TextStyle(
                 color: Colors.blue,
                 decoration: TextDecoration.underline,
               ),
             ),
-            onTap: () => onSelectedOpenUrl(currency.wikiUrl),
+            onTap: () => onSelectedOpenUrl(currency.wikiUrl!),
           ),
         if (currency.websiteUrl != null)
           ListTile(
             title: Text(AppLocalizations.of(context).selectCurrencyWebsite),
             subtitle: Text(
-              currency.websiteUrl,
+              currency.websiteUrl!,
               style: TextStyle(
                 color: Colors.blue,
                 decoration: TextDecoration.underline,
               ),
             ),
-            onTap: () => onSelectedOpenUrl(currency.websiteUrl),
+            onTap: () => onSelectedOpenUrl(currency.websiteUrl!),
           ),
       ]),
     );

@@ -5,22 +5,22 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/router.dart';
-import 'package:qwallet/widget/CatgegoryIcon.dart';
+import 'package:qwallet/widget/CategoryIcon.dart';
+import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
-import 'package:qwallet/widget/empty_state_widget.dart';
 
 import '../AppLocalizations.dart';
 
 class CategoriesPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
 
-  const CategoriesPage({Key? key, this.walletRef}) : super(key: key);
+  const CategoriesPage({Key? key, required this.walletRef}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getWallet(walletRef),
-      builder: (context, wallet) =>
+      builder: (context, Wallet wallet) =>
           _WalletCategoriesPageContent(wallet: wallet),
     );
   }
@@ -29,7 +29,10 @@ class CategoriesPage extends StatelessWidget {
 class _WalletCategoriesPageContent extends StatefulWidget {
   final Wallet wallet;
 
-  const _WalletCategoriesPageContent({Key? key, this.wallet}) : super(key: key);
+  const _WalletCategoriesPageContent({
+    Key? key,
+    required this.wallet,
+  }) : super(key: key);
 
   @override
   __WalletCategoriesPageContentState createState() =>
@@ -176,7 +179,7 @@ class _CategoriesReorderableList extends StatefulWidget {
 
   const _CategoriesReorderableList({
     Key? key,
-    this.categories,
+    required this.categories,
   }) : super(key: key);
 
   @override

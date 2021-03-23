@@ -36,7 +36,7 @@ class User {
     );
   }
 
-  factory User.currentUser() => DataSource.instance.currentUser;
+  factory User.currentUser() => DataSource.instance.currentUser!;
 
   factory User.emptyFromUid(String uid) => User(uid: uid, isAnonymous: false);
 
