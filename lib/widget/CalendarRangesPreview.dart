@@ -28,10 +28,10 @@ class CalendarRangesPreview extends StatelessWidget {
     );
 
     final items = <Widget>[];
-    int lastMonth = -1;
+    int? lastMonth;
     final weeks = calendarRange.getDays().split(DateTime.daysPerWeek);
     for (final weekDays in weeks) {
-      if (lastMonth != weekDays.last.month) {
+      if (lastMonth != weekDays.lastOrNull?.month) {
         final locale = AppLocalizations.of(context).locale;
         final monthFormat = DateFormat("MMMM", locale.toString());
         items.add(Padding(
@@ -42,7 +42,7 @@ class CalendarRangesPreview extends StatelessWidget {
           ),
         ));
       }
-      lastMonth = weekDays.last.month;
+      lastMonth = weekDays.lastOrNull?.month;
 
       items.add(Padding(
         padding: const EdgeInsets.symmetric(vertical: 1),

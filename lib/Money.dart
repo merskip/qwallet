@@ -22,17 +22,17 @@ class Money {
 
 extension MoneyOperators on Money {
   // TODO: Make amount non-optional
-  Money operator +(double? amount) =>
-      Money(this.amount! + (amount ?? 0), currency);
+  Money operator +(double? amount) => Money(
+      this.amount != null ? this.amount! + (amount ?? 0) : null, currency);
 
-  Money operator -(double? amount) =>
-      Money(this.amount! - (amount ?? 0), currency);
+  Money operator -(double? amount) => Money(
+      this.amount != null ? this.amount! - (amount ?? 0) : null, currency);
 
-  Money operator *(double? factor) =>
-      Money(this.amount! * (factor ?? 1), currency);
+  Money operator *(double? factor) => Money(
+      this.amount != null ? this.amount! * (factor ?? 1) : null, currency);
 
-  Money operator /(double? factor) =>
-      Money(this.amount! / (factor ?? 1), currency);
+  Money operator /(double? factor) => Money(
+      this.amount != null ? this.amount! / (factor ?? 1) : null, currency);
 
   Money operator -() => Money(-amount!, currency);
 }

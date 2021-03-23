@@ -316,8 +316,9 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
             AppLocalizations.of(context)
                 .addSeriesTransactionsRemainingAmount(remainingAmount),
             style: Theme.of(context).textTheme.caption!.copyWith(
-                  color:
-                      remainingAmount.amount! >= 0 ? null : Colors.deepOrange,
+                  color: (remainingAmount.amount ?? 0) >= 0
+                      ? null
+                      : Colors.deepOrange,
                 ),
           ),
         )
