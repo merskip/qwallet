@@ -67,7 +67,7 @@ class LoanFormState extends State<LoanForm> {
 
   final titleTextController = TextEditingController();
 
-  late DateTime date;
+  DateTime? date;
 
   @override
   void initState() {
@@ -151,7 +151,7 @@ class LoanFormState extends State<LoanForm> {
           context: context,
           builder: (context) => EnterMoneyDialog(
             initialMoney: initialMoney!,
-            currency: initialMoney!.currency,
+            currency: initialMoney.currency,
             isCurrencySelectable: isCurrencySelectable,
           ),
         ) as Money?;
@@ -206,7 +206,7 @@ class LoanFormState extends State<LoanForm> {
         amount!,
         repaidAmount,
         titleTextController.text.trim().nullIfEmpty(),
-        date,
+        date!,
       );
     }
   }
@@ -435,7 +435,7 @@ class LoanFormState extends State<LoanForm> {
       resetIcon: null,
       onShowPicker: (context, currentValue) => showDatePicker(
         context: context,
-        initialDate: this.date,
+        initialDate: this.date ?? DateTime.now(),
         firstDate: DateTime(2000),
         lastDate: DateTime(2100),
       ),

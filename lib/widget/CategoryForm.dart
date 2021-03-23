@@ -209,7 +209,6 @@ class _CategoryFormState extends State<CategoryForm> {
         title: Text(AppLocalizations.of(context).categoryIconPackSelect),
         children: [
           buildIconPackItem(context, IconPack.material),
-          buildIconPackItem(context, IconPack.materialOutline),
           buildIconPackItem(context, IconPack.cupertino),
           buildIconPackItem(context, IconPack.fontAwesomeIcons),
           buildIconPackItem(context, IconPack.lineAwesomeIcons),
@@ -218,7 +217,7 @@ class _CategoryFormState extends State<CategoryForm> {
     );
     if (iconPack == null) return null;
 
-    IconData icon = await FlutterIconPicker.showIconPicker(
+    final icon = await FlutterIconPicker.showIconPicker(
       context,
       showTooltips: true,
       adaptiveDialog: true,
@@ -243,8 +242,6 @@ class _CategoryFormState extends State<CategoryForm> {
     switch (iconPack) {
       case IconPack.material:
         return AppLocalizations.of(context).categoryIconPackMaterial;
-      case IconPack.materialOutline:
-        return AppLocalizations.of(context).categoryIconPackMaterialOutline;
       case IconPack.cupertino:
         return AppLocalizations.of(context).categoryIconPackCupertino;
       case IconPack.fontAwesomeIcons:
@@ -252,7 +249,7 @@ class _CategoryFormState extends State<CategoryForm> {
       case IconPack.lineAwesomeIcons:
         return AppLocalizations.of(context).categoryIconPackLineAwesome;
       default:
-        throw("Unknown iconPack: $iconPack");
+        throw ("Unknown iconPack: $iconPack");
     }
   }
 }

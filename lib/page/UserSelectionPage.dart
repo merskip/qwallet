@@ -41,7 +41,7 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
         actions: [
           IconButton(
             icon: Icon(Icons.done),
-            onPressed: () => Navigator.of(context).pop(selectedUsers ?? []),
+            onPressed: () => Navigator.of(context).pop(selectedUsers),
           )
         ],
       ),

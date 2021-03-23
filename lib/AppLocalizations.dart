@@ -1116,11 +1116,6 @@ extension CategoriesLocalizations on AppLocalizations {
         pl: "Ikony Material Design",
       );
 
-  String get categoryIconPackMaterialOutline => _locale(
-        en: "Outlined Material Design icons",
-        pl: "Obramowane ikony Material Design",
-      );
-
   String get categoryIconPackCupertino => _locale(
         en: "Cupertino icons",
         pl: "Ikony Cupertino",

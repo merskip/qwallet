@@ -42,7 +42,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
     String typeName = "$T";
     if (snapshot.data is List<List<dynamic>>) {
       final list = snapshot.data as List<List<dynamic>>;
-      typeName = "List<${list.first?.runtimeType}>";
+      typeName = "List<${list.first.runtimeType}>";
     }
 
     String stateIcon = HashMap.of({

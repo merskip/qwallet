@@ -273,8 +273,9 @@ class _CategoriesChart extends StatelessWidget {
               pieTouchData: PieTouchData(
                 enabled: !showAllTitles,
                 touchCallback: (touch) {
-                  if (touch.touchedSectionIndex >= 0) {
-                    final selectedItem = items[touch.touchedSectionIndex];
+                  final section = touch.touchedSection;
+                  if (section != null && section.touchedSectionIndex >= 0) {
+                    final selectedItem = items[section.touchedSectionIndex];
                     onSelectedItem(selectedItem);
                   }
                 },
