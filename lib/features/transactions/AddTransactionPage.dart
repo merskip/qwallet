@@ -207,7 +207,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         wallets: wallets,
         selectedWallet: this.wallet,
       ),
-    ) as Wallet;
+    ) as Wallet?;
     if (selectedWallet != null) {
       setState(() => this.wallet = selectedWallet);
     }
@@ -219,7 +219,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         wallet.reference,
         type: type,
         title: titleController.text.trim(),
-        amount: amountController.value!.amount!,
+        amount: amountController.value!.amount,
         category: category?.reference,
         date: date,
       );
@@ -282,16 +282,17 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   Widget buildAmount(BuildContext context) {
     return AmountFormField(
-      initialMoney: Money(widget.initialAmount, widget.initialWallet.currency),
+      initialMoney:
+          Money(widget.initialAmount ?? 0, widget.initialWallet.currency),
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).addTransactionAmount,
         helperText: getBalanceAfterTransactionText(),
       ),
       controller: amountController,
       validator: (amount) {
-        if (amount!.amount == null)
+        if (amount == null)
           return AppLocalizations.of(context).addTransactionAmountErrorIsEmpty;
-        if (amount.amount! <= 0)
+        if (amount.amount <= 0)
           return AppLocalizations.of(context)
               .addTransactionAmountErrorZeroOrNegative;
         return null;
@@ -303,8 +304,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     final amount =
         amountController.value?.amount ?? widget.initialAmount ?? 0.0;
     final balanceAfter = type == TransactionType.expense
-        ? wallet.balance.amount! - amount
-        : wallet.balance.amount! + amount;
+        ? wallet.balance.amount - amount
+        : wallet.balance.amount + amount;
     final balanceAfterMoney = Money(balanceAfter, wallet.currency);
     return AppLocalizations.of(context)
         .addTransactionBalanceAfter(balanceAfterMoney);

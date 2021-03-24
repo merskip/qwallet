@@ -113,7 +113,6 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
         .replaceAll("  ", " ");
 
     if (result != null) {
-      if (result.amount == null) result = Money(0.0, result.currency);
       return [displayExpression, "= ${result.formatted}"];
     } else {
       return [displayExpression, "= …"];
@@ -121,7 +120,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   }
 
   Money? calculateExpression() {
-    if (this.expression.isEmpty) return Money(null, currency);
+    if (this.expression.isEmpty) return Money(0, currency);
 
     try {
       Expression expression = Expression.parse(this.expression);

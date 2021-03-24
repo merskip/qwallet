@@ -155,7 +155,7 @@ class LoanFormState extends State<LoanForm> {
             isCurrencySelectable: isCurrencySelectable,
           ),
         ) as Money?;
-        if (money != null && money.amount != null) {
+        if (money != null) {
           controller.text = money.formattedOnlyAmount;
           onEnter(money);
         }
@@ -367,7 +367,7 @@ class LoanFormState extends State<LoanForm> {
       textAlign: TextAlign.end,
       readOnly: true,
       validator: (value) {
-        if (this.amount.amount! <= 0)
+        if (this.amount.amount <= 0)
           return AppLocalizations.of(context)
               .privateLoanValidationAmountIsNegativeOrZero;
         return null;
@@ -386,10 +386,10 @@ class LoanFormState extends State<LoanForm> {
       textAlign: TextAlign.end,
       readOnly: true,
       validator: (_) {
-        if (this.repaidAmount.amount! < 0)
+        if (this.repaidAmount.amount < 0)
           return AppLocalizations.of(context)
               .privateLoanValidationAmountIsNegativeOrZero;
-        if (this.repaidAmount.amount! > this.amount.amount!)
+        if (this.repaidAmount.amount > this.amount.amount)
           return AppLocalizations.of(context)
               .privateLoanValidationRepaidAmountGreaterThenAmount;
         return null;

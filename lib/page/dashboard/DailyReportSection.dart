@@ -98,8 +98,8 @@ class DailyReportSection extends StatelessWidget {
     final currentDay = DateTime.now().day;
 
     return DailySpendingComputing().compute(
-      totalIncome: wallet.totalIncome.amount!,
-      totalExpenses: wallet.totalExpense.amount!,
+      totalIncome: wallet.totalIncome.amount,
+      totalExpenses: wallet.totalExpense.amount,
       excludedExpenses: _getTotalExpensesExcludedFromDailyBalance(),
       totalDays: totalDays,
       currentDay: currentDay,

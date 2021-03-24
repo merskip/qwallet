@@ -43,9 +43,7 @@ class _HorizontalDrawablePickerState extends State<HorizontalDrawablePicker> {
   }
 
   _onSelectedItemChange() {
-    if (widget.onSelected != null) {
-      widget.onSelected(scrollController.getCurrentPage());
-    }
+    widget.onSelected(scrollController.getCurrentPage());
   }
 
   @override

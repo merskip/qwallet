@@ -24,7 +24,7 @@ class RepaidLoanPage extends StatelessWidget {
     DataSource.instance.updateRepaidAmountsForPrivateLoans(
       privateLoans: loans,
       getRepaidAmount: (PrivateLoan loan) =>
-          repayingLoans[loans.indexOf(loan)].repaidAmount.amount!,
+          repayingLoans[loans.indexOf(loan)].repaidAmount.amount,
     );
     router.pop(context);
   }
@@ -149,7 +149,7 @@ class RepayingLoanCard extends StatelessWidget {
       BuildContext context, MutatingPrivateLoan repayingLoan) {
     final currentUserHasRemainingRepaid =
         repayingLoan.loan.currentUserIsBorrower &&
-            repayingLoan.remainingAmount.amount! > 0;
+            repayingLoan.remainingAmount.amount > 0;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),

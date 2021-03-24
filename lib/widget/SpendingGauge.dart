@@ -30,9 +30,9 @@ class _SpendingGaugeState extends State<SpendingGauge> {
       return buildEmptyGauge(context);
     }
 
-    final normalizedMidLow = widget.midLow.amount! / widget.max.amount!;
-    final normalizedMidHigh = widget.midHigh.amount! / widget.max.amount!;
-    final normalizedCurrent = widget.current.amount! / widget.max.amount!;
+    final normalizedMidLow = widget.midLow.amount / widget.max.amount;
+    final normalizedMidHigh = widget.midHigh.amount / widget.max.amount;
+    final normalizedCurrent = widget.current.amount/ widget.max.amount;
 
     return CustomPaint(
       painter: _GaugePainter(

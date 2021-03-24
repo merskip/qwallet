@@ -62,10 +62,12 @@ class AmountFormFieldState extends FormFieldState<Money> {
   void initState() {
     super.initState();
     controller = TextEditingController();
-    if (value != null) {
-      controller.text = value!.formattedOnlyAmount;
-      widget.controller.value = value;
+    final initialValue = value;
+    if (initialValue != null) {
+      controller.text = initialValue.formattedOnlyAmount;
+      widget.controller.value = initialValue;
     }
+
     controller.addListener(() {
       widget.controller.value = _getEnteredMoney();
     });
@@ -77,7 +79,7 @@ class AmountFormFieldState extends FormFieldState<Money> {
       focusNode: effectiveFocusNode,
       controller: controller,
       isCurrencySelectable: widget.isCurrencySelectable,
-      getValue: () => value!,
+      getValue: () => initialValue!,
       onEnter: (amount) => setState(() {
         controller.text = amount.formattedOnlyAmount;
         didChange(amount);
@@ -131,7 +133,7 @@ class AmountFormFieldState extends FormFieldState<Money> {
     final text =
         controller.text.replaceAll(value!.currency.decimalSeparator!, ".");
     final amount = round(double.tryParse(text), value!.currency.decimalDigits);
-    return Money(amount, value!.currency);
+    return Money(amount ?? 0.0, value!.currency);
   }
 
   double? round(double? value, num places) {

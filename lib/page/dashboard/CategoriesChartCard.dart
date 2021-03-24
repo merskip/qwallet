@@ -107,7 +107,7 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
       final transactions = transactionsByCategory[categoryRef]!;
       return _CategoryChartItem(widget.wallet, category, transactions);
     }).toList()
-      ..sort((lhs, rhs) => rhs.sum.amount!.compareTo(lhs.sum.amount!));
+      ..sort((lhs, rhs) => rhs.sum.amount.compareTo(lhs.sum.amount));
   }
 }
 
@@ -177,7 +177,7 @@ class _CategoriesChartWithLegendState
   Widget buildSummary(BuildContext context) {
     final double sum = widget.items.fold(
       0.0,
-      (value, item) => value + item.sum.amount!,
+      (value, item) => value + item.sum.amount,
     );
     return Column(children: [
       Text(
@@ -252,7 +252,7 @@ class _CategoriesChart extends StatelessWidget {
     required this.showAllTitles,
     this.selectedItem,
     required this.onSelectedItem,
-  })   : totalAmount = items.fold(0.0, (acc, i) => acc + i.sum.amount!),
+  })   : totalAmount = items.fold(0.0, (acc, i) => acc + i.sum.amount),
         super(key: key);
 
   @override
@@ -292,15 +292,14 @@ class _CategoriesChart extends StatelessWidget {
     BuildContext context,
     _CategoryChartItem item,
   ) {
-    final percentage = totalAmount > 0.0
-        ? (item.sum.amount! / totalAmount * 100).round()
-        : 0.0;
+    final percentage =
+        totalAmount > 0.0 ? (item.sum.amount / totalAmount * 100).round() : 0.0;
     final titleStyle = Theme.of(context).textTheme.bodyText1!.copyWith(
           backgroundColor: item.category?.backgroundColor ?? Colors.grey,
         );
 
     return PieChartSectionData(
-      value: item.sum.amount! > 0.0 ? item.sum.amount : 1.0,
+      value: item.sum.amount > 0.0 ? item.sum.amount : 1.0,
       color: item.category?.primaryColor ?? Colors.black12,
       title: "$percentage%",
       titleStyle: titleStyle,

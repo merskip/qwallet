@@ -5,7 +5,7 @@ import 'package:intl/number_symbols_data.dart';
 import 'Currency.dart';
 
 class Money {
-  final double? amount;
+  final double amount;
   final Currency currency;
 
   String get formatted => format();
@@ -21,20 +21,51 @@ class Money {
 }
 
 extension MoneyOperators on Money {
-  // TODO: Make amount non-optional
-  Money operator +(double? amount) => Money(
-      this.amount != null ? this.amount! + (amount ?? 0) : null, currency);
+  Money operator -() => Money(-amount, currency);
 
-  Money operator -(double? amount) => Money(
-      this.amount != null ? this.amount! - (amount ?? 0) : null, currency);
+  Money operator +(dynamic other) {
+    if (other == null)
+      return Money(amount, currency);
+    else if (other is num)
+      return Money(amount + other, currency);
+    else if (other is Money)
+      return Money(amount + other.amount, currency);
+    else
+      throw ArgumentError.value(other, "Must be num or Money");
+  }
 
-  Money operator *(double? factor) => Money(
-      this.amount != null ? this.amount! * (factor ?? 1) : null, currency);
+  Money operator -(dynamic other) {
+    if (other == null)
+      return Money(amount, currency);
+    else if (other is num)
+      return Money(amount - other, currency);
+    else if (other is Money)
+      return Money(amount - other.amount, currency);
+    else
+      throw ArgumentError.value(other, "Must be num or Money");
+  }
 
-  Money operator /(double? factor) => Money(
-      this.amount != null ? this.amount! / (factor ?? 1) : null, currency);
+  Money operator *(dynamic other) {
+    if (other == null)
+      return Money(amount, currency);
+    else if (other is num)
+      return Money(amount * other, currency);
+    else if (other is Money)
+      return Money(amount * other.amount, currency);
+    else
+      throw ArgumentError.value(other, "Must be num or Money");
+  }
 
-  Money operator -() => Money(-amount!, currency);
+  Money operator /(dynamic other) {
+    if (other == null)
+      return Money(amount, currency);
+    else if (other is num)
+      return Money(amount / other, currency);
+    else if (other is Money)
+      return Money(amount / other.amount, currency);
+    else
+      throw ArgumentError.value(other, "Must be num or Money");
+  }
 }
 
 extension MoneyFormatting on Money {
@@ -64,21 +95,7 @@ extension MoneyFormatting on Money {
         ));
   }
 
-  String formatForEditing() {
-    return _formatAmountUsing(() {
-      final hasDecimalPart = amount!.remainder(1) != 0.0;
-      return NumberFormat.currency(
-        locale: _locale,
-        name: currency.code,
-        symbol: currency.symbols.first,
-        decimalDigits: hasDecimalPart ? currency.decimalDigits : 0,
-        customPattern: "0.00",
-      );
-    });
-  }
-
   String _formatAmountUsing(NumberFormat numberFormat()) {
-    if (amount == null) return "";
     _setNumberFormatSymbols();
     return numberFormat().format(amount);
   }
@@ -117,7 +134,7 @@ extension MoneyList on Iterable<Money> {
         throw ArgumentError(
             "All money must have the same currency. Or try use sumByCurrency().");
 
-      sum += money.amount!;
+      sum += money.amount;
     }
     return Money(sum, currency);
   }
@@ -129,7 +146,7 @@ extension MoneyList on Iterable<Money> {
     for (final money in this) {
       result.update(
         money.currency,
-        (value) => value + money.amount!,
+        (value) => value + money.amount,
         ifAbsent: () => money,
       );
     }

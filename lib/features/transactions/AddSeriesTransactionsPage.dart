@@ -49,13 +49,16 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
 
   List<Transaction> transactions = [];
 
-  Money get totalAmount =>
-      totalAmountController.value ?? Money(null, wallet.currency);
+  Money? get totalAmount => totalAmountController.value;
 
   Money get transactionsAmount => Money(
       transactions.fold<double>(0, (v, t) => v + t.amount), wallet.currency);
 
-  Money get remainingAmount => totalAmount - transactionsAmount.amount;
+  Money get remainingAmount {
+    final totalAmount = this.totalAmount;
+    if (totalAmount == null) return Money(0, wallet.currency);
+    return totalAmount - transactionsAmount.amount;
+  }
 
   _AddSeriesTransactionsPageState(this.wallet);
 
@@ -125,7 +128,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
         wallets: wallets,
         selectedWallet: this.wallet,
       ),
-    ) as Wallet;
+    ) as Wallet?;
     if (selectedWallet != null) {
       setState(() => this.wallet = selectedWallet);
     }
@@ -138,12 +141,12 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
       wallet.reference,
       type: TransactionType.expense,
       title: null,
-      amount: transactionAmountController.value!.amount!,
+      amount: transactionAmountController.value!.amount,
       category: transactionCategory?.reference,
       date: date,
     );
     setState(() {
-      transactionAmountController.value = Money(null, wallet.currency);
+      transactionAmountController.value = Money(0, wallet.currency);
       transactionCategory = null;
     });
 
@@ -158,7 +161,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   }
 
   void onSelectedDone(BuildContext context) {
-    if (remainingAmount.amount! > 0) {
+    if (remainingAmount.amount > 0) {
       ConfirmationDialog(
         title: Text(
             AppLocalizations.of(context).addSeriesTransactionsExitConfirmTitle),
@@ -166,7 +169,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
             .addSeriesTransactionsExitRemainingAmountGreater),
         onConfirm: () => router.pop(context),
       ).show(context);
-    } else if (remainingAmount.amount! < 0) {
+    } else if (remainingAmount.amount < 0) {
       ConfirmationDialog(
         title: Text(
             AppLocalizations.of(context).addSeriesTransactionsExitConfirmTitle),
@@ -231,14 +234,14 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   Widget buildTotalAmount(BuildContext context) {
     return AmountFormField(
       initialMoney:
-          Money(widget.initialTotalAmount, widget.initialWallet.currency),
+          Money(widget.initialTotalAmount ?? 0, widget.initialWallet.currency),
       decoration: InputDecoration(
         labelText:
             AppLocalizations.of(context).addSeriesTransactionsTotalAmount,
       ),
       controller: totalAmountController,
       validator: (amount) {
-        if (amount!.amount! < 0)
+        if (amount!.amount < 0)
           return AppLocalizations.of(context)
               .addTransactionAmountErrorZeroOrNegative;
         return null;
@@ -302,7 +305,8 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   Widget buildAmountIndicator(BuildContext context) {
     final totalAmount = totalAmountController.value?.amount ?? 0.0;
     final progress =
-        totalAmount > 0.0 ? transactionsAmount.amount! / totalAmount : 0.0;
+        totalAmount > 0.0 ? transactionsAmount.amount / totalAmount : 0.0;
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(children: [
@@ -316,9 +320,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
             AppLocalizations.of(context)
                 .addSeriesTransactionsRemainingAmount(remainingAmount),
             style: Theme.of(context).textTheme.caption!.copyWith(
-                  color: (remainingAmount.amount ?? 0) >= 0
-                      ? null
-                      : Colors.deepOrange,
+                  color: remainingAmount.amount >= 0 ? null : Colors.deepOrange,
                 ),
           ),
         )
@@ -327,7 +329,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   }
 
   Widget buildNewTransactionSection(BuildContext context) {
-    if (totalAmount.amount == null) {
+    if (totalAmount == null) {
       return buildPanel(
         context,
         icon: Icons.info_outline,
@@ -346,7 +348,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
         ),
         buildDoneButton(context, isPrimary: true),
       ]);
-    } else if (remainingAmount.amount! < 0) {
+    } else if (remainingAmount.amount < 0) {
       return Column(children: [
         buildPanel(
           context,
@@ -414,17 +416,17 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
       children: [
         Expanded(
           child: AmountFormField(
-            initialMoney: Money(null, widget.initialWallet.currency),
+            initialMoney: Money(0, widget.initialWallet.currency),
             decoration: InputDecoration(
               labelText: AppLocalizations.of(context)
                   .addSeriesTransactionsTransactionAmount,
             ),
             controller: transactionAmountController,
             validator: (amount) {
-              if (amount!.amount == null)
+              if (amount == null)
                 return AppLocalizations.of(context)
                     .addTransactionAmountErrorIsEmpty;
-              if (amount.amount! <= 0)
+              if (amount.amount <= 0)
                 return AppLocalizations.of(context)
                     .addTransactionAmountErrorZeroOrNegative;
               return null;

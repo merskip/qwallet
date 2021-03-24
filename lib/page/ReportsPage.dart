@@ -164,7 +164,7 @@ class _ReportByCategoriesPage extends StatelessWidget {
       final totalAmount = transactions
           .where((t) => t.type == TransactionType.expense)
           .fold<double>(0, (v, t) => v + t.amount);
-      final percentage = totalAmount / wallet.totalExpense.amount! * 100.0;
+      final percentage = totalAmount / wallet.totalExpense.amount * 100.0;
 
       items.add(_ByCategoryItem(
         category,
@@ -174,8 +174,8 @@ class _ReportByCategoriesPage extends StatelessWidget {
     });
     items
       ..sort((lhs, rhs) =>
-          rhs.totalAmount.amount!.compareTo(lhs.totalAmount.amount!));
-    return items.where((c) => c.totalAmount.amount! > 0).toList();
+          rhs.totalAmount.amount.compareTo(lhs.totalAmount.amount));
+    return items.where((c) => c.totalAmount.amount > 0).toList();
   }
 }
 
@@ -226,7 +226,7 @@ class _ReportByDatePage extends StatelessWidget {
                     x: item.date.day,
                     barRods: [
                       BarChartRodData(
-                          y: (item.totalAmount.amount! * 10).roundToDouble() /
+                          y: (item.totalAmount.amount * 10).roundToDouble() /
                               10),
                     ],
                   ),
@@ -337,7 +337,7 @@ class _ReportByDatePage extends StatelessWidget {
       final totalAmount = transactions
           .where((t) => t.type == TransactionType.expense)
           .fold<double>(0, (v, t) => v + t.amount);
-      final percentage = totalAmount / wallet.totalExpense.amount! * 100.0;
+      final percentage = totalAmount / wallet.totalExpense.amount * 100.0;
       items.add(_ByDateItem(
         date,
         Money(totalAmount, wallet.currency),

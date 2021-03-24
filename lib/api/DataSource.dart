@@ -496,7 +496,7 @@ extension PrivateLoansDataSource on DataSource {
         final repaidAmount = getRepaidAmount(loan);
         transaction.update(loan.reference.documentReference, {
           "repaidAmount": repaidAmount,
-          "isFullyRepaid": repaidAmount >= loan.amount.amount!,
+          "isFullyRepaid": repaidAmount >= loan.amount.amount,
         });
       }
     });

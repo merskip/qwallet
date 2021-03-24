@@ -108,7 +108,7 @@ class LoansGroup implements Comparable {
   });
 
   void finalize() {
-    _totalRawAmount = loans.fold(0, (p, v) => p + v.remainingAmount.amount!);
+    _totalRawAmount = loans.fold(0, (p, v) => p + v.remainingAmount.amount);
     loansOfOtherPerson =
         loans.where((loan) => loan.currentUserIsLender).toList();
     debtOfOtherPerson =
@@ -290,7 +290,7 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
               return Text(
                 money.formatted,
                 style: (defaultStyle ?? TextStyle()).copyWith(
-                  color: money.amount!.isNegative ? Colors.red : null,
+                  color: money.amount.isNegative ? Colors.red : null,
                   // fontSize: 15,
                   // fontWeight: FontWeight.w500,
                 ),

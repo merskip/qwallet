@@ -30,7 +30,9 @@ class MoneyTextDetector {
             .replaceAll(currencyDecimalSeparator, ".");
 
         final amount = double.tryParse(normalizedAmount);
-        results.add(Money(amount, currency));
+        if (amount != null) {
+          results.add(Money(amount, currency));
+        }
       });
     }
     return results;

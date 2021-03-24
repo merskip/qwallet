@@ -70,7 +70,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       title: AppLocalizations.of(context).walletOwners,
       selectedUsers: currentOwners,
     );
-    final owners = await pushPage<List<User>>(
+    final owners = await pushPage<List<User>?>(
       context,
       builder: (context) => page,
     );
@@ -85,7 +85,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   void onSelectedCurrency(BuildContext context) async {
     final page =
         CurrencySelectionPage(selectedCurrency: widget.wallet.currency);
-    final currency = await pushPage<Currency>(
+    final currency = await pushPage<Currency?>(
       context,
       builder: (context) => page,
     );

@@ -56,7 +56,7 @@ class DashboardPageState extends State<DashboardPage> {
       // Fixes #44 bug
       final freshWallet =
           await DataSource.instance.getWallet(wallet.reference).first;
-      final initialAmount = newBalance.amount! - freshWallet.balance.amount!;
+      final initialAmount = newBalance.amount - freshWallet.balance.amount;
       router.navigateTo(
           context, "/wallet/${wallet.id}/addTransaction/amount/$initialAmount");
     }
@@ -118,7 +118,7 @@ class DashboardPageState extends State<DashboardPage> {
   ) async {
     final wallet = getSelectedWallet();
     final amount =
-        notification.money.amount! * -1; // NOTE: By default is expense
+        notification.money.amount * -1; // NOTE: By default is expense
     router.pop(context);
     router.navigateTo(
         context, "/wallet/${wallet.id}/addTransaction/amount/$amount");
