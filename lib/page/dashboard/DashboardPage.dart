@@ -168,11 +168,7 @@ class DashboardPageState extends State<DashboardPage> {
           actions: buildAppBarActions(context, true),
         ),
         if (_selectedWallet.value != null)
-          buildWalletCards(context, getSelectedWallet())
-        else
-          SliverToBoxAdapter(
-            child: Center(child: CircularProgressIndicator()),
-          ),
+          buildWalletCards(context, getSelectedWallet()),
         SliverPadding(
           padding: EdgeInsets.only(bottom: 88),
         ),
@@ -183,8 +179,7 @@ class DashboardPageState extends State<DashboardPage> {
   Widget buildWalletCards(BuildContext context, Wallet wallet) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getLatestTransactions(wallet.reference),
-      loadingBuilder: (context) =>
-          SliverToBoxAdapter(child: CircularProgressIndicator()),
+      loadingBuilder: (context) => SliverToBoxAdapter(child: Container()),
       builder: (context, LatestTransactions latestTransactions) {
         DataSource.instance
             .refreshWalletBalanceIfNeeded(latestTransactions)
