@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/page/dashboard/DashboardPage.dart';
 import 'package:qwallet/page/loans/LoansTabPage.dart';
-import 'package:qwallet/widget/vector_image.dart';
+import 'package:qwallet/widget/VectorImage.dart';
 
 import '../AppLocalizations.dart';
 import '../router.dart';
@@ -17,7 +17,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   final dashboardKey = GlobalKey<DashboardPageState>();
 
   void onSelectedAddTransaction(BuildContext context) {
-    final wallet = dashboardKey.currentState.getSelectedWallet();
+    final wallet = dashboardKey.currentState!.getSelectedWallet();
     router.navigateTo(context, "/wallet/${wallet.id}/addTransaction");
   }
 
@@ -65,7 +65,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     );
   }
 
-  Widget buildAddTransactionButton(BuildContext context) {
+  Widget? buildAddTransactionButton(BuildContext context) {
     switch (selectedIndex) {
       case 0:
         return FloatingActionButton(

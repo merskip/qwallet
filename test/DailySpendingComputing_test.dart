@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:qwallet/Currency.dart';
 import 'package:qwallet/page/dashboard/DailySpendingComputing.dart';
 
 void main() {
@@ -10,7 +11,7 @@ void main() {
       excludedExpenses: 0,
       totalDays: 10,
       currentDay: 1,
-      currency: null,
+      currency: Currency.fromCode("USD"),
     );
 
     expect(result.availableDailySpending.amount, 100.0);
@@ -25,7 +26,7 @@ void main() {
       excludedExpenses: 1000,
       totalDays: 10,
       currentDay: 1,
-      currency: null,
+      currency: Currency.fromCode("USD"),
     );
 
     expect(result.availableDailySpending.amount, 100.0);
@@ -40,7 +41,7 @@ void main() {
       excludedExpenses: 1000,
       totalDays: 10,
       currentDay: 2,
-      currency: null,
+      currency: Currency.fromCode("USD"),
     );
 
     expect(result.availableDailySpending.amount, 100.0);
@@ -55,7 +56,7 @@ void main() {
       excludedExpenses: 1000,
       totalDays: 10,
       currentDay: 2,
-      currency: null,
+      currency: Currency.fromCode("USD"),
     );
 
     expect(result.availableDailySpending.amount, 100.0);

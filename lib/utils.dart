@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 Future<T> pushPage<T>(BuildContext context,
-    {@required WidgetBuilder builder}) async {
+    {required WidgetBuilder builder}) async {
   final Route route =
       MaterialPageRoute<T>(builder: (context) => builder(context));
   return await Navigator.of(context).push(route);
@@ -66,7 +66,7 @@ extension DateTimeUtils on DateTime {
     );
   }
 
-  bool isSameDate(DateTime other) =>
+  bool isSameDate(DateTime? other) =>
       year == other?.year && month == other?.month && day == other?.day;
 
   DateTime adding({
@@ -146,8 +146,9 @@ double toDouble(dynamic value, {double defaultValue = 0.0}) {
     return defaultValue;
 }
 
-String formatMoney(double amount, String currency, {bool showCurrency = true}) {
-  if (amount == null) return null;
+String formatMoney(double? amount, String currency,
+    {bool showCurrency = true}) {
+  if (amount == null) return "";
   if (showCurrency)
     return NumberFormat.simpleCurrency(locale: "pl_PL").format(amount);
   else
@@ -156,8 +157,8 @@ String formatMoney(double amount, String currency, {bool showCurrency = true}) {
         .trimRight();
 }
 
-String formatAmount(double amount, {bool currency = true}) {
-  if (amount == null) return null;
+String formatAmount(double? amount, {bool currency = true}) {
+  if (amount == null) return "";
   if (currency)
     return NumberFormat.simpleCurrency(locale: "pl_PL").format(amount);
   else
@@ -176,15 +177,7 @@ String formatNIP(String nip, {String separator = "-"}) {
   ].join(separator);
 }
 
-FormFieldValidator<String> amountValidator() {
-  return (value) {
-    if (value.isEmpty) return "Please enter a amount";
-    if (parseAmount(value) == null) return "Invalid amount format";
-    return null;
-  };
-}
-
-double parseAmount(String text) {
+double? parseAmount(String text) {
   final pureText = text.replaceAll(",", "").replaceAll(RegExp("[^-0-9\.]"), "");
   return double.tryParse(pureText) ?? null;
 }
@@ -206,20 +199,20 @@ Color colorFromHex(String hexString) {
 }
 
 extension StringUtils on String {
-  String nullIfEmpty() => isEmpty ? null : this;
+  String? nullIfEmpty() => isEmpty ? null : this;
 
   String firstUppercase() => this[0].toUpperCase() + this.substring(1);
 }
 
 extension CompareWithAccuracy on double {
-  bool isEqual(double value, {double accuracy}) =>
+  bool isEqual(double value, {double? accuracy}) =>
       (this - value).abs() <= (accuracy ?? 0.0);
 }
 
 extension DateTimeRangeFormatting on DateTimeRange {
   String formatted({
-    DateFormat dateFormat,
-    String separator,
+    DateFormat? dateFormat,
+    String? separator,
   }) {
     final effectiveDateFormat = dateFormat ?? DateFormat("dd.MM.yyyy");
     final effectiveSeparator = separator ?? " - ";
@@ -235,7 +228,7 @@ extension FieldPathAdding on FieldPath {
     if (components is String)
       addComponents = [components];
     else if (components is List<String>)
-      addComponents = addComponents;
+      addComponents = components;
     else if (components is FieldPath)
       addComponents = components.components;
     else
@@ -251,12 +244,12 @@ FieldPath toFieldPath(dynamic field) {
   else if (field is FieldPath)
     return field;
   else
-    return null;
+    throw ("Unsupported field type");
 }
 
 extension ListSplitting<T> on List<T> {
   List<List<T>> split(int size) {
-    var chunks = List<List<T>>();
+    List<List<T>> chunks = [[]];
     for (var i = 0; i < length; i += size) {
       chunks.add(sublist(i, i + size > length ? length : i + size));
     }

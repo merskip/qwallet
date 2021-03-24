@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/utils.dart';
 
 import '../AppLocalizations.dart';
+import '../utils/IterableFinding.dart';
 
 class CalendarRangesPreview extends StatelessWidget {
   final DateTime now;
@@ -11,12 +12,12 @@ class CalendarRangesPreview extends StatelessWidget {
   final DateTimeRange showingRange;
 
   CalendarRangesPreview({
-    Key key,
-    DateTime now,
-    this.ranges,
-    this.selectedRange,
-    this.showingRange,
-  })  : this.now = now ?? DateTime.now(),
+    Key? key,
+    DateTime? now,
+    required this.ranges,
+    required this.selectedRange,
+    required this.showingRange,
+  })   : this.now = now ?? DateTime.now(),
         super(key: key);
 
   @override
@@ -26,11 +27,11 @@ class CalendarRangesPreview extends StatelessWidget {
       end: this.showingRange.end.lastDayOfWeek.adding(day: 1).beginningOfDay,
     );
 
-    final items = List<Widget>();
-    int lastMonth;
+    final items = <Widget>[];
+    int? lastMonth;
     final weeks = calendarRange.getDays().split(DateTime.daysPerWeek);
     for (final weekDays in weeks) {
-      if (lastMonth != weekDays.last.month) {
+      if (lastMonth != weekDays.lastOrNull?.month) {
         final locale = AppLocalizations.of(context).locale;
         final monthFormat = DateFormat("MMMM", locale.toString());
         items.add(Padding(
@@ -41,7 +42,7 @@ class CalendarRangesPreview extends StatelessWidget {
           ),
         ));
       }
-      lastMonth = weekDays.last.month;
+      lastMonth = weekDays.lastOrNull?.month;
 
       items.add(Padding(
         padding: const EdgeInsets.symmetric(vertical: 1),
@@ -60,16 +61,13 @@ class CalendarRangesPreview extends StatelessWidget {
 
   Widget buildCell(BuildContext context, DateTime day) {
     final isToday = day.isSameDate(DateTime.now());
-    final currentRange = ranges.firstWhere(
-      (range) => range.contains(day),
-      orElse: () => null,
-    );
+    final currentRange = ranges.findFirstOrNull((range) => range.contains(day));
     final isFirstDayOfRange = day.isSameDate(currentRange?.start);
     final isLastDayOfRange = day.isSameDate(currentRange?.end);
     final backgroundColor = _getColorBackground(context, day, currentRange);
     final textColor = ThemeData.estimateBrightnessForColor(backgroundColor) ==
             Brightness.light
-        ? Theme.of(context).textTheme.bodyText1.color
+        ? Theme.of(context).textTheme.bodyText1!.color
         : Theme.of(context).primaryColorLight;
 
     return Flexible(
@@ -110,7 +108,7 @@ class CalendarRangesPreview extends StatelessWidget {
   }
 
   Color _getColorBackground(
-      BuildContext context, DateTime day, DateTimeRange range) {
+      BuildContext context, DateTime day, DateTimeRange? range) {
     final primaryColor = Theme.of(context).primaryColor as MaterialColor;
     if (selectedRange == range) {
       return primaryColor;

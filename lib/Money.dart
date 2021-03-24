@@ -9,7 +9,9 @@ class Money {
   final Currency currency;
 
   String get formatted => format();
+
   String get formattedWithCode => formatWithCode();
+
   String get formattedOnlyAmount => formatOnlyAmount();
 
   Money(this.amount, this.currency);
@@ -19,12 +21,51 @@ class Money {
 }
 
 extension MoneyOperators on Money {
-  Money operator +(double amount) => Money(this.amount + amount, currency);
-  Money operator -(double amount) => Money(this.amount - amount, currency);
-  Money operator *(double factor) => Money(this.amount * factor, currency);
-  Money operator /(double factor) => Money(this.amount / factor, currency);
-
   Money operator -() => Money(-amount, currency);
+
+  Money operator +(dynamic other) {
+    if (other == null)
+      return Money(amount, currency);
+    else if (other is num)
+      return Money(amount + other, currency);
+    else if (other is Money)
+      return Money(amount + other.amount, currency);
+    else
+      throw ArgumentError.value(other, "Must be num or Money");
+  }
+
+  Money operator -(dynamic other) {
+    if (other == null)
+      return Money(amount, currency);
+    else if (other is num)
+      return Money(amount - other, currency);
+    else if (other is Money)
+      return Money(amount - other.amount, currency);
+    else
+      throw ArgumentError.value(other, "Must be num or Money");
+  }
+
+  Money operator *(dynamic other) {
+    if (other == null)
+      return Money(amount, currency);
+    else if (other is num)
+      return Money(amount * other, currency);
+    else if (other is Money)
+      return Money(amount * other.amount, currency);
+    else
+      throw ArgumentError.value(other, "Must be num or Money");
+  }
+
+  Money operator /(dynamic other) {
+    if (other == null)
+      return Money(amount, currency);
+    else if (other is num)
+      return Money(amount / other, currency);
+    else if (other is Money)
+      return Money(amount / other.amount, currency);
+    else
+      throw ArgumentError.value(other, "Must be num or Money");
+  }
 }
 
 extension MoneyFormatting on Money {
@@ -54,21 +95,7 @@ extension MoneyFormatting on Money {
         ));
   }
 
-  String formatForEditing() {
-    return _formatAmountUsing(() {
-      final hasDecimalPart = amount.remainder(1) != 0.0;
-      return NumberFormat.currency(
-        locale: _locale,
-        name: currency.code,
-        symbol: currency.symbols.first,
-        decimalDigits: hasDecimalPart ? currency.decimalDigits : 0,
-        customPattern: "0.00",
-      );
-    });
-  }
-
   String _formatAmountUsing(NumberFormat numberFormat()) {
-    if (amount == null) return "";
     _setNumberFormatSymbols();
     return numberFormat().format(amount);
   }
@@ -78,18 +105,26 @@ extension MoneyFormatting on Money {
         () => NumberSymbols(
           NAME: _locale,
           GROUP_SEP: currency.groupSeparator,
-          DECIMAL_SEP: currency.decimalSeparator,
+          DECIMAL_SEP: currency.decimalSeparator ?? "",
           ZERO_DIGIT: '0',
           PLUS_SIGN: '+',
           MINUS_SIGN: '-',
           CURRENCY_PATTERN: currency.pattern,
           DEF_CURRENCY_CODE: currency.code,
+          NAN: '',
+          EXP_SYMBOL: '',
+          PERCENT: '',
+          PERMILL: '',
+          PERCENT_PATTERN: '',
+          SCIENTIFIC_PATTERN: '',
+          INFINITY: '',
+          DECIMAL_PATTERN: '',
         ),
       );
 }
 
 extension MoneyList on Iterable<Money> {
-  Money sum() {
+  Money? sum() {
     if (isEmpty) return null;
 
     double sum = 0.0;

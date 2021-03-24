@@ -10,14 +10,12 @@ class TransactionsCategoryMultiplePicker extends StatefulWidget {
   final List<Category> categories;
   final List<Category> selectedCategories;
   final bool includeWithoutCategory;
-  final Widget title;
 
   const TransactionsCategoryMultiplePicker({
-    Key key,
-    this.categories,
-    this.selectedCategories,
-    this.includeWithoutCategory,
-    this.title,
+    Key? key,
+    required this.categories,
+    required this.selectedCategories,
+    required this.includeWithoutCategory,
   }) : super(key: key);
 
   @override
@@ -27,8 +25,8 @@ class TransactionsCategoryMultiplePicker extends StatefulWidget {
 
 class TransactionsCategoryMultiplePickerState
     extends State<TransactionsCategoryMultiplePicker> {
-  List<Category> selectedCategories;
-  bool includeWithoutCategory;
+  late List<Category> selectedCategories;
+  late bool includeWithoutCategory;
 
   @override
   void initState() {
@@ -70,23 +68,8 @@ class TransactionsCategoryMultiplePickerState
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (widget.title != null) buildTitle(context),
           buildCategories(context)
         ],
-      ),
-    );
-  }
-
-  Widget buildTitle(BuildContext context) {
-    return Align(
-      alignment: AlignmentDirectional.centerStart,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8)
-            .copyWith(bottom: 12),
-        child: DefaultTextStyle(
-          style: Theme.of(context).textTheme.bodyText2,
-          child: widget.title,
-        ),
       ),
     );
   }

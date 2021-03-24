@@ -26,10 +26,10 @@ class AppLocalizations {
   final Locale locale;
 
   static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
-  String _locale({@required String en, @required String pl}) {
+  String _locale({required String en, required String pl}) {
     switch (locale.languageCode) {
       case "en":
         return en;
@@ -1114,11 +1114,6 @@ extension CategoriesLocalizations on AppLocalizations {
   String get categoryIconPackMaterial => _locale(
         en: "Material Design icons",
         pl: "Ikony Material Design",
-      );
-
-  String get categoryIconPackMaterialOutline => _locale(
-        en: "Outlined Material Design icons",
-        pl: "Obramowane ikony Material Design",
       );
 
   String get categoryIconPackCupertino => _locale(

@@ -4,10 +4,10 @@ import 'package:flutter_svg/svg.dart';
 
 class VectorImage extends StatelessWidget {
   final String assetName;
-  final Size size;
-  final Color color;
+  final Size? size;
+  final Color? color;
 
-  const VectorImage(this.assetName, {Key key, this.size, this.color})
+  const VectorImage(this.assetName, {Key? key, this.size, this.color})
       : super(key: key);
 
   @override

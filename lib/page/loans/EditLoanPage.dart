@@ -12,16 +12,16 @@ class EditLoanPage extends StatelessWidget {
   final PrivateLoan loan;
 
   const EditLoanPage({
-    Key key,
-    this.loan,
+    Key? key,
+    required this.loan,
   }) : super(key: key);
 
   void onSelectedSubmit(
     BuildContext context,
-    User lenderUser,
-    String lenderName,
-    User borrowerUser,
-    String borrowerName,
+    User? lenderUser,
+    String? lenderName,
+    User? borrowerUser,
+    String? borrowerName,
     Money amount,
     Money repaidAmount,
     String title,
@@ -43,8 +43,9 @@ class EditLoanPage extends StatelessWidget {
   }
 
   void onSelectedToggleArchive(BuildContext context) {
-    DataSource.instance.updatePrivateLoan(
+    DataSource.instance.updatePrivateLoanRepaidAmount(
       loanRef: loan.reference,
+      amount: loan.amount.amount,
       repaidAmount: loan.isFullyRepaid ? 0.0 : loan.amount.amount,
     );
     Navigator.of(context).pop();

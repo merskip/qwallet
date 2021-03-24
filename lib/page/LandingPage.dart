@@ -4,7 +4,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/model/user.dart';
 
 import 'MainNavigationPage.dart';
-import 'sign_in_page.dart';
+import 'SignInPage.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -44,7 +44,7 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-  _setSignInState(auth.User user) {
+  _setSignInState(auth.User? user) {
     debugPrint("Sign in state: uid=${user?.uid}");
     if (mounted) {
       setState(() {

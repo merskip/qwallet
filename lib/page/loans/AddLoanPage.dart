@@ -9,10 +9,10 @@ import 'LoanForm.dart';
 class AddLoanPage extends StatelessWidget {
   void onSubmit(
     BuildContext context,
-    User lenderUser,
-    String lenderName,
-    User borrowerUser,
-    String borrowerName,
+    User? lenderUser,
+    String? lenderName,
+    User? borrowerUser,
+    String? borrowerName,
     Money amount,
     Money repaidAmount,
     String title,

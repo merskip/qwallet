@@ -6,12 +6,10 @@ import 'package:flutter_iconpicker/IconPicker/Packs/FontAwesome.dart'
 import 'package:flutter_iconpicker/IconPicker/Packs/LineIcons.dart'
     as LineAwesome;
 import 'package:flutter_iconpicker/IconPicker/Packs/Material.dart' as Material;
-import 'package:flutter_iconpicker/IconPicker/Packs/MaterialOutline.dart'
-    as MaterialOutline;
 import 'package:flutter_iconpicker/Models/IconPack.dart';
 
-Map<String, dynamic> serializeIcon(IconData icon, {IconPack iconPack}) {
-  iconPack = iconPack ?? _getInferredIconPack(icon);
+Map<String, dynamic> serializeIcon(IconData icon, {IconPack? iconPack}) {
+  iconPack = iconPack ?? _getInferredIconPack(icon)!;
   final iconKey = _getInferredIconKey(iconPack, icon);
   if (iconKey != null) {
     return {
@@ -31,15 +29,13 @@ Map<String, dynamic> serializeIcon(IconData icon, {IconPack iconPack}) {
   }
 }
 
-IconData deserializeIcon(Map<String, dynamic> iconMap) {
+IconData? deserializeIcon(Map<String, dynamic> iconMap) {
   try {
     final pack = iconMap['pack'];
     final iconKey = iconMap['key'];
     switch (pack) {
       case "material":
         return Material.icons[iconKey];
-      case "materialOutline":
-        return MaterialOutline.materialOutline[iconKey];
       case "cupertino":
         return Cupertino.cupertinoIcons[iconKey];
       case "fontAwesomeIcons":
@@ -56,7 +52,7 @@ IconData deserializeIcon(Map<String, dynamic> iconMap) {
 }
 
 String getIconDescription(IconData icon) {
-  final iconPack = _getInferredIconPack(icon);
+  final iconPack = _getInferredIconPack(icon)!;
   final iconPackName = _iconPackToString(iconPack);
   final iconKey = _getInferredIconKey(iconPack, icon);
   if (iconKey != null) {
@@ -74,11 +70,9 @@ String getIconDescription(IconData icon) {
   }
 }
 
-IconPack _getInferredIconPack(IconData icon) {
+IconPack? _getInferredIconPack(IconData icon) {
   if (icon.fontFamily == "MaterialIcons")
     return IconPack.material;
-  else if (icon.fontFamily == "outline_material_icons")
-    return IconPack.materialOutline;
   else if (icon.fontFamily == "CupertinoIcons")
     return IconPack.cupertino;
   else if (icon.fontPackage == "font_awesome_flutter")
@@ -93,8 +87,6 @@ String _iconPackToString(IconPack iconPack) {
   switch (iconPack) {
     case IconPack.material:
       return "material";
-    case IconPack.materialOutline:
-      return "materialOutline";
     case IconPack.cupertino:
       return "cupertino";
     case IconPack.fontAwesomeIcons:
@@ -107,17 +99,14 @@ String _iconPackToString(IconPack iconPack) {
   }
 }
 
-String _getInferredIconKey(IconPack iconPack, IconData icon) {
+String? _getInferredIconKey(IconPack iconPack, IconData icon) {
   switch (iconPack) {
     case IconPack.material:
       return _getIconKey(Material.icons, icon);
-    case IconPack.materialOutline:
-      return _getIconKey(MaterialOutline.materialOutline, icon);
     case IconPack.cupertino:
       return _getIconKey(Cupertino.cupertinoIcons, icon);
     case IconPack.fontAwesomeIcons:
       return _getIconKey(FontAwesome.fontAwesomeIcons, icon);
-      break;
     case IconPack.lineAwesomeIcons:
       return _getIconKey(LineAwesome.lineAwesomeIcons, icon);
     default:

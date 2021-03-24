@@ -15,8 +15,8 @@ class EditWalletDateRangePage extends StatelessWidget {
   final Reference<Wallet> wallet;
 
   const EditWalletDateRangePage({
-    Key key,
-    this.wallet,
+    Key? key,
+    required this.wallet,
   }) : super(key: key);
 
   @override
@@ -27,7 +27,7 @@ class EditWalletDateRangePage extends StatelessWidget {
       ),
       body: SimpleStreamWidget(
         stream: DataSource.instance.getWallet(wallet),
-        builder: (context, wallet) => _EditWalletDateRangePageContent(
+        builder: (context, Wallet wallet) => _EditWalletDateRangePageContent(
           wallet: wallet,
         ),
       ),
@@ -39,8 +39,8 @@ class _EditWalletDateRangePageContent extends StatefulWidget {
   final Wallet wallet;
 
   const _EditWalletDateRangePageContent({
-    Key key,
-    this.wallet,
+    Key? key,
+    required this.wallet,
   }) : super(key: key);
 
   @override
@@ -123,7 +123,7 @@ class _EditWalletDateRangePageContentState
             AppLocalizations.of(context).editWalletDateRangeTypeCurrentWeek,
         WalletDateRangeType.lastDays:
             AppLocalizations.of(context).editWalletDateRangeTypeLastDays,
-      }[type]),
+      }[type]!),
       selected: this.type == type,
       onSelected: (isSelected) {
         if (isSelected) {
@@ -203,7 +203,7 @@ class _EditWalletDateRangePageContentState
             AppLocalizations.of(context).editWalletDateRangeTypeWeekdaySaturday,
         DateTime.sunday:
             AppLocalizations.of(context).editWalletDateRangeTypeWeekdaySunday,
-      }[weekday]),
+      }[weekday]!),
       selected: this.weekdayStart == weekday,
       onSelected: (isSelected) {
         if (isSelected) {
@@ -249,8 +249,6 @@ class _EditWalletDateRangePageContentState
         return buildExampleCalendarForCurrentWeek(context);
       case WalletDateRangeType.lastDays:
         return buildExampleCalendarForLastDays(context);
-      default:
-        return null;
     }
   }
 

@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/router.dart';
+import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
-import 'package:qwallet/widget/empty_state_widget.dart';
 
 import '../../AppLocalizations.dart';
 
@@ -23,7 +23,8 @@ class _LoansListPageState extends State<LoansListPage> {
     return Scaffold(
       body: SimpleStreamWidget(
         stream: DataSource.instance.getPrivateLoans(includeFullyRepaid: true),
-        builder: (context, loans) => buildLoansList(context, loans),
+        builder: (context, List<PrivateLoan> loans) =>
+            buildLoansList(context, loans),
       ),
     );
   }
@@ -99,7 +100,7 @@ class _LoansListPageState extends State<LoansListPage> {
         padding: const EdgeInsets.all(8.0),
         child: Icon(
           Icons.arrow_forward,
-          color: Theme.of(context).textTheme.caption.color,
+          color: Theme.of(context).textTheme.caption!.color,
         ),
       ),
       Expanded(
@@ -114,8 +115,8 @@ class _LoansListPageState extends State<LoansListPage> {
 
   Widget buildNameWithCaption(
     BuildContext context, {
-    String name,
-    String caption,
+    required String name,
+    required String caption,
   }) {
     return RichText(
       textAlign: TextAlign.center,
@@ -134,7 +135,7 @@ class _LoansListPageState extends State<LoansListPage> {
     final text = loan.isFullyRepaid
         ? loan.amount.formatted
         : "${loan.repaidAmount.formatted} / ${loan.amount.formatted}";
-    final textStyle = Theme.of(context).textTheme.headline6.copyWith(
+    final textStyle = Theme.of(context).textTheme.headline6!.copyWith(
           decoration: loan.isFullyRepaid ? TextDecoration.lineThrough : null,
         );
     return Text(text, style: textStyle);

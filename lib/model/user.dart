@@ -3,20 +3,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/api/DataSource.dart';
 
+import '../utils/IterableFinding.dart';
+
 class User {
   final String uid;
   final bool isAnonymous;
-  final String displayName;
-  final String email;
-  final String avatarUrl;
+  final String? displayName;
+  final String? email;
+  final String? avatarUrl;
 
-  final auth.User firebaseUser;
+  final auth.User? firebaseUser;
 
   bool get isCurrentUser => User.currentUser().uid == uid;
 
   User({
-    this.uid,
-    this.isAnonymous,
+    required this.uid,
+    required this.isAnonymous,
     this.displayName,
     this.email,
     this.avatarUrl,
@@ -25,17 +27,18 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-        uid: json['uid'] as String,
-        isAnonymous: json['isAnonymous'] as bool,
-        displayName: json['displayName'] as String,
-        email: json['email'] as String,
-        avatarUrl: json['avatarUrl'] as String,
-        firebaseUser: null);
+      uid: json['uid'] as String,
+      isAnonymous: json['isAnonymous'] as bool,
+      displayName: json['displayName'] as String?,
+      email: json['email'] as String?,
+      avatarUrl: json['avatarUrl'] as String?,
+      firebaseUser: null,
+    );
   }
 
-  factory User.currentUser() => DataSource.instance.currentUser;
+  factory User.currentUser() => DataSource.instance.currentUser!;
 
-  factory User.emptyFromUid(String uid) => User(uid: uid);
+  factory User.emptyFromUid(String uid) => User(uid: uid, isAnonymous: false);
 
   factory User.fromFirebase(auth.User firebaseUser) {
     return User(
@@ -57,7 +60,7 @@ class User {
     return commonName;
   }
 
-  String getSubtitle() {
+  String? getSubtitle() {
     return displayName != null ? email : null;
   }
 
@@ -71,8 +74,5 @@ class User {
 }
 
 extension UsersList on List<User> {
-  User getByUid(String uid) => firstWhere(
-        (user) => user.uid == uid,
-        orElse: () => null,
-      );
+  User? findByUid(String uid) => findFirstOrNull((user) => user.uid == uid);
 }

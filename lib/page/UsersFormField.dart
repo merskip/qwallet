@@ -6,10 +6,10 @@ class UsersFormField extends FormField<List<User>> {
   final InputDecoration decoration;
 
   UsersFormField({
-    @required List<User> initialValue,
-    @required this.controller,
-    @required this.decoration,
-    FormFieldValidator<List<User>> validator,
+    required List<User> initialValue,
+    required this.controller,
+    required this.decoration,
+    FormFieldValidator<List<User>>? validator,
   }) : super(
           builder: (FormFieldState<List<User>> state) => Builder(
             builder: (context) => buildUsersInput(context, decoration, state),
@@ -29,8 +29,9 @@ class UsersFormField extends FormField<List<User>> {
         errorText: state.errorText,
       ),
       child: Wrap(
-        children:
-            state.value?.map((user) => buildUserChip(context, user))?.toList(),
+        children: [
+          ...?state.value?.map((user) => buildUserChip(context, user)),
+        ],
         spacing: 4,
         runSpacing: 4,
       ),
@@ -48,7 +49,7 @@ class UsersFormField extends FormField<List<User>> {
   static Widget buildAvatar(BuildContext context, User user) {
     if (user.avatarUrl != null)
       return CircleAvatar(
-        backgroundImage: NetworkImage(user.avatarUrl),
+        backgroundImage: NetworkImage(user.avatarUrl!),
         backgroundColor: Colors.transparent,
       );
     else if (user.displayName != null)
@@ -58,7 +59,7 @@ class UsersFormField extends FormField<List<User>> {
   }
 }
 
-class UsersEditingController extends ValueNotifier<List<User>> {
+class UsersEditingController extends ValueNotifier<List<User>?> {
   UsersEditingController() : super(null);
 }
 

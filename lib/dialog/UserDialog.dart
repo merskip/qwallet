@@ -3,18 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/model/user.dart';
-import 'package:qwallet/widget/hand_cursor.dart';
-import 'package:qwallet/widget/vector_image.dart';
+import 'package:qwallet/widget/HandCursor.dart';
+import 'package:qwallet/widget/VectorImage.dart';
+
+import '../utils/IterableFinding.dart';
 
 class UserDialog extends StatelessWidget {
   final User user;
 
-  const UserDialog({Key key, this.user}) : super(key: key);
+  const UserDialog({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
 
   _onSelectedDeleteAccount(BuildContext context) async {
     try {
       debugPrint("Deleting account...");
-      await user.firebaseUser.delete();
+      await user.firebaseUser!.delete();
 
       Navigator.of(context).popUntil(ModalRoute.withName('/'));
     } catch (e) {
@@ -64,9 +69,8 @@ class UserDialog extends StatelessWidget {
   }
 
   bool _hasProviderId(String providerId) {
-    final provider = user.firebaseUser.providerData.firstWhere(
-        (info) => info.providerId == providerId,
-        orElse: () => null);
+    final provider = user.firebaseUser?.providerData
+        .findFirstOrNull((info) => info.providerId == providerId);
     return provider != null;
   }
 
@@ -93,7 +97,8 @@ class UserDialog extends StatelessWidget {
 class _DeleteUserTile extends StatefulWidget {
   final VoidCallback onConfirmed;
 
-  const _DeleteUserTile({Key key, this.onConfirmed}) : super(key: key);
+  const _DeleteUserTile({Key? key, required this.onConfirmed})
+      : super(key: key);
 
   @override
   _DeleteUserTileState createState() => _DeleteUserTileState();

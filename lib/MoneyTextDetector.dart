@@ -7,16 +7,16 @@ class MoneyTextDetector {
 
   MoneyTextDetector(this.currencies);
 
-  List<Money> detect(String text) {
+  List<Money> detect(String? text) {
     if (text == null) return [];
-    final results = List<Money>();
+    final results = <Money>[];
     for (final currency in currencies) {
-      if (currency.groupSeparator == null ||
-          currency.decimalSeparator == null ||
-          currency.code == null) continue; // NOTE: Temporary solution
+      final currencyDecimalSeparator = currency.decimalSeparator;
+      if (currencyDecimalSeparator == null)
+        continue; // NOTE: Temporary solution
 
       final groupSeparator = RegExp.escape(currency.groupSeparator);
-      final decimalSeparator = RegExp.escape(currency.decimalSeparator);
+      final decimalSeparator = RegExp.escape(currencyDecimalSeparator);
       final currencyCode = RegExp.escape(currency.code);
 
       final formattedAmountRegex = RegExp(
@@ -25,12 +25,14 @@ class MoneyTextDetector {
           RegExp(formattedAmountRegex.pattern + " $currencyCode");
       formattedAmountWithCurrencyCodeRegex.allMatches(text).forEach((match) {
         final normalizedAmount = match
-            .group(1)
+            .group(1)!
             .replaceAll(currency.groupSeparator, "")
-            .replaceAll(currency.decimalSeparator, ".");
+            .replaceAll(currencyDecimalSeparator, ".");
 
         final amount = double.tryParse(normalizedAmount);
-        results.add(Money(amount, currency));
+        if (amount != null) {
+          results.add(Money(amount, currency));
+        }
       });
     }
     return results;

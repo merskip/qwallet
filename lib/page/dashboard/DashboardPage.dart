@@ -10,10 +10,10 @@ import 'package:qwallet/MoneyTextDetector.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/dialog/EnterMoneyDialog.dart';
+import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
-import 'package:qwallet/widget/empty_state_widget.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../Money.dart';
@@ -24,7 +24,9 @@ import 'DailyReportSection.dart';
 import 'TransactionsCard.dart';
 
 class DashboardPage extends StatefulWidget {
-  DashboardPage({Key key}) : super(key: key);
+  DashboardPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   DashboardPageState createState() => DashboardPageState();
@@ -36,7 +38,7 @@ class DashboardPageState extends State<DashboardPage> {
   final notificationService = PushNotificationService();
 
   Wallet getSelectedWallet() {
-    return _selectedWallet.value;
+    return _selectedWallet.value!;
   }
 
   void onSelectedWallet(BuildContext context, Wallet wallet) {
@@ -49,7 +51,7 @@ class DashboardPageState extends State<DashboardPage> {
     final newBalance = await showDialog(
       context: context,
       builder: (context) => EnterMoneyDialog(currency: wallet.currency),
-    ) as Money;
+    ) as Money?;
     if (newBalance != null) {
       // Fixes #44 bug
       final freshWallet =
@@ -72,7 +74,7 @@ class DashboardPageState extends State<DashboardPage> {
           ...detectedMoneys.map((notification) => ListTile(
                 leading: notification.largeIcon != null
                     ? Image.memory(
-                        notification.largeIcon,
+                        notification.largeIcon!,
                         width: 36,
                         height: 36,
                       )
@@ -114,7 +116,7 @@ class DashboardPageState extends State<DashboardPage> {
     BuildContext context,
     PushNotificationWithMoney notification,
   ) async {
-    final wallet = _selectedWallet.value;
+    final wallet = getSelectedWallet();
     final amount =
         notification.money.amount * -1; // NOTE: By default is expense
     router.pop(context);
@@ -123,11 +125,11 @@ class DashboardPageState extends State<DashboardPage> {
   }
 
   void onSelectedEditWallet(BuildContext context, Wallet wallet) {
-    router.navigateTo(context, "/settings/wallets/${_selectedWallet.value.id}");
+    router.navigateTo(context, "/settings/wallets/${getSelectedWallet().id}");
   }
 
   void onSelectedReport(BuildContext context, Wallet wallet) {
-    router.navigateTo(context, "/wallet/${_selectedWallet.value.id}/report");
+    router.navigateTo(context, "/wallet/${getSelectedWallet().id}/report");
   }
 
   void onSelectedSettings(BuildContext context) {
@@ -166,7 +168,7 @@ class DashboardPageState extends State<DashboardPage> {
           actions: buildAppBarActions(context, true),
         ),
         if (_selectedWallet.value != null)
-          buildWalletCards(context, _selectedWallet.value)
+          buildWalletCards(context, getSelectedWallet())
         else
           SliverToBoxAdapter(
             child: Center(child: CircularProgressIndicator()),
@@ -183,7 +185,7 @@ class DashboardPageState extends State<DashboardPage> {
       stream: DataSource.instance.getLatestTransactions(wallet.reference),
       loadingBuilder: (context) =>
           SliverToBoxAdapter(child: CircularProgressIndicator()),
-      builder: (context, latestTransactions) {
+      builder: (context, LatestTransactions latestTransactions) {
         DataSource.instance
             .refreshWalletBalanceIfNeeded(latestTransactions)
             .catchError((error) {
@@ -240,8 +242,7 @@ class DashboardPageState extends State<DashboardPage> {
         IconButton(
           icon: Icon(Icons.edit_outlined),
           tooltip: AppLocalizations.of(context).dashboardEditBalance,
-          onPressed: () =>
-              onSelectedEditBalance(context, _selectedWallet.value),
+          onPressed: () => onSelectedEditBalance(context, getSelectedWallet()),
         ),
       PopupMenuButton(
         itemBuilder: (context) => [
@@ -263,10 +264,10 @@ class DashboardPageState extends State<DashboardPage> {
         onSelected: (id) {
           switch (id) {
             case "edit-wallet":
-              onSelectedEditWallet(context, _selectedWallet.value);
+              onSelectedEditWallet(context, getSelectedWallet());
               break;
             case "report":
-              onSelectedReport(context, _selectedWallet.value);
+              onSelectedReport(context, getSelectedWallet());
               break;
             case "settings":
               onSelectedSettings(context);
@@ -300,7 +301,7 @@ class DashboardPageState extends State<DashboardPage> {
         future: notificationService.isPermissionGranted(),
         builder: (context, AsyncSnapshot<bool> snapshot) {
           if (snapshot.hasData) {
-            final isPermissionGranted = snapshot.data;
+            final isPermissionGranted = snapshot.data!;
             if (isPermissionGranted) {
               return buildPushNotificationsButtonWithNotifications(context);
             } else {
@@ -324,7 +325,7 @@ class DashboardPageState extends State<DashboardPage> {
       future: notificationService.getActivePushNotifications(),
       builder: (context, AsyncSnapshot<List<PushNotification>> snapshot) {
         if (snapshot.hasData) {
-          final notifications = snapshot.data;
+          final notifications = snapshot.data!;
           final detectedMoneys = detectMoneysFromNotifications(
               MoneyTextDetector(CurrencyList.all), notifications);
 
@@ -369,8 +370,8 @@ class PushNotificationWithMoney extends PushNotification {
     String id,
     String title,
     String text,
-    Uint8List smallIcon,
-    Uint8List largeIcon,
+    Uint8List? smallIcon,
+    Uint8List? largeIcon,
     this.money,
   ) : super(id, title, text, smallIcon, largeIcon);
 }

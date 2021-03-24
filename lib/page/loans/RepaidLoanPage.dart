@@ -14,7 +14,7 @@ import '../../Money.dart';
 class RepaidLoanPage extends StatelessWidget {
   final LoansGroup loansGroup;
 
-  const RepaidLoanPage({Key key, this.loansGroup}) : super(key: key);
+  const RepaidLoanPage({Key? key, required this.loansGroup}) : super(key: key);
 
   void onSelectedApply(
     BuildContext context,
@@ -71,7 +71,8 @@ class RepaidLoanPage extends StatelessWidget {
 class RepayingLoanCard extends StatelessWidget {
   final MutatingPrivateLoan repayingLoan;
 
-  const RepayingLoanCard({Key key, this.repayingLoan}) : super(key: key);
+  const RepayingLoanCard({Key? key, required this.repayingLoan})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +115,7 @@ class RepayingLoanCard extends StatelessWidget {
       title: Text(repayingLoan.loan.title),
       trailing: Text(
         repayingLoan.loan.remainingAmount.formatted,
-        style: Theme.of(context).textTheme.subtitle1.copyWith(
+        style: Theme.of(context).textTheme.subtitle1!.copyWith(
               color:
                   repayingLoan.loan.currentUserIsBorrower ? Colors.red : null,
             ),
@@ -185,14 +186,13 @@ class RepayingLoanCard extends StatelessWidget {
 class MutatingPrivateLoan {
   final PrivateLoan loan;
 
-  Money repaidAmount;
+  late Money repaidAmount;
 
-  final List<RepayingUsedLoan> usedLoans = List();
+  final List<RepayingUsedLoan> usedLoans = [];
 
   bool get isFullyRepaid => remainingAmount.amount == 0;
 
-  Money get remainingAmount =>
-      Money(loan.amount.amount - repaidAmount.amount, loan.amount.currency);
+  Money get remainingAmount => loan.amount - repaidAmount.amount;
 
   Currency get currency => loan.amount.currency;
 

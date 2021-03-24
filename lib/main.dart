@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,18 +17,15 @@ void main() async {
 
       await Firebase.initializeApp();
 
-      if (kDebugMode && false) {
-        // Connection to Firebase Local Emulator
-        FirebaseFirestore.instance.settings = Settings(
-          host: Platform.isAndroid ? '10.0.2.2:8080' : 'localhost:8080',
-          sslEnabled: false,
-          persistenceEnabled: true,
-        );
-      } else {
-        FirebaseFirestore.instance.settings = Settings(
-          persistenceEnabled: true,
-        );
-      }
+      FirebaseFirestore.instance.settings = Settings(
+        persistenceEnabled: true,
+      );
+      // // Connection to Firebase Local Emulator
+      // FirebaseFirestore.instance.settings = Settings(
+      //   host: Platform.isAndroid ? '10.0.2.2:8080' : 'localhost:8080',
+      //   sslEnabled: false,
+      //   persistenceEnabled: true,
+      // );
 
       FlutterError.onError = (details) {
         FlutterError.dumpErrorToConsole(details);
@@ -41,7 +37,7 @@ void main() async {
     (error, stackTrace) {
       print("Error: $error");
       print("Stack trace: $stackTrace");
-      return FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
     },
   );
 }
@@ -57,7 +53,7 @@ class MyApp extends StatelessWidget {
         stream: LocalPreferences.userPreferences,
         initialData: UserPreferences.empty(),
         builder: (context, AsyncSnapshot<UserPreferences> snapshot) {
-          final userPreferences = snapshot.data;
+          final userPreferences = snapshot.data!;
           return MaterialApp(
             title: "QWallet",
             theme: ThemeData(
@@ -89,7 +85,7 @@ class MyApp extends StatelessWidget {
               GlobalCupertinoLocalizations.delegate
             ],
             localeResolutionCallback:
-                (Locale locale, Iterable<Locale> supportedLocales) {
+                (Locale? locale, Iterable<Locale> supportedLocales) {
               if (supportedLocales.contains(locale))
                 return locale;
               else

@@ -9,7 +9,7 @@ import '../AppLocalizations.dart';
 class AddCategoryPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
 
-  const AddCategoryPage({Key key, this.walletRef}) : super(key: key);
+  const AddCategoryPage({Key? key, required this.walletRef}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +21,7 @@ class AddCategoryPage extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(16),
           child: CategoryForm(
+            category: null,
             submitChild: Text(AppLocalizations.of(context).addCategorySubmit),
             onSubmit: (context, title, primaryColor, backgroundColor, icon) {
               DataSource.instance.addCategory(

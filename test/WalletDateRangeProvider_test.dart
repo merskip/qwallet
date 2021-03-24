@@ -267,8 +267,8 @@ void main() {
 }
 
 DateTimeRange _getDateTimeRange({
-  @required WalletDateRange dateRange,
-  @required DateTime now,
+  required WalletDateRange dateRange,
+  required DateTime now,
   int index = 0,
 }) {
   final provider = WalletDateRangeCalculator(dateRange);

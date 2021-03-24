@@ -18,13 +18,13 @@ import '../Currency.dart';
 class WalletPage extends StatelessWidget {
   final Reference<Wallet> walletRef;
 
-  const WalletPage({Key key, this.walletRef}) : super(key: key);
+  const WalletPage({Key? key, required this.walletRef}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getWallet(walletRef),
-      builder: (context, wallet) => _WalletPageContent(wallet: wallet),
+      builder: (context, Wallet wallet) => _WalletPageContent(wallet: wallet),
     );
   }
 }
@@ -32,7 +32,7 @@ class WalletPage extends StatelessWidget {
 class _WalletPageContent extends StatefulWidget {
   final Wallet wallet;
 
-  _WalletPageContent({Key key, this.wallet}) : super(key: key);
+  _WalletPageContent({Key? key, required this.wallet}) : super(key: key);
 
   @override
   _WalletPageContentState createState() => _WalletPageContentState();
@@ -70,7 +70,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       title: AppLocalizations.of(context).walletOwners,
       selectedUsers: currentOwners,
     );
-    final owners = await pushPage<List<User>>(
+    final owners = await pushPage<List<User>?>(
       context,
       builder: (context) => page,
     );
@@ -85,7 +85,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   void onSelectedCurrency(BuildContext context) async {
     final page =
         CurrencySelectionPage(selectedCurrency: widget.wallet.currency);
-    final currency = await pushPage<Currency>(
+    final currency = await pushPage<Currency?>(
       context,
       builder: (context) => page,
     );
@@ -254,8 +254,6 @@ class _WalletPageContentState extends State<_WalletPageContent> {
         return AppLocalizations.of(context).walletDateRangeCurrentWeek;
       case WalletDateRangeType.lastDays:
         return AppLocalizations.of(context).walletDateRangeLastDays;
-      default:
-        return null;
     }
   }
 

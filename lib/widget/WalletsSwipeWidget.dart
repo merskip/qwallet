@@ -9,8 +9,11 @@ class WalletsSwipeWidget extends StatefulWidget {
   final List<Wallet> wallets;
   final void Function(Wallet wallet) onSelectedWallet;
 
-  const WalletsSwipeWidget({Key key, this.wallets, this.onSelectedWallet})
-      : super(key: key);
+  const WalletsSwipeWidget({
+    Key? key,
+    required this.wallets,
+    required this.onSelectedWallet,
+  }) : super(key: key);
 
   @override
   _WalletsSwipeWidgetState createState() => _WalletsSwipeWidgetState();
@@ -82,7 +85,7 @@ class _WalletsSwipeWidgetState extends State<WalletsSwipeWidget> {
     );
   }
 
-  Widget buildTapArea({VoidCallback onTap}) {
+  Widget buildTapArea({required VoidCallback onTap}) {
     return Expanded(
       child: SizedBox(
         height: 24,
@@ -108,7 +111,7 @@ class _WalletsSwipeWidgetState extends State<WalletsSwipeWidget> {
 class _WalletSinglePage extends StatelessWidget {
   final Wallet wallet;
 
-  const _WalletSinglePage({Key key, this.wallet}) : super(key: key);
+  const _WalletSinglePage({Key? key, required this.wallet}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

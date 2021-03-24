@@ -13,14 +13,14 @@ import '../utils.dart';
 const buttonHeight = 56.0;
 
 class EnterMoneyDialog extends StatefulWidget {
-  final Money initialMoney;
+  final Money? initialMoney;
   final Currency currency;
   final bool isCurrencySelectable;
 
   const EnterMoneyDialog({
-    Key key,
+    Key? key,
     this.initialMoney,
-    @required this.currency,
+    required this.currency,
     this.isCurrencySelectable = false,
   }) : super(key: key);
 
@@ -29,8 +29,8 @@ class EnterMoneyDialog extends StatefulWidget {
 }
 
 class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
-  Currency currency;
-  String expression;
+  late Currency currency;
+  late String expression;
   final displayController = TextEditingController();
 
   final evaluator = const ExpressionEvaluator();
@@ -44,8 +44,8 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   }
 
   String _getInitialExpression() {
-    final initialAmount = widget.initialMoney?.amount ?? 0.0;
-    if (initialAmount != 0.0) {
+    final initialAmount = widget.initialMoney?.amount;
+    if (initialAmount != null && initialAmount > 0) {
       final amount = initialAmount.toString();
       if (amount.endsWith(".0"))
         return amount.substring(0, amount.length - 2);
@@ -88,7 +88,8 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   }
 
   void onSelectedApply(BuildContext context) {
-    final result = calculateExpression();
+    var result = calculateExpression();
+    if (result == null && expression.isEmpty) result = Money(0, currency);
     Navigator.of(context).pop(result);
   }
 
@@ -105,33 +106,32 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
     });
   }
 
-  List<String> _getDisplayText(Money result) {
+  List<String> _getDisplayText(Money? result) {
     final displayExpression = this
         .expression
         .replaceAllMapped(RegExp("([^0-9\.])"),
-            (m) => " " + _operatorToText(context, m.group(1)) + " ")
+            (m) => " " + _operatorToText(context, m.group(1)!) + " ")
         .replaceAll("  ", " ");
 
-    if (result != null) {
-      if (result.amount == null) result = Money(0.0, result.currency);
+    if (result != null)
       return [displayExpression, "= ${result.formatted}"];
-    } else {
+    else if (expression.isEmpty) {
+      return [displayExpression, "= ${Money(0, currency).formatted}"];
+    } else
       return [displayExpression, "= …"];
-    }
   }
 
-  Money calculateExpression() {
-    if (this.expression.isEmpty) return Money(null, currency);
+  Money? calculateExpression() {
+    if (this.expression.isEmpty) return null;
 
     try {
       Expression expression = Expression.parse(this.expression);
-      if (expression != null) {
-        final result = evaluator.eval(expression, {});
-        if (result is double && result.isFinite) {
-          return Money(result, currency);
-        } else if (result is int) {
-          return Money(result.toDouble(), currency);
-        }
+      final result = evaluator.eval(expression, {});
+
+      if (result is double && result.isFinite) {
+        return Money(result, currency);
+      } else if (result is int) {
+        return Money(result.toDouble(), currency);
       }
     } catch (e) {}
     return null;
@@ -141,11 +141,13 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       insetPadding: EdgeInsets.all(8),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        buildAmountPreview(context),
-        buildKeyboard(context),
-        buildButtons(context)
-      ]),
+      child: SingleChildScrollView(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          buildAmountPreview(context),
+          buildKeyboard(context),
+          buildButtons(context)
+        ]),
+      ),
     );
   }
 
@@ -238,19 +240,15 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
         padding: const EdgeInsets.all(3.0),
         child: Container(
           height: buttonHeight,
-          child: RaisedButton(
+          child: ElevatedButton(
             onPressed: () => onSelectedDigit(context, digit),
             child: Text(
               digit,
               style: TextStyle(
                 fontSize: 24,
-                color: Theme.of(context).primaryTextTheme.button.color,
+                color: Theme.of(context).primaryTextTheme.button!.color,
               ),
             ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            color: Theme.of(context).primaryColor,
           ),
         ),
       ),
@@ -264,7 +262,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
         padding: const EdgeInsets.all(3.0),
         child: Container(
           height: buttonHeight,
-          child: FlatButton(
+          child: TextButton(
             onPressed: () => onSelectedOperator(context, operator),
             child: Text(
               _operatorToText(context, operator),
@@ -272,13 +270,6 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
                 fontSize: 18,
                 color: Theme.of(context).primaryColor,
               ),
-            ),
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: Theme.of(context).primaryColor,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(4),
             ),
           ),
         ),
@@ -294,17 +285,9 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
         child: Container(
           height: buttonHeight,
           width: double.infinity,
-          child: FlatButton(
+          child: TextButton(
             onPressed: () => onSelectedBackspace(context),
             child: Icon(Icons.backspace, color: Colors.red),
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            // materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
         ),
       ),

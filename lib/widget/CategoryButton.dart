@@ -7,10 +7,10 @@ class CategoryButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const CategoryButton({
-    Key key,
-    @required this.category,
+    Key? key,
+    required this.category,
     this.isSelected = false,
-    @required this.onPressed,
+    required this.onPressed,
   }) : super(key: key);
 
   @override
@@ -35,13 +35,13 @@ class RawCategoryButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const RawCategoryButton({
-    Key key,
-    this.title,
-    this.icon,
-    this.primaryColor,
-    this.backgroundColor,
-    this.isSelected,
-    this.onPressed,
+    Key? key,
+    required this.title,
+    required this.icon,
+    required this.primaryColor,
+    required this.backgroundColor,
+    required this.isSelected,
+    required this.onPressed,
   }) : super(key: key);
 
   @override
@@ -76,7 +76,7 @@ class RawCategoryButton extends StatelessWidget {
           width: 64,
           child: Text(
             title,
-            style: Theme.of(context).textTheme.caption.copyWith(
+            style: Theme.of(context).textTheme.caption!.copyWith(
                   color: isSelected ? primaryColor : null,
                   fontWeight: isSelected ? FontWeight.bold : null,
                 ),

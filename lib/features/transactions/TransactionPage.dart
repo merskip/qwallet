@@ -7,8 +7,8 @@ import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
+import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
-import 'package:qwallet/widget/CatgegoryIcon.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -20,8 +20,11 @@ class TransactionPage extends StatefulWidget {
   final Reference<Wallet> walletRef;
   final Transaction transaction;
 
-  const TransactionPage({Key key, this.walletRef, this.transaction})
-      : super(key: key);
+  const TransactionPage({
+    Key? key,
+    required this.walletRef,
+    required this.transaction,
+  }) : super(key: key);
 
   @override
   _TransactionPageState createState() => _TransactionPageState(transaction);
@@ -31,9 +34,9 @@ class _TransactionPageState extends State<TransactionPage> {
   final TextEditingController titleController;
   final amountController = AmountEditingController();
 
-  Category _selectedCategory;
-  TransactionType _selectedType;
-  bool _excludedFromDailyStatistics;
+  late Category? _selectedCategory;
+  late TransactionType _selectedType;
+  late bool _excludedFromDailyStatistics;
 
   _TransactionPageState(Transaction transaction)
       : titleController = TextEditingController(text: transaction.title),
@@ -106,7 +109,7 @@ class _TransactionPageState extends State<TransactionPage> {
       ),
       body: SimpleStreamWidget(
         stream: DataSource.instance.getWallet(widget.walletRef),
-        builder: (context, wallet) => ListView(
+        builder: (context, Wallet wallet) => ListView(
           children: [
             buildWallet(context, wallet),
             buildCategory(context),
@@ -134,10 +137,10 @@ class _TransactionPageState extends State<TransactionPage> {
   }
 
   Widget buildCategory(BuildContext context) {
-    if (widget.transaction.category != null) {
+    final category = widget.transaction.category;
+    if (category != null) {
       return SimpleStreamWidget(
-        stream: DataSource.instance
-            .getCategory(category: widget.transaction.category),
+        stream: DataSource.instance.getCategory(category: category),
         builder: (context, Category category) {
           return buildCategoryDetailsItem(
             context,
@@ -160,8 +163,12 @@ class _TransactionPageState extends State<TransactionPage> {
     }
   }
 
-  Widget buildCategoryDetailsItem(BuildContext context,
-      {Widget leading, Widget value, Category category}) {
+  Widget buildCategoryDetailsItem(
+    BuildContext context, {
+    required Widget leading,
+    required Widget value,
+    Category? category,
+  }) {
     return DetailsItemTile(
       leading: leading,
       title: Text(AppLocalizations.of(context).transactionDetailsCategory),
@@ -229,10 +236,11 @@ class _TransactionPageState extends State<TransactionPage> {
   }
 
   Widget buildTitle(BuildContext context) {
+    final title = widget.transaction.title;
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).transactionDetailsTitle),
-      value: widget.transaction.title != null
-          ? Text(widget.transaction.title)
+      value: title != null
+          ? Text(title)
           : Text(AppLocalizations.of(context).transactionDetailsTitleEmpty,
               style: TextStyle(fontStyle: FontStyle.italic)),
       editingContent: (context) => TextField(
@@ -258,6 +266,7 @@ class _TransactionPageState extends State<TransactionPage> {
       value: Text(amount.formatted),
       editingContent: (context) => AmountFormField(
         initialMoney: amount,
+        currency: wallet.currency,
         controller: amountController,
         decoration: InputDecoration(
           labelText: AppLocalizations.of(context).transactionDetailsAmount,
@@ -266,7 +275,7 @@ class _TransactionPageState extends State<TransactionPage> {
       editingSave: () {
         final amount = amountController.value;
         if (amount != null) {
-          return DataSource.instance.updateTransaction(
+          DataSource.instance.updateTransaction(
             widget.walletRef,
             widget.transaction,
             amount: amount.amount,
@@ -302,7 +311,7 @@ class _TransactionPageState extends State<TransactionPage> {
         title: Text("Include to daily statistics"),
         value: !_excludedFromDailyStatistics,
         onChanged: (value) => setState(() {
-          _excludedFromDailyStatistics = !value;
+          _excludedFromDailyStatistics = !(value ?? true);
         }),
       ),
       editingSave: () {

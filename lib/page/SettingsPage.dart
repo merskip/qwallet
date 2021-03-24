@@ -7,7 +7,7 @@ import 'package:qwallet/dialog/UserDialog.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/MarkdownPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
-import 'package:qwallet/widget/vector_image.dart';
+import 'package:qwallet/widget/VectorImage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../EsterEgg.dart';
@@ -86,7 +86,7 @@ class SettingsPage extends StatelessWidget {
         duration = Duration(seconds: 6);
       }
 
-      final snackBar = Scaffold.of(context).showSnackBar(SnackBar(
+      final snackBar = ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: content,
         duration: duration,
       ));
@@ -121,11 +121,11 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget buildUserPanel(BuildContext context) {
-    final user = DataSource.instance.currentUser;
+    final user = DataSource.instance.currentUser!;
     return ListTile(
       leading: CircleAvatar(
         backgroundImage:
-            user.avatarUrl != null ? NetworkImage(user.avatarUrl) : null,
+            user.avatarUrl != null ? NetworkImage(user.avatarUrl!) : null,
         backgroundColor: Colors.black12,
         child: user.avatarUrl == null
             ? Icon(
@@ -135,7 +135,7 @@ class SettingsPage extends StatelessWidget {
             : null,
       ),
       title: Text(user.getCommonName(context)),
-      subtitle: user.getSubtitle() != null ? Text(user.getSubtitle()) : null,
+      subtitle: Text(user.getSubtitle() ?? ""),
       onTap: () {
         showDialog(
           context: context,
@@ -273,7 +273,7 @@ class SettingsPage extends StatelessWidget {
 
   Widget buildDeveloper(BuildContext context) {
     final subtitleStyle = TextStyle(
-      color: Theme.of(context).textTheme.caption.color,
+      color: Theme.of(context).textTheme.caption!.color,
       fontSize: 12,
     );
     final linkStyle = TextStyle(

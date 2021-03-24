@@ -9,18 +9,18 @@ class PushNotificationService {
   Future<bool> isPermissionGranted() async {
     try {
       final result = await _platform.invokeMapMethod("isPermissionGranted");
-      return result["isPermissionGranted"] as bool;
-    } on PlatformException catch (_) {
-      return null;
+      return result?["isPermissionGranted"] as bool;
+    } on PlatformException catch (error) {
+      return Future.error(error);
     }
   }
 
   Future<bool> requestPermission() async {
     try {
       final result = await _platform.invokeMapMethod("requestPermission");
-      return result["isPermissionGranted"] as bool;
-    } on PlatformException catch (_) {
-      return null;
+      return result?["isPermissionGranted"] as bool;
+    } on PlatformException catch (error) {
+      return Future.error(error);
     }
   }
 
@@ -28,7 +28,7 @@ class PushNotificationService {
     try {
       final result =
           await _platform.invokeMapMethod("getActivePushNotifications");
-      final notifications = result["notifications"] as List;
+      final notifications = result?["notifications"] as List;
       return notifications.map((item) {
         return PushNotification(
           item["id"],
@@ -38,8 +38,8 @@ class PushNotificationService {
           item["largeIcon"],
         );
       }).toList();
-    } on PlatformException catch (_) {
-      return null;
+    } on PlatformException catch (error) {
+      return Future.error(error);
     }
   }
 }
@@ -48,9 +48,14 @@ class PushNotification {
   final String id;
   final String title;
   final String text;
-  final Uint8List smallIcon;
-  final Uint8List largeIcon;
+  final Uint8List? smallIcon;
+  final Uint8List? largeIcon;
 
   PushNotification(
-      this.id, this.title, this.text, this.smallIcon, this.largeIcon);
+    this.id,
+    this.title,
+    this.text,
+    this.smallIcon,
+    this.largeIcon,
+  );
 }

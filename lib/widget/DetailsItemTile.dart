@@ -3,24 +3,24 @@ import 'package:flutter/material.dart';
 import '../AppLocalizations.dart';
 
 class DetailsItemTile extends StatefulWidget {
-  final Widget leading;
+  final Widget? leading;
   final Widget title;
   final Widget value;
-  final EdgeInsets padding;
+  final EdgeInsets? padding;
 
-  final IconData editIcon;
-  final String editTooltip;
-  final Function(BuildContext) onEdit;
+  final IconData? editIcon;
+  final String? editTooltip;
+  final void Function(BuildContext)? onEdit;
 
-  final VoidCallback editingBegin;
-  final WidgetBuilder editingContent;
-  final VoidCallback editingSave;
+  final VoidCallback? editingBegin;
+  final WidgetBuilder? editingContent;
+  final VoidCallback? editingSave;
 
   const DetailsItemTile({
-    Key key,
+    Key? key,
     this.leading,
-    this.title,
-    this.value,
+    required this.title,
+    required this.value,
     this.padding,
     this.editIcon,
     this.editTooltip,
@@ -40,16 +40,20 @@ class _DetailsItemTileState extends State<DetailsItemTile> {
   bool get isEditable => widget.onEdit != null || widget.editingContent != null;
 
   void onSelectedEdit(BuildContext context) {
-    if (widget.onEdit != null)
-      widget.onEdit(context);
-    else {
-      if (widget.editingBegin != null) widget.editingBegin();
+    if (widget.onEdit != null) {
+      widget.onEdit!(context);
+    } else {
+      if (widget.editingBegin != null) {
+        widget.editingBegin!();
+      }
       setState(() => isEditing = true);
     }
   }
 
   void onSelectedEditingSave(BuildContext context) {
-    if (widget.editingSave != null) widget.editingSave();
+    if (widget.editingSave != null) {
+      widget.editingSave!();
+    }
     setState(() => isEditing = false);
   }
 
@@ -94,7 +98,7 @@ class _DetailsItemTileState extends State<DetailsItemTile> {
         SizedBox(height: 4),
         DefaultTextStyle(
           child: widget.value,
-          style: Theme.of(context).textTheme.subtitle1,
+          style: Theme.of(context).textTheme.subtitle1!,
         ),
       ],
     );
@@ -103,22 +107,22 @@ class _DetailsItemTileState extends State<DetailsItemTile> {
   Widget buildEditValue(BuildContext context) {
     return Container(
       child: Flexible(
-        child: Builder(builder: widget.editingContent),
+        child: Builder(builder: widget.editingContent!),
       ),
     );
   }
 
   Widget buildTitle(BuildContext context) {
-    final color = Theme.of(context).textTheme.caption.color;
+    final color = Theme.of(context).textTheme.caption!.color;
     final textStyle =
-        Theme.of(context).textTheme.bodyText2.copyWith(color: color);
+        Theme.of(context).textTheme.bodyText2!.copyWith(color: color);
     return DefaultTextStyle(child: widget.title, style: textStyle);
   }
 
   Widget buildEditButton(BuildContext context) {
     return IconButton(
       icon: Icon(widget.editIcon ?? Icons.edit),
-      color: Theme.of(context).textTheme.caption.color,
+      color: Theme.of(context).textTheme.caption!.color,
       onPressed: () => onSelectedEdit(context),
       visualDensity: VisualDensity.compact,
       tooltip: widget.editTooltip ??
@@ -138,7 +142,7 @@ class _DetailsItemTileState extends State<DetailsItemTile> {
         ),
         IconButton(
           icon: Icon(Icons.close),
-          color: Theme.of(context).textTheme.caption.color,
+          color: Theme.of(context).textTheme.caption!.color,
           onPressed: () => onSelectedEditingCancel(context),
           visualDensity: VisualDensity.compact,
           tooltip: AppLocalizations.of(context).editableDetailsItemCancel,

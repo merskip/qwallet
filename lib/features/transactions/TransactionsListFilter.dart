@@ -10,12 +10,12 @@ import '../../utils.dart';
 import 'TransactionsCategoryMultiplePicker.dart';
 
 class TransactionsFilter {
-  final TransactionType transactionType;
-  final TransactionsFilterAmountType amountType;
-  final double amount;
-  final double amountAccuracy;
-  final List<Category> categories;
-  final bool includeWithoutCategory;
+  final TransactionType? transactionType;
+  final TransactionsFilterAmountType? amountType;
+  final double? amount;
+  final double? amountAccuracy;
+  final List<Category>? categories;
+  final bool? includeWithoutCategory;
 
   TransactionsFilter({
     this.transactionType,
@@ -56,8 +56,6 @@ extension TransactionsFilterAmountTypeConverting
         return "≠";
       case TransactionsFilterAmountType.isGreaterOrEqual:
         return "⩾";
-      default:
-        return null;
     }
   }
 }
@@ -67,9 +65,9 @@ class TransactionsListFilter extends StatefulWidget {
   final TransactionsFilter initialFilter;
 
   const TransactionsListFilter({
-    Key key,
-    this.wallet,
-    this.initialFilter,
+    Key? key,
+    required this.wallet,
+    required this.initialFilter,
   }) : super(key: key);
 
   @override
@@ -77,14 +75,14 @@ class TransactionsListFilter extends StatefulWidget {
 }
 
 class _TransactionsListFilterState extends State<TransactionsListFilter> {
-  TransactionType transactionType;
-  TransactionsFilterAmountType amountType;
+  late TransactionType? transactionType;
+  late TransactionsFilterAmountType? amountType;
 
   final amountController = TextEditingController();
   final amountAccuracyController = TextEditingController();
 
-  List<Category> selectedCategories;
-  bool includeWithoutCategory;
+  late List<Category> selectedCategories;
+  late bool includeWithoutCategory;
 
   bool get isSelectedAllOrNoAnyCategories =>
       isSelectedAllCategories || isNoSelectedAnyCategory;
@@ -92,6 +90,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
   bool get isSelectedAllCategories =>
       includeWithoutCategory &&
       Foundation.listEquals(selectedCategories, widget.wallet.categories);
+
   bool get isNoSelectedAnyCategory =>
       !includeWithoutCategory && selectedCategories.isEmpty;
 
@@ -104,9 +103,10 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
   void initState() {
     transactionType = widget.initialFilter.transactionType;
     amountType = widget.initialFilter.amountType;
-    amountController.text = widget.initialFilter.amount?.toStringAsFixed(2);
+    amountController.text =
+        widget.initialFilter.amount?.toStringAsFixed(2) ?? "";
     amountAccuracyController.text =
-        widget.initialFilter.amountAccuracy?.toStringAsFixed(2);
+        widget.initialFilter.amountAccuracy?.toStringAsFixed(2) ?? "";
     selectedCategories = widget.initialFilter.categories ?? [];
     includeWithoutCategory =
         widget.initialFilter.includeWithoutCategory ?? false;
@@ -176,14 +176,14 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
     );
   }
 
-  Widget buildTransactionTypeChip(BuildContext context, TransactionType type) {
+  Widget buildTransactionTypeChip(BuildContext context, TransactionType? type) {
     final isSelected = this.transactionType == type;
-    String text;
+    String text = "";
     if (type == TransactionType.expense)
       text = AppLocalizations.of(context).transactionTypeExpense;
     else if (type == TransactionType.income)
       text = AppLocalizations.of(context).transactionTypeIncome;
-    if (type == null)
+    else if (type == null)
       text = AppLocalizations.of(context).transactionsListFilterTypeAny;
 
     return FilterChip(
@@ -224,12 +224,12 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
   }
 
   Widget buildAmountTypeChip(
-      BuildContext context, TransactionsFilterAmountType type) {
+      BuildContext context, TransactionsFilterAmountType? type) {
     final isSelected = this.amountType == type;
 
     return FilterChip(
       label: Text(
-        type.toSymbol() ??
+        type?.toSymbol() ??
             AppLocalizations.of(context).transactionsListFilterAmountAny,
         style: TextStyle(
           color: isSelected ? Theme.of(context).primaryColorDark : null,
@@ -243,15 +243,17 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
   }
 
   Widget buildAmountTextFields(BuildContext context) {
+    final amountType = this.amountType;
     return Row(
       children: [
         if (amountType != null) buildAmountValueTextField(context),
-        if (amountType.isEqualOrNot)
+        if (amountType != null && amountType.isEqualOrNot)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text("±"),
           ),
-        if (amountType.isEqualOrNot) buildAmountAccuracyTextField(context),
+        if (amountType != null && amountType.isEqualOrNot)
+          buildAmountAccuracyTextField(context),
       ],
     );
   }
@@ -322,7 +324,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
     );
   }
 
-  Widget buildAnyCategoryChip(BuildContext context, Category category) {
+  Widget buildAnyCategoryChip(BuildContext context, Category? category) {
     return Chip(
       label: Text(
         category?.titleText ??
@@ -369,12 +371,12 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
           textTheme: Theme.of(context).textTheme,
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
-            color: Theme.of(context).textTheme.subtitle1.color,
+            color: Theme.of(context).textTheme.subtitle1!.color,
             onPressed: () => setState(() {
               selectedCategories =
-                  categoriesPickerKey.currentState.selectedCategories;
+                  categoriesPickerKey.currentState!.selectedCategories;
               includeWithoutCategory =
-                  categoriesPickerKey.currentState.includeWithoutCategory;
+                  categoriesPickerKey.currentState!.includeWithoutCategory;
               _isCategoriesSelect = false;
             }),
           ),
@@ -383,7 +385,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
           actions: [
             IconButton(
               icon: Icon(Icons.select_all),
-              color: Theme.of(context).textTheme.subtitle1.color,
+              color: Theme.of(context).textTheme.subtitle1!.color,
               tooltip: AppLocalizations.of(context)
                   .transactionsListFilterSelectCategoriesToggleAll,
               onPressed: () => setState(() {

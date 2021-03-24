@@ -13,17 +13,17 @@ enum TransactionType {
 
 class Transaction extends Model<Transaction> {
   TransactionType type;
-  String title;
+  String? title;
   double amount;
   DateTime date;
-  Reference<Category> category;
+  Reference<Category>? category;
   bool excludedFromDailyStatistics;
 
   Transaction(DocumentSnapshot snapshot)
-      : type = snapshot.getOneOf("type", TransactionType.values),
+      : type = snapshot.getOneOf("type", TransactionType.values)!,
         title = snapshot.getString("title"),
-        amount = snapshot.getDouble("amount"),
-        date = snapshot.getDateTime("date"),
+        amount = snapshot.getDouble("amount")!,
+        date = snapshot.getDateTime("date")!,
         category = snapshot.getReference("category"),
         excludedFromDailyStatistics =
             snapshot.getBool("excludedFromDailyStatistics") ?? false,
@@ -34,14 +34,13 @@ class Transaction extends Model<Transaction> {
         income: AppLocalizations.of(context).transactionsCardIncome,
       );
 
-  T ifType<T>({T expense, T income}) {
+  T ifType<T>({required T expense, required T income}) {
     switch (type) {
       case TransactionType.expense:
         return expense;
       case TransactionType.income:
         return income;
     }
-    return null;
   }
 
   @override
@@ -57,8 +56,6 @@ extension TransactionTypeConverting on TransactionType {
         return "expense";
       case TransactionType.income:
         return "income";
-      default:
-        return null;
     }
   }
 }
