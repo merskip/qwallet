@@ -170,7 +170,7 @@ class DashboardPageState extends State<DashboardPage> {
         if (_selectedWallet.value != null)
           buildWalletCards(context, getSelectedWallet()),
         SliverPadding(
-          padding: EdgeInsets.only(bottom: 88),
+          padding: EdgeInsets.only(bottom: 48),
         ),
       ]),
     );
@@ -178,9 +178,16 @@ class DashboardPageState extends State<DashboardPage> {
 
   Widget buildWalletCards(BuildContext context, Wallet wallet) {
     return SimpleStreamWidget(
+      key: Key("wallet-cards-${wallet.id}"),
       stream: DataSource.instance.getLatestTransactions(wallet.reference),
-      loadingBuilder: (context) => SliverToBoxAdapter(child: Container()),
+      loadingBuilder: (context) => SliverFillRemaining(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
       builder: (context, LatestTransactions latestTransactions) {
+        assert(wallet.id == latestTransactions.wallet.id);
+
         DataSource.instance
             .refreshWalletBalanceIfNeeded(latestTransactions)
             .catchError((error) {
