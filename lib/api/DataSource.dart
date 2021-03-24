@@ -202,8 +202,10 @@ extension TransactionsDataSource on DataSource {
         wallet.documentReference.collection("transactions").doc(id));
   }
 
-  Stream<Transaction> getTransaction(Reference<Transaction> transaction) =>
-      transaction.documentReference.snapshots().map((s) => Transaction(s));
+  Stream<Transaction?> getTransaction(Reference<Transaction> transaction) =>
+      transaction.documentReference
+          .snapshots()
+          .map((s) => s.exists ? Transaction(s) : null);
 
   Future<Reference<Transaction>> addTransaction(
     Reference<Wallet> wallet, {

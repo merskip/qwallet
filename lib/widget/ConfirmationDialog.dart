@@ -65,10 +65,8 @@ class ConfirmationDialog extends StatelessWidget {
         FlatButton(
           child: Text(AppLocalizations.of(context).confirmationCancel),
           onPressed: () {
-            if (onCancel != null)
-              onCancel!();
-            else
-              Navigator.of(context).pop();
+            Navigator.of(context).pop();
+            if (onCancel != null) onCancel!();
           },
         ),
         FlatButton(
@@ -76,6 +74,7 @@ class ConfirmationDialog extends StatelessWidget {
               isDestructive ? Colors.red : Theme.of(context).primaryColor,
           child: Text(AppLocalizations.of(context).confirmationConfirm),
           onPressed: () {
+            Navigator.of(context).pop();
             if (onConfirm != null) onConfirm!();
           },
         ),

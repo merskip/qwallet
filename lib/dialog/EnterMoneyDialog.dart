@@ -44,8 +44,8 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   }
 
   String _getInitialExpression() {
-    final initialAmount = widget.initialMoney?.amount ?? 0.0;
-    if (initialAmount != 0.0) {
+    final initialAmount = widget.initialMoney?.amount;
+    if (initialAmount != null && initialAmount > 0) {
       final amount = initialAmount.toString();
       if (amount.endsWith(".0"))
         return amount.substring(0, amount.length - 2);
@@ -88,7 +88,8 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   }
 
   void onSelectedApply(BuildContext context) {
-    final result = calculateExpression();
+    var result = calculateExpression();
+    if (result == null && expression.isEmpty) result = Money(0, currency);
     Navigator.of(context).pop(result);
   }
 
@@ -112,15 +113,16 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
             (m) => " " + _operatorToText(context, m.group(1)!) + " ")
         .replaceAll("  ", " ");
 
-    if (result != null) {
+    if (result != null)
       return [displayExpression, "= ${result.formatted}"];
-    } else {
+    else if (expression.isEmpty) {
+      return [displayExpression, "= ${Money(0, currency).formatted}"];
+    } else
       return [displayExpression, "= …"];
-    }
   }
 
   Money? calculateExpression() {
-    if (this.expression.isEmpty) return Money(0, currency);
+    if (this.expression.isEmpty) return null;
 
     try {
       Expression expression = Expression.parse(this.expression);

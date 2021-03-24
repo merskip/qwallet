@@ -7,8 +7,8 @@ import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
-import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
+import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -266,6 +266,7 @@ class _TransactionPageState extends State<TransactionPage> {
       value: Text(amount.formatted),
       editingContent: (context) => AmountFormField(
         initialMoney: amount,
+        currency: wallet.currency,
         controller: amountController,
         decoration: InputDecoration(
           labelText: AppLocalizations.of(context).transactionDetailsAmount,

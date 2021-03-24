@@ -53,7 +53,10 @@ class _AddTransactionPageContent extends StatelessWidget {
   }) : super(key: key);
 
   void onSelectedAddSeriesTransactions(BuildContext context) {
-    final type = formKey.currentState!.type;
+    final currentState = this.formKey.currentState;
+    if (currentState == null) return;
+
+    final type = currentState.type;
     if (type == TransactionType.income) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
@@ -62,9 +65,9 @@ class _AddTransactionPageContent extends StatelessWidget {
       ));
       return;
     }
-    final wallet = formKey.currentState!.wallet;
-    final amount = formKey.currentState!.amountController.value!.amount;
-    final date = formKey.currentState!.date;
+    final wallet = currentState.wallet;
+    final amount = currentState.amountController.value?.amount;
+    final date = currentState.date;
     router.pop(context, null);
     router.navigateTo(
         context,
@@ -281,9 +284,12 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   Widget buildAmount(BuildContext context) {
+    final initialMoney = widget.initialAmount != null
+        ? Money(widget.initialAmount!, widget.initialWallet.currency)
+        : null;
     return AmountFormField(
-      initialMoney:
-          Money(widget.initialAmount ?? 0, widget.initialWallet.currency),
+      initialMoney: initialMoney,
+      currency: widget.initialWallet.currency,
       decoration: InputDecoration(
         labelText: AppLocalizations.of(context).addTransactionAmount,
         helperText: getBalanceAfterTransactionText(),

@@ -10,10 +10,12 @@ import '../Money.dart';
 class AmountFormField extends FormField<Money> {
   final AmountEditingController controller;
   final FocusNode? focusNode;
+  final Currency currency;
   final bool isCurrencySelectable;
 
   AmountFormField({
-    required Money initialMoney,
+    required Money? initialMoney,
+    required this.currency,
     required this.controller,
     InputDecoration decoration = const InputDecoration(),
     this.focusNode,
@@ -26,7 +28,7 @@ class AmountFormField extends FormField<Money> {
             final AmountFormFieldState state =
                 fieldState as AmountFormFieldState;
             return TextFormField(
-              controller: state.controller,
+              controller: state.textController,
               decoration: decoration.copyWith(
                 suffixText: state.value?.currency.code,
               ),
@@ -53,7 +55,7 @@ class AmountFormFieldState extends FormFieldState<Money> {
   @override
   AmountFormField get widget => super.widget as AmountFormField;
 
-  late TextEditingController controller;
+  final textController = TextEditingController();
   late FocusNode _focusNode;
 
   FocusNode get effectiveFocusNode => widget.focusNode ?? _focusNode;
@@ -61,79 +63,61 @@ class AmountFormFieldState extends FormFieldState<Money> {
   @override
   void initState() {
     super.initState();
-    controller = TextEditingController();
     final initialValue = value;
     if (initialValue != null) {
-      controller.text = initialValue.formattedOnlyAmount;
-      widget.controller.value = initialValue;
+      setValue(initialValue);
     }
 
-    controller.addListener(() {
-      widget.controller.value = _getEnteredMoney();
-    });
-    widget.controller.addListener(onChangedValue);
     if (widget.focusNode == null) {
       _focusNode = FocusNode();
     }
-    initAmountField(
-      focusNode: effectiveFocusNode,
-      controller: controller,
-      isCurrencySelectable: widget.isCurrencySelectable,
-      getValue: () => initialValue!,
-      onEnter: (amount) => setState(() {
-        controller.text = amount.formattedOnlyAmount;
-        didChange(amount);
-        widget.controller.value = amount;
-      }),
-    );
+    effectiveFocusNode.addListener(onChangeFocus);
+    widget.controller.addListener(onControllerValueChange);
   }
 
   @override
   void dispose() {
-    widget.controller.removeListener(onChangedValue);
-    controller.dispose();
+    textController.dispose();
+    effectiveFocusNode.removeListener(onChangeFocus);
+    widget.controller.removeListener(onControllerValueChange);
     _focusNode.dispose();
     super.dispose();
   }
 
-  void onChangedValue() {
-    final amount = widget.controller.value;
-    controller.text = amount!.formattedOnlyAmount;
-    didChange(amount);
-  }
-
-  void initAmountField({
-    required FocusNode focusNode,
-    required TextEditingController controller,
-    required bool isCurrencySelectable,
-    required Money getValue(),
-    required void onEnter(Money money),
-  }) {
-    focusNode.addListener(() async {
-      if (focusNode.hasFocus) {
-        focusNode.unfocus();
-        final initialMoney = getValue();
-        final money = await showDialog(
-          context: context,
-          builder: (context) => EnterMoneyDialog(
-            initialMoney: initialMoney,
-            currency: initialMoney.currency,
-            isCurrencySelectable: isCurrencySelectable,
-          ),
-        ) as Money?;
-        if (money != null) {
-          controller.text = money.formattedOnlyAmount;
-          onEnter(money);
-        }
+  void onChangeFocus() async {
+    final focusNode = effectiveFocusNode;
+    if (focusNode.hasFocus) {
+      focusNode.unfocus();
+      final money = await showDialog(
+        context: context,
+        builder: (context) => EnterMoneyDialog(
+          initialMoney: value,
+          currency: value?.currency ?? widget.currency,
+          isCurrencySelectable: widget.isCurrencySelectable,
+        ),
+      ) as Money?;
+      if (money != null) {
+        didChange(money);
       }
-    });
+    }
   }
 
-  Money _getEnteredMoney() {
-    final text =
-        controller.text.replaceAll(value!.currency.decimalSeparator!, ".");
-    final amount = round(double.tryParse(text), value!.currency.decimalDigits);
-    return Money(amount ?? 0.0, value!.currency);
+  void onControllerValueChange() {
+    didChange(widget.controller.value);
+  }
+
+  @override
+  void didChange(Money? value) {
+    textController.text = value?.formattedOnlyAmount ?? "";
+    widget.controller.value = value;
+    super.didChange(value);
+  }
+
+  @override
+  void setValue(dynamic value) {
+    textController.text = value.formattedOnlyAmount;
+    widget.controller.value = value;
+    super.setValue(value);
   }
 
   double? round(double? value, num places) {

@@ -139,9 +139,9 @@ void initRoutes(FluroRouter router) {
 
       return SimpleStreamWidget(
         stream: DataSource.instance.getTransaction(transactionRef),
-        builder: (context, Transaction transaction) => TransactionPage(
+        builder: (context, Transaction? transaction) => TransactionPage(
           walletRef: walletRef,
-          transaction: transaction,
+          transaction: transaction!,
         ),
       );
     }),

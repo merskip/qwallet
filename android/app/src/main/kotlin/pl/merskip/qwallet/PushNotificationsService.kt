@@ -50,8 +50,8 @@ class PushNotificationsService : NotificationListenerService() {
 
             PushNotification(
                     id = statusBarNotification.key,
-                    title = extras.getString("android.title"),
-                    text = extras.getString("android.text"),
+                    title = extras.get("android.title").toString(),
+                    text = extras.get("android.text").toString(),
                     smallIcon = smallIcon,
                     largeIcon = largeIcon,
             )
@@ -74,7 +74,39 @@ class PushNotificationsService : NotificationListenerService() {
             val text: String?,
             val smallIcon: ByteArray?,
             val largeIcon: ByteArray?
-    )
+    ) {
+        override fun equals(other: Any?): Boolean {
+            // Generated
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as PushNotification
+
+            if (id != other.id) return false
+            if (title != other.title) return false
+            if (text != other.text) return false
+            if (smallIcon != null) {
+                if (other.smallIcon == null) return false
+                if (!smallIcon.contentEquals(other.smallIcon)) return false
+            } else if (other.smallIcon != null) return false
+            if (largeIcon != null) {
+                if (other.largeIcon == null) return false
+                if (!largeIcon.contentEquals(other.largeIcon)) return false
+            } else if (other.largeIcon != null) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            // Generated
+            var result = id.hashCode()
+            result = 31 * result + (title?.hashCode() ?: 0)
+            result = 31 * result + (text?.hashCode() ?: 0)
+            result = 31 * result + (smallIcon?.contentHashCode() ?: 0)
+            result = 31 * result + (largeIcon?.contentHashCode() ?: 0)
+            return result
+        }
+    }
 
     inner class LocalBinder : Binder() {
 

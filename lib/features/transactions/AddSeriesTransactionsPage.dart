@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -60,6 +62,8 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
     return totalAmount - transactionsAmount.amount;
   }
 
+  List<StreamSubscription> subscriptions = [];
+
   _AddSeriesTransactionsPageState(this.wallet);
 
   @override
@@ -78,6 +82,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
     totalAmountController.dispose();
     dateFocus.dispose();
     dateController.dispose();
+    subscriptions.forEach((s) => s.cancel());
     super.dispose();
   }
 
@@ -146,18 +151,17 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
       date: date,
     );
     setState(() {
-      transactionAmountController.value = Money(0, wallet.currency);
+      transactionAmountController.value = null;
       transactionCategory = null;
     });
 
-    final transaction = DataSource.instance.getTransaction(transactionRef);
-    transaction.listen((transaction) {
-      transactions.removeWhere((t) => t.id == transaction.id);
-      if (transaction.documentSnapshot.exists) {
-        transactions.add(transaction);
-      }
+    subscriptions.add(DataSource.instance
+        .getTransaction(transactionRef)
+        .listen((transaction) {
+      transactions.removeWhere((t) => t.id == transactionRef.id);
+      if (transaction != null) transactions.add(transaction);
       setState(() {});
-    });
+    }));
   }
 
   void onSelectedDone(BuildContext context) {
@@ -167,7 +171,9 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
             AppLocalizations.of(context).addSeriesTransactionsExitConfirmTitle),
         content: Text(AppLocalizations.of(context)
             .addSeriesTransactionsExitRemainingAmountGreater),
-        onConfirm: () => router.pop(context),
+        onConfirm: () {
+          router.pop(context);
+        },
       ).show(context);
     } else if (remainingAmount.amount < 0) {
       ConfirmationDialog(
@@ -232,9 +238,12 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   }
 
   Widget buildTotalAmount(BuildContext context) {
+    final initialMoney = widget.initialTotalAmount != null
+        ? Money(widget.initialTotalAmount!, widget.initialWallet.currency)
+        : null;
     return AmountFormField(
-      initialMoney:
-          Money(widget.initialTotalAmount ?? 0, widget.initialWallet.currency),
+      initialMoney: initialMoney,
+      currency: widget.initialWallet.currency,
       decoration: InputDecoration(
         labelText:
             AppLocalizations.of(context).addSeriesTransactionsTotalAmount,
@@ -416,7 +425,8 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
       children: [
         Expanded(
           child: AmountFormField(
-            initialMoney: Money(0, widget.initialWallet.currency),
+            initialMoney: null,
+            currency: widget.initialWallet.currency,
             decoration: InputDecoration(
               labelText: AppLocalizations.of(context)
                   .addSeriesTransactionsTransactionAmount,
