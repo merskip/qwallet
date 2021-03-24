@@ -215,6 +215,7 @@ class _ReportByDatePage extends StatelessWidget {
   Widget buildChart(BuildContext context, List<_ByDateItem> items) {
     return SizedBox(
       width: double.infinity,
+      height: 256,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: BarChart(
