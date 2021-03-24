@@ -242,7 +242,7 @@ class _CategoriesChart extends StatelessWidget {
   final List<_CategoryChartItem> items;
   final bool showAllTitles;
   final _CategoryChartItem? selectedItem;
-  final Function(_CategoryChartItem) onSelectedItem;
+  final Function(_CategoryChartItem?) onSelectedItem;
 
   final double totalAmount;
 
@@ -273,10 +273,16 @@ class _CategoriesChart extends StatelessWidget {
               pieTouchData: PieTouchData(
                 enabled: !showAllTitles,
                 touchCallback: (touch) {
+                  if (!touch.clickHappened) return;
+
                   final section = touch.touchedSection;
                   if (section != null && section.touchedSectionIndex >= 0) {
                     final selectedItem = items[section.touchedSectionIndex];
-                    onSelectedItem(selectedItem);
+                    if (this.selectedItem == selectedItem) {
+                      onSelectedItem(null);
+                    } else {
+                      onSelectedItem(selectedItem);
+                    }
                   }
                 },
               ),
