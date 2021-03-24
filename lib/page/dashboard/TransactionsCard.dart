@@ -62,19 +62,15 @@ class _TransactionsCardState extends State<TransactionsCard> {
       child: Column(children: [
         buildTransactionsList(context),
         if (isCollapsable && isCollapsed)
-          FlatButton(
+          TextButton(
             child: Text(AppLocalizations.of(context).transactionsCardShowMore),
-            textColor: Theme.of(context).primaryColor,
             onPressed: () => setState(() => isCollapsed = false),
-            visualDensity: VisualDensity.compact,
           ),
         if (!isCollapsable || !isCollapsed)
-          FlatButton(
+          TextButton(
             child: Text(AppLocalizations.of(context).transactionsCardShowAll),
-            textColor: Theme.of(context).primaryColor,
             onPressed: () => router.navigateTo(
                 context, "/wallet/${widget.wallet.id}/transactions"),
-            visualDensity: VisualDensity.compact,
           ),
       ]),
     );

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qwallet/widget/HandCursor.dart';
+import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/VectorImage.dart';
 
@@ -125,20 +126,12 @@ class _SignInPageState extends State<SignInPage> {
       height: 44,
       width: 256,
       child: HandCursor(
-        child: RaisedButton(
-          child: Row(children: <Widget>[
-            SizedBox(width: 28, height: 28, child: icon),
-            SizedBox(width: 12),
-            Text(
-              text,
-              style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
-            ),
-          ]),
+        child: PrimaryButton.icon(
+          icon: icon,
+          label: Text(text),
           onPressed: onPressed,
-          textColor: Theme.of(context).primaryColor,
-          color: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(60.0)),
+          foregroundColor: Theme.of(context).primaryColor,
+          backgroundColor: Colors.white,
         ),
       ),
     );
@@ -195,7 +188,7 @@ class _SignInPageState extends State<SignInPage> {
           ),
         ),
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(AppLocalizations.of(context).singInFailedLoginOk),
           ),
@@ -283,17 +276,16 @@ class _SignInWithEmailDialogState extends State<_SignInWithEmailDialog> {
         ],
       ),
       actions: <Widget>[
-        FlatButton(
+        TextButton(
           child: Text(AppLocalizations.of(context).singInEmailCancel),
           onPressed: () => Navigator.pop(context),
         ),
-        FlatButton(
+        TextButton(
           child: Text(AppLocalizations.of(context).singInEmailSignUp),
           onPressed: () => _signUpWithEmail(context),
         ),
-        RaisedButton(
+        ElevatedButton(
           child: Text(AppLocalizations.of(context).singInEmailSignIn),
-          color: Theme.of(context).primaryColor,
           onPressed: () => _signInWithEmail(context),
         )
       ],

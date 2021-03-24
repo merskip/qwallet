@@ -21,7 +21,7 @@ class TransactionTypeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
+    return MaterialButton(
       child: Row(
         children: [
           Icon(

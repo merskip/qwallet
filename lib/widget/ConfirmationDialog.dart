@@ -62,17 +62,18 @@ class ConfirmationDialog extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        FlatButton(
+        TextButton(
           child: Text(AppLocalizations.of(context).confirmationCancel),
           onPressed: () {
             Navigator.of(context).pop();
             if (onCancel != null) onCancel!();
           },
         ),
-        FlatButton(
-          textColor:
-              isDestructive ? Colors.red : Theme.of(context).primaryColor,
+        TextButton(
           child: Text(AppLocalizations.of(context).confirmationConfirm),
+          style: TextButton.styleFrom(
+            primary: isDestructive ? Colors.red : null,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
             if (onConfirm != null) onConfirm!();

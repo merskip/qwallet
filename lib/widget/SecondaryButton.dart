@@ -25,7 +25,7 @@ class SecondaryButton extends StatelessWidget {
       height: 44,
       width: shrinkWrap ? null : double.infinity,
       child: HandCursor(
-        child: FlatButton(
+        child: MaterialButton(
           splashColor: effectiveColor.withAlpha(64),
           highlightColor: effectiveColor.withAlpha(32),
           child: Padding(

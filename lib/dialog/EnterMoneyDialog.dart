@@ -240,7 +240,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
         padding: const EdgeInsets.all(3.0),
         child: Container(
           height: buttonHeight,
-          child: RaisedButton(
+          child: ElevatedButton(
             onPressed: () => onSelectedDigit(context, digit),
             child: Text(
               digit,
@@ -249,10 +249,6 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
                 color: Theme.of(context).primaryTextTheme.button!.color,
               ),
             ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            color: Theme.of(context).primaryColor,
           ),
         ),
       ),
@@ -266,7 +262,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
         padding: const EdgeInsets.all(3.0),
         child: Container(
           height: buttonHeight,
-          child: FlatButton(
+          child: TextButton(
             onPressed: () => onSelectedOperator(context, operator),
             child: Text(
               _operatorToText(context, operator),
@@ -274,13 +270,6 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
                 fontSize: 18,
                 color: Theme.of(context).primaryColor,
               ),
-            ),
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: Theme.of(context).primaryColor,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(4),
             ),
           ),
         ),
@@ -296,17 +285,9 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
         child: Container(
           height: buttonHeight,
           width: double.infinity,
-          child: FlatButton(
+          child: TextButton(
             onPressed: () => onSelectedBackspace(context),
             child: Icon(Icons.backspace, color: Colors.red),
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            // materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
         ),
       ),

@@ -86,7 +86,7 @@ class SettingsPage extends StatelessWidget {
         duration = Duration(seconds: 6);
       }
 
-      final snackBar = Scaffold.of(context).showSnackBar(SnackBar(
+      final snackBar = ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: content,
         duration: duration,
       ));

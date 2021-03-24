@@ -327,12 +327,11 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
   }
 
   Widget buildToggleExpended(BuildContext context) {
-    return FlatButton(
+    return TextButton(
       onPressed: () => setState(() => _isExtended = !_isExtended),
       child: Text(_isExtended
           ? AppLocalizations.of(context).privateLoanShowLess
           : AppLocalizations.of(context).transactionsCardShowMore),
-      visualDensity: VisualDensity.compact,
     );
   }
 }

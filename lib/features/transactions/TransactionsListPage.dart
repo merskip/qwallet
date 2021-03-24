@@ -464,9 +464,8 @@ class ShowMoreListItem extends _ListItem {
   ShowMoreListItem({required this.onSelected});
 
   @override
-  Widget build(BuildContext context) => FlatButton(
+  Widget build(BuildContext context) => TextButton(
         child: Text(AppLocalizations.of(context).transactionsListShowMore),
-        textColor: Theme.of(context).primaryColor,
         onPressed: onSelected,
       );
 }
