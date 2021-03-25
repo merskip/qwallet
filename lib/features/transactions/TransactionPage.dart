@@ -17,7 +17,7 @@ import 'package:qwallet/widget/TransactionTypeButton.dart';
 import '../../AppLocalizations.dart';
 
 class TransactionPage extends StatefulWidget {
-  final Reference<Wallet> walletRef;
+  final FirebaseReference<FirebaseWallet> walletRef;
   final Transaction transaction;
 
   const TransactionPage({
@@ -109,7 +109,7 @@ class _TransactionPageState extends State<TransactionPage> {
       ),
       body: SimpleStreamWidget(
         stream: DataSource.instance.getWallet(widget.walletRef),
-        builder: (context, Wallet wallet) => ListView(
+        builder: (context, FirebaseWallet wallet) => ListView(
           children: [
             buildWallet(context, wallet),
             buildCategory(context),
@@ -124,7 +124,7 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  Widget buildWallet(BuildContext context, Wallet wallet) {
+  Widget buildWallet(BuildContext context, FirebaseWallet wallet) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -259,7 +259,7 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  Widget buildAmount(BuildContext context, Wallet wallet) {
+  Widget buildAmount(BuildContext context, FirebaseWallet wallet) {
     final amount = Money(widget.transaction.amount, wallet.currency);
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).transactionDetailsAmount),

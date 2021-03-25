@@ -42,7 +42,7 @@ class _WalletsPageState extends State<WalletsPage> {
   Widget buildContent(BuildContext context) {
     return SimpleStreamWidget(
       stream: LocalPreferences.orderedWallets(DataSource.instance.getWallets()),
-      builder: (context, List<Wallet> wallets) {
+      builder: (context, List<FirebaseWallet> wallets) {
         if (isReordering) {
           return buildReorderableWalletsList(context, wallets);
         } else {
@@ -52,7 +52,7 @@ class _WalletsPageState extends State<WalletsPage> {
     );
   }
 
-  Widget buildWalletsList(BuildContext context, List<Wallet> wallets) {
+  Widget buildWalletsList(BuildContext context, List<FirebaseWallet> wallets) {
     return ListView.separated(
       itemCount: wallets.length,
       itemBuilder: (context, index) => buildWallet(context, wallets[index]),
@@ -60,7 +60,7 @@ class _WalletsPageState extends State<WalletsPage> {
     );
   }
 
-  Widget buildWallet(BuildContext context, Wallet wallet) {
+  Widget buildWallet(BuildContext context, FirebaseWallet wallet) {
     return ListTile(
       title: Text(wallet.name),
       trailing: Text(wallet.balance.formatted),
@@ -69,7 +69,7 @@ class _WalletsPageState extends State<WalletsPage> {
   }
 
   Widget buildReorderableWalletsList(
-      BuildContext context, List<Wallet> wallets) {
+      BuildContext context, List<FirebaseWallet> wallets) {
     return ReorderableListView(
       padding: const EdgeInsets.all(8),
       header: Text(
@@ -90,7 +90,7 @@ class _WalletsPageState extends State<WalletsPage> {
     );
   }
 
-  Widget buildReorderableWallet(BuildContext context, Wallet wallet) {
+  Widget buildReorderableWallet(BuildContext context, FirebaseWallet wallet) {
     return ListTile(
       key: Key(wallet.id),
       title: Text(wallet.name),

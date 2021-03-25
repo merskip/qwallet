@@ -1,38 +1,42 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Reference<T> {
+class FirebaseReference<T> {
   DocumentReference documentReference;
 
   String get id => documentReference.id;
 
-  Reference(this.documentReference);
+  FirebaseReference(this.documentReference);
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Reference && runtimeType == other.runtimeType && id == other.id;
+      other is FirebaseReference &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
 }
 
 extension ReferenceConverting on DocumentReference {
-  Reference<T> toReference<T>() => Reference(this);
+  FirebaseReference<T> toReference<T>() => FirebaseReference(this);
 }
 
-abstract class Model<T> {
-  final Reference<T> reference;
+abstract class FirebaseModel<T> {
+  final FirebaseReference<T> reference;
   final DocumentSnapshot documentSnapshot;
 
   String get id => reference.id;
 
-  Model(this.documentSnapshot)
-      : this.reference = Reference<T>(documentSnapshot.reference);
+  FirebaseModel(this.documentSnapshot)
+      : this.reference = FirebaseReference<T>(documentSnapshot.reference);
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Model && runtimeType == other.runtimeType && id == other.id;
+      other is FirebaseModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;

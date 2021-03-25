@@ -116,7 +116,7 @@ void initRoutes(FluroRouter router) {
           : null;
       return SimpleStreamWidget(
         stream: DataSource.instance.getWalletById(walletId),
-        builder: (context, Wallet wallet) => AddSeriesTransactionsPage(
+        builder: (context, FirebaseWallet wallet) => AddSeriesTransactionsPage(
           initialWallet: wallet,
           initialTotalAmount: initialTotalAmount,
           initialDate: initialDate,
@@ -200,7 +200,7 @@ void initRoutes(FluroRouter router) {
       final walletId = params["walletId"][0];
       return SimpleStreamWidget(
         stream: DataSource.instance.getWalletById(walletId),
-        builder: (context, Wallet wallet) => TransactionsListPage(
+        builder: (context, FirebaseWallet wallet) => TransactionsListPage(
           wallet: wallet,
         ),
       );

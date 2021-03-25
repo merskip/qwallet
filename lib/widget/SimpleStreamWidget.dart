@@ -30,7 +30,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
           return _error(context, snapshot.error!, debugDescription);
         else if (snapshot.hasData) {
           final data = snapshot.data;
-          if (data is Model && !data.documentSnapshot.exists)
+          if (data is FirebaseModel && !data.documentSnapshot.exists)
             return buildLoading(context);
           return builder(context, data!);
         } else

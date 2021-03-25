@@ -21,7 +21,7 @@ import '../../LocalPreferences.dart';
 import '../../Money.dart';
 
 class AddSeriesTransactionsPage extends StatefulWidget {
-  final Wallet initialWallet;
+  final FirebaseWallet initialWallet;
   final double? initialTotalAmount;
   final DateTime? initialDate;
 
@@ -40,7 +40,7 @@ class AddSeriesTransactionsPage extends StatefulWidget {
 class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   final _formKey = GlobalKey<FormState>();
 
-  Wallet wallet;
+  FirebaseWallet wallet;
   final totalAmountController = AmountEditingController();
   final dateFocus = FocusNode();
   final dateController = TextEditingController();
@@ -133,7 +133,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
         wallets: wallets,
         selectedWallet: this.wallet,
       ),
-    ) as Wallet?;
+    ) as FirebaseWallet?;
     if (selectedWallet != null) {
       setState(() => this.wallet = selectedWallet);
     }

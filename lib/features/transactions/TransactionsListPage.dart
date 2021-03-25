@@ -17,7 +17,7 @@ import '../../utils.dart';
 import 'TransactionsListFilter.dart';
 
 class TransactionsListPage extends StatefulWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
 
   TransactionsListPage({
     Key? key,
@@ -44,7 +44,7 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
     super.initState();
   }
 
-  void onSelectedFilter(BuildContext context, Wallet wallet) async {
+  void onSelectedFilter(BuildContext context, FirebaseWallet wallet) async {
     final filter = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -84,7 +84,7 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
 }
 
 class _TransactionsContentPage extends StatefulWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final TransactionsFilter filter;
 
   _TransactionsContentPage({
@@ -448,7 +448,7 @@ class SectionHeaderListItem extends _ListItem {
 }
 
 class TransactionListItem extends _ListItem {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final Transaction transaction;
 
   TransactionListItem(this.wallet, this.transaction);

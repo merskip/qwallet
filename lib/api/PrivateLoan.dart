@@ -6,7 +6,7 @@ import '../Money.dart';
 import 'Converting.dart';
 import 'Model.dart';
 
-class PrivateLoan extends Model<PrivateLoan> {
+class PrivateLoan extends FirebaseModel<PrivateLoan> {
   final String title;
   final DateTime date;
   final User? lenderUser;

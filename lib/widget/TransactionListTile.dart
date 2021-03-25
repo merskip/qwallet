@@ -8,7 +8,7 @@ import '../router.dart';
 import 'CategoryIcon.dart';
 
 class TransactionListTile extends StatelessWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final Transaction transaction;
   final Category? category;
   final VisualDensity? visualDensity;

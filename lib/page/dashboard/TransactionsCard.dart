@@ -13,7 +13,7 @@ import 'package:qwallet/widget/TransactionListTile.dart';
 import '../../AppLocalizations.dart';
 
 class TransactionsCard extends StatefulWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final List<Transaction> transactions;
 
   const TransactionsCard({
@@ -97,7 +97,7 @@ class _TransactionsCardState extends State<TransactionsCard> {
 
   List<Widget> buildGroupedTransactions(
     BuildContext context,
-    Wallet wallet,
+    FirebaseWallet wallet,
     List<Transaction> transactions,
   ) {
     final effectiveDates = dates.sublist(

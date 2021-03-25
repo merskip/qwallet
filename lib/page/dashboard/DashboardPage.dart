@@ -33,21 +33,22 @@ class DashboardPage extends StatefulWidget {
 }
 
 class DashboardPageState extends State<DashboardPage> {
-  final _selectedWallet = BehaviorSubject<Wallet>();
+  final _selectedWallet = BehaviorSubject<FirebaseWallet>();
 
   final notificationService = PushNotificationService();
 
-  Wallet getSelectedWallet() {
+  FirebaseWallet getSelectedWallet() {
     return _selectedWallet.value!;
   }
 
-  void onSelectedWallet(BuildContext context, Wallet wallet) {
+  void onSelectedWallet(BuildContext context, FirebaseWallet wallet) {
     setState(() {
       _selectedWallet.add(wallet);
     });
   }
 
-  void onSelectedEditBalance(BuildContext context, Wallet wallet) async {
+  void onSelectedEditBalance(
+      BuildContext context, FirebaseWallet wallet) async {
     final newBalance = await showDialog(
       context: context,
       builder: (context) => EnterMoneyDialog(currency: wallet.currency),
@@ -124,11 +125,11 @@ class DashboardPageState extends State<DashboardPage> {
         context, "/wallet/${wallet.id}/addTransaction/amount/$amount");
   }
 
-  void onSelectedEditWallet(BuildContext context, Wallet wallet) {
+  void onSelectedEditWallet(BuildContext context, FirebaseWallet wallet) {
     router.navigateTo(context, "/settings/wallets/${getSelectedWallet().id}");
   }
 
-  void onSelectedReport(BuildContext context, Wallet wallet) {
+  void onSelectedReport(BuildContext context, FirebaseWallet wallet) {
     router.navigateTo(context, "/wallet/${getSelectedWallet().id}/report");
   }
 
@@ -140,12 +141,12 @@ class DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getOrderedWallets(),
-      builder: (context, List<Wallet> wallets) =>
+      builder: (context, List<FirebaseWallet> wallets) =>
           buildContent(context, wallets),
     );
   }
 
-  Widget buildContent(BuildContext context, List<Wallet> wallets) {
+  Widget buildContent(BuildContext context, List<FirebaseWallet> wallets) {
     if (wallets.isNotEmpty) {
       return buildContentWithWallets(context, wallets);
     } else {
@@ -153,7 +154,8 @@ class DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  Widget buildContentWithWallets(BuildContext context, List<Wallet> wallets) {
+  Widget buildContentWithWallets(
+      BuildContext context, List<FirebaseWallet> wallets) {
     return Scaffold(
       body: CustomScrollView(slivers: [
         SliverAppBar(
@@ -176,7 +178,7 @@ class DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget buildWalletCards(BuildContext context, Wallet wallet) {
+  Widget buildWalletCards(BuildContext context, FirebaseWallet wallet) {
     return SimpleStreamWidget(
       key: Key("wallet-cards-${wallet.id}"),
       stream: DataSource.instance.getLatestTransactions(wallet.reference),

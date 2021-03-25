@@ -9,7 +9,7 @@ import '../../AppLocalizations.dart';
 import '../../Money.dart';
 
 class DailyReportSection extends StatelessWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final List<Transaction> transactions;
 
   DailyReportSection({

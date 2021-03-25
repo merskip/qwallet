@@ -11,12 +11,12 @@ enum TransactionType {
   income,
 }
 
-class Transaction extends Model<Transaction> {
+class Transaction extends FirebaseModel<Transaction> {
   TransactionType type;
   String? title;
   double amount;
   DateTime date;
-  Reference<Category>? category;
+  FirebaseReference<Category>? category;
   bool excludedFromDailyStatistics;
 
   Transaction(DocumentSnapshot snapshot)

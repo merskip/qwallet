@@ -61,7 +61,7 @@ extension TransactionsFilterAmountTypeConverting
 }
 
 class TransactionsListFilter extends StatefulWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final TransactionsFilter initialFilter;
 
   const TransactionsListFilter({

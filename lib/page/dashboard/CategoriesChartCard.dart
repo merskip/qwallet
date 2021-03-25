@@ -12,7 +12,7 @@ import '../../Money.dart';
 import '../../utils/IterableFinding.dart';
 
 class CategoriesChartCard extends StatelessWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final List<Transaction> transactions;
 
   const CategoriesChartCard({
@@ -34,7 +34,7 @@ class CategoriesChartCard extends StatelessWidget {
 }
 
 class _CategoriesChartContent extends StatefulWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final List<Transaction> transactions;
 
   const _CategoriesChartContent({
@@ -112,7 +112,7 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
 }
 
 class _CategoriesChartWithLegend extends StatefulWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final List<_CategoryChartItem> items;
   final String summaryTitle;
 
@@ -316,7 +316,7 @@ class _CategoriesChart extends StatelessWidget {
 }
 
 class _CategoryChartItem {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final Category? category;
   final List<Transaction> transactions;
 

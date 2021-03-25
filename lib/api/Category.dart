@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'Converting.dart';
 import 'Model.dart';
 
-class Category extends Model<Category> implements Comparable<Category> {
+class Category extends FirebaseModel<Category> implements Comparable<Category> {
   final String title;
   final IconData icon;
   final Color primaryColor;

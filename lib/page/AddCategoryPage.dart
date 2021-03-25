@@ -7,7 +7,7 @@ import 'package:qwallet/widget/CategoryForm.dart';
 import '../AppLocalizations.dart';
 
 class AddCategoryPage extends StatelessWidget {
-  final Reference<Wallet> walletRef;
+  final FirebaseReference<FirebaseWallet> walletRef;
 
   const AddCategoryPage({Key? key, required this.walletRef}) : super(key: key);
 

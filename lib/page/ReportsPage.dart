@@ -15,7 +15,7 @@ import '../Money.dart';
 import '../utils.dart';
 
 class ReportsPage extends StatefulWidget {
-  final Reference<Wallet> walletRef;
+  final FirebaseReference<FirebaseWallet> walletRef;
 
   const ReportsPage({Key? key, required this.walletRef}) : super(key: key);
 
@@ -39,7 +39,7 @@ class _ReportsPageState extends State<ReportsPage> {
 
   Widget buildTabController(
     BuildContext context,
-    Wallet wallet,
+    FirebaseWallet wallet,
     List<Transaction> transactions,
   ) {
     return DefaultTabController(
@@ -72,7 +72,7 @@ class _ReportsPageState extends State<ReportsPage> {
 }
 
 class _ReportByCategoriesPage extends StatelessWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final List<Transaction> transactions;
 
   const _ReportByCategoriesPage({
@@ -188,7 +188,7 @@ class _ByCategoryItem {
 }
 
 class _ReportByDatePage extends StatelessWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final List<Transaction> transactions;
 
   const _ReportByDatePage({

@@ -29,10 +29,10 @@ class DataSource {
 }
 
 extension WalletsDataSource on DataSource {
-  Stream<List<Wallet>> getOrderedWallets() =>
+  Stream<List<FirebaseWallet>> getOrderedWallets() =>
       LocalPreferences.orderedWallets(getWallets());
 
-  Stream<List<Wallet>> getWallets() {
+  Stream<List<FirebaseWallet>> getWallets() {
     return firestore
         .collection("wallets")
         .where("ownersUid", arrayContains: currentUser!.uid)
@@ -41,7 +41,7 @@ extension WalletsDataSource on DataSource {
       final wallets = querySnapshot.docs.map((walletSnapshot) {
         return DataSource.instance
             .getCategories(wallet: walletSnapshot.reference.toReference())
-            .map((categories) => Wallet(walletSnapshot, categories));
+            .map((categories) => FirebaseWallet(walletSnapshot, categories));
       });
       if (wallets.isNotEmpty) // NOTE: Fixes #40
         return CombineLatestStream.list(wallets);
@@ -50,14 +50,15 @@ extension WalletsDataSource on DataSource {
     });
   }
 
-  Stream<Wallet> getWalletById(String walletId) =>
+  Stream<FirebaseWallet> getWalletById(String walletId) =>
       getWallet(getWalletReference(walletId));
 
-  Reference<Wallet> getWalletReference(String id) {
-    return Reference(firestore.collection("wallets").doc(id));
+  FirebaseReference<FirebaseWallet> getWalletReference(String id) {
+    return FirebaseReference(firestore.collection("wallets").doc(id));
   }
 
-  Stream<Wallet> getWallet(Reference<Wallet> walletRef) {
+  Stream<FirebaseWallet> getWallet(
+      FirebaseReference<FirebaseWallet> walletRef) {
     final walletSnapshots = firestore
         .collection("wallets")
         .doc(walletRef.documentReference.id)
@@ -69,12 +70,12 @@ extension WalletsDataSource on DataSource {
       walletSnapshots,
       categories,
       (Firestore.DocumentSnapshot walletSnapshot, List<Category> categories) {
-        return Wallet(walletSnapshot, categories);
+        return FirebaseWallet(walletSnapshot, categories);
       },
     );
   }
 
-  Future<Reference<Wallet>> addWallet(
+  Future<FirebaseReference<FirebaseWallet>> addWallet(
       String name, List<String> ownersUid, String currency) {
     return firestore.collection("wallets").add({
       "name": name,
@@ -82,15 +83,15 @@ extension WalletsDataSource on DataSource {
       "currency": currency,
       "totalExpense": 0.0,
       "totalIncome": 0.0
-    }).then((reference) => Reference(reference));
+    }).then((reference) => FirebaseReference(reference));
   }
 
-  Future<Reference<Wallet>> updateWallet(
-    Reference<Wallet> walletRef, {
+  Future<FirebaseReference<FirebaseWallet>> updateWallet(
+    FirebaseReference<FirebaseWallet> walletRef, {
     String? name,
     Currency? currency,
     List<String>? ownersUid,
-    WalletDateRange? dateRange,
+    FirebaseWalletDateRange? dateRange,
   }) async {
     await firestore.runTransaction((transaction) async {
       transaction.update(walletRef.documentReference, {
@@ -138,14 +139,14 @@ extension WalletsDataSource on DataSource {
     }
   }
 
-  Future<void> removeWallet(Reference<Wallet> wallet) {
+  Future<void> removeWallet(FirebaseReference<FirebaseWallet> wallet) {
     return firestore.collection("wallets").doc(wallet.id).delete();
   }
 }
 
 extension TransactionsDataSource on DataSource {
   Stream<LatestTransactions> getLatestTransactions(
-    Reference<Wallet> wallet,
+    FirebaseReference<FirebaseWallet> wallet,
   ) {
     final walletStream = getWallet(wallet).asBroadcastStream();
 
@@ -158,14 +159,14 @@ extension TransactionsDataSource on DataSource {
 
     return Rx.combineLatestList([walletStream, transactionsStream])
         .map((values) {
-      final wallet = values[0] as Wallet;
+      final wallet = values[0] as FirebaseWallet;
       final transactions = values[1] as List<Transaction>;
       return LatestTransactions(wallet, transactions);
     });
   }
 
   Stream<List<Transaction>> _getTransactionsInDateTimeRange({
-    required Reference<Wallet> wallet,
+    required FirebaseReference<FirebaseWallet> wallet,
     required DateTimeRange dateRange,
   }) {
     return wallet.documentReference
@@ -178,7 +179,7 @@ extension TransactionsDataSource on DataSource {
   }
 
   Stream<List<Transaction>> getTransactions({
-    required Reference<Wallet> wallet,
+    required FirebaseReference<FirebaseWallet> wallet,
     required int limit,
     Transaction? afterTransaction,
   }) {
@@ -194,25 +195,26 @@ extension TransactionsDataSource on DataSource {
     });
   }
 
-  Reference<Transaction> getTransactionReference({
-    required Reference<Wallet> wallet,
+  FirebaseReference<Transaction> getTransactionReference({
+    required FirebaseReference<FirebaseWallet> wallet,
     required String id,
   }) {
-    return Reference(
+    return FirebaseReference(
         wallet.documentReference.collection("transactions").doc(id));
   }
 
-  Stream<Transaction?> getTransaction(Reference<Transaction> transaction) =>
+  Stream<Transaction?> getTransaction(
+          FirebaseReference<Transaction> transaction) =>
       transaction.documentReference
           .snapshots()
           .map((s) => s.exists ? Transaction(s) : null);
 
-  Future<Reference<Transaction>> addTransaction(
-    Reference<Wallet> wallet, {
+  Future<FirebaseReference<Transaction>> addTransaction(
+    FirebaseReference<FirebaseWallet> wallet, {
     required TransactionType type,
     String? title,
     required double amount,
-    Reference<Category>? category,
+    FirebaseReference<Category>? category,
     required DateTime date,
   }) async {
     final addingTransaction =
@@ -237,10 +239,10 @@ extension TransactionsDataSource on DataSource {
             (values[0] as Firestore.DocumentReference).toReference());
   }
 
-  Future<Reference<Transaction>> updateTransaction(
-    Reference<Wallet> walletRef,
+  Future<FirebaseReference<Transaction>> updateTransaction(
+    FirebaseReference<FirebaseWallet> walletRef,
     Transaction transaction, {
-    Reference<Category>? category,
+    FirebaseReference<Category>? category,
     TransactionType? type,
     String? title,
     double? amount,
@@ -296,7 +298,7 @@ extension TransactionsDataSource on DataSource {
 
   Future<void> updateTransactionCategory(
     Transaction transaction,
-    Reference<Category>? category,
+    FirebaseReference<Category>? category,
   ) {
     return transaction.reference.documentReference.update({
       "category": category?.documentReference,
@@ -304,7 +306,7 @@ extension TransactionsDataSource on DataSource {
   }
 
   Future<void> removeTransaction(
-    Reference<Wallet> walletRef,
+    FirebaseReference<FirebaseWallet> walletRef,
     Transaction transaction,
   ) async {
     await firestore.runTransaction((removeTransaction) async {
@@ -322,7 +324,7 @@ extension TransactionsDataSource on DataSource {
 
 extension CategoriesDataSource on DataSource {
   Stream<List<Category>> getCategories({
-    required Reference<Wallet> wallet,
+    required FirebaseReference<FirebaseWallet> wallet,
   }) {
     return wallet.documentReference.collection("categories").snapshots().map(
         (snapshot) => snapshot.docs.map((s) => Category(s)).toList()
@@ -330,12 +332,12 @@ extension CategoriesDataSource on DataSource {
   }
 
   Stream<Category> getCategory({
-    required Reference<Category> category,
+    required FirebaseReference<Category> category,
   }) =>
       category.documentReference.snapshots().map((s) => Category(s));
 
   Future<void> addCategory({
-    required Reference<Wallet> wallet,
+    required FirebaseReference<FirebaseWallet> wallet,
     required String title,
     required Color primaryColor,
     required Color backgroundColor,
@@ -351,7 +353,7 @@ extension CategoriesDataSource on DataSource {
   }
 
   Future<void> updateCategory({
-    required Reference<Category> category,
+    required FirebaseReference<Category> category,
     required String title,
     required Color primaryColor,
     required Color backgroundColor,
@@ -366,7 +368,7 @@ extension CategoriesDataSource on DataSource {
   }
 
   Future<void> updateCategoriesOrder({
-    required List<Reference<Category>> categoriesOrder,
+    required List<FirebaseReference<Category>> categoriesOrder,
   }) async {
     await firestore.runTransaction((transaction) async {
       categoriesOrder.forEach((category) {
@@ -377,7 +379,7 @@ extension CategoriesDataSource on DataSource {
     });
   }
 
-  Future<void> removeCategory({required Reference<Category> category}) {
+  Future<void> removeCategory({required FirebaseReference<Category> category}) {
     return category.documentReference.delete();
   }
 }
@@ -452,7 +454,7 @@ extension PrivateLoansDataSource on DataSource {
   }
 
   Future<void> updatePrivateLoan({
-    required Reference<PrivateLoan> loanRef,
+    required FirebaseReference<PrivateLoan> loanRef,
     required String? lenderUid,
     required String? lenderName,
     required String? borrowerUid,
@@ -478,7 +480,7 @@ extension PrivateLoansDataSource on DataSource {
   }
 
   Future<void> updatePrivateLoanRepaidAmount({
-    required Reference<PrivateLoan> loanRef,
+    required FirebaseReference<PrivateLoan> loanRef,
     required double amount,
     required double repaidAmount,
   }) {
@@ -505,7 +507,7 @@ extension PrivateLoansDataSource on DataSource {
   }
 
   Future<void> removePrivateLoan({
-    required Reference<PrivateLoan> loanRef,
+    required FirebaseReference<PrivateLoan> loanRef,
   }) {
     return loanRef.documentReference.delete();
   }
@@ -553,7 +555,7 @@ extension DateTimeUtils on DateTime {
 }
 
 class LatestTransactions {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
   final List<Transaction> transactions;
 
   LatestTransactions(this.wallet, this.transactions);

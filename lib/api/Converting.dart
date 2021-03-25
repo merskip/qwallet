@@ -43,9 +43,9 @@ extension DocumentSnapshotConverting on DocumentSnapshot {
     return value is Map<K, V> ? value : null;
   }
 
-  Reference<T>? getReference<T>(dynamic field) {
+  FirebaseReference<T>? getReference<T>(dynamic field) {
     final value = _getOrNull(field);
-    return value is DocumentReference ? Reference(value) : null;
+    return value is DocumentReference ? FirebaseReference(value) : null;
   }
 
   List<T>? getList<T>(dynamic field) {

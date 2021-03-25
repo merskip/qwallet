@@ -16,7 +16,7 @@ import '../AppLocalizations.dart';
 import '../Currency.dart';
 
 class WalletPage extends StatelessWidget {
-  final Reference<Wallet> walletRef;
+  final FirebaseReference<FirebaseWallet> walletRef;
 
   const WalletPage({Key? key, required this.walletRef}) : super(key: key);
 
@@ -24,13 +24,14 @@ class WalletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getWallet(walletRef),
-      builder: (context, Wallet wallet) => _WalletPageContent(wallet: wallet),
+      builder: (context, FirebaseWallet wallet) =>
+          _WalletPageContent(wallet: wallet),
     );
   }
 }
 
 class _WalletPageContent extends StatefulWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
 
   _WalletPageContent({Key? key, required this.wallet}) : super(key: key);
 
@@ -246,13 +247,14 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     );
   }
 
-  String _getWalletDateRangeTypeText(WalletDateRangeType dateRangeType) {
+  String _getWalletDateRangeTypeText(
+      FirebaseWalletDateRangeType dateRangeType) {
     switch (dateRangeType) {
-      case WalletDateRangeType.currentMonth:
+      case FirebaseWalletDateRangeType.currentMonth:
         return AppLocalizations.of(context).walletDateRangeCurrentMonth;
-      case WalletDateRangeType.currentWeek:
+      case FirebaseWalletDateRangeType.currentWeek:
         return AppLocalizations.of(context).walletDateRangeCurrentWeek;
-      case WalletDateRangeType.lastDays:
+      case FirebaseWalletDateRangeType.lastDays:
         return AppLocalizations.of(context).walletDateRangeLastDays;
     }
   }

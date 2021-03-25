@@ -18,7 +18,8 @@ class UserPreferences {
 }
 
 class LocalPreferences {
-  static final _walletsOrder = StreamController<List<Wallet>>.broadcast();
+  static final _walletsOrder =
+      StreamController<List<FirebaseWallet>>.broadcast();
 
   static final _userPreferences = BehaviorSubject<UserPreferences>(
     onListen: () => emitUserPreferences(),
@@ -26,14 +27,15 @@ class LocalPreferences {
 
   static Stream<UserPreferences> get userPreferences => _userPreferences.stream;
 
-  static Future<void> orderWallets(List<Wallet> wallets) async {
+  static Future<void> orderWallets(List<FirebaseWallet> wallets) async {
     final preferences = await SharedPreferences.getInstance();
     final walletsOrderIds = wallets.map((wallet) => wallet.id).toList();
     preferences.setStringList("walletsOrder", walletsOrderIds);
     _walletsOrder.add(wallets);
   }
 
-  static Stream<List<Wallet>> orderedWallets(Stream<List<Wallet>> wallets) {
+  static Stream<List<FirebaseWallet>> orderedWallets(
+      Stream<List<FirebaseWallet>> wallets) {
     return MergeStream([_walletsOrder.stream, wallets])
         .asyncMap((wallets) async {
       final remainingWallets = List.of(wallets);
@@ -43,7 +45,7 @@ class LocalPreferences {
           ? preferences.getStringList("walletsOrder")!
           : [];
 
-      final result = <Wallet>[];
+      final result = <FirebaseWallet>[];
       for (final walletId in walletsOrderIds) {
         final foundWallet =
             remainingWallets.findFirstOrNull((wallet) => wallet.id == walletId);

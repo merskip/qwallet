@@ -9,7 +9,7 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import '../AppLocalizations.dart';
 
 class EditCategoryPage extends StatelessWidget {
-  final Reference<Category> categoryRef;
+  final FirebaseReference<Category> categoryRef;
 
   const EditCategoryPage({
     Key? key,

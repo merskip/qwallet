@@ -12,7 +12,7 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import '../AppLocalizations.dart';
 
 class EditWalletDateRangePage extends StatelessWidget {
-  final Reference<Wallet> wallet;
+  final FirebaseReference<FirebaseWallet> wallet;
 
   const EditWalletDateRangePage({
     Key? key,
@@ -27,7 +27,8 @@ class EditWalletDateRangePage extends StatelessWidget {
       ),
       body: SimpleStreamWidget(
         stream: DataSource.instance.getWallet(wallet),
-        builder: (context, Wallet wallet) => _EditWalletDateRangePageContent(
+        builder: (context, FirebaseWallet wallet) =>
+            _EditWalletDateRangePageContent(
           wallet: wallet,
         ),
       ),
@@ -36,7 +37,7 @@ class EditWalletDateRangePage extends StatelessWidget {
 }
 
 class _EditWalletDateRangePageContent extends StatefulWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
 
   const _EditWalletDateRangePageContent({
     Key? key,
@@ -50,7 +51,7 @@ class _EditWalletDateRangePageContent extends StatefulWidget {
 
 class _EditWalletDateRangePageContentState
     extends State<_EditWalletDateRangePageContent> {
-  WalletDateRangeType type = WalletDateRangeType.currentMonth;
+  FirebaseWalletDateRangeType type = FirebaseWalletDateRangeType.currentMonth;
   int monthStartDay = 1;
   int weekdayStart = DateTime.monday;
   int numberOfLastDays = 30;
@@ -79,11 +80,11 @@ class _EditWalletDateRangePageContentState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           buildTypeSelection(context),
-          if (type == WalletDateRangeType.currentMonth)
+          if (type == FirebaseWalletDateRangeType.currentMonth)
             buildMonthStartDayPicker(context),
-          if (type == WalletDateRangeType.currentWeek)
+          if (type == FirebaseWalletDateRangeType.currentWeek)
             buildWeekdayStartSelection(context),
-          if (type == WalletDateRangeType.lastDays)
+          if (type == FirebaseWalletDateRangeType.lastDays)
             buildNumberOfDaysSelection(context),
           Divider(),
           buildExampleCalendar(context),
@@ -103,9 +104,12 @@ class _EditWalletDateRangePageContentState
           Wrap(
             spacing: 8,
             children: [
-              buildDateRangeTypeChip(context, WalletDateRangeType.currentMonth),
-              buildDateRangeTypeChip(context, WalletDateRangeType.currentWeek),
-              buildDateRangeTypeChip(context, WalletDateRangeType.lastDays),
+              buildDateRangeTypeChip(
+                  context, FirebaseWalletDateRangeType.currentMonth),
+              buildDateRangeTypeChip(
+                  context, FirebaseWalletDateRangeType.currentWeek),
+              buildDateRangeTypeChip(
+                  context, FirebaseWalletDateRangeType.lastDays),
             ],
           ),
         ],
@@ -114,14 +118,14 @@ class _EditWalletDateRangePageContentState
   }
 
   Widget buildDateRangeTypeChip(
-      BuildContext context, WalletDateRangeType type) {
+      BuildContext context, FirebaseWalletDateRangeType type) {
     return ChoiceChip(
       label: Text({
-        WalletDateRangeType.currentMonth:
+        FirebaseWalletDateRangeType.currentMonth:
             AppLocalizations.of(context).editWalletDateRangeTypeCurrentMonth,
-        WalletDateRangeType.currentWeek:
+        FirebaseWalletDateRangeType.currentWeek:
             AppLocalizations.of(context).editWalletDateRangeTypeCurrentWeek,
-        WalletDateRangeType.lastDays:
+        FirebaseWalletDateRangeType.lastDays:
             AppLocalizations.of(context).editWalletDateRangeTypeLastDays,
       }[type]!),
       selected: this.type == type,
@@ -243,11 +247,11 @@ class _EditWalletDateRangePageContentState
 
   Widget buildExampleCalendar(BuildContext context) {
     switch (this.type) {
-      case WalletDateRangeType.currentMonth:
+      case FirebaseWalletDateRangeType.currentMonth:
         return buildExampleCalendarForCurrentMonth(context);
-      case WalletDateRangeType.currentWeek:
+      case FirebaseWalletDateRangeType.currentWeek:
         return buildExampleCalendarForCurrentWeek(context);
-      case WalletDateRangeType.lastDays:
+      case FirebaseWalletDateRangeType.lastDays:
         return buildExampleCalendarForLastDays(context);
     }
   }
@@ -333,8 +337,8 @@ class _EditWalletDateRangePageContentState
     );
   }
 
-  WalletDateRange _getWalletDateRange() {
-    return WalletDateRange(
+  FirebaseWalletDateRange _getWalletDateRange() {
+    return FirebaseWalletDateRange(
       type: type,
       weekdayStart: weekdayStart,
       monthStartDay: monthStartDay,

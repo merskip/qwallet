@@ -20,7 +20,7 @@ import '../../AppLocalizations.dart';
 import '../../router.dart';
 
 class AddTransactionPage extends StatelessWidget {
-  final Reference<Wallet> initialWalletRef;
+  final FirebaseReference<FirebaseWallet> initialWalletRef;
   final double? initialAmount;
 
   const AddTransactionPage({
@@ -33,7 +33,7 @@ class AddTransactionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getWallet(initialWalletRef),
-      builder: (context, Wallet wallet) => _AddTransactionPageContent(
+      builder: (context, FirebaseWallet wallet) => _AddTransactionPageContent(
         initialWallet: wallet,
         initialAmount: initialAmount,
       ),
@@ -43,7 +43,7 @@ class AddTransactionPage extends StatelessWidget {
 
 class _AddTransactionPageContent extends StatelessWidget {
   final formKey = GlobalKey<_AddTransactionFormState>();
-  final Wallet initialWallet;
+  final FirebaseWallet initialWallet;
   final double? initialAmount;
 
   _AddTransactionPageContent({
@@ -109,7 +109,7 @@ class _AddTransactionPageContent extends StatelessWidget {
 }
 
 class _AddTransactionForm extends StatefulWidget {
-  final Wallet initialWallet;
+  final FirebaseWallet initialWallet;
   final double? initialAmount;
   final TransactionType? initialTransactionType;
 
@@ -130,7 +130,7 @@ class _AddTransactionForm extends StatefulWidget {
 class _AddTransactionFormState extends State<_AddTransactionForm> {
   final _formKey = GlobalKey<FormState>();
 
-  Wallet wallet;
+  FirebaseWallet wallet;
 
   TransactionType type;
 
@@ -210,7 +210,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         wallets: wallets,
         selectedWallet: this.wallet,
       ),
-    ) as Wallet?;
+    ) as FirebaseWallet?;
     if (selectedWallet != null) {
       setState(() => this.wallet = selectedWallet);
     }

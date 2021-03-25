@@ -3,8 +3,8 @@ import 'package:qwallet/api/Wallet.dart';
 
 class SelectWalletDialog extends StatelessWidget {
   final String title;
-  final List<Wallet> wallets;
-  final Wallet? selectedWallet;
+  final List<FirebaseWallet> wallets;
+  final FirebaseWallet? selectedWallet;
 
   const SelectWalletDialog({
     Key? key,
@@ -23,7 +23,7 @@ class SelectWalletDialog extends StatelessWidget {
     );
   }
 
-  Widget buildWalletOption(BuildContext context, Wallet wallet) {
+  Widget buildWalletOption(BuildContext context, FirebaseWallet wallet) {
     return RadioListTile(
       title: Text(wallet.name),
       secondary: Text(wallet.balance.formatted),

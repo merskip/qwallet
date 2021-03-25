@@ -6,8 +6,8 @@ import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/utils.dart';
 
 class WalletsSwipeWidget extends StatefulWidget {
-  final List<Wallet> wallets;
-  final void Function(Wallet wallet) onSelectedWallet;
+  final List<FirebaseWallet> wallets;
+  final void Function(FirebaseWallet wallet) onSelectedWallet;
 
   const WalletsSwipeWidget({
     Key? key,
@@ -109,7 +109,7 @@ class _WalletsSwipeWidgetState extends State<WalletsSwipeWidget> {
 }
 
 class _WalletSinglePage extends StatelessWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
 
   const _WalletSinglePage({Key? key, required this.wallet}) : super(key: key);
 

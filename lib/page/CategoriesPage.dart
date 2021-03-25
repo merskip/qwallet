@@ -12,7 +12,7 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import '../AppLocalizations.dart';
 
 class CategoriesPage extends StatelessWidget {
-  final Reference<Wallet> walletRef;
+  final FirebaseReference<FirebaseWallet> walletRef;
 
   const CategoriesPage({Key? key, required this.walletRef}) : super(key: key);
 
@@ -20,14 +20,14 @@ class CategoriesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getWallet(walletRef),
-      builder: (context, Wallet wallet) =>
+      builder: (context, FirebaseWallet wallet) =>
           _WalletCategoriesPageContent(wallet: wallet),
     );
   }
 }
 
 class _WalletCategoriesPageContent extends StatefulWidget {
-  final Wallet wallet;
+  final FirebaseWallet wallet;
 
   const _WalletCategoriesPageContent({
     Key? key,

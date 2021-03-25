@@ -5,17 +5,17 @@ import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/utils.dart';
 
 class WalletDateRangeCalculator {
-  final WalletDateRange dateRange;
+  final FirebaseWalletDateRange dateRange;
 
   WalletDateRangeCalculator(this.dateRange);
 
   DateTimeRange getDateTimeRangeFor({required DateTime now, int index = 0}) {
     switch (dateRange.type) {
-      case WalletDateRangeType.currentMonth:
+      case FirebaseWalletDateRangeType.currentMonth:
         return _getDateRangeCurrentMonth(now, index);
-      case WalletDateRangeType.currentWeek:
+      case FirebaseWalletDateRangeType.currentWeek:
         return _getDateRangeCurrentWeek(now, index);
-      case WalletDateRangeType.lastDays:
+      case FirebaseWalletDateRangeType.lastDays:
         return getDateRangeLastDays(now, index);
     }
   }
