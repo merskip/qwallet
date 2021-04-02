@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qwallet/datasource/Account.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/datasource/WalletsProvider.dart';
+import 'package:qwallet/datasource/firebase/DocumentIdentifiable.dart';
 import 'package:qwallet/datasource/firebase/FirebaseCategoriesProvider.dart';
 import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
 
@@ -63,8 +64,8 @@ void main() {
 
     walletsProvider.getWallets().listen(expectAsync1((wallets) {
       expect(wallets.length, 1);
-      expect(wallets.first.name, "Some name 1");
-      expect(wallets.first.currency.code, "USD");
+      expect(wallets[0].name, "Some name 1");
+      expect(wallets[0].currency.code, "USD");
     }));
   });
 
@@ -112,13 +113,39 @@ void main() {
       emitsInOrder([
         expectNext((List<Wallet> wallets) {
           expect(wallets.length, 1);
-          expect(wallets.first.name, "Some name 1");
-          expect(wallets.first.currency.code, "USD");
+          expect(wallets[0].name, "Some name 1");
+          expect(wallets[0].currency.code, "USD");
         }),
         expectNext((List<Wallet> wallets) {
           expect(wallets.length, 1);
-          expect(wallets.first.name, "Some other name 1");
-          expect(wallets.first.currency.code, "USD");
+          expect(wallets[0].name, "Some other name 1");
+          expect(wallets[0].currency.code, "USD");
+        }),
+      ]),
+    );
+  });
+
+  test("When request single wallet should emit this wallet", () async {
+    final walletsProvider = makeWalletsProvider(
+      firestore,
+      firebaseUserId: "1234",
+    );
+
+    final walletReference = await firestore.collection("wallets").add({
+      "ownersUid": ["1234"],
+      "name": "Some name 1",
+      "currency": "USD",
+    });
+
+    final wallet =
+        walletsProvider.getWalletByIdentifier(walletReference.toIdentifier());
+
+    expect(
+      wallet,
+      emitsInOrder([
+        expectNext((Wallet wallet) {
+          expect(wallet.name, "Some name 1");
+          expect(wallet.currency.code, "USD");
         }),
       ]),
     );

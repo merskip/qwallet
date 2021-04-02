@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/datasource/CategoriesProvider.dart';
+import 'package:qwallet/datasource/Identifier.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../AccountProvider.dart';
@@ -21,32 +23,58 @@ class FirebaseWalletsProvider implements WalletsProvider {
   });
 
   @override
-  Stream<List<Wallet>> getWallets() {
-    return accountProvider.getAccount().asStream().flatMap((account) {
-      final user = account.firebaseUser;
-      if (user == null) return Stream.empty();
-
+  Stream<List<FirebaseWallet>> getWallets() {
+    return onFirebaseUser((user) {
       return firestore
           .collection("wallets")
           .where("ownersUid", arrayContains: user.uid)
           .snapshots()
-          .switchMap((walletsSnapshot) {
-        print("New wallets");
-        final wallets = walletsSnapshot.docs.map((walletSnapshot) {
-          return categoriesProvider
-              .getCategories(walletSnapshot.toIdentifier())
-              .map((categories) {
-            print("New categories for ${walletSnapshot.toIdentifier()}");
-            return FirebaseWallet(
-                walletSnapshot, categories as List<FirebaseCategory>);
-          });
-        });
+          .switchMap(
+            (walletsSnapshot) => _parseWalletsSnapshot(walletsSnapshot),
+          );
+    });
+  }
 
-        if (wallets.isNotEmpty) // NOTE: Fixes #40
-          return CombineLatestStream.list(wallets);
-        else
-          return Stream.value([]);
-      });
+  @override
+  Stream<FirebaseWallet> getWalletByIdentifier(Identifier<Wallet> walletId) {
+    return onFirebaseUser((user) {
+      return firestore
+          .collection("wallets")
+          .doc(walletId.id)
+          .snapshots()
+          .flatMap(
+            (walletSnapshot) => _parseWalletSnapshot(walletSnapshot),
+          );
+    });
+  }
+
+  Stream<List<FirebaseWallet>> _parseWalletsSnapshot(
+      QuerySnapshot walletsSnapshot) {
+    final wallets = walletsSnapshot.docs.map(
+      (walletSnapshot) => _parseWalletSnapshot(walletSnapshot),
+    );
+
+    if (wallets.isNotEmpty) // NOTE: Fixes #40
+      return CombineLatestStream.list(wallets);
+    else
+      return Stream.value([]);
+  }
+
+  Stream<FirebaseWallet> _parseWalletSnapshot(DocumentSnapshot walletSnapshot) {
+    return categoriesProvider
+        .getCategories(walletSnapshot.toIdentifier())
+        .map((categories) => FirebaseWallet(
+              walletSnapshot,
+              categories as List<FirebaseCategory>,
+            ));
+  }
+
+  Stream<T> onFirebaseUser<T>(Stream<T> Function(User user) callback) {
+    return accountProvider.getAccount().asStream().flatMap((account) {
+      final user = account.firebaseUser;
+      if (user == null) return Stream.empty();
+
+      return callback(user);
     });
   }
 }
