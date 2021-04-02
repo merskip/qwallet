@@ -180,7 +180,7 @@ class _ReportByCategoriesPage extends StatelessWidget {
 }
 
 class _ByCategoryItem {
-  final Category? category;
+  final FirebaseCategory? category;
   final Money totalAmount;
   final double percentage;
 

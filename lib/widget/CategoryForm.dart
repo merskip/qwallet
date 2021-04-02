@@ -10,7 +10,7 @@ import 'ColorPicker.dart';
 import 'PrimaryButton.dart';
 
 class CategoryForm extends StatefulWidget {
-  final Category? category;
+  final FirebaseCategory? category;
 
   final Function(
     BuildContext context,
@@ -44,7 +44,7 @@ class _CategoryFormState extends State<CategoryForm> {
   MaterialColor backgroundColor;
   IconData icon;
 
-  _CategoryFormState({required Category? category})
+  _CategoryFormState({required FirebaseCategory? category})
       : titleController = TextEditingController(text: category?.title),
         primaryColor = _findMaterialColor(category?.primaryColor, 800) ??
             Colors.primaries.first,

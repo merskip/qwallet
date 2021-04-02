@@ -70,7 +70,7 @@ class _TransactionsCardState extends State<TransactionsCard> {
           TextButton(
             child: Text(AppLocalizations.of(context).transactionsCardShowAll),
             onPressed: () => router.navigateTo(
-                context, "/wallet/${widget.wallet.id}/transactions"),
+                context, "/wallet/${widget.wallet.identifier}/transactions"),
           ),
       ]),
     );

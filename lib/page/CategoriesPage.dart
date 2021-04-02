@@ -47,7 +47,8 @@ class __WalletCategoriesPageContentState
       GlobalKey();
 
   onSelectedAddCategory(BuildContext context) {
-    router.navigateTo(context, "/wallet/${widget.wallet.id}/categories/add");
+    router.navigateTo(
+        context, "/wallet/${widget.wallet.identifier}/categories/add");
   }
 
   onSelectedReorder(BuildContext context) {
@@ -69,10 +70,10 @@ class __WalletCategoriesPageContentState
     });
   }
 
-  onSelectedCategory(BuildContext context, Category category) {
+  onSelectedCategory(BuildContext context, FirebaseCategory category) {
     router.navigateTo(
       context,
-      "/wallet/${widget.wallet.id}/category/${category.id}",
+      "/wallet/${widget.wallet.identifier}/category/${category.id}",
     );
   }
 
@@ -110,7 +111,7 @@ class __WalletCategoriesPageContentState
     return SimpleStreamWidget(
       stream:
           DataSource.instance.getCategories(wallet: widget.wallet.reference),
-      builder: (context, List<Category> categories) {
+      builder: (context, List<FirebaseCategory> categories) {
         if (categories.isNotEmpty) {
           return !isReordering
               ? buildCategoriesGrid(context, categories)
@@ -127,7 +128,8 @@ class __WalletCategoriesPageContentState
     );
   }
 
-  Widget buildCategoriesGrid(BuildContext context, List<Category> categories) {
+  Widget buildCategoriesGrid(
+      BuildContext context, List<FirebaseCategory> categories) {
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
@@ -142,7 +144,7 @@ class __WalletCategoriesPageContentState
     );
   }
 
-  Widget buildCategoryTile(BuildContext context, Category category) {
+  Widget buildCategoryTile(BuildContext context, FirebaseCategory category) {
     return InkWell(
       key: Key(category.id),
       child: Padding(
@@ -175,7 +177,7 @@ class __WalletCategoriesPageContentState
 }
 
 class _CategoriesReorderableList extends StatefulWidget {
-  final List<Category> categories;
+  final List<FirebaseCategory> categories;
 
   const _CategoriesReorderableList({
     Key? key,
@@ -189,7 +191,7 @@ class _CategoriesReorderableList extends StatefulWidget {
 
 class _CategoriesReorderableListState
     extends State<_CategoriesReorderableList> {
-  List<Category> sortingCategories;
+  List<FirebaseCategory> sortingCategories;
 
   _CategoriesReorderableListState(this.sortingCategories);
 
@@ -217,7 +219,8 @@ class _CategoriesReorderableListState
     );
   }
 
-  Widget buildReorderableCategory(BuildContext context, Category category) {
+  Widget buildReorderableCategory(
+      BuildContext context, FirebaseCategory category) {
     return ListTile(
       key: Key(category.id),
       leading: CategoryIcon(category, size: 18),

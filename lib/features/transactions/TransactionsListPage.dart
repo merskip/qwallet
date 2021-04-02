@@ -352,7 +352,8 @@ class FiltersListItem extends _ListItem {
     return text;
   }
 
-  Widget buildCategoryFilterChip(BuildContext context, Category category) {
+  Widget buildCategoryFilterChip(
+      BuildContext context, FirebaseCategory category) {
     return Chip(
       label: RichText(
         text: TextSpan(

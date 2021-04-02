@@ -34,7 +34,7 @@ class _TransactionPageState extends State<TransactionPage> {
   final TextEditingController titleController;
   final amountController = AmountEditingController();
 
-  late Category? _selectedCategory;
+  late FirebaseCategory? _selectedCategory;
   late TransactionType _selectedType;
   late bool _excludedFromDailyStatistics;
 
@@ -141,7 +141,7 @@ class _TransactionPageState extends State<TransactionPage> {
     if (category != null) {
       return SimpleStreamWidget(
         stream: DataSource.instance.getCategory(category: category),
-        builder: (context, Category category) {
+        builder: (context, FirebaseCategory category) {
           return buildCategoryDetailsItem(
             context,
             leading: CategoryIcon(category, size: 20),
@@ -167,7 +167,7 @@ class _TransactionPageState extends State<TransactionPage> {
     BuildContext context, {
     required Widget leading,
     required Widget value,
-    Category? category,
+    FirebaseCategory? category,
   }) {
     return DetailsItemTile(
       leading: leading,
@@ -176,7 +176,7 @@ class _TransactionPageState extends State<TransactionPage> {
       editingBegin: () => _selectedCategory = category,
       editingContent: (context) => SimpleStreamWidget(
         stream: DataSource.instance.getCategories(wallet: widget.walletRef),
-        builder: (context, List<Category> categories) {
+        builder: (context, List<FirebaseCategory> categories) {
           return CategoryPicker(
             title:
                 Text(AppLocalizations.of(context).transactionDetailsCategory),

@@ -7,8 +7,8 @@ import '../../AppLocalizations.dart';
 import '../../widget/CategoryButton.dart';
 
 class TransactionsCategoryMultiplePicker extends StatefulWidget {
-  final List<Category> categories;
-  final List<Category> selectedCategories;
+  final List<FirebaseCategory> categories;
+  final List<FirebaseCategory> selectedCategories;
   final bool includeWithoutCategory;
 
   const TransactionsCategoryMultiplePicker({
@@ -25,7 +25,7 @@ class TransactionsCategoryMultiplePicker extends StatefulWidget {
 
 class TransactionsCategoryMultiplePickerState
     extends State<TransactionsCategoryMultiplePicker> {
-  late List<Category> selectedCategories;
+  late List<FirebaseCategory> selectedCategories;
   late bool includeWithoutCategory;
 
   @override
@@ -42,7 +42,7 @@ class TransactionsCategoryMultiplePickerState
     super.didUpdateWidget(oldWidget);
   }
 
-  void onSelectedCategory(BuildContext context, Category category) {
+  void onSelectedCategory(BuildContext context, FirebaseCategory category) {
     var newCategories = [...selectedCategories];
 
     final isSelected = selectedCategories.contains(category);
@@ -67,9 +67,7 @@ class TransactionsCategoryMultiplePickerState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
-        children: [
-          buildCategories(context)
-        ],
+        children: [buildCategories(context)],
       ),
     );
   }
@@ -86,7 +84,7 @@ class TransactionsCategoryMultiplePickerState
     );
   }
 
-  Widget buildCategoryButton(BuildContext context, Category category) {
+  Widget buildCategoryButton(BuildContext context, FirebaseCategory category) {
     final isSelected = selectedCategories.contains(category);
     return CategoryButton(
       category: category,

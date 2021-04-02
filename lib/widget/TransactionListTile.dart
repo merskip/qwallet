@@ -10,7 +10,7 @@ import 'CategoryIcon.dart';
 class TransactionListTile extends StatelessWidget {
   final FirebaseWallet wallet;
   final Transaction transaction;
-  final Category? category;
+  final FirebaseCategory? category;
   final VisualDensity? visualDensity;
 
   TransactionListTile({
@@ -40,8 +40,8 @@ class TransactionListTile extends StatelessWidget {
       trailing: Text(amountPrefix + amountText, style: TextStyle(color: color)),
       dense: true,
       visualDensity: visualDensity,
-      onTap: () => router.navigateTo(
-          context, "/wallet/${wallet.id}/transaction/${transaction.id}"),
+      onTap: () => router.navigateTo(context,
+          "/wallet/${wallet.identifier}/transaction/${transaction.id}"),
     );
   }
 }

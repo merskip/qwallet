@@ -16,7 +16,7 @@ class Transaction extends FirebaseModel<Transaction> {
   String? title;
   double amount;
   DateTime date;
-  FirebaseReference<Category>? category;
+  FirebaseReference<FirebaseCategory>? category;
   bool excludedFromDailyStatistics;
 
   Transaction(DocumentSnapshot snapshot)

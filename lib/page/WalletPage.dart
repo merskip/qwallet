@@ -109,7 +109,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
 
   void onSelectedEditDateRange(BuildContext context) async {
     final dateRange = await router.navigateTo(
-        context, "/wallet/${widget.wallet.id}/editDateRange");
+        context, "/wallet/${widget.wallet.identifier}/editDateRange");
     if (dateRange != null) {
       DataSource.instance.updateWallet(
         widget.wallet.reference,
@@ -119,7 +119,8 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   }
 
   void onSelectedCategories(BuildContext context) {
-    router.navigateTo(context, "/wallet/${widget.wallet.id}/categories");
+    router.navigateTo(
+        context, "/wallet/${widget.wallet.identifier}/categories");
   }
 
   @override

@@ -18,7 +18,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   void onSelectedAddTransaction(BuildContext context) {
     final wallet = dashboardKey.currentState!.getSelectedWallet();
-    router.navigateTo(context, "/wallet/${wallet.id}/addTransaction");
+    router.navigateTo(context, "/wallet/${wallet.identifier}/addTransaction");
   }
 
   void onSelectedAddPrivateLoan(BuildContext context) {

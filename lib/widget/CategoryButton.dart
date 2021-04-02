@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
 
 class CategoryButton extends StatelessWidget {
-  final Category category;
+  final FirebaseCategory category;
   final bool isSelected;
   final VoidCallback onPressed;
 

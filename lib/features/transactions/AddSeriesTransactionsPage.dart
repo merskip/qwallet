@@ -47,7 +47,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   DateTime date = DateTime.now();
 
   final transactionAmountController = AmountEditingController();
-  Category? transactionCategory;
+  FirebaseCategory? transactionCategory;
 
   List<Transaction> transactions = [];
 
@@ -458,7 +458,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   }
 
   Widget buildTransactionCategoryPicker(
-      BuildContext context, List<Category> categories) {
+      BuildContext context, List<FirebaseCategory> categories) {
     return CategoryPicker(
       categories: categories,
       selectedCategory: transactionCategory,

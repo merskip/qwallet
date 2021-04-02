@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/datasource/Category.dart';
+import 'package:qwallet/datasource/Identifier.dart';
 
 import 'Converting.dart';
 import 'Model.dart';
 
-class Category extends FirebaseModel<Category> implements Comparable<Category> {
+class FirebaseCategory extends FirebaseModel<FirebaseCategory>
+    implements Category, Comparable<FirebaseCategory> {
+  final Identifier<Category> identifier;
   final String title;
   final IconData icon;
   final Color primaryColor;
@@ -16,8 +20,9 @@ class Category extends FirebaseModel<Category> implements Comparable<Category> {
         (match) => " ${match.group(1)}\u{00a0}",
       );
 
-  Category(DocumentSnapshot snapshot)
-      : title = snapshot.getString("title")!,
+  FirebaseCategory(DocumentSnapshot snapshot)
+      : identifier = Identifier(domain: "firebase", id: snapshot.id),
+        title = snapshot.getString("title")!,
         icon = snapshot.getIconData("icon")!,
         primaryColor = snapshot.getColorHex("primaryColor")!,
         backgroundColor = snapshot.getColorHex("backgroundColor")!,

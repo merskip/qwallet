@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/WalletDateRangeProvider.dart';
 import 'package:qwallet/api/Category.dart';
+import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/utils.dart';
 
@@ -12,6 +13,7 @@ import 'Converting.dart';
 import 'Model.dart';
 
 class FirebaseWallet extends FirebaseModel<FirebaseWallet> implements Wallet {
+  final Identifier<Wallet> identifier;
   final String name;
   final List<String> ownersUid;
   final Currency currency;
@@ -19,12 +21,13 @@ class FirebaseWallet extends FirebaseModel<FirebaseWallet> implements Wallet {
   final Money totalIncome;
   final FirebaseWalletDateRange dateRange;
 
-  final List<Category> categories;
+  final List<FirebaseCategory> categories;
 
   Money get balance => totalIncome - totalExpense.amount;
 
-  FirebaseWallet(DocumentSnapshot snapshot, List<Category> categories)
-      : this.name = snapshot.getString("name")!,
+  FirebaseWallet(DocumentSnapshot snapshot, List<FirebaseCategory> categories)
+      : this.identifier = Identifier(domain: "firebase", id: snapshot.id),
+        this.name = snapshot.getString("name")!,
         this.ownersUid = snapshot.getList<String>("ownersUid")!,
         this.currency = snapshot.getCurrency("currency")!,
         this.totalExpense = snapshot.getMoney("totalExpense", "currency") ??
@@ -35,9 +38,14 @@ class FirebaseWallet extends FirebaseModel<FirebaseWallet> implements Wallet {
         this.categories = categories,
         super(snapshot);
 
-  Category? getCategory(FirebaseReference<Category>? category) {
+  FirebaseCategory? getCategory(FirebaseReference<FirebaseCategory>? category) {
     if (category == null) return null;
     return categories.findFirstOrNull((c) => c.id == category.id);
+  }
+
+  @override
+  String toString() {
+    return 'FirebaseWallet{identifier: $identifier, name: $name}';
   }
 }
 

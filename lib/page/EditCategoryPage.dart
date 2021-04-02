@@ -9,14 +9,14 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import '../AppLocalizations.dart';
 
 class EditCategoryPage extends StatelessWidget {
-  final FirebaseReference<Category> categoryRef;
+  final FirebaseReference<FirebaseCategory> categoryRef;
 
   const EditCategoryPage({
     Key? key,
     required this.categoryRef,
   }) : super(key: key);
 
-  onSelectedRemove(BuildContext context, Category category) {
+  onSelectedRemove(BuildContext context, FirebaseCategory category) {
     ConfirmationDialog(
       title: Text(AppLocalizations.of(context)
           .categoryRemoveConfirmation(category.titleText)),
@@ -35,11 +35,12 @@ class EditCategoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getCategory(category: categoryRef),
-      builder: (context, Category category) => buildContent(context, category),
+      builder: (context, FirebaseCategory category) =>
+          buildContent(context, category),
     );
   }
 
-  Widget buildContent(BuildContext context, Category category) {
+  Widget buildContent(BuildContext context, FirebaseCategory category) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).categoryEdit(category.title)),

@@ -71,7 +71,7 @@ class _AddTransactionPageContent extends StatelessWidget {
     router.pop(context, null);
     router.navigateTo(
         context,
-        "/wallet/${wallet.id}/addSeriesTransactions"
+        "/wallet/${wallet.identifier}/addSeriesTransactions"
         "?initialTotalAmount=$amount"
         "&initialDate=${date.toIso8601String()}");
   }
@@ -136,7 +136,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   final amountController = AmountEditingController();
 
-  Category? category;
+  FirebaseCategory? category;
 
   final titleFocus = FocusNode();
   final titleController = TextEditingController();
@@ -320,12 +320,13 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   Widget buildCategory(BuildContext context) {
     return SimpleStreamWidget(
       stream: DataSource.instance.getCategories(wallet: wallet.reference),
-      builder: (context, List<Category> categories) =>
+      builder: (context, List<FirebaseCategory> categories) =>
           buildCategoryPicker(context, categories),
     );
   }
 
-  Widget buildCategoryPicker(BuildContext context, List<Category> categories) {
+  Widget buildCategoryPicker(
+      BuildContext context, List<FirebaseCategory> categories) {
     return CategoryPicker(
       categories: categories,
       selectedCategory: category,

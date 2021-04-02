@@ -184,7 +184,7 @@ void initRoutes(FluroRouter router) {
           .doc(walletId)
           .collection("categories")
           .doc(categoryId)
-          .toReference<Category>();
+          .toReference<FirebaseCategory>();
 
       return EditCategoryPage(
         categoryRef: categoryRef,

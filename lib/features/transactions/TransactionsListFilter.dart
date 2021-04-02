@@ -14,7 +14,7 @@ class TransactionsFilter {
   final TransactionsFilterAmountType? amountType;
   final double? amount;
   final double? amountAccuracy;
-  final List<Category>? categories;
+  final List<FirebaseCategory>? categories;
   final bool? includeWithoutCategory;
 
   TransactionsFilter({
@@ -81,7 +81,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
   final amountController = TextEditingController();
   final amountAccuracyController = TextEditingController();
 
-  late List<Category> selectedCategories;
+  late List<FirebaseCategory> selectedCategories;
   late bool includeWithoutCategory;
 
   bool get isSelectedAllOrNoAnyCategories =>
@@ -324,7 +324,8 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
     );
   }
 
-  Widget buildAnyCategoryChip(BuildContext context, Category? category) {
+  Widget buildAnyCategoryChip(
+      BuildContext context, FirebaseCategory? category) {
     return Chip(
       label: Text(
         category?.titleText ??
@@ -337,7 +338,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
     );
   }
 
-  Widget buildCategoryChip(BuildContext context, Category category) {
+  Widget buildCategoryChip(BuildContext context, FirebaseCategory category) {
     return Chip(
       label: Text(
         category.titleText,

@@ -1,11 +1,15 @@
+import 'package:qwallet/datasource/Category.dart';
+
 import '../Currency.dart';
 import '../Money.dart';
+import 'Identifiable.dart';
 
-abstract class Wallet {
+abstract class Wallet implements Identifiable<Wallet> {
   final String name;
   final Currency currency;
   final Money totalExpense;
   final Money totalIncome;
+  final List<Category> categories;
 
   Money get balance => totalIncome - totalExpense.amount;
 
@@ -14,5 +18,6 @@ abstract class Wallet {
     required this.name,
     required this.totalExpense,
     required this.totalIncome,
+    required this.categories,
   });
 }

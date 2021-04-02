@@ -317,7 +317,7 @@ class _CategoriesChart extends StatelessWidget {
 
 class _CategoryChartItem {
   final FirebaseWallet wallet;
-  final Category? category;
+  final FirebaseCategory? category;
   final List<Transaction> transactions;
 
   Money get sum => Money(

@@ -58,8 +58,8 @@ class DashboardPageState extends State<DashboardPage> {
       final freshWallet =
           await DataSource.instance.getWallet(wallet.reference).first;
       final initialAmount = newBalance.amount - freshWallet.balance.amount;
-      router.navigateTo(
-          context, "/wallet/${wallet.id}/addTransaction/amount/$initialAmount");
+      router.navigateTo(context,
+          "/wallet/${wallet.identifier}/addTransaction/amount/$initialAmount");
     }
   }
 
@@ -122,15 +122,17 @@ class DashboardPageState extends State<DashboardPage> {
         notification.money.amount * -1; // NOTE: By default is expense
     router.pop(context);
     router.navigateTo(
-        context, "/wallet/${wallet.id}/addTransaction/amount/$amount");
+        context, "/wallet/${wallet.identifier}/addTransaction/amount/$amount");
   }
 
   void onSelectedEditWallet(BuildContext context, FirebaseWallet wallet) {
-    router.navigateTo(context, "/settings/wallets/${getSelectedWallet().id}");
+    router.navigateTo(
+        context, "/settings/wallets/${getSelectedWallet().identifier}");
   }
 
   void onSelectedReport(BuildContext context, FirebaseWallet wallet) {
-    router.navigateTo(context, "/wallet/${getSelectedWallet().id}/report");
+    router.navigateTo(
+        context, "/wallet/${getSelectedWallet().identifier}/report");
   }
 
   void onSelectedSettings(BuildContext context) {
@@ -180,7 +182,7 @@ class DashboardPageState extends State<DashboardPage> {
 
   Widget buildWalletCards(BuildContext context, FirebaseWallet wallet) {
     return SimpleStreamWidget(
-      key: Key("wallet-cards-${wallet.id}"),
+      key: Key("wallet-cards-${wallet.identifier}"),
       stream: DataSource.instance.getLatestTransactions(wallet.reference),
       loadingBuilder: (context) => SliverFillRemaining(
         child: Center(
@@ -188,7 +190,7 @@ class DashboardPageState extends State<DashboardPage> {
         ),
       ),
       builder: (context, LatestTransactions latestTransactions) {
-        assert(wallet.id == latestTransactions.wallet.id);
+        assert(wallet.identifier == latestTransactions.wallet.identifier);
 
         DataSource.instance
             .refreshWalletBalanceIfNeeded(latestTransactions)
