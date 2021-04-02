@@ -8,7 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
+import 'package:qwallet/datasource/firebase/FirebaseCategoriesProvider.dart';
+import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
+import 'package:qwallet/datasource/googlesheets/GoogleSheetsWalletsProvider.dart';
 import 'package:qwallet/router.dart';
+
+import 'datasource/AggregatedWalletsProvider.dart';
+import 'datasource/DefaultAccountProvider.dart';
+import 'datasource/Identifier.dart';
+import 'datasource/googlesheets/GoogleSheetsCategoriesProvider.dart';
 
 void main() async {
   runZonedGuarded(
@@ -31,6 +39,28 @@ void main() async {
         FlutterError.dumpErrorToConsole(details);
         FirebaseCrashlytics.instance.recordFlutterError(details);
       };
+
+      final accountProvider = DefaultAccountProvider();
+      AggregatedWalletsProvider.instance = AggregatedWalletsProvider(
+        firebaseWalletsProvider: FirebaseWalletsProvider(
+          accountProvider: accountProvider,
+          firestore: FirebaseFirestore.instance,
+          categoriesProvider: FirebaseCategoriesProvider(
+            firestore: FirebaseFirestore.instance,
+          ),
+        ),
+        googleSheetsWalletsProvider: GoogleSheetsWalletsProvider(
+            accountProvider: accountProvider,
+            categoriesProvider: GoogleSheetsCategoriesProvider(
+              accountProvider: accountProvider,
+            ),
+            walletsIds: [
+              Identifier(
+                domain: "google_sheets",
+                id: "1bCUZJfpZyS838rhMQYybBjgldVNNvEPqKJZlBs2oXHM",
+              ),
+            ]),
+      );
 
       runApp(MyApp());
     },

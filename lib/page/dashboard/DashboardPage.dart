@@ -190,7 +190,7 @@ class DashboardPageState extends State<DashboardPage> {
         ),
       ),
       builder: (context, LatestTransactions latestTransactions) {
-        assert(wallet.identifier == latestTransactions.wallet.identifier);
+        // assert(wallet.identifier == latestTransactions.wallet.identifier);
 
         DataSource.instance
             .refreshWalletBalanceIfNeeded(latestTransactions)

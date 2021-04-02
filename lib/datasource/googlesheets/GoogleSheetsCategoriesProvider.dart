@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:googleapis/sheets/v4.dart';
 import 'package:qwallet/datasource/CategoriesProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
@@ -6,33 +8,40 @@ import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/datasource/googlesheets/GoogleSheetsCategory.dart';
 import 'package:qwallet/utils/IterableFinding.dart';
 
-class GoogleSheetsCategoriesProvider extends CategoriesProvider {
-  final SheetsApi sheetsApi;
+import '../AccountProvider.dart';
+import 'GoogleAuthClient.dart';
 
-  GoogleSheetsCategoriesProvider(this.sheetsApi);
+class GoogleSheetsCategoriesProvider extends CategoriesProvider {
+  final AccountProvider accountProvider;
+
+  GoogleSheetsCategoriesProvider({
+    required this.accountProvider,
+  });
 
   @override
   Stream<List<Category>> getCategories(Identifier<Wallet> walletId) {
     assert(walletId.domain == "google_sheets");
-    return sheetsApi.spreadsheets.get(walletId.id).then((spreadsheet) async {
-      final statisticsSheetMetadata = spreadsheet.sheets
-          ?.findFirstOrNull((sheet) => sheet.properties?.title == "Statystyka");
+    return onSheetsApi((sheetsApi) async {
+      return sheetsApi.spreadsheets.get(walletId.id).then((spreadsheet) async {
+        final statisticsSheetMetadata = spreadsheet.sheets?.findFirstOrNull(
+            (sheet) => sheet.properties?.title == "Statystyka");
 
-      final request = GetSpreadsheetByDataFilterRequest();
-      final dataFilter = DataFilter();
-      final gridRange = GridRange();
-      gridRange.sheetId = statisticsSheetMetadata!.properties!.sheetId;
-      gridRange.startColumnIndex = 3;
-      gridRange.endColumnIndex = 6;
-      dataFilter.gridRange = gridRange;
-      request.dataFilters = [dataFilter];
-      request.includeGridData = true;
-      final result =
-          await sheetsApi.spreadsheets.getByDataFilter(request, walletId.id);
+        final request = GetSpreadsheetByDataFilterRequest();
+        final dataFilter = DataFilter();
+        final gridRange = GridRange();
+        gridRange.sheetId = statisticsSheetMetadata!.properties!.sheetId;
+        gridRange.startColumnIndex = 3;
+        gridRange.endColumnIndex = 6;
+        dataFilter.gridRange = gridRange;
+        request.dataFilters = [dataFilter];
+        request.includeGridData = true;
+        final result =
+            await sheetsApi.spreadsheets.getByDataFilter(request, walletId.id);
 
-      return _parseCategories(result.sheets![0]);
-    }).catchError((err) {
-      print(err);
+        return _parseCategories(result.sheets![0]);
+      }).catchError((err) {
+        print(err);
+      });
     }).asStream();
   }
 
@@ -59,5 +68,13 @@ class GoogleSheetsCategoriesProvider extends CategoriesProvider {
       order++;
     }
     return categories;
+  }
+
+  Future<T> onSheetsApi<T>(
+      FutureOr<T> Function(SheetsApi sheetsApi) callback) async {
+    final account = await accountProvider.getAccount();
+    final client = GoogleAuthClient(account.googleAccount!);
+    final sheetsApi = SheetsApi(client);
+    return callback(sheetsApi);
   }
 }
