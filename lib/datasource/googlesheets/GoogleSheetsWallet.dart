@@ -7,22 +7,20 @@ import 'package:qwallet/datasource/Wallet.dart';
 class GoogleSheetsWallet implements Wallet {
   final Identifier<Wallet> identifier;
   final String name;
-  final List<String> ownersUid;
   final Currency currency;
   final Money totalExpense;
   final Money totalIncome;
 
   final List<Category> categories;
 
-  GoogleSheetsWallet(
-    this.identifier,
-    this.name,
-    this.ownersUid,
-    this.currency,
-    this.totalExpense,
-    this.totalIncome,
-    this.categories,
-  );
+  GoogleSheetsWallet({
+    required this.identifier,
+    required this.name,
+    required this.currency,
+    required this.totalExpense,
+    required this.totalIncome,
+    required this.categories,
+  });
 
   Money get balance => totalIncome - totalExpense.amount;
 }
