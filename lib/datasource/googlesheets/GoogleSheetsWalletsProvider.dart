@@ -27,10 +27,12 @@ class GoogleSheetsWalletsProvider implements WalletsProvider {
   @override
   Stream<List<Wallet>> getWallets() {
     return Future(() async {
-      final fetchedWallets =
-          walletsIds.map((walletId) => _getWalletByIdentifier(walletId));
-
-      return await Future.wait(fetchedWallets);
+      final wallets = <Wallet>[];
+      for (final walletId in walletsIds) {
+        final wallet = await _getWalletByIdentifier(walletId);
+        if (wallet != null) wallets.add(wallet);
+      }
+      return wallets;
     }).asStream();
   }
 
@@ -39,7 +41,7 @@ class GoogleSheetsWalletsProvider implements WalletsProvider {
     return _getWalletByIdentifier(walletId).asStream();
   }
 
-  Future<Wallet> _getWalletByIdentifier(Identifier<Wallet> walletId) {
+  Future<Wallet?> _getWalletByIdentifier(Identifier<Wallet> walletId) {
     return onSheetsApi((sheetsApi) async {
       final spreadsheet = await sheetsApi.spreadsheets.get(walletId.id);
 
@@ -77,9 +79,10 @@ class GoogleSheetsWalletsProvider implements WalletsProvider {
     });
   }
 
-  Future<T> onSheetsApi<T>(
+  Future<T?> onSheetsApi<T>(
       FutureOr<T> Function(SheetsApi sheetsApi) callback) async {
     final account = await accountProvider.getAccount();
+    if (account.googleAccount == null) return Future.value(null);
     final client = GoogleAuthClient(account.googleAccount!);
     final sheetsApi = SheetsApi(client);
     return callback(sheetsApi);

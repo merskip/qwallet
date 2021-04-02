@@ -23,7 +23,10 @@ class AggregatedWalletsProvider extends WalletsProvider {
       firebaseWalletsProvider.getWallets(),
       googleSheetsWalletsProvider.getWallets(),
       (List<Wallet> firebaseWallets, List<Wallet> googleSheetWallets) {
-        return firebaseWallets + googleSheetWallets;
+        final wallets = <Wallet>[];
+        wallets.addAll(firebaseWallets);
+        wallets.addAll(googleSheetWallets);
+        return wallets;
       },
     );
   }

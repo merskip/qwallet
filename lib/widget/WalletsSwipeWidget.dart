@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/utils.dart';
 
 class WalletsSwipeWidget extends StatefulWidget {
-  final List<FirebaseWallet> wallets;
-  final void Function(FirebaseWallet wallet) onSelectedWallet;
+  final List<Wallet> wallets;
+  final void Function(Wallet wallet) onSelectedWallet;
 
   const WalletsSwipeWidget({
     Key? key,
@@ -109,7 +110,7 @@ class _WalletsSwipeWidgetState extends State<WalletsSwipeWidget> {
 }
 
 class _WalletSinglePage extends StatelessWidget {
-  final FirebaseWallet wallet;
+  final Wallet wallet;
 
   const _WalletSinglePage({Key? key, required this.wallet}) : super(key: key);
 
@@ -133,16 +134,22 @@ class _WalletSinglePage extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 4),
-            Text(
-              wallet.dateRange.getDateTimeRange().formatted(),
-              style: TextStyle(
-                fontSize: 12.0,
-                color: Colors.white.withAlpha(223),
-                fontWeight: FontWeight.w300,
-              ),
-            ),
+            if (wallet is FirebaseWallet)
+              buildFirebaseDateRange(context, wallet as FirebaseWallet),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildFirebaseDateRange(
+      BuildContext context, FirebaseWallet firebaseWallet) {
+    return Text(
+      firebaseWallet.dateRange.getDateTimeRange().formatted(),
+      style: TextStyle(
+        fontSize: 12.0,
+        color: Colors.white.withAlpha(223),
+        fontWeight: FontWeight.w300,
       ),
     );
   }

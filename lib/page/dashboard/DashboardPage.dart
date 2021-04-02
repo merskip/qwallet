@@ -1,14 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:badges/badges.dart';
-import 'package:cloud_firestore/cloud_firestore.dart' as Could;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/CurrencyList.dart';
 import 'package:qwallet/MoneyTextDetector.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/dialog/EnterMoneyDialog.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
@@ -19,9 +18,6 @@ import 'package:rxdart/rxdart.dart';
 import '../../Money.dart';
 import '../../PushNotificationService.dart';
 import '../../router.dart';
-import 'CategoriesChartCard.dart';
-import 'DailyReportSection.dart';
-import 'TransactionsCard.dart';
 
 class DashboardPage extends StatefulWidget {
   DashboardPage({
@@ -33,34 +29,34 @@ class DashboardPage extends StatefulWidget {
 }
 
 class DashboardPageState extends State<DashboardPage> {
-  final _selectedWallet = BehaviorSubject<FirebaseWallet>();
+  final _selectedWallet = BehaviorSubject<Wallet>();
 
   final notificationService = PushNotificationService();
 
-  FirebaseWallet getSelectedWallet() {
+  Wallet getSelectedWallet() {
     return _selectedWallet.value!;
   }
 
-  void onSelectedWallet(BuildContext context, FirebaseWallet wallet) {
+  void onSelectedWallet(BuildContext context, Wallet wallet) {
     setState(() {
       _selectedWallet.add(wallet);
     });
   }
 
-  void onSelectedEditBalance(
-      BuildContext context, FirebaseWallet wallet) async {
+  void onSelectedEditBalance(BuildContext context, Wallet wallet) async {
     final newBalance = await showDialog(
       context: context,
       builder: (context) => EnterMoneyDialog(currency: wallet.currency),
     ) as Money?;
-    if (newBalance != null) {
-      // Fixes #44 bug
-      final freshWallet =
-          await DataSource.instance.getWallet(wallet.reference).first;
-      final initialAmount = newBalance.amount - freshWallet.balance.amount;
-      router.navigateTo(context,
-          "/wallet/${wallet.identifier}/addTransaction/amount/$initialAmount");
-    }
+    // TODO: Impl
+    // if (newBalance != null) {
+    //   // Fixes #44 bug
+    //   final freshWallet =
+    //       await DataSource.instance.getWallet(wallet.reference).first;
+    //   final initialAmount = newBalance.amount - freshWallet.balance.amount;
+    //   router.navigateTo(context,
+    //       "/wallet/${wallet.identifier}/addTransaction/amount/$initialAmount");
+    // }
   }
 
   void onSelectedPushNotifications(
@@ -125,14 +121,12 @@ class DashboardPageState extends State<DashboardPage> {
         context, "/wallet/${wallet.identifier}/addTransaction/amount/$amount");
   }
 
-  void onSelectedEditWallet(BuildContext context, FirebaseWallet wallet) {
-    router.navigateTo(
-        context, "/settings/wallets/${getSelectedWallet().identifier}");
+  void onSelectedEditWallet(BuildContext context, Wallet wallet) {
+    router.navigateTo(context, "/settings/wallets/${wallet.identifier}");
   }
 
-  void onSelectedReport(BuildContext context, FirebaseWallet wallet) {
-    router.navigateTo(
-        context, "/wallet/${getSelectedWallet().identifier}/report");
+  void onSelectedReport(BuildContext context, Wallet wallet) {
+    router.navigateTo(context, "/wallet/${wallet.identifier}/report");
   }
 
   void onSelectedSettings(BuildContext context) {
@@ -142,13 +136,13 @@ class DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: DataSource.instance.getOrderedWallets(),
-      builder: (context, List<FirebaseWallet> wallets) =>
+      stream: AggregatedWalletsProvider.instance!.getWallets(),
+      builder: (context, List<Wallet> wallets) =>
           buildContent(context, wallets),
     );
   }
 
-  Widget buildContent(BuildContext context, List<FirebaseWallet> wallets) {
+  Widget buildContent(BuildContext context, List<Wallet> wallets) {
     if (wallets.isNotEmpty) {
       return buildContentWithWallets(context, wallets);
     } else {
@@ -156,8 +150,7 @@ class DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  Widget buildContentWithWallets(
-      BuildContext context, List<FirebaseWallet> wallets) {
+  Widget buildContentWithWallets(BuildContext context, List<Wallet> wallets) {
     return Scaffold(
       body: CustomScrollView(slivers: [
         SliverAppBar(
@@ -171,8 +164,8 @@ class DashboardPageState extends State<DashboardPage> {
           ),
           actions: buildAppBarActions(context, true),
         ),
-        if (_selectedWallet.value != null)
-          buildWalletCards(context, getSelectedWallet()),
+        // if (_selectedWallet.value != null)
+        //   buildWalletCards(context, getSelectedWallet()),
         SliverPadding(
           padding: EdgeInsets.only(bottom: 48),
         ),
@@ -180,49 +173,50 @@ class DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget buildWalletCards(BuildContext context, FirebaseWallet wallet) {
-    return SimpleStreamWidget(
-      key: Key("wallet-cards-${wallet.identifier}"),
-      stream: DataSource.instance.getLatestTransactions(wallet.reference),
-      loadingBuilder: (context) => SliverFillRemaining(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-      builder: (context, LatestTransactions latestTransactions) {
-        // assert(wallet.identifier == latestTransactions.wallet.identifier);
-
-        DataSource.instance
-            .refreshWalletBalanceIfNeeded(latestTransactions)
-            .catchError((error) {
-          if (error is Could.FirebaseException &&
-              error.code == "permission-denied") {
-            print(
-                "Permission denied while updating wallet balance, clearing cache");
-            DataSource.instance.firestore.clearPersistence();
-          }
-        });
-
-        return SliverToBoxAdapter(
-          child: Column(
-            children: [
-              DailyReportSection(
-                wallet: wallet,
-                transactions: latestTransactions.transactions,
-              ),
-              TransactionsCard(
-                wallet: wallet,
-                transactions: latestTransactions.transactions,
-              ),
-              CategoriesChartCard(
-                wallet: wallet,
-                transactions: latestTransactions.transactions,
-              ),
-            ],
-          ),
-        );
-      },
-    );
+  Widget buildWalletCards(BuildContext context, Wallet wallet) {
+    return Container();
+    // return SimpleStreamWidget(
+    //   key: Key("wallet-cards-${wallet.identifier}"),
+    //   stream: DataSource.instance.getLatestTransactions(wallet.reference),
+    //   loadingBuilder: (context) => SliverFillRemaining(
+    //     child: Center(
+    //       child: CircularProgressIndicator(),
+    //     ),
+    //   ),
+    //   builder: (context, LatestTransactions latestTransactions) {
+    //     // assert(wallet.identifier == latestTransactions.wallet.identifier);
+    //
+    //     DataSource.instance
+    //         .refreshWalletBalanceIfNeeded(latestTransactions)
+    //         .catchError((error) {
+    //       if (error is Could.FirebaseException &&
+    //           error.code == "permission-denied") {
+    //         print(
+    //             "Permission denied while updating wallet balance, clearing cache");
+    //         DataSource.instance.firestore.clearPersistence();
+    //       }
+    //     });
+    //
+    //     return SliverToBoxAdapter(
+    //       child: Column(
+    //         children: [
+    //           DailyReportSection(
+    //             wallet: wallet,
+    //             transactions: latestTransactions.transactions,
+    //           ),
+    //           TransactionsCard(
+    //             wallet: wallet,
+    //             transactions: latestTransactions.transactions,
+    //           ),
+    //           CategoriesChartCard(
+    //             wallet: wallet,
+    //             transactions: latestTransactions.transactions,
+    //           ),
+    //         ],
+    //       ),
+    //     );
+    //   },
+    // );
   }
 
   Widget buildContentWithNoWallets(BuildContext context) {
