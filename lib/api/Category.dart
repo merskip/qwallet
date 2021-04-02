@@ -7,7 +7,7 @@ import 'Converting.dart';
 import 'Model.dart';
 
 class FirebaseCategory extends FirebaseModel<FirebaseCategory>
-    implements Category, Comparable<FirebaseCategory> {
+    implements Category {
   final Identifier<Category> identifier;
   final String title;
   final IconData icon;
@@ -30,11 +30,5 @@ class FirebaseCategory extends FirebaseModel<FirebaseCategory>
         super(snapshot);
 
   @override
-  int compareTo(other) => _compareWithNullAtEnd(order, other.order);
-
-  int _compareWithNullAtEnd(lhs, rhs) {
-    if (lhs == null) return 1;
-    if (rhs == null) return -1;
-    return lhs.compareTo(rhs);
-  }
+  int compareTo(other) => Category.compareWithNullAtEnd(order, other.order);
 }

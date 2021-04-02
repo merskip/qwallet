@@ -23,8 +23,6 @@ class FirebaseWallet extends FirebaseModel<FirebaseWallet> implements Wallet {
 
   final List<FirebaseCategory> categories;
 
-  Money get balance => totalIncome - totalExpense.amount;
-
   FirebaseWallet(DocumentSnapshot snapshot, List<FirebaseCategory> categories)
       : this.identifier = Identifier(domain: "firebase", id: snapshot.id),
         this.name = snapshot.getString("name")!,
@@ -37,6 +35,8 @@ class FirebaseWallet extends FirebaseModel<FirebaseWallet> implements Wallet {
         this.dateRange = snapshot.getWalletTimeRange("dateRange"),
         this.categories = categories,
         super(snapshot);
+
+  Money get balance => totalIncome - totalExpense.amount;
 
   FirebaseCategory? getCategory(FirebaseReference<FirebaseCategory>? category) {
     if (category == null) return null;
