@@ -11,6 +11,7 @@ class FirebaseCategory extends FirebaseModel<FirebaseCategory>
   final Identifier<Category> identifier;
   final String title;
   final IconData icon;
+  final String? symbol = null;
   final Color primaryColor;
   final Color backgroundColor;
   final int order;
