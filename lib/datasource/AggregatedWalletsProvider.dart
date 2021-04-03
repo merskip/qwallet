@@ -7,12 +7,12 @@ import 'package:rxdart/rxdart.dart';
 import 'WalletsProvider.dart';
 
 class AggregatedWalletsProvider extends WalletsProvider {
-  final FirebaseWalletsProvider firebaseWalletsProvider;
-  final GoogleSheetsWalletsProvider googleSheetsWalletsProvider;
+  final FirebaseWalletsProvider firebaseProvider;
+  final GoogleSheetsWalletsProvider googleSheetsProvider;
 
   AggregatedWalletsProvider({
-    required this.firebaseWalletsProvider,
-    required this.googleSheetsWalletsProvider,
+    required this.firebaseProvider,
+    required this.googleSheetsProvider,
   });
 
   static AggregatedWalletsProvider? instance;
@@ -20,8 +20,8 @@ class AggregatedWalletsProvider extends WalletsProvider {
   @override
   Stream<List<Wallet>> getWallets() {
     return CombineLatestStream.combine2(
-      firebaseWalletsProvider.getWallets(),
-      googleSheetsWalletsProvider.getWallets(),
+      firebaseProvider.getWallets(),
+      googleSheetsProvider.getWallets(),
       (List<Wallet> firebaseWallets, List<Wallet> googleSheetWallets) {
         final wallets = <Wallet>[];
         wallets.addAll(firebaseWallets);
@@ -35,9 +35,9 @@ class AggregatedWalletsProvider extends WalletsProvider {
   Stream<Wallet?> getWalletByIdentifier(Identifier<Wallet> walletId) {
     switch (walletId.domain) {
       case "firebase":
-        return firebaseWalletsProvider.getWalletByIdentifier(walletId);
+        return firebaseProvider.getWalletByIdentifier(walletId);
       case "google_sheets":
-        return googleSheetsWalletsProvider.getWalletByIdentifier(walletId);
+        return googleSheetsProvider.getWalletByIdentifier(walletId);
       default:
         return Stream.value(null);
     }

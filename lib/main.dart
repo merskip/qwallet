@@ -8,14 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
+import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/firebase/FirebaseCategoriesProvider.dart';
 import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
+import 'package:qwallet/datasource/googlesheets/GoogleSheetsTransactionsProvider.dart';
 import 'package:qwallet/datasource/googlesheets/GoogleSheetsWalletsProvider.dart';
 import 'package:qwallet/router.dart';
 
 import 'datasource/AggregatedWalletsProvider.dart';
 import 'datasource/DefaultAccountProvider.dart';
 import 'datasource/Identifier.dart';
+import 'datasource/firebase/FirebaseTransactionsProvider.dart';
 import 'datasource/googlesheets/GoogleSheetsCategoriesProvider.dart';
 
 void main() async {
@@ -41,15 +44,16 @@ void main() async {
       };
 
       final accountProvider = DefaultAccountProvider();
-      AggregatedWalletsProvider.instance = AggregatedWalletsProvider(
-        firebaseWalletsProvider: FirebaseWalletsProvider(
-          accountProvider: accountProvider,
+      final firebaseWalletsProvider = FirebaseWalletsProvider(
+        accountProvider: accountProvider,
+        firestore: FirebaseFirestore.instance,
+        categoriesProvider: FirebaseCategoriesProvider(
           firestore: FirebaseFirestore.instance,
-          categoriesProvider: FirebaseCategoriesProvider(
-            firestore: FirebaseFirestore.instance,
-          ),
         ),
-        googleSheetsWalletsProvider: GoogleSheetsWalletsProvider(
+      );
+      AggregatedWalletsProvider.instance = AggregatedWalletsProvider(
+        firebaseProvider: firebaseWalletsProvider,
+        googleSheetsProvider: GoogleSheetsWalletsProvider(
             accountProvider: accountProvider,
             categoriesProvider: GoogleSheetsCategoriesProvider(
               accountProvider: accountProvider,
@@ -60,6 +64,14 @@ void main() async {
                 id: "1bCUZJfpZyS838rhMQYybBjgldVNNvEPqKJZlBs2oXHM",
               ),
             ]),
+      );
+
+      AggregatedTransactionsProvider.instance = AggregatedTransactionsProvider(
+        firebaseProvider: FirebaseTransactionsProvider(
+          walletsProvider: firebaseWalletsProvider,
+          firestore: FirebaseFirestore.instance,
+        ),
+        googleSheetsProvider: GoogleSheetsTransactionsProvider(),
       );
 
       runApp(MyApp());
