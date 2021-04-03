@@ -61,7 +61,7 @@ class GoogleSheetsTransactionsProvider implements TransactionsProvider {
       final date = DateTime.parse(row.values![0].formattedValue!);
       final amount = row.values![2].effectiveValue!.numberValue!;
       final categorySymbol = row.values![3].effectiveValue!.stringValue;
-      final title = row.values![6].effectiveValue!.stringValue;
+      final title = row.values![6].effectiveValue?.stringValue;
       transactions.add(GoogleSheetsTransaction(
         identifier: Identifier(domain: "google_sheets", id: column.toString()),
         type: amount < 0 ? TransactionType.expense : TransactionType.income,
