@@ -44,6 +44,7 @@ void main() async {
       };
 
       final accountProvider = DefaultAccountProvider();
+
       final firebaseWalletsProvider = FirebaseWalletsProvider(
         accountProvider: accountProvider,
         firestore: FirebaseFirestore.instance,
@@ -51,19 +52,23 @@ void main() async {
           firestore: FirebaseFirestore.instance,
         ),
       );
+
+      final googleSheetsWalletsProvider = GoogleSheetsWalletsProvider(
+        accountProvider: accountProvider,
+        categoriesProvider: GoogleSheetsCategoriesProvider(
+          accountProvider: accountProvider,
+        ),
+        walletsIds: [
+          Identifier(
+            domain: "google_sheets",
+            id: "1bCUZJfpZyS838rhMQYybBjgldVNNvEPqKJZlBs2oXHM",
+          ),
+        ],
+      );
+
       AggregatedWalletsProvider.instance = AggregatedWalletsProvider(
         firebaseProvider: firebaseWalletsProvider,
-        googleSheetsProvider: GoogleSheetsWalletsProvider(
-            accountProvider: accountProvider,
-            categoriesProvider: GoogleSheetsCategoriesProvider(
-              accountProvider: accountProvider,
-            ),
-            walletsIds: [
-              Identifier(
-                domain: "google_sheets",
-                id: "1bCUZJfpZyS838rhMQYybBjgldVNNvEPqKJZlBs2oXHM",
-              ),
-            ]),
+        googleSheetsProvider: googleSheetsWalletsProvider,
       );
 
       AggregatedTransactionsProvider.instance = AggregatedTransactionsProvider(
@@ -71,7 +76,10 @@ void main() async {
           walletsProvider: firebaseWalletsProvider,
           firestore: FirebaseFirestore.instance,
         ),
-        googleSheetsProvider: GoogleSheetsTransactionsProvider(),
+        googleSheetsProvider: GoogleSheetsTransactionsProvider(
+          accountProvider: accountProvider,
+          walletsProvider: googleSheetsWalletsProvider,
+        ),
       );
 
       runApp(MyApp());

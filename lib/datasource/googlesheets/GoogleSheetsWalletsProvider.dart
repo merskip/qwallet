@@ -17,7 +17,7 @@ import 'GoogleSheetsWallet.dart';
 class GoogleSheetsWalletsProvider implements WalletsProvider {
   final AccountProvider accountProvider;
   final CategoriesProvider categoriesProvider;
-  final List<Identifier<Wallet>> walletsIds;
+  final List<Identifier<GoogleSheetsWallet>> walletsIds;
 
   GoogleSheetsWalletsProvider({
     required this.accountProvider,
@@ -26,9 +26,9 @@ class GoogleSheetsWalletsProvider implements WalletsProvider {
   });
 
   @override
-  Stream<List<Wallet>> getWallets() {
+  Stream<List<GoogleSheetsWallet>> getWallets() {
     return Future(() async {
-      final wallets = <Wallet>[];
+      final wallets = <GoogleSheetsWallet>[];
       for (final walletId in walletsIds) {
         final wallet = await _getWalletByIdentifier(walletId);
         if (wallet != null) wallets.add(wallet);
@@ -38,11 +38,13 @@ class GoogleSheetsWalletsProvider implements WalletsProvider {
   }
 
   @override
-  Stream<Wallet?> getWalletByIdentifier(Identifier<Wallet> walletId) {
+  Stream<GoogleSheetsWallet?> getWalletByIdentifier(
+      Identifier<Wallet> walletId) {
     return _getWalletByIdentifier(walletId).asStream();
   }
 
-  Future<Wallet?> _getWalletByIdentifier(Identifier<Wallet> walletId) {
+  Future<GoogleSheetsWallet?> _getWalletByIdentifier(
+      Identifier<Wallet> walletId) {
     return onSheetsApi((sheetsApi) async {
       final spreadsheet = await sheetsApi.spreadsheets.get(walletId.id);
 
