@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
@@ -13,7 +14,7 @@ import '../../utils/IterableFinding.dart';
 
 class CategoriesChartCard extends StatelessWidget {
   final FirebaseWallet wallet;
-  final List<Transaction> transactions;
+  final List<FirebaseTransaction> transactions;
 
   const CategoriesChartCard({
     Key? key,
@@ -35,7 +36,7 @@ class CategoriesChartCard extends StatelessWidget {
 
 class _CategoriesChartContent extends StatefulWidget {
   final FirebaseWallet wallet;
-  final List<Transaction> transactions;
+  final List<FirebaseTransaction> transactions;
 
   const _CategoriesChartContent({
     Key? key,
@@ -95,7 +96,7 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
     final transactionInType =
         widget.transactions.where((t) => t.type == transactionType);
     final transactionsByCategory =
-        groupBy(transactionInType, (Transaction t) => t.category);
+        groupBy(transactionInType, (FirebaseTransaction t) => t.category);
 
     if (transactionsByCategory.isEmpty) {
       return [_CategoryChartItem(widget.wallet, null, [])];
@@ -318,7 +319,7 @@ class _CategoriesChart extends StatelessWidget {
 class _CategoryChartItem {
   final FirebaseWallet wallet;
   final FirebaseCategory? category;
-  final List<Transaction> transactions;
+  final List<FirebaseTransaction> transactions;
 
   Money get sum => Money(
       transactions.fold<double>(0, (amount, t) => amount + t.amount),

@@ -7,6 +7,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
@@ -40,7 +41,7 @@ class _ReportsPageState extends State<ReportsPage> {
   Widget buildTabController(
     BuildContext context,
     FirebaseWallet wallet,
-    List<Transaction> transactions,
+    List<FirebaseTransaction> transactions,
   ) {
     return DefaultTabController(
       length: 2,
@@ -73,7 +74,7 @@ class _ReportsPageState extends State<ReportsPage> {
 
 class _ReportByCategoriesPage extends StatelessWidget {
   final FirebaseWallet wallet;
-  final List<Transaction> transactions;
+  final List<FirebaseTransaction> transactions;
 
   const _ReportByCategoriesPage({
     Key? key,
@@ -157,9 +158,8 @@ class _ReportByCategoriesPage extends StatelessWidget {
 
   List<_ByCategoryItem> getByCategoryItems() {
     final items = <_ByCategoryItem>[];
-    groupBy(transactions, (Transaction t) => t.category)
-        .forEach((categoryRef, transactions) {
-      final category = wallet.getCategory(categoryRef);
+    groupBy(transactions, (FirebaseTransaction t) => t.category)
+        .forEach((category, transactions) {
 
       final totalAmount = transactions
           .where((t) => t.type == TransactionType.expense)
@@ -189,7 +189,7 @@ class _ByCategoryItem {
 
 class _ReportByDatePage extends StatelessWidget {
   final FirebaseWallet wallet;
-  final List<Transaction> transactions;
+  final List<FirebaseTransaction> transactions;
 
   const _ReportByDatePage({
     Key? key,
@@ -321,7 +321,7 @@ class _ReportByDatePage extends StatelessWidget {
   }
 
   List<_ByDateItem> getByDateItems() {
-    final groupedTransactions = Map<DateTime, List<Transaction>>();
+    final groupedTransactions = Map<DateTime, List<FirebaseTransaction>>();
     transactions.where((t) {
       return t.type == TransactionType.expense &&
           !t.excludedFromDailyStatistics;

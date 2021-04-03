@@ -6,6 +6,7 @@ import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
@@ -18,7 +19,7 @@ import '../../AppLocalizations.dart';
 
 class TransactionPage extends StatefulWidget {
   final FirebaseReference<FirebaseWallet> walletRef;
-  final Transaction transaction;
+  final FirebaseTransaction transaction;
 
   const TransactionPage({
     Key? key,
@@ -38,7 +39,7 @@ class _TransactionPageState extends State<TransactionPage> {
   late TransactionType _selectedType;
   late bool _excludedFromDailyStatistics;
 
-  _TransactionPageState(Transaction transaction)
+  _TransactionPageState(FirebaseTransaction transaction)
       : titleController = TextEditingController(text: transaction.title),
         super();
 
@@ -139,16 +140,11 @@ class _TransactionPageState extends State<TransactionPage> {
   Widget buildCategory(BuildContext context) {
     final category = widget.transaction.category;
     if (category != null) {
-      return SimpleStreamWidget(
-        stream: DataSource.instance.getCategory(category: category),
-        builder: (context, FirebaseCategory category) {
-          return buildCategoryDetailsItem(
-            context,
-            leading: CategoryIcon(category, size: 20),
-            value: Text(category.titleText),
-            category: category,
-          );
-        },
+      return buildCategoryDetailsItem(
+        context,
+        leading: CategoryIcon(category, size: 20),
+        value: Text(category.titleText),
+        category: category,
       );
     } else {
       return buildCategoryDetailsItem(

@@ -1,30 +1,32 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
+import 'package:flutter/widgets.dart';
+import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Identifier.dart';
+import 'package:qwallet/datasource/Transaction.dart';
 
 import '../AppLocalizations.dart';
 import 'Category.dart';
 import 'Converting.dart';
 import 'Model.dart';
 
-enum TransactionType {
-  expense,
-  income,
-}
+class FirebaseTransaction extends FirebaseModel<FirebaseTransaction>
+    implements Transaction {
+  final Identifier<Transaction> identifier;
+  final TransactionType type;
+  final String? title;
+  final double amount;
+  final DateTime date;
+  final FirebaseCategory? category;
+  final bool excludedFromDailyStatistics;
 
-class Transaction extends FirebaseModel<Transaction> {
-  TransactionType type;
-  String? title;
-  double amount;
-  DateTime date;
-  FirebaseReference<FirebaseCategory>? category;
-  bool excludedFromDailyStatistics;
-
-  Transaction(DocumentSnapshot snapshot)
-      : type = snapshot.getOneOf("type", TransactionType.values)!,
+  FirebaseTransaction(
+      CloudFirestore.DocumentSnapshot snapshot, FirebaseWallet wallet)
+      : identifier = Identifier(domain: "firebase", id: snapshot.id),
+        type = snapshot.getOneOf("type", TransactionType.values)!,
         title = snapshot.getString("title"),
         amount = snapshot.getDouble("amount")!,
         date = snapshot.getDateTime("date")!,
-        category = snapshot.getReference("category"),
+        category = wallet.getCategory(snapshot.getReference("category")),
         excludedFromDailyStatistics =
             snapshot.getBool("excludedFromDailyStatistics") ?? false,
         super(snapshot);

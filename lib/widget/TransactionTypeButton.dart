@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Transaction.dart';
+import 'package:qwallet/datasource/Transaction.dart';
 
 import '../AppLocalizations.dart';
 

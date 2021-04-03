@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart' as Firestore;
+import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/IconsSerialization.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
+import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -20,7 +21,7 @@ import 'Wallet.dart';
 class DataSource {
   static final DataSource instance = DataSource._privateConstructor();
 
-  final firestore = Firestore.FirebaseFirestore.instance;
+  final firestore = CloudFirestore.FirebaseFirestore.instance;
   late User? currentUser;
 
   List<User>? _cachedUsers;
@@ -69,7 +70,7 @@ extension WalletsDataSource on DataSource {
     return Rx.combineLatest2(
       walletSnapshots,
       categories,
-      (Firestore.DocumentSnapshot walletSnapshot,
+      (CloudFirestore.DocumentSnapshot walletSnapshot,
           List<FirebaseCategory> categories) {
         return FirebaseWallet(walletSnapshot, categories);
       },
@@ -153,7 +154,7 @@ extension TransactionsDataSource on DataSource {
 
     final transactionsStream = walletStream.flatMap((wallet) {
       return _getTransactionsInDateTimeRange(
-        wallet: wallet.reference,
+        walletReference: wallet.reference,
         dateRange: wallet.dateRange.getDateTimeRange(),
       );
     });
@@ -161,42 +162,65 @@ extension TransactionsDataSource on DataSource {
     return Rx.combineLatestList([walletStream, transactionsStream])
         .map((values) {
       final wallet = values[0] as FirebaseWallet;
-      final transactions = values[1] as List<Transaction>;
+      final transactions = values[1] as List<FirebaseTransaction>;
       return LatestTransactions(wallet, transactions);
     });
   }
 
-  Stream<List<Transaction>> _getTransactionsInDateTimeRange({
-    required FirebaseReference<FirebaseWallet> wallet,
+  Stream<List<FirebaseTransaction>> _getTransactionsInDateTimeRange({
+    required FirebaseReference<FirebaseWallet> walletReference,
     required DateTimeRange dateRange,
   }) {
-    return wallet.documentReference
+    final wallet = getWallet(walletReference);
+
+    final transactionsSnapshots = walletReference.documentReference
         .collection("transactions")
         .where("date", isGreaterThanOrEqualTo: dateRange.start.toTimestamp())
         .where("date", isLessThanOrEqualTo: dateRange.end.toTimestamp())
         .orderBy("date", descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((s) => Transaction(s)).toList());
+        .snapshots();
+
+    return Rx.combineLatest2(
+      wallet,
+      transactionsSnapshots,
+      (FirebaseWallet wallet,
+          CloudFirestore.QuerySnapshot transactionsSnapshot) {
+        return transactionsSnapshot.docs
+            .map((snapshot) => FirebaseTransaction(snapshot, wallet))
+            .toList();
+      },
+    );
   }
 
-  Stream<List<Transaction>> getTransactions({
-    required FirebaseReference<FirebaseWallet> wallet,
+  Stream<List<FirebaseTransaction>> getTransactions({
+    required FirebaseReference<FirebaseWallet> walletReference,
     required int limit,
-    Transaction? afterTransaction,
+    FirebaseTransaction? afterTransaction,
   }) {
-    var query = wallet.documentReference
+    final wallet = getWallet(walletReference);
+
+    var query = walletReference.documentReference
         .collection("transactions")
         .orderBy("date", descending: true)
         .limit(limit);
     if (afterTransaction != null)
       query = query.startAfterDocument(afterTransaction.documentSnapshot);
 
-    return query.snapshots().map((snapshot) {
-      return snapshot.docs.map((s) => Transaction(s)).toList();
-    });
+    final transactionsSnapshots = query.snapshots();
+
+    return Rx.combineLatest2(
+      wallet,
+      transactionsSnapshots,
+      (FirebaseWallet wallet,
+          CloudFirestore.QuerySnapshot transactionsSnapshot) {
+        return transactionsSnapshot.docs
+            .map((snapshot) => FirebaseTransaction(snapshot, wallet))
+            .toList();
+      },
+    );
   }
 
-  FirebaseReference<Transaction> getTransactionReference({
+  FirebaseReference<FirebaseTransaction> getTransactionReference({
     required FirebaseReference<FirebaseWallet> wallet,
     required String id,
   }) {
@@ -204,13 +228,25 @@ extension TransactionsDataSource on DataSource {
         wallet.documentReference.collection("transactions").doc(id));
   }
 
-  Stream<Transaction?> getTransaction(
-          FirebaseReference<Transaction> transaction) =>
-      transaction.documentReference
-          .snapshots()
-          .map((s) => s.exists ? Transaction(s) : null);
+  Stream<FirebaseTransaction?> getTransaction(
+      FirebaseReference<FirebaseWallet> walletReference,
+      FirebaseReference<FirebaseTransaction> transaction) {
+    final wallet = getWallet(walletReference);
 
-  Future<FirebaseReference<Transaction>> addTransaction(
+    final transactionSnapshots = transaction.documentReference.snapshots();
+
+    return Rx.combineLatest2(
+      wallet,
+      transactionSnapshots,
+      (FirebaseWallet wallet,
+          CloudFirestore.DocumentSnapshot transactionsSnapshot) {
+        if (!transactionsSnapshot.exists) return null;
+        return FirebaseTransaction(transactionsSnapshot, wallet);
+      },
+    );
+  }
+
+  Future<FirebaseReference<FirebaseTransaction>> addTransaction(
     FirebaseReference<FirebaseWallet> wallet, {
     required TransactionType type,
     String? title,
@@ -224,25 +260,25 @@ extension TransactionsDataSource on DataSource {
       "title": title?.nullIfEmpty(),
       "amount": amount,
       "category": category?.documentReference,
-      "date": Firestore.Timestamp.fromDate(date),
+      "date": CloudFirestore.Timestamp.fromDate(date),
     });
 
     final updatingWallet = wallet.documentReference.update({
       if (type == TransactionType.expense)
-        "totalExpense": Firestore.FieldValue.increment(amount),
+        "totalExpense": CloudFirestore.FieldValue.increment(amount),
       if (type == TransactionType.income)
-        "totalIncome": Firestore.FieldValue.increment(amount),
+        "totalIncome": CloudFirestore.FieldValue.increment(amount),
     });
 
     return Future.wait([addingTransaction, updatingWallet])
         .timeout(Duration(seconds: 5))
         .then((values) =>
-            (values[0] as Firestore.DocumentReference).toReference());
+            (values[0] as CloudFirestore.DocumentReference).toReference());
   }
 
-  Future<FirebaseReference<Transaction>> updateTransaction(
+  Future<FirebaseReference<FirebaseTransaction>> updateTransaction(
     FirebaseReference<FirebaseWallet> walletRef,
-    Transaction transaction, {
+    FirebaseTransaction transaction, {
     FirebaseReference<FirebaseCategory>? category,
     TransactionType? type,
     String? title,
@@ -256,7 +292,7 @@ extension TransactionsDataSource on DataSource {
         if (type != null) 'type': type.rawValue,
         if (title != null) 'title': title,
         if (amount != null) 'amount': amount,
-        if (date != null) 'date': Firestore.Timestamp.fromDate(date),
+        if (date != null) 'date': CloudFirestore.Timestamp.fromDate(date),
         if (excludedFromDailyStatistics != null)
           'excludedFromDailyStatistics': excludedFromDailyStatistics
       });
@@ -289,8 +325,9 @@ extension TransactionsDataSource on DataSource {
         }
 
         updateTransaction.update(walletRef.documentReference, {
-          "totalExpense": Firestore.FieldValue.increment(expensesIncrement),
-          "totalIncome": Firestore.FieldValue.increment(incomesIncrement),
+          "totalExpense":
+              CloudFirestore.FieldValue.increment(expensesIncrement),
+          "totalIncome": CloudFirestore.FieldValue.increment(incomesIncrement),
         });
       }
     });
@@ -298,7 +335,7 @@ extension TransactionsDataSource on DataSource {
   }
 
   Future<void> updateTransactionCategory(
-    Transaction transaction,
+    FirebaseTransaction transaction,
     FirebaseReference<FirebaseCategory>? category,
   ) {
     return transaction.reference.documentReference.update({
@@ -308,16 +345,18 @@ extension TransactionsDataSource on DataSource {
 
   Future<void> removeTransaction(
     FirebaseReference<FirebaseWallet> walletRef,
-    Transaction transaction,
+    FirebaseTransaction transaction,
   ) async {
     await firestore.runTransaction((removeTransaction) async {
       removeTransaction.delete(transaction.reference.documentReference);
 
       removeTransaction.update(walletRef.documentReference, {
         if (transaction.type == TransactionType.expense)
-          "totalExpense": Firestore.FieldValue.increment(-transaction.amount),
+          "totalExpense":
+              CloudFirestore.FieldValue.increment(-transaction.amount),
         if (transaction.type == TransactionType.income)
-          "totalIncome": Firestore.FieldValue.increment(-transaction.amount),
+          "totalIncome":
+              CloudFirestore.FieldValue.increment(-transaction.amount),
       });
     });
   }
@@ -390,8 +429,9 @@ extension PrivateLoansDataSource on DataSource {
   Stream<List<PrivateLoan>> getPrivateLoans({
     bool includeFullyRepaid = false,
   }) {
-    final getSnapshots = (Firestore.Query filter(Firestore.Query query)) {
-      Firestore.Query query = firestore.collection("privateLoans");
+    final getSnapshots =
+        (CloudFirestore.Query filter(CloudFirestore.Query query)) {
+      CloudFirestore.Query query = firestore.collection("privateLoans");
       query = filter(query);
 
       if (!includeFullyRepaid)
@@ -405,8 +445,8 @@ extension PrivateLoansDataSource on DataSource {
       getSnapshots((q) => q.where("borrowerUid", isEqualTo: currentUser!.uid)),
       getUsers().asStream(),
       (
-        Firestore.QuerySnapshot loansAsLender,
-        Firestore.QuerySnapshot loansAsBorrower,
+        CloudFirestore.QuerySnapshot loansAsLender,
+        CloudFirestore.QuerySnapshot loansAsBorrower,
         List<User> users,
       ) {
         final documents = loansAsLender.docs + loansAsBorrower.docs;
@@ -425,7 +465,7 @@ extension PrivateLoansDataSource on DataSource {
     return CombineLatestStream.combine2(
       loanSnapshots,
       getUsers().asStream(),
-      (Firestore.DocumentSnapshot snapshot, List<User> users) =>
+      (CloudFirestore.DocumentSnapshot snapshot, List<User> users) =>
           PrivateLoan(snapshot, users),
     );
   }
@@ -553,12 +593,13 @@ extension UsersDataSource on DataSource {
 }
 
 extension DateTimeUtils on DateTime {
-  Firestore.Timestamp toTimestamp() => Firestore.Timestamp.fromDate(this);
+  CloudFirestore.Timestamp toTimestamp() =>
+      CloudFirestore.Timestamp.fromDate(this);
 }
 
 class LatestTransactions {
   final FirebaseWallet wallet;
-  final List<Transaction> transactions;
+  final List<FirebaseTransaction> transactions;
 
   LatestTransactions(this.wallet, this.transactions);
 }

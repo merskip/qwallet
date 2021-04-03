@@ -138,8 +138,8 @@ void initRoutes(FluroRouter router) {
           .getTransactionReference(wallet: walletRef, id: transactionId);
 
       return SimpleStreamWidget(
-        stream: DataSource.instance.getTransaction(transactionRef),
-        builder: (context, Transaction? transaction) => TransactionPage(
+        stream: DataSource.instance.getTransaction(walletRef, transactionRef),
+        builder: (context, FirebaseTransaction? transaction) => TransactionPage(
           walletRef: walletRef,
           transaction: transaction!,
         ),

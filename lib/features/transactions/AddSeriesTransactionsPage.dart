@@ -7,6 +7,7 @@ import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/dialog/SelectWalletDialog.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
@@ -49,7 +50,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   final transactionAmountController = AmountEditingController();
   FirebaseCategory? transactionCategory;
 
-  List<Transaction> transactions = [];
+  List<FirebaseTransaction> transactions = [];
 
   Money? get totalAmount => totalAmountController.value;
 
@@ -156,7 +157,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
     });
 
     subscriptions.add(DataSource.instance
-        .getTransaction(transactionRef)
+        .getTransaction(wallet.reference, transactionRef)
         .listen((transaction) {
       transactions.removeWhere((t) => t.id == transactionRef.id);
       if (transaction != null) transactions.add(transaction);

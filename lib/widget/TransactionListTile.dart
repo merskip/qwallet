@@ -9,7 +9,7 @@ import 'CategoryIcon.dart';
 
 class TransactionListTile extends StatelessWidget {
   final FirebaseWallet wallet;
-  final Transaction transaction;
+  final FirebaseTransaction transaction;
   final FirebaseCategory? category;
   final VisualDensity? visualDensity;
 
@@ -18,7 +18,7 @@ class TransactionListTile extends StatelessWidget {
     required this.wallet,
     required this.transaction,
     this.visualDensity,
-  })  : category = wallet.getCategory(transaction.category),
+  })  : category = transaction.category,
         super(key: key);
 
   @override

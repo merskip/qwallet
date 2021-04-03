@@ -14,7 +14,7 @@ import '../../AppLocalizations.dart';
 
 class TransactionsCard extends StatefulWidget {
   final FirebaseWallet wallet;
-  final List<Transaction> transactions;
+  final List<FirebaseTransaction> transactions;
 
   const TransactionsCard({
     Key? key,
@@ -27,7 +27,7 @@ class TransactionsCard extends StatefulWidget {
 }
 
 class _TransactionsCardState extends State<TransactionsCard> {
-  late Map<DateTime, List<Transaction>> transactionsByDate;
+  late Map<DateTime, List<FirebaseTransaction>> transactionsByDate;
   late List<DateTime> dates;
 
   bool isCollapsable = true;
@@ -48,7 +48,7 @@ class _TransactionsCardState extends State<TransactionsCard> {
   _prepareTransactions() {
     transactionsByDate = groupBy(
       widget.transactions,
-      (Transaction transaction) => getDateWithoutTime(transaction.date),
+      (FirebaseTransaction transaction) => getDateWithoutTime(transaction.date),
     );
     dates = transactionsByDate.keys.toList()
       ..sort((lhs, rhs) => rhs.compareTo(lhs));
@@ -98,7 +98,7 @@ class _TransactionsCardState extends State<TransactionsCard> {
   List<Widget> buildGroupedTransactions(
     BuildContext context,
     FirebaseWallet wallet,
-    List<Transaction> transactions,
+    List<FirebaseTransaction> transactions,
   ) {
     final effectiveDates = dates.sublist(
       0,
