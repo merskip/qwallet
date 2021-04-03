@@ -2,12 +2,13 @@ import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
-import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/datasource/TransactionsProvider.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
@@ -40,8 +41,8 @@ class _ReportsPageState extends State<ReportsPage> {
 
   Widget buildTabController(
     BuildContext context,
-    FirebaseWallet wallet,
-    List<FirebaseTransaction> transactions,
+    Wallet wallet,
+    List<Transaction> transactions,
   ) {
     return DefaultTabController(
       length: 2,
@@ -73,8 +74,8 @@ class _ReportsPageState extends State<ReportsPage> {
 }
 
 class _ReportByCategoriesPage extends StatelessWidget {
-  final FirebaseWallet wallet;
-  final List<FirebaseTransaction> transactions;
+  final Wallet wallet;
+  final List<Transaction> transactions;
 
   const _ReportByCategoriesPage({
     Key? key,
@@ -158,9 +159,8 @@ class _ReportByCategoriesPage extends StatelessWidget {
 
   List<_ByCategoryItem> getByCategoryItems() {
     final items = <_ByCategoryItem>[];
-    groupBy(transactions, (FirebaseTransaction t) => t.category)
+    groupBy(transactions, (Transaction t) => t.category)
         .forEach((category, transactions) {
-
       final totalAmount = transactions
           .where((t) => t.type == TransactionType.expense)
           .fold<double>(0, (v, t) => v + t.amount);
@@ -180,7 +180,7 @@ class _ReportByCategoriesPage extends StatelessWidget {
 }
 
 class _ByCategoryItem {
-  final FirebaseCategory? category;
+  final Category? category;
   final Money totalAmount;
   final double percentage;
 
@@ -188,8 +188,8 @@ class _ByCategoryItem {
 }
 
 class _ReportByDatePage extends StatelessWidget {
-  final FirebaseWallet wallet;
-  final List<FirebaseTransaction> transactions;
+  final Wallet wallet;
+  final List<Transaction> transactions;
 
   const _ReportByDatePage({
     Key? key,
@@ -321,7 +321,7 @@ class _ReportByDatePage extends StatelessWidget {
   }
 
   List<_ByDateItem> getByDateItems() {
-    final groupedTransactions = Map<DateTime, List<FirebaseTransaction>>();
+    final groupedTransactions = Map<DateTime, List<Transaction>>();
     transactions.where((t) {
       return t.type == TransactionType.expense &&
           !t.excludedFromDailyStatistics;

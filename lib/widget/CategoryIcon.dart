@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Category.dart';
+import 'package:qwallet/datasource/Category.dart';
 
 class CategoryIcon extends StatelessWidget {
-  final FirebaseCategory? category;
+  final Category? category;
   final double? size;
 
   const CategoryIcon(this.category, {Key? key, this.size}) : super(key: key);

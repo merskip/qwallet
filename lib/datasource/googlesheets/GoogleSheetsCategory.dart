@@ -22,6 +22,8 @@ class GoogleSheetsCategory implements Category {
     required this.order,
   });
 
+  String get titleText => Category.toTitleText(title);
+
   @override
   int compareTo(other) => Category.compareWithNullAtEnd(order, other.order);
 }

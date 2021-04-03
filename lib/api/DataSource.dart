@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/IconsSerialization.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/datasource/TransactionsProvider.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -115,14 +116,14 @@ extension WalletsDataSource on DataSource {
   Future<void> refreshWalletBalanceIfNeeded(
     LatestTransactions latestTransactions,
   ) async {
-    final wallet = latestTransactions.wallet;
+    final wallet = latestTransactions.wallet as FirebaseWallet;
     final transactions = latestTransactions.transactions;
     double totalExpense = 0.0, totalIncome = 0.0;
     for (final transaction in transactions) {
-      transaction.ifType(
-        expense: () => totalExpense += transaction.amount,
-        income: () => totalIncome += transaction.amount,
-      )();
+      if (transaction.type == TransactionType.expense)
+        totalExpense += transaction.amount;
+      else
+        totalIncome += transaction.amount;
     }
     if (wallet.totalExpense.amount != totalExpense ||
         wallet.totalIncome.amount != totalIncome) {
@@ -595,11 +596,4 @@ extension UsersDataSource on DataSource {
 extension DateTimeUtils on DateTime {
   CloudFirestore.Timestamp toTimestamp() =>
       CloudFirestore.Timestamp.fromDate(this);
-}
-
-class LatestTransactions {
-  final FirebaseWallet wallet;
-  final List<FirebaseTransaction> transactions;
-
-  LatestTransactions(this.wallet, this.transactions);
 }

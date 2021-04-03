@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 
 import 'Converting.dart';
-import 'Model.dart';
 
 class FirebaseCategory extends FirebaseModel<FirebaseCategory>
     implements Category {
@@ -16,10 +16,7 @@ class FirebaseCategory extends FirebaseModel<FirebaseCategory>
   final Color backgroundColor;
   final int order;
 
-  String get titleText => title.replaceAllMapped(
-        RegExp(r" ([a-z]) "),
-        (match) => " ${match.group(1)}\u{00a0}",
-      );
+  String get titleText => Category.toTitleText(title);
 
   FirebaseCategory(DocumentSnapshot snapshot)
       : identifier = Identifier(domain: "firebase", id: snapshot.id),

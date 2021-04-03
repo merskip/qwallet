@@ -36,6 +36,7 @@ class FirebaseTransaction extends FirebaseModel<FirebaseTransaction>
         income: AppLocalizations.of(context).transactionsCardIncome,
       );
 
+  @deprecated
   T ifType<T>({required T expense, required T income}) {
     switch (type) {
       case TransactionType.expense:

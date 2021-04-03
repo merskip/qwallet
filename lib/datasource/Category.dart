@@ -20,6 +20,13 @@ abstract class Category
     required this.order,
   });
 
+  String get titleText;
+
+  static String toTitleText(String title) => title.replaceAllMapped(
+        RegExp(r" ([a-z]) "),
+        (match) => " ${match.group(1)}\u{00a0}",
+      );
+
   @protected
   static int compareWithNullAtEnd(lhs, rhs) {
     if (lhs == null) return 1;

@@ -40,7 +40,7 @@ class FirebaseWallet extends FirebaseModel<FirebaseWallet> implements Wallet {
 
   FirebaseCategory? getCategory(FirebaseReference<FirebaseCategory>? category) {
     if (category == null) return null;
-    return categories.findFirstOrNull((c) => c.id == category.id);
+    return categories.findFirstOrNull((c) => c.identifier.id == category.id);
   }
 
   @override
