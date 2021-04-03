@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:qwallet/api/Transaction.dart';
-import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/page/dashboard/DailySpendingComputing.dart';
 import 'package:qwallet/widget/SpendingGauge.dart';
 
@@ -10,8 +9,8 @@ import '../../AppLocalizations.dart';
 import '../../Money.dart';
 
 class DailyReportSection extends StatelessWidget {
-  final FirebaseWallet wallet;
-  final List<FirebaseTransaction> transactions;
+  final Wallet wallet;
+  final List<Transaction> transactions;
 
   DailyReportSection({
     Key? key,
@@ -94,8 +93,7 @@ class DailyReportSection extends StatelessWidget {
   }
 
   DailySpending _computeDailySpending() {
-    final timeRange = wallet.dateRange.getDateTimeRange();
-    final totalDays = timeRange.duration.inDays;
+    final totalDays = wallet.dateTimeRange.duration.inDays;
     final currentDay = DateTime.now().day;
 
     return DailySpendingComputing().compute(

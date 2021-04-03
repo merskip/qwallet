@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/api/Transaction.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Category.dart';
+import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 
+import '../AppLocalizations.dart';
 import '../Money.dart';
 import '../router.dart';
 import 'CategoryIcon.dart';
 
 class TransactionListTile extends StatelessWidget {
-  final FirebaseWallet wallet;
-  final FirebaseTransaction transaction;
-  final FirebaseCategory? category;
+  final Wallet wallet;
+  final Transaction transaction;
+  final Category? category;
   final VisualDensity? visualDensity;
 
   TransactionListTile({
@@ -23,17 +24,19 @@ class TransactionListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = transaction.ifType(expense: null, income: Colors.green);
-    final amountPrefix = transaction.ifType(expense: "-", income: "+");
+    final color =
+        transaction.type == TransactionType.expense ? null : Colors.green;
+    final amountPrefix =
+        transaction.type == TransactionType.expense ? "-" : "+";
     final amountText = Money(transaction.amount, wallet.currency).formatted;
 
     final String title = transaction.title ??
         category?.titleText ??
-        transaction.getTypeLocalizedText(context);
+        getTypeLocalizedText(context);
     final subTitle = transaction.title != null ? category?.titleText : null;
 
     return ListTile(
-      key: Key(transaction.id),
+      key: Key(transaction.identifier.id),
       leading: CategoryIcon(category, size: 17),
       title: Text(title),
       subtitle: subTitle != null ? Text(subTitle) : null,
@@ -41,7 +44,12 @@ class TransactionListTile extends StatelessWidget {
       dense: true,
       visualDensity: visualDensity,
       onTap: () => router.navigateTo(context,
-          "/wallet/${wallet.identifier}/transaction/${transaction.id}"),
+          "/wallet/${wallet.identifier}/transaction/${transaction.identifier.id}"),
     );
   }
+
+  String getTypeLocalizedText(BuildContext context) =>
+      transaction.type == TransactionType.expense
+          ? AppLocalizations.of(context).transactionsCardExpense
+          : AppLocalizations.of(context).transactionsCardIncome;
 }

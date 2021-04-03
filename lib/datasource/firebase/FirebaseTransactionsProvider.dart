@@ -1,16 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Transaction.dart';
+import 'package:qwallet/api/Transaction.dart' as FirebaseTransaction;
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/TransactionsProvider.dart';
 import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/datasource/WalletsProvider.dart';
+import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../Transaction.dart';
+
 class FirebaseTransactionsProvider implements TransactionsProvider {
-  final WalletsProvider walletsProvider;
-  final FirebaseFirestore firestore;
+  final FirebaseWalletsProvider walletsProvider;
+  final CloudFirestore.FirebaseFirestore firestore;
 
   FirebaseTransactionsProvider({
     required this.walletsProvider,
@@ -24,51 +26,33 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     assert(walletId.domain == "firebase");
     final wallet = walletsProvider.getWalletByIdentifier(walletId);
 
-    final transactionsStream = wallet.flatMap((wallet) {
-      final firebaseWallet = wallet as FirebaseWallet;
-      return _getTransactionsInDateTimeRange(
-        walletId: walletId,
-        dateRange: firebaseWallet.dateRange.getDateTimeRange(),
-      );
-    });
-
-    return Rx.combineLatest2(
-      wallet,
-      transactionsStream,
-      (Wallet? wallet, List<FirebaseTransaction> transactions) {
-        return LatestTransactions(wallet!, transactions);
-      },
-    );
+    return wallet.flatMap<LatestTransactions>((wallet) =>
+        _getTransactionsInDateTimeRange(
+                wallet: wallet, dateRange: wallet.dateTimeRange)
+            .map((transactions) => LatestTransactions(wallet, transactions)));
   }
 
-  Stream<List<FirebaseTransaction>> _getTransactionsInDateTimeRange({
-    required Identifier<Wallet> walletId,
+  Stream<List<Transaction>> _getTransactionsInDateTimeRange({
+    required FirebaseWallet wallet,
     required DateTimeRange dateRange,
   }) {
-    final wallet = walletsProvider.getWalletByIdentifier(walletId);
-
-    final transactionsSnapshots = firestore
+    return firestore
         .collection("wallets")
-        .doc(walletId.id)
+        .doc(wallet.id)
         .collection("transactions")
         .where("date", isGreaterThanOrEqualTo: dateRange.start.toTimestamp())
         .where("date", isLessThanOrEqualTo: dateRange.end.toTimestamp())
         .orderBy("date", descending: true)
-        .snapshots();
-
-    return Rx.combineLatest2(
-      wallet,
-      transactionsSnapshots,
-      (Wallet? wallet, QuerySnapshot transactionsSnapshot) {
-        return transactionsSnapshot.docs
-            .map((snapshot) =>
-                FirebaseTransaction(snapshot, wallet! as FirebaseWallet))
-            .toList();
-      },
-    );
+        .snapshots()
+        .map((querySnapshot) => querySnapshot.docs
+            .map((transactionSnapshot) =>
+                FirebaseTransaction.FirebaseTransaction(
+                    transactionSnapshot, wallet))
+            .toList());
   }
 }
 
 extension DateTimeUtils on DateTime {
-  Timestamp toTimestamp() => Timestamp.fromDate(this);
+  CloudFirestore.Timestamp toTimestamp() =>
+      CloudFirestore.Timestamp.fromDate(this);
 }

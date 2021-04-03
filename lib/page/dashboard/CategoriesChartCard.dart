@@ -1,10 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/api/Transaction.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
@@ -13,8 +12,8 @@ import '../../Money.dart';
 import '../../utils/IterableFinding.dart';
 
 class CategoriesChartCard extends StatelessWidget {
-  final FirebaseWallet wallet;
-  final List<FirebaseTransaction> transactions;
+  final Wallet wallet;
+  final List<Transaction> transactions;
 
   const CategoriesChartCard({
     Key? key,
@@ -35,8 +34,8 @@ class CategoriesChartCard extends StatelessWidget {
 }
 
 class _CategoriesChartContent extends StatefulWidget {
-  final FirebaseWallet wallet;
-  final List<FirebaseTransaction> transactions;
+  final Wallet wallet;
+  final List<Transaction> transactions;
 
   const _CategoriesChartContent({
     Key? key,
@@ -96,15 +95,15 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
     final transactionInType =
         widget.transactions.where((t) => t.type == transactionType);
     final transactionsByCategory =
-        groupBy(transactionInType, (FirebaseTransaction t) => t.category);
+        groupBy(transactionInType, (Transaction t) => t.category);
 
     if (transactionsByCategory.isEmpty) {
       return [_CategoryChartItem(widget.wallet, null, [])];
     }
 
     return transactionsByCategory.keys.map((categoryRef) {
-      final category = widget.wallet.categories
-          .findFirstOrNull((c) => c.reference.id == categoryRef?.id);
+      final category = widget.wallet.categories.findFirstOrNull(
+          (c) => c.identifier.id == categoryRef?.identifier.id);
       final transactions = transactionsByCategory[categoryRef]!;
       return _CategoryChartItem(widget.wallet, category, transactions);
     }).toList()
@@ -113,7 +112,7 @@ class _CategoriesChartContentState extends State<_CategoriesChartContent> {
 }
 
 class _CategoriesChartWithLegend extends StatefulWidget {
-  final FirebaseWallet wallet;
+  final Wallet wallet;
   final List<_CategoryChartItem> items;
   final String summaryTitle;
 
@@ -317,9 +316,9 @@ class _CategoriesChart extends StatelessWidget {
 }
 
 class _CategoryChartItem {
-  final FirebaseWallet wallet;
-  final FirebaseCategory? category;
-  final List<FirebaseTransaction> transactions;
+  final Wallet wallet;
+  final Category? category;
+  final List<Transaction> transactions;
 
   Money get sum => Money(
       transactions.fold<double>(0, (amount, t) => amount + t.amount),

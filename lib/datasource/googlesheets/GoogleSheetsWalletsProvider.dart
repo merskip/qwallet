@@ -6,6 +6,7 @@ import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 
 import '../../Money.dart';
+import '../../utils.dart';
 import '../../utils/IterableFinding.dart';
 import '../AccountProvider.dart';
 import '../CategoriesProvider.dart';
@@ -75,6 +76,7 @@ class GoogleSheetsWalletsProvider implements WalletsProvider {
         totalExpense: Money(totalExpenses, Currency.fromCode("PLN")),
         totalIncome: Money(earned + looted, Currency.fromCode("PLN")),
         categories: await categoriesProvider.getCategories(walletId).first,
+        dateTimeRange: DateTime.now().getRangeOfMonth(),
       );
     });
   }

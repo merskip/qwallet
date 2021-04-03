@@ -6,7 +6,9 @@ import 'package:flutter/widgets.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/CurrencyList.dart';
 import 'package:qwallet/MoneyTextDetector.dart';
+import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/TransactionsProvider.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/dialog/EnterMoneyDialog.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
@@ -18,6 +20,9 @@ import 'package:rxdart/rxdart.dart';
 import '../../Money.dart';
 import '../../PushNotificationService.dart';
 import '../../router.dart';
+import 'CategoriesChartCard.dart';
+import 'DailyReportSection.dart';
+import 'TransactionsCard.dart';
 
 class DashboardPage extends StatefulWidget {
   DashboardPage({
@@ -164,8 +169,8 @@ class DashboardPageState extends State<DashboardPage> {
           ),
           actions: buildAppBarActions(context, true),
         ),
-        // if (_selectedWallet.value != null)
-        //   buildWalletCards(context, getSelectedWallet()),
+        if (_selectedWallet.value != null)
+          buildWalletCards(context, getSelectedWallet()),
         SliverPadding(
           padding: EdgeInsets.only(bottom: 48),
         ),
@@ -174,49 +179,49 @@ class DashboardPageState extends State<DashboardPage> {
   }
 
   Widget buildWalletCards(BuildContext context, Wallet wallet) {
-    return Container();
-    // return SimpleStreamWidget(
-    //   key: Key("wallet-cards-${wallet.identifier}"),
-    //   stream: DataSource.instance.getLatestTransactions(wallet.reference),
-    //   loadingBuilder: (context) => SliverFillRemaining(
-    //     child: Center(
-    //       child: CircularProgressIndicator(),
-    //     ),
-    //   ),
-    //   builder: (context, LatestTransactions latestTransactions) {
-    //     // assert(wallet.identifier == latestTransactions.wallet.identifier);
-    //
-    //     DataSource.instance
-    //         .refreshWalletBalanceIfNeeded(latestTransactions)
-    //         .catchError((error) {
-    //       if (error is Could.FirebaseException &&
-    //           error.code == "permission-denied") {
-    //         print(
-    //             "Permission denied while updating wallet balance, clearing cache");
-    //         DataSource.instance.firestore.clearPersistence();
-    //       }
-    //     });
-    //
-    //     return SliverToBoxAdapter(
-    //       child: Column(
-    //         children: [
-    //           DailyReportSection(
-    //             wallet: wallet,
-    //             transactions: latestTransactions.transactions,
-    //           ),
-    //           TransactionsCard(
-    //             wallet: wallet,
-    //             transactions: latestTransactions.transactions,
-    //           ),
-    //           CategoriesChartCard(
-    //             wallet: wallet,
-    //             transactions: latestTransactions.transactions,
-    //           ),
-    //         ],
-    //       ),
-    //     );
-    //   },
-    // );
+    return SimpleStreamWidget(
+      key: Key("wallet-cards-${wallet.identifier}"),
+      stream: AggregatedTransactionsProvider.instance!
+          .getLatestTransactions(walletId: wallet.identifier),
+      loadingBuilder: (context) => SliverFillRemaining(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      builder: (context, LatestTransactions latestTransactions) {
+        // assert(wallet.identifier == latestTransactions.wallet.identifier);
+
+        // DataSource.instance
+        //     .refreshWalletBalanceIfNeeded(latestTransactions)
+        //     .catchError((error) {
+        //   if (error is Could.FirebaseException &&
+        //       error.code == "permission-denied") {
+        //     print(
+        //         "Permission denied while updating wallet balance, clearing cache");
+        //     DataSource.instance.firestore.clearPersistence();
+        //   }
+        // });
+
+        return SliverToBoxAdapter(
+          child: Column(
+            children: [
+              DailyReportSection(
+                wallet: wallet,
+                transactions: latestTransactions.transactions,
+              ),
+              TransactionsCard(
+                wallet: wallet,
+                transactions: latestTransactions.transactions,
+              ),
+              CategoriesChartCard(
+                wallet: wallet,
+                transactions: latestTransactions.transactions,
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget buildContentWithNoWallets(BuildContext context) {

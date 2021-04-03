@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/api/Transaction.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
@@ -13,8 +13,8 @@ import 'package:qwallet/widget/TransactionListTile.dart';
 import '../../AppLocalizations.dart';
 
 class TransactionsCard extends StatefulWidget {
-  final FirebaseWallet wallet;
-  final List<FirebaseTransaction> transactions;
+  final Wallet wallet;
+  final List<Transaction> transactions;
 
   const TransactionsCard({
     Key? key,
@@ -27,7 +27,7 @@ class TransactionsCard extends StatefulWidget {
 }
 
 class _TransactionsCardState extends State<TransactionsCard> {
-  late Map<DateTime, List<FirebaseTransaction>> transactionsByDate;
+  late Map<DateTime, List<Transaction>> transactionsByDate;
   late List<DateTime> dates;
 
   bool isCollapsable = true;
@@ -48,7 +48,7 @@ class _TransactionsCardState extends State<TransactionsCard> {
   _prepareTransactions() {
     transactionsByDate = groupBy(
       widget.transactions,
-      (FirebaseTransaction transaction) => getDateWithoutTime(transaction.date),
+      (Transaction transaction) => getDateWithoutTime(transaction.date),
     );
     dates = transactionsByDate.keys.toList()
       ..sort((lhs, rhs) => rhs.compareTo(lhs));
@@ -97,8 +97,8 @@ class _TransactionsCardState extends State<TransactionsCard> {
 
   List<Widget> buildGroupedTransactions(
     BuildContext context,
-    FirebaseWallet wallet,
-    List<FirebaseTransaction> transactions,
+    Wallet wallet,
+    List<Transaction> transactions,
   ) {
     final effectiveDates = dates.sublist(
       0,

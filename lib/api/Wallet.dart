@@ -20,8 +20,10 @@ class FirebaseWallet extends FirebaseModel<FirebaseWallet> implements Wallet {
   final Money totalExpense;
   final Money totalIncome;
   final FirebaseWalletDateRange dateRange;
-
   final List<FirebaseCategory> categories;
+
+  @override
+  DateTimeRange get dateTimeRange => dateRange.getDateTimeRange();
 
   FirebaseWallet(DocumentSnapshot snapshot, List<FirebaseCategory> categories)
       : this.identifier = Identifier(domain: "firebase", id: snapshot.id),

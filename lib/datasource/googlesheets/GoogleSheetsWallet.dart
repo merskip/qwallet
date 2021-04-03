@@ -1,3 +1,4 @@
+import 'package:flutter/src/material/date.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/datasource/Category.dart';
@@ -10,8 +11,8 @@ class GoogleSheetsWallet implements Wallet {
   final Currency currency;
   final Money totalExpense;
   final Money totalIncome;
-
   final List<Category> categories;
+  DateTimeRange dateTimeRange;
 
   GoogleSheetsWallet({
     required this.identifier,
@@ -20,6 +21,7 @@ class GoogleSheetsWallet implements Wallet {
     required this.totalExpense,
     required this.totalIncome,
     required this.categories,
+    required this.dateTimeRange,
   });
 
   Money get balance => totalIncome - totalExpense.amount;
