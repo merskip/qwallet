@@ -32,14 +32,14 @@ class AggregatedWalletsProvider extends WalletsProvider {
   }
 
   @override
-  Stream<Wallet?> getWalletByIdentifier(Identifier<Wallet> walletId) {
+  Stream<Wallet> getWalletByIdentifier(Identifier<Wallet> walletId) {
     switch (walletId.domain) {
       case "firebase":
         return firebaseProvider.getWalletByIdentifier(walletId);
       case "google_sheets":
         return googleSheetsProvider.getWalletByIdentifier(walletId);
       default:
-        return Stream.value(null);
+        return Stream.error("Unknown domain: ${walletId.domain}");
     }
   }
 }

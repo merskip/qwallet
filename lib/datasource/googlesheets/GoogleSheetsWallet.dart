@@ -4,6 +4,7 @@ import 'package:qwallet/Money.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/datasource/googlesheets/GoogleSpreadsheetWallet.dart';
 
 class GoogleSheetsWallet implements Wallet {
   final Identifier<Wallet> identifier;
@@ -14,7 +15,10 @@ class GoogleSheetsWallet implements Wallet {
   final List<Category> categories;
   DateTimeRange dateTimeRange;
 
+  final GoogleSpreadsheetWallet spreadsheetWallet;
+
   GoogleSheetsWallet({
+    required this.spreadsheetWallet,
     required this.identifier,
     required this.name,
     required this.currency,

@@ -9,7 +9,7 @@ class GoogleSheetsTransaction implements Transaction {
   final double amount;
   final DateTime date;
   final Category? category;
-  final bool excludedFromDailyStatistics = false;
+  final bool excludedFromDailyStatistics;
 
   GoogleSheetsTransaction({
     required this.identifier,
@@ -18,5 +18,6 @@ class GoogleSheetsTransaction implements Transaction {
     required this.amount,
     required this.date,
     required this.category,
+    required this.excludedFromDailyStatistics,
   });
 }

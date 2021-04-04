@@ -13,13 +13,13 @@ import 'package:qwallet/datasource/firebase/FirebaseCategoriesProvider.dart';
 import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
 import 'package:qwallet/datasource/googlesheets/GoogleSheetsTransactionsProvider.dart';
 import 'package:qwallet/datasource/googlesheets/GoogleSheetsWalletsProvider.dart';
+import 'package:qwallet/datasource/googlesheets/GoogleSpreadsheetRepository.dart';
 import 'package:qwallet/router.dart';
 
 import 'datasource/AggregatedWalletsProvider.dart';
 import 'datasource/DefaultAccountProvider.dart';
 import 'datasource/Identifier.dart';
 import 'datasource/firebase/FirebaseTransactionsProvider.dart';
-import 'datasource/googlesheets/GoogleSheetsCategoriesProvider.dart';
 
 void main() async {
   runZonedGuarded(
@@ -53,11 +53,12 @@ void main() async {
         ),
       );
 
-      final googleSheetsWalletsProvider = GoogleSheetsWalletsProvider(
+      final googleSpreadsheetRepository = GoogleSpreadsheetRepository(
         accountProvider: accountProvider,
-        categoriesProvider: GoogleSheetsCategoriesProvider(
-          accountProvider: accountProvider,
-        ),
+      );
+
+      final googleSheetsWalletsProvider = GoogleSheetsWalletsProvider(
+        repository: googleSpreadsheetRepository,
         walletsIds: [
           Identifier(
             domain: "google_sheets",
@@ -77,7 +78,7 @@ void main() async {
           firestore: FirebaseFirestore.instance,
         ),
         googleSheetsProvider: GoogleSheetsTransactionsProvider(
-          accountProvider: accountProvider,
+          repository: googleSpreadsheetRepository,
           walletsProvider: googleSheetsWalletsProvider,
         ),
       );

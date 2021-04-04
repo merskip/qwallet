@@ -1,18 +1,22 @@
 class GoogleSpreadsheetWallet {
+  final String name;
   final List<double> incomes;
   final List<GoogleSpreadsheetTransfer> transfers;
   final int? lastTransferRowIndex;
 
-  final DateTime beginDate;
+  final DateTime firstDate;
+  final DateTime lastDate;
   final List<GoogleSpreadsheetCategory> categories;
   final List<String> shops;
   final GoogleSpreadsheetStatistics statistics;
 
   GoogleSpreadsheetWallet({
+    required this.name,
     required this.incomes,
     required this.transfers,
     required this.lastTransferRowIndex,
-    required this.beginDate,
+    required this.firstDate,
+    required this.lastDate,
     required this.categories,
     required this.shops,
     required this.statistics,
@@ -20,7 +24,7 @@ class GoogleSpreadsheetWallet {
 }
 
 class GoogleSpreadsheetTransfer {
-  final int rowIndex;
+  final int row;
   final DateTime date;
   final GoogleSpreadsheetTransferType type;
   final double amount;
@@ -30,7 +34,7 @@ class GoogleSpreadsheetTransfer {
   final String? description;
 
   GoogleSpreadsheetTransfer({
-    required this.rowIndex,
+    required this.row,
     required this.date,
     required this.type,
     required this.amount,
@@ -78,11 +82,13 @@ class GoogleSpreadsheetStatistics {
 }
 
 class GoogleSpreadsheetCategory {
+  final int row;
   final String symbol;
   final double totalExpenses;
   final String description;
 
   GoogleSpreadsheetCategory({
+    required this.row,
     required this.symbol,
     required this.totalExpenses,
     required this.description,

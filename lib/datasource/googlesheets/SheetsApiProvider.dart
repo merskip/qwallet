@@ -15,8 +15,8 @@ class SheetsApiProvider {
   Future<SheetsApi> get sheetsApi async {
     final account = await accountProvider.getAccount();
     final googleAccount = account.googleAccount;
-    if (googleAccount == null) throw Exception("account.googleAccount is null");
-
+    if (googleAccount == null)
+      return Future.error("account.googleAccount is null");
     final client = GoogleAuthClient(googleAccount);
     return SheetsApi(client);
   }

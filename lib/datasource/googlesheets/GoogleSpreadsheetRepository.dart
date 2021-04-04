@@ -21,30 +21,30 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
     final dailyBalanceSheet = spreadsheet.findSheetByTitle("Balans dzienny")!;
     final statisticsSheet = spreadsheet.findSheetByTitle("Statystyka")!;
 
-    final incomes = getIncomes(generalSheet);
-    final transfers = getTransfers(dailyBalanceSheet);
-
-    final beginDate = getBeginDate(statisticsSheet);
-    final categories = getCategories(statisticsSheet);
-    final shops = getShops(statisticsSheet);
-    final statistics = getStatistics(statisticsSheet);
+    final incomes = _getIncomes(generalSheet);
+    final transfers = _getTransfers(dailyBalanceSheet);
+    final categories = _getCategories(statisticsSheet);
+    final shops = _getShops(statisticsSheet);
+    final statistics = _getStatistics(statisticsSheet);
 
     return GoogleSpreadsheetWallet(
+      name: spreadsheet.properties?.title ?? "",
       incomes: incomes,
       transfers: transfers,
-      lastTransferRowIndex: transfers.lastOrNull?.rowIndex,
-      beginDate: beginDate!,
+      lastTransferRowIndex: transfers.lastOrNull?.row,
+      firstDate: _getFirstDate(statisticsSheet)!,
+      lastDate: _getLastDate(statisticsSheet)!,
       categories: categories,
       shops: shops,
       statistics: statistics,
     );
   }
 
-  List<double> getIncomes(Sheet generalSheet) {
+  List<double> _getIncomes(Sheet generalSheet) {
     return generalSheet.mapRow((_, row) => row.getDouble(column: 1));
   }
 
-  List<GoogleSpreadsheetTransfer> getTransfers(Sheet dailyBalanceSheet) {
+  List<GoogleSpreadsheetTransfer> _getTransfers(Sheet dailyBalanceSheet) {
     return dailyBalanceSheet.mapRow((index, row) {
       final date = row.getDate(column: 0);
       final type = row.getTransaferType(column: 1);
@@ -56,7 +56,7 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
           categorySymbol == null) return null;
 
       return GoogleSpreadsheetTransfer(
-        rowIndex: index,
+        row: index,
         date: date,
         type: type,
         amount: amount,
@@ -68,28 +68,41 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
     });
   }
 
-  DateTime? getBeginDate(Sheet statisticsSheet) {
+  DateTime? _getFirstDate(Sheet statisticsSheet) {
     return statisticsSheet.getRow(2)?.getDate(column: 8);
   }
 
-  List<GoogleSpreadsheetCategory> getCategories(Sheet statisticsSheet) {
+  DateTime? _getLastDate(Sheet statisticsSheet) {
+    final numbersOfRows = statisticsSheet.getNumbersOfRows();
+    final reversedRows =
+        List<int>.generate(numbersOfRows, (i) => numbersOfRows - i - 1);
+    for (final row in reversedRows) {
+      final date = statisticsSheet.getRow(row)?.getDate(column: 8);
+      if (date != null) return date;
+    }
+    return null;
+  }
+
+  List<GoogleSpreadsheetCategory> _getCategories(Sheet statisticsSheet) {
     return statisticsSheet.mapRow((index, row) {
       final symbol = row.getString(column: 3);
       final totalExpenses = row.getDouble(column: 4);
       final description = row.getString(column: 5);
       if (symbol == null || description == null) return null;
       return GoogleSpreadsheetCategory(
-          symbol: symbol,
-          totalExpenses: totalExpenses ?? 0,
-          description: description);
+        row: index,
+        symbol: symbol,
+        totalExpenses: totalExpenses ?? 0,
+        description: description,
+      );
     });
   }
 
-  List<String> getShops(Sheet statisticsSheet) {
+  List<String> _getShops(Sheet statisticsSheet) {
     return statisticsSheet.mapRow((index, row) => row.getString(column: 16));
   }
 
-  GoogleSpreadsheetStatistics getStatistics(Sheet statisticsSheet) {
+  GoogleSpreadsheetStatistics _getStatistics(Sheet statisticsSheet) {
     return GoogleSpreadsheetStatistics(
       earnedIncome: statisticsSheet.getRow(0)!.getDouble(column: 1)!,
       gainedIncome: statisticsSheet.getRow(1)!.getDouble(column: 1)!,
@@ -120,6 +133,8 @@ extension _SpreadsheetFinding on Spreadsheet {
 }
 
 extension _SheetIterator on Sheet {
+  int getNumbersOfRows() => data?[0].rowData?.length ?? 0;
+
   RowData? getRow(int index) {
     return data?[0].rowData?[index];
   }
