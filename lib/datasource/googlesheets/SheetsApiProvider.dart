@@ -12,11 +12,12 @@ class SheetsApiProvider {
     required this.accountProvider,
   });
 
-  Future<T> onSheetsApi<T>(
-      FutureOr<T> Function(SheetsApi sheetsApi) callback) async {
+  Future<SheetsApi> get sheetsApi async {
     final account = await accountProvider.getAccount();
-    final client = GoogleAuthClient(account.googleAccount!);
-    final sheetsApi = SheetsApi(client);
-    return callback(sheetsApi);
+    final googleAccount = account.googleAccount;
+    if (googleAccount == null) throw Exception("account.googleAccount is null");
+
+    final client = GoogleAuthClient(googleAccount);
+    return SheetsApi(client);
   }
 }

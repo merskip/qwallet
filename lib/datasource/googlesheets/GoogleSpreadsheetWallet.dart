@@ -1,31 +1,36 @@
-import 'package:googleapis/sheets/v4.dart';
-
 class GoogleSpreadsheetWallet {
-  final Sheet incomesSheet;
   final List<double> incomes;
   final List<GoogleSpreadsheetTransfer> transfers;
+  final int? lastTransferRowIndex;
+
   final DateTime beginDate;
+  final List<GoogleSpreadsheetCategory> categories;
   final List<String> shops;
+  final GoogleSpreadsheetStatistics statistics;
 
   GoogleSpreadsheetWallet({
-    required this.incomesSheet,
     required this.incomes,
     required this.transfers,
+    required this.lastTransferRowIndex,
     required this.beginDate,
+    required this.categories,
     required this.shops,
+    required this.statistics,
   });
 }
 
 class GoogleSpreadsheetTransfer {
+  final int rowIndex;
   final DateTime date;
   final GoogleSpreadsheetTransferType type;
   final double amount;
-  final String? categorySymbol;
+  final String categorySymbol;
   final bool isForeignCapital;
-  final String shop;
-  final String description;
+  final String? shop;
+  final String? description;
 
   GoogleSpreadsheetTransfer({
+    required this.rowIndex,
     required this.date,
     required this.type,
     required this.amount,
@@ -44,6 +49,7 @@ class GoogleSpreadsheetStatistics {
   final double depreciateExpenses;
   final double totalExpenses;
   final double remainingAmount;
+  final double balance;
   final double foreignCapital;
   final double? averageBalanceFromConstantIncomes;
   final double? averageBalance;
@@ -60,6 +66,7 @@ class GoogleSpreadsheetStatistics {
     required this.depreciateExpenses,
     required this.totalExpenses,
     required this.remainingAmount,
+    required this.balance,
     required this.foreignCapital,
     required this.averageBalanceFromConstantIncomes,
     required this.averageBalance,
