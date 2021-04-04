@@ -117,7 +117,7 @@ class _WalletSinglePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 16),
+      padding: EdgeInsets.only(left: 16, right: 96),
       child: DefaultTextStyle(
         style: TextStyle(color: Colors.white),
         child: Column(
