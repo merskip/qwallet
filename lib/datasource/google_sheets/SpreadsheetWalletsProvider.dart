@@ -4,27 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/datasource/googlesheets/GoogleSheetsCategory.dart';
-import 'package:qwallet/datasource/googlesheets/GoogleSpreadsheetWallet.dart';
+import 'package:qwallet/datasource/google_sheets/GoogleSpreadsheetWallet.dart';
+import 'package:qwallet/datasource/google_sheets/SpreadsheetCategory.dart';
 
 import '../../Money.dart';
 import '../WalletsProvider.dart';
-import 'GoogleSheetsWallet.dart';
 import 'GoogleSpreadsheetRepository.dart';
+import 'SpreadsheetCategory.dart';
+import 'SpreadsheetWallet.dart';
 
-class GoogleSheetsWalletsProvider implements WalletsProvider {
+class SpreadsheetWalletsProvider implements WalletsProvider {
   final GoogleSpreadsheetRepository repository;
-  final List<Identifier<GoogleSheetsWallet>> walletsIds;
+  final List<Identifier<SpreadsheetWallet>> walletsIds;
 
-  GoogleSheetsWalletsProvider({
+  SpreadsheetWalletsProvider({
     required this.repository,
     required this.walletsIds,
   });
 
   @override
-  Stream<List<GoogleSheetsWallet>> getWallets() {
+  Stream<List<SpreadsheetWallet>> getWallets() {
     return Future(() async {
-      final wallets = <GoogleSheetsWallet>[];
+      final wallets = <SpreadsheetWallet>[];
       for (final walletId in walletsIds) {
         try {
           final wallet = await getWalletByIdentifier(walletId).first;
@@ -38,8 +39,7 @@ class GoogleSheetsWalletsProvider implements WalletsProvider {
   }
 
   @override
-  Stream<GoogleSheetsWallet> getWalletByIdentifier(
-      Identifier<Wallet> walletId) {
+  Stream<SpreadsheetWallet> getWalletByIdentifier(Identifier<Wallet> walletId) {
     assert(walletId.domain == "google_sheets");
     return repository
         .getWalletBySpreadsheetId(walletId.id)
@@ -47,14 +47,14 @@ class GoogleSheetsWalletsProvider implements WalletsProvider {
         .map((w) => _toWallet(walletId, w));
   }
 
-  GoogleSheetsWallet _toWallet(
+  SpreadsheetWallet _toWallet(
     Identifier<Wallet> id,
     GoogleSpreadsheetWallet wallet,
   ) {
     final currency = Currency.fromCode("PLN");
     final totalIncome =
         wallet.statistics.earnedIncome + wallet.statistics.gainedIncome;
-    return GoogleSheetsWallet(
+    return SpreadsheetWallet(
       spreadsheetWallet: wallet,
       identifier: id,
       name: wallet.name,
@@ -67,8 +67,8 @@ class GoogleSheetsWalletsProvider implements WalletsProvider {
     );
   }
 
-  GoogleSheetsCategory _toCategory(GoogleSpreadsheetCategory category) {
-    return GoogleSheetsCategory(
+  SpreadsheetCategory _toCategory(GoogleSpreadsheetCategory category) {
+    return SpreadsheetCategory(
       identifier:
           Identifier(domain: "google_sheets", id: category.row.toString()),
       symbol: category.symbol,

@@ -11,15 +11,15 @@ import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/firebase/FirebaseCategoriesProvider.dart';
 import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
-import 'package:qwallet/datasource/googlesheets/GoogleSheetsTransactionsProvider.dart';
-import 'package:qwallet/datasource/googlesheets/GoogleSheetsWalletsProvider.dart';
-import 'package:qwallet/datasource/googlesheets/GoogleSpreadsheetRepository.dart';
 import 'package:qwallet/router.dart';
 
 import 'datasource/AggregatedWalletsProvider.dart';
 import 'datasource/DefaultAccountProvider.dart';
 import 'datasource/Identifier.dart';
 import 'datasource/firebase/FirebaseTransactionsProvider.dart';
+import 'datasource/google_sheets/CachedGoogleSpreadsheetRepository.dart';
+import 'datasource/google_sheets/SpreadsheetTransactionsProvider.dart';
+import 'datasource/google_sheets/SpreadsheetWalletsProvider.dart';
 
 void main() async {
   runZonedGuarded(
@@ -53,11 +53,11 @@ void main() async {
         ),
       );
 
-      final googleSpreadsheetRepository = GoogleSpreadsheetRepository(
+      final googleSpreadsheetRepository = CachedGoogleSpreadsheetRepository(
         accountProvider: accountProvider,
       );
 
-      final googleSheetsWalletsProvider = GoogleSheetsWalletsProvider(
+      final googleSheetsWalletsProvider = SpreadsheetWalletsProvider(
         repository: googleSpreadsheetRepository,
         walletsIds: [
           Identifier(
@@ -69,7 +69,7 @@ void main() async {
 
       AggregatedWalletsProvider.instance = AggregatedWalletsProvider(
         firebaseProvider: firebaseWalletsProvider,
-        googleSheetsProvider: googleSheetsWalletsProvider,
+        spreadsheetProvider: googleSheetsWalletsProvider,
       );
 
       AggregatedTransactionsProvider.instance = AggregatedTransactionsProvider(
@@ -77,7 +77,7 @@ void main() async {
           walletsProvider: firebaseWalletsProvider,
           firestore: FirebaseFirestore.instance,
         ),
-        googleSheetsProvider: GoogleSheetsTransactionsProvider(
+        spreadsheetProvider: SpreadsheetTransactionsProvider(
           repository: googleSpreadsheetRepository,
           walletsProvider: googleSheetsWalletsProvider,
         ),

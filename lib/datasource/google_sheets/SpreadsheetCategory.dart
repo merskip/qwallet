@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 
-class GoogleSheetsCategory implements Category {
+class SpreadsheetCategory implements Category {
   final Identifier<Category> identifier;
   final String title;
   final IconData? icon = null;
@@ -13,7 +13,7 @@ class GoogleSheetsCategory implements Category {
   final Color? backgroundColor;
   final int order;
 
-  GoogleSheetsCategory({
+  SpreadsheetCategory({
     required this.identifier,
     required this.title,
     required this.symbol,

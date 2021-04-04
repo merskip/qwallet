@@ -1,18 +1,18 @@
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
-import 'package:qwallet/datasource/googlesheets/GoogleSheetsWalletsProvider.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'WalletsProvider.dart';
+import 'google_sheets/SpreadsheetWalletsProvider.dart';
 
 class AggregatedWalletsProvider extends WalletsProvider {
   final FirebaseWalletsProvider firebaseProvider;
-  final GoogleSheetsWalletsProvider googleSheetsProvider;
+  final SpreadsheetWalletsProvider spreadsheetProvider;
 
   AggregatedWalletsProvider({
     required this.firebaseProvider,
-    required this.googleSheetsProvider,
+    required this.spreadsheetProvider,
   });
 
   static AggregatedWalletsProvider? instance;
@@ -21,7 +21,7 @@ class AggregatedWalletsProvider extends WalletsProvider {
   Stream<List<Wallet>> getWallets() {
     return CombineLatestStream.combine2(
       firebaseProvider.getWallets(),
-      googleSheetsProvider.getWallets(),
+      spreadsheetProvider.getWallets(),
       (List<Wallet> firebaseWallets, List<Wallet> googleSheetWallets) {
         final wallets = <Wallet>[];
         wallets.addAll(firebaseWallets);
@@ -37,7 +37,7 @@ class AggregatedWalletsProvider extends WalletsProvider {
       case "firebase":
         return firebaseProvider.getWalletByIdentifier(walletId);
       case "google_sheets":
-        return googleSheetsProvider.getWalletByIdentifier(walletId);
+        return spreadsheetProvider.getWalletByIdentifier(walletId);
       default:
         return Stream.error("Unknown domain: ${walletId.domain}");
     }

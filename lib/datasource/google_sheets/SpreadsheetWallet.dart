@@ -4,9 +4,9 @@ import 'package:qwallet/Money.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/datasource/googlesheets/GoogleSpreadsheetWallet.dart';
+import 'package:qwallet/datasource/google_sheets/GoogleSpreadsheetWallet.dart';
 
-class GoogleSheetsWallet implements Wallet {
+class SpreadsheetWallet implements Wallet {
   final Identifier<Wallet> identifier;
   final String name;
   final Currency currency;
@@ -17,7 +17,7 @@ class GoogleSheetsWallet implements Wallet {
 
   final GoogleSpreadsheetWallet spreadsheetWallet;
 
-  GoogleSheetsWallet({
+  SpreadsheetWallet({
     required this.spreadsheetWallet,
     required this.identifier,
     required this.name,

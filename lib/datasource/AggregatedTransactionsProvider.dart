@@ -3,15 +3,15 @@ import 'package:qwallet/datasource/TransactionsProvider.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/datasource/firebase/FirebaseTransactionsProvider.dart';
 
-import 'googlesheets/GoogleSheetsTransactionsProvider.dart';
+import 'google_sheets/SpreadsheetTransactionsProvider.dart';
 
 class AggregatedTransactionsProvider implements TransactionsProvider {
   final FirebaseTransactionsProvider firebaseProvider;
-  final GoogleSheetsTransactionsProvider googleSheetsProvider;
+  final SpreadsheetTransactionsProvider spreadsheetProvider;
 
   AggregatedTransactionsProvider({
     required this.firebaseProvider,
-    required this.googleSheetsProvider,
+    required this.spreadsheetProvider,
   });
 
   static AggregatedTransactionsProvider? instance;
@@ -24,7 +24,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
       case "firebase":
         return firebaseProvider.getLatestTransactions(walletId: walletId);
       case "google_sheets":
-        return googleSheetsProvider.getLatestTransactions(walletId: walletId);
+        return spreadsheetProvider.getLatestTransactions(walletId: walletId);
       default:
         return Stream.error(ArgumentError.value(
             walletId.domain, "walletId.domain", "Unknown domain"));

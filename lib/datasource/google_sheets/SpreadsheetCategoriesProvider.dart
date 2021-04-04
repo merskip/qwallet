@@ -5,16 +5,16 @@ import 'package:qwallet/datasource/CategoriesProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/datasource/googlesheets/GoogleSheetsCategory.dart';
 import 'package:qwallet/utils/IterableFinding.dart';
 
 import '../AccountProvider.dart';
 import 'GoogleAuthClient.dart';
+import 'SpreadsheetCategory.dart';
 
-class GoogleSheetsCategoriesProvider extends CategoriesProvider {
+class SpreadsheetCategoriesProvider extends CategoriesProvider {
   final AccountProvider accountProvider;
 
-  GoogleSheetsCategoriesProvider({
+  SpreadsheetCategoriesProvider({
     required this.accountProvider,
   });
 
@@ -45,8 +45,8 @@ class GoogleSheetsCategoriesProvider extends CategoriesProvider {
     }).asStream();
   }
 
-  List<GoogleSheetsCategory> _parseCategories(Sheet statisticsSheet) {
-    final categories = <GoogleSheetsCategory>[];
+  List<SpreadsheetCategory> _parseCategories(Sheet statisticsSheet) {
+    final categories = <SpreadsheetCategory>[];
 
     int order = 0;
     for (final row in statisticsSheet.data![0].rowData!) {
@@ -57,7 +57,7 @@ class GoogleSheetsCategoriesProvider extends CategoriesProvider {
       final identifier =
           Identifier<Category>(domain: "google_sheet", id: "${order + 1}");
 
-      categories.add(GoogleSheetsCategory(
+      categories.add(SpreadsheetCategory(
         identifier: identifier,
         title: title!,
         symbol: symbol,

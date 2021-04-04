@@ -2,7 +2,7 @@ import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 
-class GoogleSheetsTransaction implements Transaction {
+class SpreadsheetTransaction implements Transaction {
   final Identifier<Transaction> identifier;
   final TransactionType type;
   final String? title;
@@ -11,7 +11,7 @@ class GoogleSheetsTransaction implements Transaction {
   final Category? category;
   final bool excludedFromDailyStatistics;
 
-  GoogleSheetsTransaction({
+  SpreadsheetTransaction({
     required this.identifier,
     required this.type,
     required this.title,

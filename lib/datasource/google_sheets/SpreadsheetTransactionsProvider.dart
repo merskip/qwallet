@@ -3,20 +3,20 @@ import 'dart:async';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/TransactionsProvider.dart';
 import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/datasource/googlesheets/GoogleSheetsTransaction.dart';
-import 'package:qwallet/datasource/googlesheets/GoogleSheetsWallet.dart';
-import 'package:qwallet/datasource/googlesheets/GoogleSheetsWalletsProvider.dart';
-import 'package:qwallet/datasource/googlesheets/GoogleSpreadsheetWallet.dart';
+import 'package:qwallet/datasource/google_sheets/GoogleSpreadsheetWallet.dart';
+import 'package:qwallet/datasource/google_sheets/SpreadsheetTransaction.dart';
+import 'package:qwallet/datasource/google_sheets/SpreadsheetWallet.dart';
+import 'package:qwallet/datasource/google_sheets/SpreadsheetWalletsProvider.dart';
 
 import '../../utils/IterableFinding.dart';
 import '../Transaction.dart';
 import 'GoogleSpreadsheetRepository.dart';
 
-class GoogleSheetsTransactionsProvider implements TransactionsProvider {
+class SpreadsheetTransactionsProvider implements TransactionsProvider {
   final GoogleSpreadsheetRepository repository;
-  final GoogleSheetsWalletsProvider walletsProvider;
+  final SpreadsheetWalletsProvider walletsProvider;
 
-  GoogleSheetsTransactionsProvider({
+  SpreadsheetTransactionsProvider({
     required this.repository,
     required this.walletsProvider,
   });
@@ -38,9 +38,9 @@ class GoogleSheetsTransactionsProvider implements TransactionsProvider {
     }).asStream();
   }
 
-  GoogleSheetsTransaction _toTransfer(
-      GoogleSheetsWallet wallet, GoogleSpreadsheetTransfer transfer) {
-    return GoogleSheetsTransaction(
+  SpreadsheetTransaction _toTransfer(
+      SpreadsheetWallet wallet, GoogleSpreadsheetTransfer transfer) {
+    return SpreadsheetTransaction(
       identifier:
           Identifier(domain: "google_sheets", id: transfer.row.toString()),
       type: transfer.amount < 0
