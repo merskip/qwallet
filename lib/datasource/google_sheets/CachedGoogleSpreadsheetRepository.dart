@@ -9,6 +9,10 @@ class CachedGoogleSpreadsheetRepository extends GoogleSpreadsheetRepository {
     required AccountProvider accountProvider,
   }) : super(accountProvider: accountProvider);
 
+  void clearCacheForSpreadsheetId(String spreadsheetId) {
+    _cachedWallets.remove(spreadsheetId);
+  }
+
   @override
   Future<GoogleSpreadsheetWallet> getWalletBySpreadsheetId(
       String spreadsheetId) async {

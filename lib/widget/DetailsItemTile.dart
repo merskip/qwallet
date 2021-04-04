@@ -90,10 +90,9 @@ class _DetailsItemTileState extends State<DetailsItemTile> {
   }
 
   Widget buildValue(BuildContext context) {
-    return Flexible(
+    return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
         children: [
           buildTitle(context),
           SizedBox(height: 4),

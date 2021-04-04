@@ -27,16 +27,14 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     required Identifier<Wallet> walletId,
   }) {
     assert(walletId.domain == "google_sheets");
-    return Future(() async {
-      final wallet =
-          await walletsProvider.getWalletByIdentifier(walletId).first;
+    return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
       return LatestTransactions(
         wallet,
         wallet.spreadsheetWallet.transfers
             .map((t) => _toTransaction(wallet, t))
             .toList(),
       );
-    }).asStream();
+    });
   }
 
   @override
@@ -45,13 +43,11 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     required Identifier<Transaction> transactionId,
   }) {
     assert(walletId.domain == "google_sheets");
-    return Future(() async {
-      final wallet =
-          await walletsProvider.getWalletByIdentifier(walletId).first;
+    return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
       final transaction = wallet.spreadsheetWallet.transfers
           .findFirstOrNull((t) => t.row.toString() == transactionId.id);
       return _toTransaction(wallet, transaction!);
-    }).asStream();
+    });
   }
 
   @override
@@ -65,11 +61,13 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     final symbol = category?.symbol;
 
     if (symbol != null) {
-      return repository.updateTransferCategory(
-        spreadsheetId: walletId.id,
-        transferRow: spreadsheetTransaction.spreadsheetTransfer.row,
-        categorySymbol: symbol,
-      );
+      return repository
+          .updateTransferCategory(
+            spreadsheetId: walletId.id,
+            transferRow: spreadsheetTransaction.spreadsheetTransfer.row,
+            categorySymbol: symbol,
+          )
+          .then((value) => walletsProvider.refreshWallet(walletId));
     } else {
       return Future.value();
     }

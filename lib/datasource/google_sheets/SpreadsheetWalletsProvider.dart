@@ -9,18 +9,30 @@ import 'package:qwallet/datasource/google_sheets/SpreadsheetCategory.dart';
 
 import '../../Money.dart';
 import '../WalletsProvider.dart';
-import 'GoogleSpreadsheetRepository.dart';
+import 'CachedGoogleSpreadsheetRepository.dart';
 import 'SpreadsheetCategory.dart';
 import 'SpreadsheetWallet.dart';
 
 class SpreadsheetWalletsProvider implements WalletsProvider {
-  final GoogleSpreadsheetRepository repository;
-  final List<Identifier<SpreadsheetWallet>> walletsIds;
+  final CachedGoogleSpreadsheetRepository repository;
+  final List<Identifier<Wallet>> walletsIds;
+  final refreshController = StreamController<Identifier<Wallet>>.broadcast();
 
   SpreadsheetWalletsProvider({
     required this.repository,
     required this.walletsIds,
   });
+
+  void dispose() {
+    refreshController.close();
+  }
+
+  void refreshWallet(Identifier<Wallet> walletId) {
+    Future(() {
+      repository.clearCacheForSpreadsheetId(walletId.id);
+      refreshController.add(walletId);
+    });
+  }
 
   @override
   Stream<List<SpreadsheetWallet>> getWallets() {
@@ -41,10 +53,16 @@ class SpreadsheetWalletsProvider implements WalletsProvider {
   @override
   Stream<SpreadsheetWallet> getWalletByIdentifier(Identifier<Wallet> walletId) {
     assert(walletId.domain == "google_sheets");
-    return repository
-        .getWalletBySpreadsheetId(walletId.id)
-        .asStream()
-        .map((w) => _toWallet(walletId, w));
+    Future(() {
+      refreshController.add(walletId);
+    });
+    return refreshController.stream
+        .where((id) => id == walletId)
+        .asyncMap((walletId) {
+      return repository
+          .getWalletBySpreadsheetId(walletId.id)
+          .then((w) => _toWallet(walletId, w));
+    });
   }
 
   SpreadsheetWallet _toWallet(
