@@ -97,7 +97,7 @@ class TransactionsCategoryMultiplePickerState
     return RawCategoryButton(
       title: AppLocalizations.of(context)
           .transactionsListFilterSelectCategoriesWithoutCategory,
-      icon: Icons.category,
+      icon: Icon(Icons.category),
       primaryColor: colorFromHex("#838383"),
       backgroundColor: colorFromHex("#dcdcdc"),
       isSelected: includeWithoutCategory,

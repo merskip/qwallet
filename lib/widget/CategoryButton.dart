@@ -15,20 +15,42 @@ class CategoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Widget icon;
+
     return RawCategoryButton(
       title: category.titleText,
-      icon: category.icon ?? Icons.category,
-      primaryColor: category.primaryColor ?? Colors.black26,
-      backgroundColor: category.backgroundColor ?? Colors.black12,
+      icon: _getIcon(),
+      primaryColor: category.primaryColor ?? Theme.of(context).primaryColor,
+      backgroundColor: category.backgroundColor ?? Colors.grey.shade50,
       isSelected: isSelected,
       onPressed: onPressed,
     );
+  }
+
+  Widget _getIcon() {
+    if (category.icon != null) {
+      return Icon(
+        category.icon,
+        color: category.primaryColor!.withOpacity(isSelected ? 1.0 : 0.5),
+      );
+    } else if (category.symbol != null) {
+      final symbols = category.symbol!;
+      final style = TextStyle(fontSize: 20);
+      return Stack(children: [
+        ...symbols.characters.map((c) => Text(c, style: style)),
+      ]);
+    } else {
+      return Icon(
+        Icons.category,
+        color: Colors.black26,
+      );
+    }
   }
 }
 
 class RawCategoryButton extends StatelessWidget {
   final String title;
-  final IconData icon;
+  final Widget icon;
   final Color primaryColor;
   final Color backgroundColor;
   final bool isSelected;
@@ -63,10 +85,8 @@ class RawCategoryButton extends StatelessWidget {
           child: SizedBox(
             width: 56,
             height: 56,
-            child: Icon(
-              icon,
-              color: primaryColor.withOpacity(isSelected ? 1.0 : 0.5),
-              size: 28,
+            child: Center(
+              child: icon,
             ),
           ),
           onPressed: onPressed,
