@@ -66,7 +66,7 @@ class _DetailsItemTileState extends State<DetailsItemTile> {
     final content = Padding(
       padding: widget.padding ?? const EdgeInsets.all(16.0),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           if (widget.leading != null && !isEditing)
             Padding(
@@ -74,7 +74,6 @@ class _DetailsItemTileState extends State<DetailsItemTile> {
               child: widget.leading,
             ),
           if (isEditing) buildEditValue(context) else buildValue(context),
-          if (!isEditing) Spacer(),
           if (isEditable) SizedBox(width: 16),
           if (isEditable)
             isEditing ? buildSaveButton(context) : buildEditButton(context),
@@ -91,16 +90,20 @@ class _DetailsItemTileState extends State<DetailsItemTile> {
   }
 
   Widget buildValue(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        buildTitle(context),
-        SizedBox(height: 4),
-        DefaultTextStyle(
-          child: widget.value,
-          style: Theme.of(context).textTheme.subtitle1!,
-        ),
-      ],
+    return Flexible(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          buildTitle(context),
+          SizedBox(height: 4),
+          DefaultTextStyle(
+            child: widget.value,
+            style: Theme.of(context).textTheme.subtitle1!,
+            overflow: TextOverflow.clip,
+          ),
+        ],
+      ),
     );
   }
 
