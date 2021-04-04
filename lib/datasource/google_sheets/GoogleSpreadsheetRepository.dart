@@ -11,11 +11,10 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
   }) : super(accountProvider: accountProvider);
 
   Future<GoogleSpreadsheetWallet> getWalletBySpreadsheetId(
-    String spreadsheetId,
-  ) async {
+      String spreadsheetId,) async {
     final sheetsApi = await this.sheetsApi;
     final spreadsheet =
-        await sheetsApi.spreadsheets.get(spreadsheetId, includeGridData: true);
+    await sheetsApi.spreadsheets.get(spreadsheetId, includeGridData: true);
 
     final generalSheet = spreadsheet.findSheetByTitle("Ogólne")!;
     final dailyBalanceSheet = spreadsheet.findSheetByTitle("Balans dzienny")!;
@@ -75,7 +74,7 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
   DateTime? _getLastDate(Sheet statisticsSheet) {
     final numbersOfRows = statisticsSheet.getNumbersOfRows();
     final reversedRows =
-        List<int>.generate(numbersOfRows, (i) => numbersOfRows - i - 1);
+    List<int>.generate(numbersOfRows, (i) => numbersOfRows - i - 1);
     for (final row in reversedRows) {
       final date = statisticsSheet.getRow(row)?.getDate(column: 8);
       if (date != null) return date;
@@ -114,15 +113,30 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
       balance: statisticsSheet.getRow(8)!.getDouble(column: 1)!,
       foreignCapital: statisticsSheet.getRow(9)!.getDouble(column: 1)!,
       averageBalanceFromConstantIncomes:
-          statisticsSheet.getRow(11)?.getDouble(column: 1),
+      statisticsSheet.getRow(11)?.getDouble(column: 1),
       averageBalance: statisticsSheet.getRow(12)?.getDouble(column: 1),
       predictedBalanceWithEarnedIncomes:
-          statisticsSheet.getRow(14)?.getDouble(column: 1),
+      statisticsSheet.getRow(14)?.getDouble(column: 1),
       predictedBalanceWithGainedIncomes:
-          statisticsSheet.getRow(15)?.getDouble(column: 1),
+      statisticsSheet.getRow(15)?.getDouble(column: 1),
       predictedBalance: statisticsSheet.getRow(16)?.getDouble(column: 1),
       availableDailyBudget: statisticsSheet.getRow(17)?.getDouble(column: 1),
     );
+  }
+
+  Future<void> updateTransferCategory({
+    required String spreadsheetId,
+    required int transferRow,
+    required String categorySymbol,
+  }) async {
+    final sheetsApi = await this.sheetsApi;
+    final request = ValueRange()
+      ..values = [
+        [categorySymbol]
+      ];
+    final range = "'Balans Dzienny'!D${transferRow + 1}";
+    await sheetsApi.spreadsheets.values.update(
+      request, spreadsheetId, range, valueInputOption: "RAW");
   }
 }
 
@@ -133,14 +147,14 @@ extension _SpreadsheetFinding on Spreadsheet {
 }
 
 extension _SheetIterator on Sheet {
-  int getNumbersOfRows() => data?[0].rowData?.length ?? 0;
+  int getNumbersOfRows() => data ? [0].rowData?.length ?? 0;
 
   RowData? getRow(int index) {
-    return data?[0].rowData?[index];
+    return data ? [0].rowData ? [index];
   }
 
   List<T> mapRow<T>(T? Function(int index, RowData row) callback) {
-    final rows = data?[0].rowData;
+    final rows = data ? [0].rowData;
     final list = <T>[];
     var index = 0;
     rows?.forEach((cell) {
@@ -154,22 +168,22 @@ extension _SheetIterator on Sheet {
 
 extension _RowDataConverting on RowData {
   double? getDouble({required int column}) {
-    return values?[column].effectiveValue?.numberValue;
+    return values ? [column].effectiveValue?.numberValue;
   }
 
   String? getString({required int column}) {
-    final string = values?[column].effectiveValue?.stringValue;
+    final string = values ? [column].effectiveValue?.stringValue;
     return string != null && string.isNotEmpty ? string : null;
   }
 
   DateTime? getDate({required int column}) {
-    final string = values?[column].formattedValue;
+    final string = values ? [column].formattedValue;
     if (string == null) return null;
     return DateTime.tryParse(string);
   }
 
   GoogleSpreadsheetTransferType? getTransaferType({required int column}) {
-    final string = values?[column].effectiveValue?.stringValue;
+    final string = values ? [column].effectiveValue?.stringValue;
     if (string == "Bieżące")
       return GoogleSpreadsheetTransferType.current;
     else if (string == "Stałe")

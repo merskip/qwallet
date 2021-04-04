@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/TransactionsProvider.dart';
 import 'package:qwallet/datasource/Wallet.dart';
@@ -53,9 +54,31 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     }).asStream();
   }
 
+  @override
+  Future<void> updateTransactionCategory({
+    required Identifier<Wallet> walletId,
+    required Transaction transaction,
+    required Category? category,
+  }) {
+    assert(walletId.domain == "google_sheets");
+    final spreadsheetTransaction = transaction as SpreadsheetTransaction;
+    final symbol = category?.symbol;
+
+    if (symbol != null) {
+      return repository.updateTransferCategory(
+        spreadsheetId: walletId.id,
+        transferRow: spreadsheetTransaction.spreadsheetTransfer.row,
+        categorySymbol: symbol,
+      );
+    } else {
+      return Future.value();
+    }
+  }
+
   SpreadsheetTransaction _toTransaction(
       SpreadsheetWallet wallet, GoogleSpreadsheetTransfer transfer) {
     return SpreadsheetTransaction(
+      spreadsheetTransfer: transfer,
       identifier:
           Identifier(domain: "google_sheets", id: transfer.row.toString()),
       type: transfer.amount < 0

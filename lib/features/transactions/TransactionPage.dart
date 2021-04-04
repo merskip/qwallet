@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
+import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
@@ -180,13 +181,13 @@ class _TransactionPageState extends State<TransactionPage> {
           setState(() => _selectedCategory = effectiveCategory);
         },
       ),
-
-      // editingSave: () {
-      //   DataSource.instance.updateTransactionCategory(
-      //     widget.transaction,
-      //     _selectedCategory?.reference,
-      //   );
-      // },
+      editingSave: () {
+        AggregatedTransactionsProvider.instance!.updateTransactionCategory(
+          walletId: widget.wallet.identifier,
+          transaction: widget.transaction,
+          category: _selectedCategory,
+        );
+      },
     );
   }
 

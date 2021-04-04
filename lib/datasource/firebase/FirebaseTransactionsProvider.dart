@@ -8,6 +8,7 @@ import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../Category.dart';
 import '../Transaction.dart';
 
 class FirebaseTransactionsProvider implements TransactionsProvider {
@@ -49,6 +50,16 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
             transactionSnapshot, wallet);
       });
     });
+  }
+
+  @override
+  Future<void> updateTransactionCategory({
+    required Identifier<Wallet> walletId,
+    required Transaction transaction,
+    required Category? category,
+  }) {
+    // TODO: implement updateTransactionCategory
+    throw UnimplementedError();
   }
 
   Stream<List<Transaction>> _getTransactionsInDateTimeRange({

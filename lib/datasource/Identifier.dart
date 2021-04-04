@@ -20,5 +20,16 @@ class Identifier<T> {
   }
 
   @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Identifier &&
+          runtimeType == other.runtimeType &&
+          domain == other.domain &&
+          id == other.id;
+
+  @override
+  int get hashCode => domain.hashCode ^ id.hashCode;
+
+  @override
   String toString() => [domain, id].join(":");
 }

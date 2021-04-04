@@ -4,6 +4,7 @@ import 'package:qwallet/datasource/TransactionsProvider.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/datasource/firebase/FirebaseTransactionsProvider.dart';
 
+import 'Category.dart';
 import 'google_sheets/SpreadsheetTransactionsProvider.dart';
 
 class AggregatedTransactionsProvider implements TransactionsProvider {
@@ -47,6 +48,34 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
       default:
         return Stream.error(ArgumentError.value(
             transactionId.domain, "transactionId.domain", "Unknown domain"));
+    }
+  }
+
+  @override
+  Future<void> updateTransactionCategory({
+    required Identifier<Wallet> walletId,
+    required Transaction transaction,
+    required Category? category,
+  }) {
+    switch (transaction.identifier.domain) {
+      case "firebase":
+        return firebaseProvider.updateTransactionCategory(
+          walletId: walletId,
+          transaction: transaction,
+          category: category,
+        );
+      case "google_sheets":
+        return spreadsheetProvider.updateTransactionCategory(
+          walletId: walletId,
+          transaction: transaction,
+          category: category,
+        );
+      default:
+        return Future.error(ArgumentError.value(
+          transaction.identifier.domain,
+          "transactionId.domain",
+          "Unknown domain",
+        ));
     }
   }
 }

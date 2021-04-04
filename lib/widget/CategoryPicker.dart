@@ -85,7 +85,7 @@ class CategoryPicker extends StatelessWidget {
   }
 
   Widget buildCategoryButton(BuildContext context, Category category) {
-    final isSelected = selectedCategory == category;
+    final isSelected = selectedCategory?.identifier == category.identifier;
     return CategoryButton(
       category: category,
       isSelected: isSelected,

@@ -1,3 +1,4 @@
+import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 
 import 'Transaction.dart';
@@ -11,6 +12,12 @@ abstract class TransactionsProvider {
   Stream<Transaction> getTransactionById({
     required Identifier<Wallet> walletId,
     required Identifier<Transaction> transactionId,
+  });
+
+  Future<void> updateTransactionCategory({
+    required Identifier<Wallet> walletId,
+    required Transaction transaction,
+    required Category? category,
   });
 }
 

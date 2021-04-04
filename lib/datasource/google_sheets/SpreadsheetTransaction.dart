@@ -1,8 +1,10 @@
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/datasource/google_sheets/GoogleSpreadsheetWallet.dart';
 
 class SpreadsheetTransaction implements Transaction {
+  final GoogleSpreadsheetTransfer spreadsheetTransfer;
   final Identifier<Transaction> identifier;
   final TransactionType type;
   final String? title;
@@ -12,6 +14,7 @@ class SpreadsheetTransaction implements Transaction {
   final bool excludedFromDailyStatistics;
 
   SpreadsheetTransaction({
+    required this.spreadsheetTransfer,
     required this.identifier,
     required this.type,
     required this.title,
