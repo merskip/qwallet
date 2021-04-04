@@ -32,13 +32,28 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
       return LatestTransactions(
         wallet,
         wallet.spreadsheetWallet.transfers
-            .map((t) => _toTransfer(wallet, t))
+            .map((t) => _toTransaction(wallet, t))
             .toList(),
       );
     }).asStream();
   }
 
-  SpreadsheetTransaction _toTransfer(
+  @override
+  Stream<Transaction> getTransactionById({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transactionId,
+  }) {
+    assert(walletId.domain == "google_sheets");
+    return Future(() async {
+      final wallet =
+          await walletsProvider.getWalletByIdentifier(walletId).first;
+      final transaction = wallet.spreadsheetWallet.transfers
+          .findFirstOrNull((t) => t.row.toString() == transactionId.id);
+      return _toTransaction(wallet, transaction!);
+    }).asStream();
+  }
+
+  SpreadsheetTransaction _toTransaction(
       SpreadsheetWallet wallet, GoogleSpreadsheetTransfer transfer) {
     return SpreadsheetTransaction(
       identifier:

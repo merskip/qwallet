@@ -5,15 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
+import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
+import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/Identifier.dart';
+import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/page/WalletPage.dart';
 import 'package:qwallet/page/WalletsPage.dart';
 import 'package:qwallet/page/loans/AddLoanPage.dart';
 import 'package:qwallet/page/loans/EditLoanPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'api/Model.dart';
-import 'api/Transaction.dart';
 import 'api/Wallet.dart';
+import 'datasource/Wallet.dart';
 import 'features/transactions/AddSeriesTransactionsPage.dart';
 import 'features/transactions/AddTransactionPage.dart';
 import 'features/transactions/TransactionPage.dart';
@@ -130,19 +135,24 @@ void initRoutes(FluroRouter router) {
     transitionType: fluro.TransitionType.nativeModal,
     handler: fluro.Handler(
         handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
-      final walletId = params["walletId"][0];
-      final transactionId = params["transactionId"][0];
-
-      final walletRef = DataSource.instance.getWalletReference(walletId);
-      final transactionRef = DataSource.instance
-          .getTransactionReference(wallet: walletRef, id: transactionId);
+      final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
+      final transactionId =
+          Identifier.parse<Transaction>(params["transactionId"][0]);
 
       return SimpleStreamWidget(
-        stream: DataSource.instance.getTransaction(walletRef, transactionRef),
-        builder: (context, FirebaseTransaction? transaction) => TransactionPage(
-          walletRef: walletRef,
-          transaction: transaction!,
-        ),
+        stream: Rx.combineLatestList([
+          AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+          AggregatedTransactionsProvider.instance!.getTransactionById(
+              walletId: walletId, transactionId: transactionId)
+        ]),
+        builder: (context, List values) {
+          final wallet = values[0] as Wallet;
+          final transaction = values[1] as Transaction;
+          return TransactionPage(
+            wallet: wallet,
+            transaction: transaction,
+          );
+        },
       );
     }),
   );

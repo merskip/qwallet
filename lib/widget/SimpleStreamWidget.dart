@@ -11,12 +11,12 @@ class SimpleStreamWidget<T> extends StatelessWidget {
   final ValueWidgetBuilder<T> builder;
   final WidgetBuilder? loadingBuilder;
 
-  const SimpleStreamWidget(
-      {Key? key,
-      required this.stream,
-      required this.builder,
-      this.loadingBuilder})
-      : super(key: key);
+  const SimpleStreamWidget({
+    Key? key,
+    required this.stream,
+    required this.builder,
+    this.loadingBuilder,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

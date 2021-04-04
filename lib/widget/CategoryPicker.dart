@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Category.dart';
+import 'package:qwallet/datasource/Category.dart';
 
 import 'CategoryButton.dart';
 
 class CategoryPicker extends StatelessWidget {
-  final List<FirebaseCategory> categories;
-  final FirebaseCategory? selectedCategory;
+  final List<Category> categories;
+  final Category? selectedCategory;
   final Widget? title;
-  final Function(FirebaseCategory?) onChangeCategory;
+  final Function(Category?) onChangeCategory;
 
   const CategoryPicker({
     Key? key,
@@ -26,7 +26,7 @@ class CategoryPicker extends StatelessWidget {
     onChangeCategory(_getCategoryBy(offset: 1));
   }
 
-  FirebaseCategory? _getCategoryBy({required int offset}) {
+  Category? _getCategoryBy({required int offset}) {
     if (selectedCategory == null)
       return offset > 0 ? categories.first : categories.last;
     final targetIndex = categories.indexOf(selectedCategory!) + offset;
@@ -84,7 +84,7 @@ class CategoryPicker extends StatelessWidget {
     );
   }
 
-  Widget buildCategoryButton(BuildContext context, FirebaseCategory category) {
+  Widget buildCategoryButton(BuildContext context, Category category) {
     final isSelected = selectedCategory == category;
     return CategoryButton(
       category: category,

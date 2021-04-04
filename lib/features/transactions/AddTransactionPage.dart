@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/Money.dart';
-import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/dialog/SelectWalletDialog.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
@@ -130,13 +131,13 @@ class _AddTransactionForm extends StatefulWidget {
 class _AddTransactionFormState extends State<_AddTransactionForm> {
   final _formKey = GlobalKey<FormState>();
 
-  FirebaseWallet wallet;
+  Wallet wallet;
 
   TransactionType type;
 
   final amountController = AmountEditingController();
 
-  FirebaseCategory? category;
+  Category? category;
 
   final titleFocus = FocusNode();
   final titleController = TextEditingController();
@@ -218,15 +219,16 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      final transactionRef = DataSource.instance.addTransaction(
-        wallet.reference,
-        type: type,
-        title: titleController.text.trim(),
-        amount: amountController.value!.amount,
-        category: category?.reference,
-        date: date,
-      );
-      router.pop(context, transactionRef);
+      // TODO: Impl
+      // final transactionRef = DataSource.instance.addTransaction(
+      //   wallet.reference,
+      //   type: type,
+      //   title: titleController.text.trim(),
+      //   amount: amountController.value!.amount,
+      //   category: category?.reference,
+      //   date: date,
+      // );
+      // router.pop(context, transactionRef);
     }
   }
 
@@ -318,15 +320,10 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   Widget buildCategory(BuildContext context) {
-    return SimpleStreamWidget(
-      stream: DataSource.instance.getCategories(wallet: wallet.reference),
-      builder: (context, List<FirebaseCategory> categories) =>
-          buildCategoryPicker(context, categories),
-    );
+    return buildCategoryPicker(context, wallet.categories);
   }
 
-  Widget buildCategoryPicker(
-      BuildContext context, List<FirebaseCategory> categories) {
+  Widget buildCategoryPicker(BuildContext context, List<Category> categories) {
     return CategoryPicker(
       categories: categories,
       selectedCategory: category,

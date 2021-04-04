@@ -7,7 +7,7 @@ import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/dialog/SelectWalletDialog.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
@@ -48,7 +48,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   DateTime date = DateTime.now();
 
   final transactionAmountController = AmountEditingController();
-  FirebaseCategory? transactionCategory;
+  Category? transactionCategory;
 
   List<FirebaseTransaction> transactions = [];
 
@@ -143,26 +143,27 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   void onSelectedAddTransaction(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
-    final transactionRef = await DataSource.instance.addTransaction(
-      wallet.reference,
-      type: TransactionType.expense,
-      title: null,
-      amount: transactionAmountController.value!.amount,
-      category: transactionCategory?.reference,
-      date: date,
-    );
-    setState(() {
-      transactionAmountController.value = null;
-      transactionCategory = null;
-    });
-
-    subscriptions.add(DataSource.instance
-        .getTransaction(wallet.reference, transactionRef)
-        .listen((transaction) {
-      transactions.removeWhere((t) => t.id == transactionRef.id);
-      if (transaction != null) transactions.add(transaction);
-      setState(() {});
-    }));
+    // TODO: Impl
+    // final transactionRef = await DataSource.instance.addTransaction(
+    //   wallet.reference,
+    //   type: TransactionType.expense,
+    //   title: null,
+    //   amount: transactionAmountController.value!.amount,
+    //   category: transactionCategory?.reference,
+    //   date: date,
+    // );
+    // setState(() {
+    //   transactionAmountController.value = null;
+    //   transactionCategory = null;
+    // });
+    //
+    // subscriptions.add(DataSource.instance
+    //     .getTransaction(wallet.reference, transactionRef)
+    //     .listen((transaction) {
+    //   transactions.removeWhere((t) => t.id == transactionRef.id);
+    //   if (transaction != null) transactions.add(transaction);
+    //   setState(() {});
+    // }));
   }
 
   void onSelectedDone(BuildContext context) {

@@ -32,6 +32,25 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
             .map((transactions) => LatestTransactions(wallet, transactions)));
   }
 
+  @override
+  Stream<Transaction> getTransactionById({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transactionId,
+  }) {
+    return walletsProvider.getWalletByIdentifier(walletId).flatMap((wallet) {
+      return firestore
+          .collection("wallets")
+          .doc(walletId.id)
+          .collection("transactions")
+          .doc(transactionId.id)
+          .snapshots()
+          .map((transactionSnapshot) {
+        return FirebaseTransaction.FirebaseTransaction(
+            transactionSnapshot, wallet);
+      });
+    });
+  }
+
   Stream<List<Transaction>> _getTransactionsInDateTimeRange({
     required FirebaseWallet wallet,
     required DateTimeRange dateRange,

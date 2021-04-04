@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Category.dart';
+import 'package:qwallet/datasource/Category.dart';
 
 class CategoryButton extends StatelessWidget {
-  final FirebaseCategory category;
+  final Category category;
   final bool isSelected;
   final VoidCallback onPressed;
 
@@ -17,9 +17,9 @@ class CategoryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return RawCategoryButton(
       title: category.titleText,
-      icon: category.icon,
-      primaryColor: category.primaryColor,
-      backgroundColor: category.backgroundColor,
+      icon: category.icon ?? Icons.category,
+      primaryColor: category.primaryColor ?? Colors.black26,
+      backgroundColor: category.backgroundColor ?? Colors.black12,
       isSelected: isSelected,
       onPressed: onPressed,
     );

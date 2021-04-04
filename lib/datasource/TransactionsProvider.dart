@@ -7,6 +7,11 @@ abstract class TransactionsProvider {
   Stream<LatestTransactions> getLatestTransactions({
     required Identifier<Wallet> walletId,
   });
+
+  Stream<Transaction> getTransactionById({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transactionId,
+  });
 }
 
 class LatestTransactions {

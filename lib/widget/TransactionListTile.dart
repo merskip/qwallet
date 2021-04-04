@@ -44,7 +44,7 @@ class TransactionListTile extends StatelessWidget {
       dense: true,
       visualDensity: visualDensity,
       onTap: () => router.navigateTo(context,
-          "/wallet/${wallet.identifier}/transaction/${transaction.identifier.id}"),
+          "/wallet/${wallet.identifier}/transaction/${transaction.identifier}"),
     );
   }
 

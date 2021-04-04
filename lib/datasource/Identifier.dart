@@ -7,7 +7,13 @@ class Identifier<T> {
     required this.id,
   });
 
-  static Identifier? tryParse(String string) {
+  static Identifier<T> parse<T>(String string) {
+    final parts = string.split(":");
+    if (parts.length != 2) throw Exception("Failed parse identifier");
+    return Identifier(domain: parts[0], id: parts[1]);
+  }
+
+  static Identifier<T>? tryParse<T>(String string) {
     final parts = string.split(":");
     if (parts.length != 2) return null;
     return Identifier(domain: parts[0], id: parts[1]);
