@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
@@ -13,38 +13,35 @@ import 'package:qwallet/dialog/SelectWalletDialog.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
-import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 import 'package:qwallet/widget/VectorImage.dart';
 
 import '../../AppLocalizations.dart';
 import '../../router.dart';
+import '../../utils.dart';
 
 class AddTransactionPage extends StatelessWidget {
-  final FirebaseReference<FirebaseWallet> initialWalletRef;
+  final Wallet initialWallet;
   final double? initialAmount;
 
   const AddTransactionPage({
     Key? key,
-    required this.initialWalletRef,
+    required this.initialWallet,
     this.initialAmount,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SimpleStreamWidget(
-      stream: DataSource.instance.getWallet(initialWalletRef),
-      builder: (context, FirebaseWallet wallet) => _AddTransactionPageContent(
-        initialWallet: wallet,
-        initialAmount: initialAmount,
-      ),
+    return _AddTransactionPageContent(
+      initialWallet: initialWallet,
+      initialAmount: initialAmount,
     );
   }
 }
 
 class _AddTransactionPageContent extends StatelessWidget {
   final formKey = GlobalKey<_AddTransactionFormState>();
-  final FirebaseWallet initialWallet;
+  final Wallet initialWallet;
   final double? initialAmount;
 
   _AddTransactionPageContent({
@@ -110,7 +107,7 @@ class _AddTransactionPageContent extends StatelessWidget {
 }
 
 class _AddTransactionForm extends StatefulWidget {
-  final FirebaseWallet initialWallet;
+  final Wallet initialWallet;
   final double? initialAmount;
   final TransactionType? initialTransactionType;
 
@@ -219,16 +216,16 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      // TODO: Impl
-      // final transactionRef = DataSource.instance.addTransaction(
-      //   wallet.reference,
-      //   type: type,
-      //   title: titleController.text.trim(),
-      //   amount: amountController.value!.amount,
-      //   category: category?.reference,
-      //   date: date,
-      // );
-      // router.pop(context, transactionRef);
+      final transactionId =
+          await AggregatedTransactionsProvider.instance!.addTransaction(
+        walletId: wallet.identifier,
+        type: type,
+        category: category,
+        title: titleController.text.trim().nullIfEmpty(),
+        amount: amountController.value!.amount,
+        date: date,
+      );
+      router.pop(context, transactionId);
     }
   }
 

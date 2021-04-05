@@ -14,6 +14,15 @@ abstract class TransactionsProvider {
     required Identifier<Transaction> transactionId,
   });
 
+  Future<Identifier<Transaction>> addTransaction({
+    required Identifier<Wallet> walletId,
+    required TransactionType type,
+    required Category? category,
+    required String? title,
+    required double amount,
+    required DateTime date,
+  });
+
   Future<void> updateTransaction({
     required Identifier<Wallet> walletId,
     required Transaction transaction,

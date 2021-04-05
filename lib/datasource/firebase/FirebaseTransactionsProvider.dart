@@ -9,6 +9,7 @@ import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../utils.dart';
 import '../Category.dart';
 import '../Transaction.dart';
 
@@ -50,6 +51,44 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
         return FirebaseTransaction.FirebaseTransaction(
             transactionSnapshot, wallet);
       });
+    });
+  }
+
+  @override
+  Future<Identifier<Transaction>> addTransaction({
+    required Identifier<Wallet> walletId,
+    required TransactionType type,
+    required Category? category,
+    required String? title,
+    required double amount,
+    required DateTime date,
+  }) {
+    final addingTransaction = firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("transactions")
+        .add({
+      "type": type.rawValue,
+      "title": title?.nullIfEmpty(),
+      "amount": amount,
+      "category": (category as FirebaseCategory?)?.reference.documentReference,
+      "date": CloudFirestore.Timestamp.fromDate(date),
+    });
+
+    final updatingWallet =
+        firestore.collection("wallets").doc(walletId.id).update({
+      if (type == TransactionType.expense)
+        "totalExpense": CloudFirestore.FieldValue.increment(amount),
+      if (type == TransactionType.income)
+        "totalIncome": CloudFirestore.FieldValue.increment(amount),
+    });
+
+    return Future.wait([addingTransaction, updatingWallet])
+        .timeout(Duration(seconds: 5))
+        .then((values) {
+      final documentReference = values[0] as CloudFirestore.DocumentReference;
+      return Identifier<Transaction>(
+          domain: "firebase", id: documentReference.id);
     });
   }
 

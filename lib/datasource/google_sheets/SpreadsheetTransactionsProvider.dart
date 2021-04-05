@@ -66,7 +66,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
 
     if (symbol != null) {
       return repository
-          .updateTransactionCategory(
+          .updateTransaction(
             spreadsheetId: walletId.id,
             transferRow: spreadsheetTransaction.spreadsheetTransfer.row,
             date: date,
@@ -102,7 +102,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
   }
 
   SpreadsheetTransaction _toTransaction(
-      SpreadsheetWallet wallet, GoogleSpreadsheetTransfer transfer) {
+      SpreadsheetWallet wallet, GoogleSpreadsheetTransaction transfer) {
     return SpreadsheetTransaction(
       spreadsheetTransfer: transfer,
       identifier:
@@ -116,7 +116,32 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
       category: wallet.categories
           .findFirstOrNull((c) => c.symbol == transfer.categorySymbol),
       excludedFromDailyStatistics:
-          transfer.type != GoogleSpreadsheetTransferType.current,
+          transfer.type != GoogleSpreadsheetTransactionType.current,
     );
+  }
+
+  @override
+  Future<Identifier<Transaction>> addTransaction({
+    required Identifier<Wallet> walletId,
+    required TransactionType type,
+    required Category? category,
+    required String? title,
+    required double amount,
+    required DateTime date,
+  }) async {
+    final wallet = await repository.getWalletBySpreadsheetId(walletId.id);
+    final insertedRow = await repository.addTransaction(
+      spreadsheetId: walletId.id,
+      date: date,
+      type: GoogleSpreadsheetTransactionType.current,
+      amount: type == TransactionType.expense ? -amount : amount,
+      categorySymbol: category?.symbol ?? wallet.categories.first.symbol,
+      isForeignCapital: false,
+      shop: null,
+      description: title,
+    );
+    walletsProvider.refreshWallet(walletId);
+    return Identifier<Transaction>(
+        domain: "google_sheets", id: insertedRow.toString());
   }
 }

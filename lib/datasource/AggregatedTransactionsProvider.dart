@@ -52,6 +52,43 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
   }
 
   @override
+  Future<Identifier<Transaction>> addTransaction({
+    required Identifier<Wallet> walletId,
+    required TransactionType type,
+    required Category? category,
+    required String? title,
+    required double amount,
+    required DateTime date,
+  }) {
+    switch (walletId.domain) {
+      case "firebase":
+        return firebaseProvider.addTransaction(
+          walletId: walletId,
+          type: type,
+          category: category,
+          title: title,
+          amount: amount,
+          date: date,
+        );
+      case "google_sheets":
+        return spreadsheetProvider.addTransaction(
+          walletId: walletId,
+          type: type,
+          category: category,
+          title: title,
+          amount: amount,
+          date: date,
+        );
+      default:
+        return Future.error(ArgumentError.value(
+          walletId.domain,
+          "walletId.domain",
+          "Unknown domain",
+        ));
+    }
+  }
+
+  @override
   Future<void> updateTransaction({
     required Identifier<Wallet> walletId,
     required Transaction transaction,

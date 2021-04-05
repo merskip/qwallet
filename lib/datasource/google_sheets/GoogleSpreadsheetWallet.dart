@@ -3,7 +3,7 @@ import 'package:googleapis/sheets/v4.dart';
 class GoogleSpreadsheetWallet {
   final String name;
   final List<double> incomes;
-  final List<GoogleSpreadsheetTransfer> transfers;
+  final List<GoogleSpreadsheetTransaction> transfers;
   final int? lastTransferRowIndex;
 
   final DateTime firstDate;
@@ -32,17 +32,17 @@ class GoogleSpreadsheetWallet {
   });
 }
 
-class GoogleSpreadsheetTransfer {
+class GoogleSpreadsheetTransaction {
   final int row;
   final DateTime date;
-  final GoogleSpreadsheetTransferType type;
+  final GoogleSpreadsheetTransactionType type;
   final double amount;
   final String categorySymbol;
   final bool isForeignCapital;
   final String? shop;
   final String? description;
 
-  GoogleSpreadsheetTransfer({
+  GoogleSpreadsheetTransaction({
     required this.row,
     required this.date,
     required this.type,
@@ -104,21 +104,21 @@ class GoogleSpreadsheetCategory {
   });
 }
 
-enum GoogleSpreadsheetTransferType {
+enum GoogleSpreadsheetTransactionType {
   current,
   constant,
   depreciate,
 }
 
 extension GoogleSpreadsheetTransferTypeConverting
-    on GoogleSpreadsheetTransferType {
+    on GoogleSpreadsheetTransactionType {
   String toText() {
     switch (this) {
-      case GoogleSpreadsheetTransferType.current:
+      case GoogleSpreadsheetTransactionType.current:
         return "Bieżące";
-      case GoogleSpreadsheetTransferType.constant:
+      case GoogleSpreadsheetTransactionType.constant:
         return "Stałe";
-      case GoogleSpreadsheetTransferType.depreciate:
+      case GoogleSpreadsheetTransactionType.depreciate:
         return "Amortyzowane";
     }
   }

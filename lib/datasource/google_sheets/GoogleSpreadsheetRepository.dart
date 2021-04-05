@@ -48,7 +48,7 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
     return generalSheet.mapRow((_, row) => row.getDouble(column: 1));
   }
 
-  List<GoogleSpreadsheetTransfer> _getTransfers(Sheet dailyBalanceSheet) {
+  List<GoogleSpreadsheetTransaction> _getTransfers(Sheet dailyBalanceSheet) {
     return dailyBalanceSheet.mapRow((index, row) {
       final date = row.getDate(column: 0);
       final type = row.getTransaferType(column: 1);
@@ -59,7 +59,7 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
           amount == null ||
           categorySymbol == null) return null;
 
-      return GoogleSpreadsheetTransfer(
+      return GoogleSpreadsheetTransaction(
         row: index,
         date: date,
         type: type,
@@ -129,11 +129,52 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
     );
   }
 
-  Future<void> updateTransactionCategory({
+  Future<int> addTransaction({
+    required String spreadsheetId,
+    required DateTime date,
+    required GoogleSpreadsheetTransactionType type,
+    required double amount,
+    required String categorySymbol,
+    required bool isForeignCapital,
+    required String? shop,
+    required String? description,
+  }) async {
+    final sheetsApi = await this.sheetsApi;
+    final format = DateFormat("yyyy-MM-dd");
+    final request = ValueRange()
+      ..values = [
+        [
+          format.format(date),
+          type.toText(),
+          amount,
+          categorySymbol,
+          isForeignCapital ? "Kapitał obcy" : "",
+          shop ?? "",
+          description ?? "",
+        ]
+      ];
+    final range = "'Balans Dzienny'!A1:A";
+    final response = await sheetsApi.spreadsheets.values.append(
+      request,
+      spreadsheetId,
+      range,
+      valueInputOption: "USER_ENTERED",
+    );
+    final updatedRange = response.updates?.updatedRange;
+    final firstCell = updatedRange?.split('!')[1].split(':')[0];
+    if (firstCell != null) {
+      final firstMatch = RegExp("[A-Z]+([0-9]+)").firstMatch(firstCell);
+      final row = firstMatch?.group(1);
+      if (row != null) return int.parse(row);
+    }
+    return Future.error("Failed appending row");
+  }
+
+  Future<void> updateTransaction({
     required String spreadsheetId,
     required int transferRow,
     required DateTime date,
-    required GoogleSpreadsheetTransferType type,
+    required GoogleSpreadsheetTransactionType type,
     required double amount,
     required String categorySymbol,
     required bool isForeignCapital,
@@ -225,14 +266,14 @@ extension _RowDataConverting on RowData {
     return DateTime.tryParse(string);
   }
 
-  GoogleSpreadsheetTransferType? getTransaferType({required int column}) {
+  GoogleSpreadsheetTransactionType? getTransaferType({required int column}) {
     final string = values?[column].effectiveValue?.stringValue;
     if (string == "Bieżące")
-      return GoogleSpreadsheetTransferType.current;
+      return GoogleSpreadsheetTransactionType.current;
     else if (string == "Stałe")
-      return GoogleSpreadsheetTransferType.constant;
+      return GoogleSpreadsheetTransactionType.constant;
     else if (string == "Amortyzowane")
-      return GoogleSpreadsheetTransferType.depreciate;
+      return GoogleSpreadsheetTransactionType.depreciate;
     else
       return null;
   }
