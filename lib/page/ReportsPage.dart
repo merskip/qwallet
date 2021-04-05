@@ -2,9 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/TransactionsProvider.dart';
@@ -17,9 +15,9 @@ import '../Money.dart';
 import '../utils.dart';
 
 class ReportsPage extends StatefulWidget {
-  final FirebaseReference<FirebaseWallet> walletRef;
+  final Wallet wallet;
 
-  const ReportsPage({Key? key, required this.walletRef}) : super(key: key);
+  const ReportsPage({Key? key, required this.wallet}) : super(key: key);
 
   @override
   _ReportsPageState createState() => _ReportsPageState();
@@ -29,7 +27,8 @@ class _ReportsPageState extends State<ReportsPage> {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: DataSource.instance.getLatestTransactions(widget.walletRef),
+      stream: AggregatedTransactionsProvider.instance!
+          .getLatestTransactions(walletId: widget.wallet.identifier),
       builder: (context, LatestTransactions latestTransactions) =>
           buildTabController(
         context,

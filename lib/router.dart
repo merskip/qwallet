@@ -245,9 +245,13 @@ void initRoutes(FluroRouter router) {
     transitionType: fluro.TransitionType.nativeModal,
     handler: fluro.Handler(
         handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
-      final walletId = params["walletId"][0];
-      return ReportsPage(
-        walletRef: DataSource.instance.getWalletReference(walletId),
+      final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
+      return SimpleStreamWidget(
+        stream:
+            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        builder: (context, Wallet wallet) => ReportsPage(
+          wallet: wallet,
+        ),
       );
     }),
   );
