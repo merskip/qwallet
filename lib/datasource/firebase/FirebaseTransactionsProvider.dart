@@ -54,10 +54,14 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
   }
 
   @override
-  Future<void> updateTransactionCategory({
+  Future<void> updateTransaction({
     required Identifier<Wallet> walletId,
     required Transaction transaction,
+    required TransactionType type,
     required Category? category,
+    required String? title,
+    required double amount,
+    required DateTime date,
   }) {
     final firebaseCategory = category as FirebaseCategory?;
     return firestore
@@ -66,7 +70,26 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
         .collection("transactions")
         .doc(transaction.identifier.id)
         .update({
+      "type": type == TransactionType.expense ? "expense" : "income",
       "category": firebaseCategory?.reference.documentReference,
+      "title": title,
+      "amount": amount,
+      "date": CloudFirestore.Timestamp.fromDate(date),
+    });
+  }
+
+  Future<void> updateTransactionExtra({
+    required Identifier<Wallet> walletId,
+    required Transaction transaction,
+    required bool excludedFromDailyStatistics,
+  }) {
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("transactions")
+        .doc(transaction.identifier.id)
+        .update({
+      "excludedFromDailyStatistics": excludedFromDailyStatistics,
     });
   }
 

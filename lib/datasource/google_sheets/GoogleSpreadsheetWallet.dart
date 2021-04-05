@@ -100,3 +100,17 @@ enum GoogleSpreadsheetTransferType {
   constant,
   depreciate,
 }
+
+extension GoogleSpreadsheetTransferTypeConverting
+    on GoogleSpreadsheetTransferType {
+  String toText() {
+    switch (this) {
+      case GoogleSpreadsheetTransferType.current:
+        return "Bieżące";
+      case GoogleSpreadsheetTransferType.constant:
+        return "Stałe";
+      case GoogleSpreadsheetTransferType.depreciate:
+        return "Amortyzowane";
+    }
+  }
+}

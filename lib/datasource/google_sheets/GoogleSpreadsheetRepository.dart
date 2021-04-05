@@ -1,4 +1,5 @@
 import 'package:googleapis/sheets/v4.dart';
+import 'package:intl/intl.dart';
 
 import '../../utils/IterableFinding.dart';
 import '../AccountProvider.dart';
@@ -128,16 +129,35 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
   Future<void> updateTransactionCategory({
     required String spreadsheetId,
     required int transferRow,
+    required DateTime date,
+    required GoogleSpreadsheetTransferType type,
+    required double amount,
     required String categorySymbol,
+    required bool isForeignCapital,
+    required String? shop,
+    required String? description,
   }) async {
     final sheetsApi = await this.sheetsApi;
+    final format = DateFormat("yyyy-MM-dd");
     final request = ValueRange()
       ..values = [
-        [categorySymbol]
+        [
+          format.format(date),
+          type.toText(),
+          amount,
+          categorySymbol,
+          isForeignCapital ? "Kapitał obcy" : "",
+          shop ?? "",
+          description ?? "",
+        ]
       ];
-    final range = "'Balans Dzienny'!${transferRow + 1}";
-    await sheetsApi.spreadsheets.values
-        .update(request, spreadsheetId, range, valueInputOption: "RAW");
+    final range = "'Balans Dzienny'!${transferRow + 1}:${transferRow + 1}";
+    await sheetsApi.spreadsheets.values.update(
+      request,
+      spreadsheetId,
+      range,
+      valueInputOption: "USER_ENTERED",
+    );
   }
 
   Future<void> removeTransaction({

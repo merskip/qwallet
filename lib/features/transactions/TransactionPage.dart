@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
+import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
@@ -82,12 +83,15 @@ class _TransactionPageState extends State<TransactionPage> {
         now.minute,
         now.second,
       );
-      // TODO: Impl
-      // DataSource.instance.updateTransaction(
-      //   widget.walletRef,
-      //   widget.transaction,
-      //   date: dateTime,
-      // );
+      AggregatedTransactionsProvider.instance!.updateTransaction(
+        walletId: widget.wallet.identifier,
+        transaction: widget.transaction,
+        type: widget.transaction.type,
+        category: widget.transaction.category,
+        title: widget.transaction.title,
+        amount: widget.transaction.amount,
+        date: dateTime,
+      );
     }
   }
 
@@ -116,7 +120,8 @@ class _TransactionPageState extends State<TransactionPage> {
           buildTitle(context),
           buildAmount(context, widget.wallet),
           buildDate(context),
-          buildExcludedFromDailyStatistics(context),
+          if (widget.transaction is FirebaseTransaction)
+            buildExcludedFromDailyStatistics(context),
         ],
       ),
     );
@@ -181,10 +186,14 @@ class _TransactionPageState extends State<TransactionPage> {
         },
       ),
       editingSave: () {
-        AggregatedTransactionsProvider.instance!.updateTransactionCategory(
+        AggregatedTransactionsProvider.instance!.updateTransaction(
           walletId: widget.wallet.identifier,
           transaction: widget.transaction,
+          type: widget.transaction.type,
           category: _selectedCategory,
+          title: widget.transaction.title,
+          amount: widget.transaction.amount,
+          date: widget.transaction.date,
         );
       },
     );
@@ -198,11 +207,16 @@ class _TransactionPageState extends State<TransactionPage> {
           : AppLocalizations.of(context).transactionTypeIncome),
       editingBegin: () => _selectedType = widget.transaction.type,
       editingContent: (context) => buildTypeEditing(context),
-      // editingSave: () => DataSource.instance.updateTransaction(
-      //   widget.walletRef,
-      //   widget.transaction,
-      //   type: _selectedType,
-      // ),
+      editingSave: () =>
+          AggregatedTransactionsProvider.instance!.updateTransaction(
+        walletId: widget.wallet.identifier,
+        transaction: widget.transaction,
+        type: _selectedType,
+        category: widget.transaction.category,
+        title: widget.transaction.title,
+        amount: widget.transaction.amount,
+        date: widget.transaction.date,
+      ),
     );
   }
 
@@ -244,11 +258,16 @@ class _TransactionPageState extends State<TransactionPage> {
         autofocus: true,
         maxLength: 50,
       ),
-      // editingSave: () => DataSource.instance.updateTransaction(
-      //   widget.walletRef,
-      //   widget.transaction,
-      //   title: titleController.text.trim(),
-      // ),
+      editingSave: () =>
+          AggregatedTransactionsProvider.instance!.updateTransaction(
+        walletId: widget.wallet.identifier,
+        transaction: widget.transaction,
+        type: widget.transaction.type,
+        category: widget.transaction.category,
+        title: titleController.text.trim(),
+        amount: widget.transaction.amount,
+        date: widget.transaction.date,
+      ),
     );
   }
 
@@ -268,12 +287,15 @@ class _TransactionPageState extends State<TransactionPage> {
       editingSave: () {
         final amount = amountController.value;
         if (amount != null) {
-          // TODO: Impl
-          // DataSource.instance.updateTransaction(
-          //   widget.walletRef,
-          //   widget.transaction,
-          //   amount: amount.amount,
-          // );
+          AggregatedTransactionsProvider.instance!.updateTransaction(
+            walletId: widget.wallet.identifier,
+            transaction: widget.transaction,
+            type: widget.transaction.type,
+            category: widget.transaction.category,
+            title: widget.transaction.title,
+            amount: amount.amount,
+            date: widget.transaction.date,
+          );
         }
       },
     );
@@ -308,13 +330,14 @@ class _TransactionPageState extends State<TransactionPage> {
           _excludedFromDailyStatistics = !(value ?? true);
         }),
       ),
-      // editingSave: () {
-      //   DataSource.instance.updateTransaction(
-      //     widget.walletRef,
-      //     widget.transaction,
-      //     excludedFromDailyStatistics: _excludedFromDailyStatistics,
-      //   );
-      // },
+      editingSave: () {
+        AggregatedTransactionsProvider.instance!.firebaseProvider
+            .updateTransactionExtra(
+          walletId: widget.wallet.identifier,
+          transaction: widget.transaction,
+          excludedFromDailyStatistics: _excludedFromDailyStatistics,
+        );
+      },
     );
   }
 }
