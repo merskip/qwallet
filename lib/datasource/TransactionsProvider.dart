@@ -14,6 +14,12 @@ abstract class TransactionsProvider {
     required Identifier<Transaction> transactionId,
   });
 
+  Stream<List<Transaction>> getPageableTransactions({
+    required Identifier<Wallet> walletId,
+    required int limit,
+    required Transaction? afterTransaction,
+  });
+
   Future<Identifier<Transaction>> addTransaction({
     required Identifier<Wallet> walletId,
     required TransactionType type,

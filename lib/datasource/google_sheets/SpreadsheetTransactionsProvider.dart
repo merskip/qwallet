@@ -51,6 +51,29 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
   }
 
   @override
+  Stream<List<Transaction>> getPageableTransactions({
+    required Identifier<Wallet> walletId,
+    required int limit,
+    required Transaction? afterTransaction,
+  }) {
+    return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
+      var transactions = wallet.spreadsheetWallet.transfers
+          .map((t) => _toTransaction(wallet, t))
+          .toList();
+
+      if (afterTransaction != null) {
+        final afterIndex = transactions
+            .lastIndexWhere((t) => t.identifier == afterTransaction.identifier);
+        transactions.sublist(afterIndex);
+      }
+      if (transactions.length > limit)
+        return transactions.sublist(0, limit);
+      else
+        return transactions;
+    });
+  }
+
+  @override
   Future<void> updateTransaction({
     required Identifier<Wallet> walletId,
     required Transaction transaction,

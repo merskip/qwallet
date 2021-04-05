@@ -52,6 +52,26 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
   }
 
   @override
+  Stream<List<Transaction>> getPageableTransactions({
+    required Identifier<Wallet> walletId,
+    required int limit,
+    required Transaction? afterTransaction,
+  }) =>
+      onDomain(
+        walletId,
+        ifFirebase: () => firebaseProvider.getPageableTransactions(
+          walletId: walletId,
+          limit: limit,
+          afterTransaction: afterTransaction,
+        ),
+        ifGoogleSheets: () => spreadsheetProvider.getPageableTransactions(
+          walletId: walletId,
+          limit: limit,
+          afterTransaction: afterTransaction,
+        ),
+      );
+
+  @override
   Future<Identifier<Transaction>> addTransaction({
     required Identifier<Wallet> walletId,
     required TransactionType type,
@@ -150,6 +170,25 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
           "transactionId.domain",
           "Unknown domain",
         ));
+    }
+  }
+
+  T onDomain<T>(
+    Identifier identifier, {
+    required T Function() ifFirebase,
+    required T Function() ifGoogleSheets,
+  }) {
+    switch (identifier.domain) {
+      case "firebase":
+        return ifFirebase();
+      case "google_sheets":
+        return ifGoogleSheets();
+      default:
+        throw ArgumentError.value(
+          identifier.domain,
+          "domain",
+          "Unknown domain: ${identifier.domain}",
+        );
     }
   }
 }

@@ -8,6 +8,7 @@ import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
@@ -54,10 +55,11 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
       ),
-      builder: (context) => TransactionsListFilter(
-        wallet: wallet,
-        initialFilter: this.filter,
-      ),
+      builder: (context) =>
+          TransactionsListFilter(
+            wallet: wallet,
+            initialFilter: this.filter,
+          ),
     ) as TransactionsFilter?;
     if (filter != null) {
       setState(() => this.filter = filter);
@@ -71,10 +73,11 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
         title: Text(widget.wallet.name),
         actions: [
           Builder(
-            builder: (context) => IconButton(
-              icon: Icon(Icons.filter_list),
-              onPressed: () => onSelectedFilter(context, widget.wallet),
-            ),
+            builder: (context) =>
+                IconButton(
+                  icon: Icon(Icons.filter_list),
+                  onPressed: () => onSelectedFilter(context, widget.wallet),
+                ),
           ),
         ],
       ),
@@ -112,28 +115,27 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
     super.initState();
   }
 
-  void onSelectedMore(
-      BuildContext context, Transaction lastTransaction) {
+  void onSelectedMore(BuildContext context, Transaction lastTransaction) {
     setState(() {
-      transactionsPages.add(getNextTransactions(after: lastTransaction));
+      transactionsPages.add(getNextTransactions(afterTransaction: lastTransaction));
     });
   }
 
-  Stream<List<Transaction>> getNextTransactions(
-          {Transaction? after}) {
-    return Stream.value([]);
-    // return DataSource.instance.getTransactions(
-    //     walletReference: widget.wallet.reference,
-    //     afterTransaction: after,
-    //     limit: itemsPerPage,
-    //   );
+  Stream<List<Transaction>> getNextTransactions({
+    Transaction? afterTransaction,
+  }) {
+    return AggregatedTransactionsProvider.instance!.getPageableTransactions(
+      walletId: widget.wallet.identifier,
+      limit: itemsPerPage,
+      afterTransaction: afterTransaction,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final transactions = CombineLatestStream(
       transactionsPages,
-      (List<List<Transaction>> transactions) =>
+          (List<List<Transaction>> transactions) =>
           transactions.expand((i) => i).toList(),
     );
 
@@ -147,7 +149,7 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
             transactions.length == transactionsPages.length * itemsPerPage;
 
         final filteredTransactions =
-            getFilteredTransactions(transactions, widget.filter);
+        getFilteredTransactions(transactions, widget.filter);
 
         if (filteredTransactions.isEmpty) {
           return buildTransactionsEmpty(context);
@@ -162,10 +164,8 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
     );
   }
 
-  List<Transaction> getFilteredTransactions(
-    List<Transaction> transactions,
-    TransactionsFilter filter,
-  ) =>
+  List<Transaction> getFilteredTransactions(List<Transaction> transactions,
+      TransactionsFilter filter,) =>
       transactions.where((transaction) {
         if (filter.transactionType != null) {
           if (transaction.type != filter.transactionType) return false;
@@ -211,22 +211,25 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
           child: EmptyStateWidget(
             iconAsset: "assets/ic-wallet.svg",
             text: widget.filter.isEmpty()
-                ? AppLocalizations.of(context).transactionsListEmpty
-                : AppLocalizations.of(context).transactionsListEmptyWithFilter,
+                ? AppLocalizations
+                .of(context)
+                .transactionsListEmpty
+                : AppLocalizations
+                .of(context)
+                .transactionsListEmptyWithFilter,
           ),
         ),
       ],
     );
   }
 
-  Widget buildTransactionsList(
-    BuildContext context,
-    List<Transaction> transactions, {
-    required Transaction lastTransaction,
-  }) {
+  Widget buildTransactionsList(BuildContext context,
+      List<Transaction> transactions, {
+        required Transaction lastTransaction,
+      }) {
     final transactionsByDate = groupBy(
       transactions,
-      (Transaction transaction) => getDateWithoutTime(transaction.date),
+          (Transaction transaction) => getDateWithoutTime(transaction.date),
     );
     final dates = transactionsByDate.keys.toList()
       ..sort((lhs, rhs) => rhs.compareTo(lhs));
@@ -244,7 +247,7 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
       listItems.add(SectionHeaderListItem(date));
       listItems.addAll([
         ...transactionsByDate[date]!.map(
-          (transaction) => TransactionListItem(widget.wallet, transaction),
+              (transaction) => TransactionListItem(widget.wallet, transaction),
         )
       ]);
       lastMonth = date.month;
@@ -294,7 +297,9 @@ class FiltersListItem extends _ListItem {
 
   Widget buildNoFilersChip(BuildContext context) {
     return Chip(
-      label: Text(AppLocalizations.of(context).transactionsListNoFilters),
+      label: Text(AppLocalizations
+          .of(context)
+          .transactionsListNoFilters),
       visualDensity: VisualDensity.compact,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
@@ -304,22 +309,32 @@ class FiltersListItem extends _ListItem {
     return Chip(
       label: RichText(
         text: TextSpan(
-          style: TextStyle(color: Theme.of(context).primaryColorDark),
+          style: TextStyle(color: Theme
+              .of(context)
+              .primaryColorDark),
           children: [
             TextSpan(
-              text: AppLocalizations.of(context).transactionsListChipFilterType,
+              text: AppLocalizations
+                  .of(context)
+                  .transactionsListChipFilterType,
             ),
             TextSpan(
               text: filter.transactionType == TransactionType.expense
-                  ? AppLocalizations.of(context).transactionTypeExpense
-                  : AppLocalizations.of(context).transactionTypeIncome,
+                  ? AppLocalizations
+                  .of(context)
+                  .transactionTypeExpense
+                  : AppLocalizations
+                  .of(context)
+                  .transactionTypeIncome,
               style: TextStyle(fontWeight: FontWeight.w500),
             ),
           ],
         ),
       ),
       visualDensity: VisualDensity.compact,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme
+          .of(context)
+          .backgroundColor,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
@@ -328,11 +343,15 @@ class FiltersListItem extends _ListItem {
     return Chip(
       label: RichText(
         text: TextSpan(
-          style: TextStyle(color: Theme.of(context).primaryColorDark),
+          style: TextStyle(color: Theme
+              .of(context)
+              .primaryColorDark),
           children: [
             TextSpan(
               text:
-                  AppLocalizations.of(context).transactionsListChipFilterAmount,
+              AppLocalizations
+                  .of(context)
+                  .transactionsListChipFilterAmount,
             ),
             TextSpan(
               text: formatAmountFilter(filter),
@@ -342,7 +361,9 @@ class FiltersListItem extends _ListItem {
         ),
       ),
       visualDensity: VisualDensity.compact,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme
+          .of(context)
+          .backgroundColor,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
@@ -359,15 +380,17 @@ class FiltersListItem extends _ListItem {
     return text;
   }
 
-  Widget buildCategoryFilterChip(
-      BuildContext context, Category category) {
+  Widget buildCategoryFilterChip(BuildContext context, Category category) {
     return Chip(
       label: RichText(
         text: TextSpan(
-          style: TextStyle(color: Theme.of(context).primaryColorDark),
+          style: TextStyle(color: Theme
+              .of(context)
+              .primaryColorDark),
           children: [
             TextSpan(
-              text: AppLocalizations.of(context)
+              text: AppLocalizations
+                  .of(context)
                   .transactionsListChipFilterCategory,
             ),
             TextSpan(
@@ -378,7 +401,9 @@ class FiltersListItem extends _ListItem {
         ),
       ),
       visualDensity: VisualDensity.compact,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme
+          .of(context)
+          .backgroundColor,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
@@ -386,11 +411,17 @@ class FiltersListItem extends _ListItem {
   Widget buildWithoutCategoryFilterChip(BuildContext context) {
     return Chip(
       label: Text(
-        AppLocalizations.of(context).transactionsListChipFilterWithoutCategory,
-        style: TextStyle(color: Theme.of(context).primaryColorDark),
+        AppLocalizations
+            .of(context)
+            .transactionsListChipFilterWithoutCategory,
+        style: TextStyle(color: Theme
+            .of(context)
+            .primaryColorDark),
       ),
       visualDensity: VisualDensity.compact,
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme
+          .of(context)
+          .backgroundColor,
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
@@ -403,8 +434,13 @@ class MonthListItem extends _ListItem {
 
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context).locale.toString();
-    final date = DateTime(DateTime.now().year, month);
+    final locale = AppLocalizations
+        .of(context)
+        .locale
+        .toString();
+    final date = DateTime(DateTime
+        .now()
+        .year, month);
     return Padding(
         padding: const EdgeInsets.only(left: 12.0, top: 12.0, right: 12.0),
         child: Column(
@@ -412,7 +448,10 @@ class MonthListItem extends _ListItem {
             Divider(),
             Text(
               DateFormat("LLLL yyyy", locale).format(date).firstUppercase(),
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .subtitle1,
             ),
           ],
         ));
@@ -430,24 +469,34 @@ class SectionHeaderListItem extends _ListItem {
       padding: const EdgeInsets.only(left: 12, right: 12, top: 16, bottom: 8),
       child: Text(
         getDateSectionTitle(context, date),
-        style: Theme.of(context).textTheme.subtitle2,
+        style: Theme
+            .of(context)
+            .textTheme
+            .subtitle2,
       ),
     );
   }
 
   String getDateSectionTitle(BuildContext context, DateTime date) {
-    final locale = AppLocalizations.of(context).locale.toString();
+    final locale = AppLocalizations
+        .of(context)
+        .locale
+        .toString();
     String dateText = DateFormat("EEEE, d MMMM", locale).format(date);
 
     final today = DateTime.now();
     if (date.isSameDate(today)) {
       dateText +=
-          " (${AppLocalizations.of(context).transactionsCardTodayHint})";
+      " (${AppLocalizations
+          .of(context)
+          .transactionsCardTodayHint})";
     }
     final yesterday = today.adding(day: -1);
     if (date.isSameDate(yesterday)) {
       dateText +=
-          " (${AppLocalizations.of(context).transactionsCardYesterdayHint})";
+      " (${AppLocalizations
+          .of(context)
+          .transactionsCardYesterdayHint})";
     }
 
     return dateText[0].toUpperCase() +
@@ -472,8 +521,11 @@ class ShowMoreListItem extends _ListItem {
   ShowMoreListItem({required this.onSelected});
 
   @override
-  Widget build(BuildContext context) => TextButton(
-        child: Text(AppLocalizations.of(context).transactionsListShowMore),
+  Widget build(BuildContext context) =>
+      TextButton(
+        child: Text(AppLocalizations
+            .of(context)
+            .transactionsListShowMore),
         onPressed: onSelected,
       );
 }

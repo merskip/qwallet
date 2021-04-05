@@ -55,6 +55,40 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
   }
 
   @override
+  Stream<List<Transaction>> getPageableTransactions({
+    required Identifier<Wallet> walletId,
+    required int limit,
+    required Transaction? afterTransaction,
+  }) {
+    final wallet = walletsProvider.getWalletByIdentifier(walletId);
+
+    var query = firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("transactions")
+        .orderBy("date", descending: true)
+        .limit(limit);
+    if (afterTransaction != null) {
+      final afterFirebaseTransaction =
+          (afterTransaction as FirebaseTransaction.FirebaseTransaction)
+              .documentSnapshot;
+      query = query.startAfterDocument(afterFirebaseTransaction);
+    }
+
+    return Rx.combineLatest2(
+      wallet,
+      query.snapshots(),
+      (FirebaseWallet wallet,
+          CloudFirestore.QuerySnapshot transactionsSnapshot) {
+        return transactionsSnapshot.docs.map((transactionSnapshot) {
+          return FirebaseTransaction.FirebaseTransaction(
+              transactionSnapshot, wallet);
+        }).toList();
+      },
+    );
+  }
+
+  @override
   Future<Identifier<Transaction>> addTransaction({
     required Identifier<Wallet> walletId,
     required TransactionType type,
