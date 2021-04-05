@@ -47,13 +47,13 @@ class _CategoriesChartContent extends StatefulWidget {
 }
 
 class _CategoriesChartContentState extends State<_CategoriesChartContent> {
-
   @override
   Widget build(BuildContext context) {
     return _CategoriesChartWithLegend(
       wallet: widget.wallet,
       items: _getCategoryChartItems(),
-      summaryTitle: AppLocalizations.of(context).categoriesChartCardTotalExpenses,
+      summaryTitle:
+          AppLocalizations.of(context).categoriesChartCardTotalExpenses,
     );
   }
 
@@ -273,12 +273,17 @@ class _CategoriesChart extends StatelessWidget {
           backgroundColor: item.category?.backgroundColor ?? Colors.grey,
         );
 
+    final badge =
+        item.category?.symbol != null ? Text(item.category!.symbol!) : null;
+    final showTitle = (showAllTitles || this.selectedItem == item);
+
     return PieChartSectionData(
       value: item.sum.amount > 0.0 ? item.sum.amount : 1.0,
       color: item.category?.primaryColor ?? Colors.black12,
       title: "$percentage%",
       titleStyle: titleStyle,
-      showTitle: (showAllTitles || this.selectedItem == item),
+      showTitle: showTitle,
+      badgeWidget: !showTitle ? badge : null,
       radius: (this.selectedItem == item ? 64 : 52),
     );
   }
