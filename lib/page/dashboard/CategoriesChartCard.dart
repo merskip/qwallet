@@ -5,7 +5,6 @@ import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
-import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 import '../../AppLocalizations.dart';
 import '../../Money.dart';
@@ -48,52 +47,19 @@ class _CategoriesChartContent extends StatefulWidget {
 }
 
 class _CategoriesChartContentState extends State<_CategoriesChartContent> {
-  TransactionType transactionType = TransactionType.expense;
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Padding(
-        padding: const EdgeInsets.only(top: 12.0),
-        child: buildTransactionSelection(context),
-      ),
-      _CategoriesChartWithLegend(
-        wallet: widget.wallet,
-        items: _getCategoryChartItems(),
-        summaryTitle: transactionType == TransactionType.expense
-            ? AppLocalizations.of(context).categoriesChartCardTotalExpenses
-            : AppLocalizations.of(context).categoriesChartCardTotalIncomes,
-      ),
-    ]);
-  }
-
-  Widget buildTransactionSelection(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        TransactionTypeButton(
-          type: TransactionType.expense,
-          title: Text(AppLocalizations.of(context).categoriesChartCardExpenses),
-          isSelected: transactionType == TransactionType.expense,
-          onPressed: () =>
-              setState(() => transactionType = TransactionType.expense),
-          visualDensity: VisualDensity.compact,
-        ),
-        TransactionTypeButton(
-          type: TransactionType.income,
-          title: Text(AppLocalizations.of(context).categoriesChartCardIncomes),
-          isSelected: transactionType == TransactionType.income,
-          onPressed: () =>
-              setState(() => transactionType = TransactionType.income),
-          visualDensity: VisualDensity.compact,
-        ),
-      ],
+    return _CategoriesChartWithLegend(
+      wallet: widget.wallet,
+      items: _getCategoryChartItems(),
+      summaryTitle: AppLocalizations.of(context).categoriesChartCardTotalExpenses,
     );
   }
 
   List<_CategoryChartItem> _getCategoryChartItems() {
     final transactionInType =
-        widget.transactions.where((t) => t.type == transactionType);
+        widget.transactions.where((t) => t.type == TransactionType.expense);
     final transactionsByCategory =
         groupBy(transactionInType, (Transaction t) => t.category);
 
@@ -142,19 +108,22 @@ class _CategoriesChartWithLegendState
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.max,
       children: [
         Stack(
           alignment: Alignment.center,
           children: [
-            _CategoriesChart(
-              items: widget.items,
-              showAllTitles: showAllTitles,
-              selectedItem: selectedItem,
-              onSelectedItem: (selectedItem) {
-                setState(() {
-                  this.selectedItem = selectedItem;
-                });
-              },
+            Center(
+              child: _CategoriesChart(
+                items: widget.items,
+                showAllTitles: showAllTitles,
+                selectedItem: selectedItem,
+                onSelectedItem: (selectedItem) {
+                  setState(() {
+                    this.selectedItem = selectedItem;
+                  });
+                },
+              ),
             ),
             GestureDetector(
               onTap: () {

@@ -917,11 +917,6 @@ extension CategoriesChartCardLocalizations on AppLocalizations {
         pl: "Łączne wydatki",
       );
 
-  String get categoriesChartCardTotalIncomes => _locale(
-        en: "Total incomes",
-        pl: "Łączne przychody",
-      );
-
   String get categoriesChartCardNoCategory => _locale(
         en: "Without category",
         pl: "Bez kategorii",
