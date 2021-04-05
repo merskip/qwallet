@@ -16,21 +16,19 @@ import 'SpreadsheetWallet.dart';
 class SpreadsheetWalletsProvider implements WalletsProvider {
   final CachedGoogleSpreadsheetRepository repository;
   final List<Identifier<Wallet>> walletsIds;
-  final refreshController = StreamController<Identifier<Wallet>>.broadcast();
+  final Map<Identifier<Wallet>, List<StreamController<Identifier<Wallet>>>>
+      refreshController = {};
 
   SpreadsheetWalletsProvider({
     required this.repository,
     required this.walletsIds,
   });
 
-  void dispose() {
-    refreshController.close();
-  }
-
   void refreshWallet(Identifier<Wallet> walletId) {
     Future(() {
       repository.clearCacheForSpreadsheetId(walletId.id);
-      refreshController.add(walletId);
+      refreshController[walletId]
+          ?.forEach((streamController) => streamController.add(walletId));
     });
   }
 
@@ -53,10 +51,19 @@ class SpreadsheetWalletsProvider implements WalletsProvider {
   @override
   Stream<SpreadsheetWallet> getWalletByIdentifier(Identifier<Wallet> walletId) {
     assert(walletId.domain == "google_sheets");
-    Future(() {
-      refreshController.add(walletId);
+
+    final streamController = StreamController<Identifier<Wallet>>(onCancel: () {
+      refreshController[walletId]?.remove(walletId);
     });
-    return refreshController.stream
+    if (refreshController.containsKey(walletId))
+      refreshController[walletId]?.add(streamController);
+    else
+      refreshController[walletId] = [streamController];
+
+    Future(() {
+      streamController.add(walletId);
+    });
+    return streamController.stream
         .where((id) => id == walletId)
         .asyncMap((walletId) {
       return repository
