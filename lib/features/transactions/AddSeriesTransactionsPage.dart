@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Transaction.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
+import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/dialog/SelectWalletDialog.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
@@ -22,7 +22,7 @@ import '../../LocalPreferences.dart';
 import '../../Money.dart';
 
 class AddSeriesTransactionsPage extends StatefulWidget {
-  final FirebaseWallet initialWallet;
+  final Wallet initialWallet;
   final double? initialTotalAmount;
   final DateTime? initialDate;
 
@@ -41,7 +41,7 @@ class AddSeriesTransactionsPage extends StatefulWidget {
 class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   final _formKey = GlobalKey<FormState>();
 
-  FirebaseWallet wallet;
+  Wallet wallet;
   final totalAmountController = AmountEditingController();
   final dateFocus = FocusNode();
   final dateController = TextEditingController();
@@ -50,7 +50,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   final transactionAmountController = AmountEditingController();
   Category? transactionCategory;
 
-  List<FirebaseTransaction> transactions = [];
+  List<Transaction> transactions = [];
 
   Money? get totalAmount => totalAmountController.value;
 
@@ -134,7 +134,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
         wallets: wallets,
         selectedWallet: this.wallet,
       ),
-    ) as FirebaseWallet?;
+    ) as Wallet?;
     if (selectedWallet != null) {
       setState(() => this.wallet = selectedWallet);
     }
@@ -143,27 +143,32 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   void onSelectedAddTransaction(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
-    // TODO: Impl
-    // final transactionRef = await DataSource.instance.addTransaction(
-    //   wallet.reference,
-    //   type: TransactionType.expense,
-    //   title: null,
-    //   amount: transactionAmountController.value!.amount,
-    //   category: transactionCategory?.reference,
-    //   date: date,
-    // );
-    // setState(() {
-    //   transactionAmountController.value = null;
-    //   transactionCategory = null;
-    // });
-    //
-    // subscriptions.add(DataSource.instance
-    //     .getTransaction(wallet.reference, transactionRef)
-    //     .listen((transaction) {
-    //   transactions.removeWhere((t) => t.id == transactionRef.id);
-    //   if (transaction != null) transactions.add(transaction);
-    //   setState(() {});
-    // }));
+    final transactionId =
+        await AggregatedTransactionsProvider.instance!.addTransaction(
+      walletId: wallet.identifier,
+      type: TransactionType.expense,
+      category: transactionCategory,
+      title: null,
+      amount: transactionAmountController.value!.amount,
+      date: date,
+    );
+
+    setState(() {
+      transactionAmountController.value = null;
+      transactionCategory = null;
+    });
+
+    subscriptions.add(AggregatedTransactionsProvider.instance!
+        .getTransactionById(
+            walletId: wallet.identifier, transactionId: transactionId)
+        .listen((transaction) {
+      transactions.removeWhere((t) => t.identifier.id == transactionId.id);
+      transactions.add(transaction);
+      setState(() {});
+    }, onError: (error) {
+      transactions.removeWhere((t) => t.identifier.id == transactionId.id);
+      setState(() {});
+    }));
   }
 
   void onSelectedDone(BuildContext context) {
@@ -460,7 +465,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
   }
 
   Widget buildTransactionCategoryPicker(
-      BuildContext context, List<FirebaseCategory> categories) {
+      BuildContext context, List<Category> categories) {
     return CategoryPicker(
       categories: categories,
       selectedCategory: transactionCategory,

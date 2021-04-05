@@ -17,7 +17,6 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'api/Model.dart';
-import 'api/Wallet.dart';
 import 'datasource/Wallet.dart';
 import 'features/transactions/AddSeriesTransactionsPage.dart';
 import 'features/transactions/AddTransactionPage.dart';
@@ -122,7 +121,7 @@ void initRoutes(FluroRouter router) {
     transitionType: fluro.TransitionType.nativeModal,
     handler: fluro.Handler(
         handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
-      final walletId = params["walletId"][0];
+      final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
       final initialTotalAmount = params.containsKey("initialTotalAmount")
           ? double.tryParse(params["initialTotalAmount"][0])
           : null;
@@ -130,8 +129,9 @@ void initRoutes(FluroRouter router) {
           ? DateTime.tryParse(params["initialDate"][0])
           : null;
       return SimpleStreamWidget(
-        stream: DataSource.instance.getWalletById(walletId),
-        builder: (context, FirebaseWallet wallet) => AddSeriesTransactionsPage(
+        stream:
+            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        builder: (context, Wallet wallet) => AddSeriesTransactionsPage(
           initialWallet: wallet,
           initialTotalAmount: initialTotalAmount,
           initialDate: initialDate,
