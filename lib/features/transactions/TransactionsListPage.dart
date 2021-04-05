@@ -8,7 +8,9 @@ import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Transaction.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
@@ -18,7 +20,7 @@ import '../../utils.dart';
 import 'TransactionsListFilter.dart';
 
 class TransactionsListPage extends StatefulWidget {
-  final FirebaseWallet wallet;
+  final Wallet wallet;
 
   TransactionsListPage({
     Key? key,
@@ -45,7 +47,7 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
     super.initState();
   }
 
-  void onSelectedFilter(BuildContext context, FirebaseWallet wallet) async {
+  void onSelectedFilter(BuildContext context, Wallet wallet) async {
     final filter = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -85,7 +87,7 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
 }
 
 class _TransactionsContentPage extends StatefulWidget {
-  final FirebaseWallet wallet;
+  final Wallet wallet;
   final TransactionsFilter filter;
 
   _TransactionsContentPage({
@@ -102,7 +104,7 @@ class _TransactionsContentPage extends StatefulWidget {
 class _TransactionsContentPageState extends State<_TransactionsContentPage> {
   final itemsPerPage = 20;
   late bool isMorePages;
-  late List<Stream<List<FirebaseTransaction>>> transactionsPages;
+  late List<Stream<List<Transaction>>> transactionsPages;
 
   @override
   void initState() {
@@ -111,31 +113,33 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
   }
 
   void onSelectedMore(
-      BuildContext context, FirebaseTransaction lastTransaction) {
+      BuildContext context, Transaction lastTransaction) {
     setState(() {
       transactionsPages.add(getNextTransactions(after: lastTransaction));
     });
   }
 
-  Stream<List<FirebaseTransaction>> getNextTransactions(
-          {FirebaseTransaction? after}) =>
-      DataSource.instance.getTransactions(
-        walletReference: widget.wallet.reference,
-        afterTransaction: after,
-        limit: itemsPerPage,
-      );
+  Stream<List<Transaction>> getNextTransactions(
+          {Transaction? after}) {
+    return Stream.value([]);
+    // return DataSource.instance.getTransactions(
+    //     walletReference: widget.wallet.reference,
+    //     afterTransaction: after,
+    //     limit: itemsPerPage,
+    //   );
+  }
 
   @override
   Widget build(BuildContext context) {
     final transactions = CombineLatestStream(
       transactionsPages,
-      (List<List<FirebaseTransaction>> transactions) =>
+      (List<List<Transaction>> transactions) =>
           transactions.expand((i) => i).toList(),
     );
 
     return SimpleStreamWidget(
       stream: transactions,
-      builder: (context, List<FirebaseTransaction> transactions) {
+      builder: (context, List<Transaction> transactions) {
         // If all pages are full, it can be assumed that is there more pages.
         // It doesn't work when the count of all items is the multiplication of page size.
         // But the only problem will be that the last page will be empty.
@@ -158,8 +162,8 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
     );
   }
 
-  List<FirebaseTransaction> getFilteredTransactions(
-    List<FirebaseTransaction> transactions,
+  List<Transaction> getFilteredTransactions(
+    List<Transaction> transactions,
     TransactionsFilter filter,
   ) =>
       transactions.where((transaction) {
@@ -186,7 +190,7 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
           assert(filter.includeWithoutCategory != null);
 
           if (!filter.categories!
-              .any((c) => c.id == transaction.category?.id)) {
+              .any((c) => c.identifier == transaction.category?.identifier)) {
             if (transaction.category == null)
               return filter.includeWithoutCategory!;
             return false;
@@ -217,12 +221,12 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
 
   Widget buildTransactionsList(
     BuildContext context,
-    List<FirebaseTransaction> transactions, {
-    required FirebaseTransaction lastTransaction,
+    List<Transaction> transactions, {
+    required Transaction lastTransaction,
   }) {
     final transactionsByDate = groupBy(
       transactions,
-      (FirebaseTransaction transaction) => getDateWithoutTime(transaction.date),
+      (Transaction transaction) => getDateWithoutTime(transaction.date),
     );
     final dates = transactionsByDate.keys.toList()
       ..sort((lhs, rhs) => rhs.compareTo(lhs));
@@ -356,7 +360,7 @@ class FiltersListItem extends _ListItem {
   }
 
   Widget buildCategoryFilterChip(
-      BuildContext context, FirebaseCategory category) {
+      BuildContext context, Category category) {
     return Chip(
       label: RichText(
         text: TextSpan(
@@ -452,8 +456,8 @@ class SectionHeaderListItem extends _ListItem {
 }
 
 class TransactionListItem extends _ListItem {
-  final FirebaseWallet wallet;
-  final FirebaseTransaction transaction;
+  final Wallet wallet;
+  final Transaction transaction;
 
   TransactionListItem(this.wallet, this.transaction);
 

@@ -1,14 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
+import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/utils.dart';
 
 import '../../AppLocalizations.dart';
 import '../../widget/CategoryButton.dart';
 
 class TransactionsCategoryMultiplePicker extends StatefulWidget {
-  final List<FirebaseCategory> categories;
-  final List<FirebaseCategory> selectedCategories;
+  final List<Category> categories;
+  final List<Category> selectedCategories;
   final bool includeWithoutCategory;
 
   const TransactionsCategoryMultiplePicker({
@@ -25,7 +26,7 @@ class TransactionsCategoryMultiplePicker extends StatefulWidget {
 
 class TransactionsCategoryMultiplePickerState
     extends State<TransactionsCategoryMultiplePicker> {
-  late List<FirebaseCategory> selectedCategories;
+  late List<Category> selectedCategories;
   late bool includeWithoutCategory;
 
   @override
@@ -42,7 +43,7 @@ class TransactionsCategoryMultiplePickerState
     super.didUpdateWidget(oldWidget);
   }
 
-  void onSelectedCategory(BuildContext context, FirebaseCategory category) {
+  void onSelectedCategory(BuildContext context, Category category) {
     var newCategories = [...selectedCategories];
 
     final isSelected = selectedCategories.contains(category);
@@ -84,7 +85,7 @@ class TransactionsCategoryMultiplePickerState
     );
   }
 
-  Widget buildCategoryButton(BuildContext context, FirebaseCategory category) {
+  Widget buildCategoryButton(BuildContext context, Category category) {
     final isSelected = selectedCategories.contains(category);
     return CategoryButton(
       category: category,

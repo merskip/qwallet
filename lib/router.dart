@@ -217,10 +217,11 @@ void initRoutes(FluroRouter router) {
     transitionType: fluro.TransitionType.nativeModal,
     handler: fluro.Handler(
         handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
-      final walletId = params["walletId"][0];
+      final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
       return SimpleStreamWidget(
-        stream: DataSource.instance.getWalletById(walletId),
-        builder: (context, FirebaseWallet wallet) => TransactionsListPage(
+        stream:
+            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        builder: (context, Wallet wallet) => TransactionsListPage(
           wallet: wallet,
         ),
       );

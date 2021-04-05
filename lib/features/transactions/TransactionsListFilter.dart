@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart' as Foundation;
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../../AppLocalizations.dart';
@@ -14,7 +16,7 @@ class TransactionsFilter {
   final TransactionsFilterAmountType? amountType;
   final double? amount;
   final double? amountAccuracy;
-  final List<FirebaseCategory>? categories;
+  final List<Category>? categories;
   final bool? includeWithoutCategory;
 
   TransactionsFilter({
@@ -61,7 +63,7 @@ extension TransactionsFilterAmountTypeConverting
 }
 
 class TransactionsListFilter extends StatefulWidget {
-  final FirebaseWallet wallet;
+  final Wallet wallet;
   final TransactionsFilter initialFilter;
 
   const TransactionsListFilter({
@@ -81,7 +83,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
   final amountController = TextEditingController();
   final amountAccuracyController = TextEditingController();
 
-  late List<FirebaseCategory> selectedCategories;
+  late List<Category> selectedCategories;
   late bool includeWithoutCategory;
 
   bool get isSelectedAllOrNoAnyCategories =>
@@ -325,7 +327,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
   }
 
   Widget buildAnyCategoryChip(
-      BuildContext context, FirebaseCategory? category) {
+      BuildContext context, Category? category) {
     return Chip(
       label: Text(
         category?.titleText ??
@@ -338,7 +340,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
     );
   }
 
-  Widget buildCategoryChip(BuildContext context, FirebaseCategory category) {
+  Widget buildCategoryChip(BuildContext context, Category category) {
     return Chip(
       label: Text(
         category.titleText,
