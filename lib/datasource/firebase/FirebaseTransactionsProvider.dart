@@ -88,6 +88,19 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
                     transactionSnapshot, wallet))
             .toList());
   }
+
+  @override
+  Future<void> removeTransaction({
+    required Identifier<Wallet> walletId,
+    required Transaction transaction,
+  }) {
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("transactions")
+        .doc(transaction.identifier.id)
+        .delete();
+  }
 }
 
 extension DateTimeUtils on DateTime {

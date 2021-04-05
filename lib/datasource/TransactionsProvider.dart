@@ -19,6 +19,11 @@ abstract class TransactionsProvider {
     required Transaction transaction,
     required Category? category,
   });
+
+  Future<void> removeTransaction({
+    required Identifier<Wallet> walletId,
+    required Transaction transaction,
+  });
 }
 
 class LatestTransactions {

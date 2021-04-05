@@ -62,7 +62,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
 
     if (symbol != null) {
       return repository
-          .updateTransferCategory(
+          .updateTransactionCategory(
             spreadsheetId: walletId.id,
             transferRow: spreadsheetTransaction.spreadsheetTransfer.row,
             categorySymbol: symbol,
@@ -71,6 +71,21 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     } else {
       return Future.value();
     }
+  }
+
+  @override
+  Future<void> removeTransaction({
+    required Identifier<Wallet> walletId,
+    required Transaction transaction,
+  }) {
+    assert(walletId.domain == "google_sheets");
+    final spreadsheetTransaction = transaction as SpreadsheetTransaction;
+    return repository
+        .removeTransaction(
+          spreadsheetId: walletId.id,
+          transferRow: spreadsheetTransaction.spreadsheetTransfer.row,
+        )
+        .then((value) => walletsProvider.refreshWallet(walletId));
   }
 
   SpreadsheetTransaction _toTransaction(

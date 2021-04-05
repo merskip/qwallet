@@ -78,4 +78,29 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
         ));
     }
   }
+
+  @override
+  Future<void> removeTransaction({
+    required Identifier<Wallet> walletId,
+    required Transaction transaction,
+  }) {
+    switch (transaction.identifier.domain) {
+      case "firebase":
+        return firebaseProvider.removeTransaction(
+          walletId: walletId,
+          transaction: transaction,
+        );
+      case "google_sheets":
+        return spreadsheetProvider.removeTransaction(
+          walletId: walletId,
+          transaction: transaction,
+        );
+      default:
+        return Future.error(ArgumentError.value(
+          transaction.identifier.domain,
+          "transactionId.domain",
+          "Unknown domain",
+        ));
+    }
+  }
 }

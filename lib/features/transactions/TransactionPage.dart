@@ -54,14 +54,13 @@ class _TransactionPageState extends State<TransactionPage> {
       content: Text(AppLocalizations.of(context)
           .transactionDetailsRemoveConfirmationContent),
       isDestructive: true,
-      onConfirm: () {
-        // TODO: Impl
-        // DataSource.instance.removeTransaction(
-        //   widget.walletRef,
-        //   widget.transaction,
-        // );
-        // Navigator.of(context).popUntil(
-        //     (route) => !(route.settings.name?.contains("transaction") ?? true));
+      onConfirm: () async {
+        await AggregatedTransactionsProvider.instance!.removeTransaction(
+          walletId: widget.wallet.identifier,
+          transaction: widget.transaction,
+        );
+        Navigator.of(context).popUntil(
+            (route) => !(route.settings.name?.contains("transaction") ?? true));
       },
     ).show(context);
   }
