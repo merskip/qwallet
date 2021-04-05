@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/Transaction.dart' as FirebaseTransaction;
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/datasource/Identifier.dart';
@@ -58,8 +59,15 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required Transaction transaction,
     required Category? category,
   }) {
-    // TODO: implement updateTransactionCategory
-    throw UnimplementedError();
+    final firebaseCategory = category as FirebaseCategory?;
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("transactions")
+        .doc(transaction.identifier.id)
+        .update({
+      "category": firebaseCategory?.reference.documentReference,
+    });
   }
 
   Stream<List<Transaction>> _getTransactionsInDateTimeRange({
