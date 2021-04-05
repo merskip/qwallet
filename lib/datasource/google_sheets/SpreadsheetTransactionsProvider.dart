@@ -88,12 +88,14 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
   Future<void> removeTransaction({
     required Identifier<Wallet> walletId,
     required Transaction transaction,
-  }) {
+  }) async {
     assert(walletId.domain == "google_sheets");
+    final wallet = await repository.getWalletBySpreadsheetId(walletId.id);
     final spreadsheetTransaction = transaction as SpreadsheetTransaction;
     return repository
         .removeTransaction(
           spreadsheetId: walletId.id,
+          sheetId: wallet.dailyBalanceSheet.properties!.sheetId!,
           transferRow: spreadsheetTransaction.spreadsheetTransfer.row,
         )
         .then((value) => walletsProvider.refreshWallet(walletId));

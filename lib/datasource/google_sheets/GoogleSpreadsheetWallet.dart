@@ -1,3 +1,5 @@
+import 'package:googleapis/sheets/v4.dart';
+
 class GoogleSpreadsheetWallet {
   final String name;
   final List<double> incomes;
@@ -10,6 +12,10 @@ class GoogleSpreadsheetWallet {
   final List<String> shops;
   final GoogleSpreadsheetStatistics statistics;
 
+  final Sheet generalSheet;
+  final Sheet dailyBalanceSheet;
+  final Sheet statisticsSheet;
+
   GoogleSpreadsheetWallet({
     required this.name,
     required this.incomes,
@@ -20,6 +26,9 @@ class GoogleSpreadsheetWallet {
     required this.categories,
     required this.shops,
     required this.statistics,
+    required this.generalSheet,
+    required this.dailyBalanceSheet,
+    required this.statisticsSheet,
   });
 }
 

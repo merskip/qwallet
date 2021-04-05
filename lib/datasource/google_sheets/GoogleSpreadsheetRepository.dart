@@ -38,6 +38,9 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
       categories: categories,
       shops: shops,
       statistics: statistics,
+      generalSheet: generalSheet,
+      dailyBalanceSheet: dailyBalanceSheet,
+      statisticsSheet: statisticsSheet,
     );
   }
 
@@ -162,12 +165,21 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
 
   Future<void> removeTransaction({
     required String spreadsheetId,
+    required int sheetId,
     required int transferRow,
   }) async {
     final sheetsApi = await this.sheetsApi;
-    final range = "'Balans Dzienny'!${transferRow + 1}:${transferRow + 1}";
-    await sheetsApi.spreadsheets.values
-        .clear(ClearValuesRequest(), spreadsheetId, range);
+    final request = BatchUpdateSpreadsheetRequest();
+    request.requests = [
+      Request()
+        ..deleteDimension = (DeleteDimensionRequest()
+          ..range = (DimensionRange()
+            ..sheetId = sheetId
+            ..dimension = "ROWS"
+            ..startIndex = transferRow
+            ..endIndex = transferRow + 1))
+    ];
+    await sheetsApi.spreadsheets.batchUpdate(request, spreadsheetId);
   }
 }
 
