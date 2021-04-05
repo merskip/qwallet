@@ -53,15 +53,15 @@ class DashboardPageState extends State<DashboardPage> {
       context: context,
       builder: (context) => EnterMoneyDialog(currency: wallet.currency),
     ) as Money?;
-    // TODO: Impl
-    // if (newBalance != null) {
-    //   // Fixes #44 bug
-    //   final freshWallet =
-    //       await DataSource.instance.getWallet(wallet.reference).first;
-    //   final initialAmount = newBalance.amount - freshWallet.balance.amount;
-    //   router.navigateTo(context,
-    //       "/wallet/${wallet.identifier}/addTransaction/amount/$initialAmount");
-    // }
+    if (newBalance != null) {
+      // Fixes #44 bug
+      final freshWallet = await AggregatedWalletsProvider.instance!
+          .getWalletByIdentifier(wallet.identifier)
+          .first;
+      final initialAmount = newBalance.amount - freshWallet.balance.amount;
+      router.navigateTo(context,
+          "/wallet/${wallet.identifier}/addTransaction/amount/$initialAmount");
+    }
   }
 
   void onSelectedPushNotifications(
