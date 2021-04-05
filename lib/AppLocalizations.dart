@@ -787,11 +787,6 @@ extension TransactionsCardLocalizations on AppLocalizations {
         pl: "wczoraj",
       );
 
-  String get transactionsCardShowMore => _locale(
-        en: "Show more",
-        pl: "Pokaż więcej",
-      );
-
   String get transactionsCardShowAll => _locale(
         en: "Show all",
         pl: "Pokaż wszystkie",

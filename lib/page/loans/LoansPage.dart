@@ -331,7 +331,7 @@ class _LoansGroupCardState extends State<LoansGroupCard> {
       onPressed: () => setState(() => _isExtended = !_isExtended),
       child: Text(_isExtended
           ? AppLocalizations.of(context).privateLoanShowLess
-          : AppLocalizations.of(context).transactionsCardShowMore),
+          : AppLocalizations.of(context).privateLoanShowMore),
     );
   }
 }

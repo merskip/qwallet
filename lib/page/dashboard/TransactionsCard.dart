@@ -30,9 +30,6 @@ class _TransactionsCardState extends State<TransactionsCard> {
   late Map<DateTime, List<Transaction>> transactionsByDate;
   late List<DateTime> dates;
 
-  bool isCollapsable = true;
-  bool isCollapsed = true;
-
   @override
   void initState() {
     _prepareTransactions();
@@ -52,7 +49,6 @@ class _TransactionsCardState extends State<TransactionsCard> {
     );
     dates = transactionsByDate.keys.toList()
       ..sort((lhs, rhs) => rhs.compareTo(lhs));
-    isCollapsable = dates.length > 2;
   }
 
   @override
@@ -61,17 +57,11 @@ class _TransactionsCardState extends State<TransactionsCard> {
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Column(children: [
         buildTransactionsList(context),
-        if (isCollapsable && isCollapsed)
-          TextButton(
-            child: Text(AppLocalizations.of(context).transactionsCardShowMore),
-            onPressed: () => setState(() => isCollapsed = false),
-          ),
-        if (!isCollapsable || !isCollapsed)
-          TextButton(
-            child: Text(AppLocalizations.of(context).transactionsCardShowAll),
-            onPressed: () => router.navigateTo(
-                context, "/wallet/${widget.wallet.identifier}/transactions"),
-          ),
+        TextButton(
+          child: Text(AppLocalizations.of(context).transactionsCardShowAll),
+          onPressed: () => router.navigateTo(
+              context, "/wallet/${widget.wallet.identifier}/transactions"),
+        ),
       ]),
     );
   }
@@ -100,10 +90,7 @@ class _TransactionsCardState extends State<TransactionsCard> {
     Wallet wallet,
     List<Transaction> transactions,
   ) {
-    final effectiveDates = dates.sublist(
-      0,
-      isCollapsed ? min(2, dates.length) : null,
-    );
+    final effectiveDates = dates.sublist(0, min(2, dates.length));
 
     final result = <Widget>[];
     for (final date in effectiveDates) {
