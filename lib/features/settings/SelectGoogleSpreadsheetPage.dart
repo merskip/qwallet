@@ -36,13 +36,15 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
   Widget buildSpreadsheets(BuildContext context) {
     return SimpleStreamWidget(
       stream: getSpreadsheetFiles(),
-      builder: (context, _SpreadsheetFiles response) {
+      builder: (context, _SpreadsheetFilesResponse response) {
         return GridView.count(
           crossAxisCount: 2,
           padding: const EdgeInsets.all(8),
           children: [
-            ...response.files
-                .map((file) => buildFileTile(context, file, response.client)),
+            ...response.files.map((file) {
+              final isLinked = response.walletIds.any((id) => id.id == file.id);
+              return buildFileTile(context, file, response.client, isLinked);
+            }),
           ],
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
@@ -52,7 +54,7 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
   }
 
   Widget buildFileTile(
-      BuildContext context, File file, GoogleAuthClient client) {
+      BuildContext context, File file, GoogleAuthClient client, bool isLinked) {
     return Stack(
       children: [
         Container(
@@ -63,21 +65,49 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
             child: GridTile(
-              footer: buildName(context, file),
+              header: isLinked ? buildLinkedHint(context) : null,
               child: buildThumbnail(context, file, client),
+              footer: buildName(context, file),
             ),
           ),
         ),
-        Positioned.fill(
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(8.0),
-              onTap: () => onSelectedSpreadsheetFile(context, file),
+        if (!isLinked)
+          Positioned.fill(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8.0),
+                onTap: () => onSelectedSpreadsheetFile(context, file),
+              ),
             ),
           ),
-        ),
       ],
+    );
+  }
+
+  Widget buildLinkedHint(BuildContext context) {
+    return Container(
+      color: Colors.green.shade700.withOpacity(0.9),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        child: Row(
+          children: [
+            Icon(
+              Icons.check,
+              color: Colors.white,
+              size: 20,
+            ),
+            SizedBox(width: 4),
+            Text(
+              "Already linked",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1
+                  ?.copyWith(color: Colors.white),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -112,7 +142,7 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
     );
   }
 
-  Stream<_SpreadsheetFiles> getSpreadsheetFiles() {
+  Stream<_SpreadsheetFilesResponse> getSpreadsheetFiles() {
     final googleApiProvider =
         GoogleApiProvider(SharedProviders.accountProvider);
     final files = googleApiProvider.driveApi
@@ -124,9 +154,16 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
 
     final client = googleApiProvider.client;
 
-    return Future.wait([files, client])
-        .then((values) => _SpreadsheetFiles(
-            values[0] as List<File>, values[1] as GoogleAuthClient))
+    final walletIds = LocalPreferences.walletsSpreadsheetIds.first;
+
+    return Future.wait([files, client, walletIds])
+        .then(
+          (values) => _SpreadsheetFilesResponse(
+            values[0] as List<File>,
+            values[1] as GoogleAuthClient,
+            values[2] as List<Identifier<Wallet>>,
+          ),
+        )
         .asStream();
   }
 
@@ -135,11 +172,12 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
   }
 }
 
-class _SpreadsheetFiles {
+class _SpreadsheetFilesResponse {
   final List<File> files;
   final GoogleAuthClient client;
+  final List<Identifier<Wallet>> walletIds;
 
-  _SpreadsheetFiles(this.files, this.client);
+  _SpreadsheetFilesResponse(this.files, this.client, this.walletIds);
 }
 
 class GoogleSpreadsheetWalletConfirmationPage extends StatelessWidget {
