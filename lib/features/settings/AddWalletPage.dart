@@ -9,9 +9,9 @@ import 'package:qwallet/page/UserSelectionPage.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
-import '../Currency.dart';
-import '../utils/IterableFinding.dart';
-import 'UsersFormField.dart';
+import '../../Currency.dart';
+import '../../utils/IterableFinding.dart';
+import '../../page/UsersFormField.dart';
 
 class AddWalletPage extends StatelessWidget {
   @override

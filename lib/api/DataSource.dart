@@ -378,6 +378,7 @@ extension TransactionsDataSource on DataSource {
 }
 
 extension CategoriesDataSource on DataSource {
+  @deprecated
   Stream<List<FirebaseCategory>> getCategories({
     required FirebaseReference<FirebaseWallet> wallet,
   }) {
@@ -386,11 +387,13 @@ extension CategoriesDataSource on DataSource {
           ..sort((lhs, rhs) => lhs.compareTo(rhs)));
   }
 
+  @deprecated
   Stream<FirebaseCategory> getCategory({
     required FirebaseReference<FirebaseCategory> category,
   }) =>
       category.documentReference.snapshots().map((s) => FirebaseCategory(s));
 
+  @deprecated
   Future<void> addCategory({
     required FirebaseReference<FirebaseWallet> wallet,
     required String title,

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/widget/CategoryForm.dart';
 
-import '../AppLocalizations.dart';
+import '../../AppLocalizations.dart';
 
 class AddCategoryPage extends StatelessWidget {
-  final FirebaseReference<FirebaseWallet> walletRef;
+  final Wallet wallet;
 
-  const AddCategoryPage({Key? key, required this.walletRef}) : super(key: key);
+  const AddCategoryPage({Key? key, required this.wallet}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +23,15 @@ class AddCategoryPage extends StatelessWidget {
             category: null,
             submitChild: Text(AppLocalizations.of(context).addCategorySubmit),
             onSubmit: (context, title, primaryColor, backgroundColor, icon) {
-              DataSource.instance.addCategory(
-                wallet: walletRef,
+              AggregatedWalletsProvider
+                  .instance!.firebaseProvider.categoriesProvider
+                  .addCategory(
+                walletId: wallet.identifier,
                 title: title,
                 primaryColor: primaryColor,
                 backgroundColor: backgroundColor,
                 icon: icon,
+                order: wallet.categories.length,
               );
               Navigator.of(context).pop();
             },

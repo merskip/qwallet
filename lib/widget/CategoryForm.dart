@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Models/IconPack.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:qwallet/IconsSerialization.dart';
-import 'package:qwallet/api/Category.dart';
+import 'package:qwallet/datasource/Category.dart';
 
 import '../AppLocalizations.dart';
 import '../utils/IterableFinding.dart';
@@ -10,7 +10,7 @@ import 'ColorPicker.dart';
 import 'PrimaryButton.dart';
 
 class CategoryForm extends StatefulWidget {
-  final FirebaseCategory? category;
+  final Category? category;
 
   final Function(
     BuildContext context,
@@ -44,7 +44,7 @@ class _CategoryFormState extends State<CategoryForm> {
   MaterialColor backgroundColor;
   IconData icon;
 
-  _CategoryFormState({required FirebaseCategory? category})
+  _CategoryFormState({required Category? category})
       : titleController = TextEditingController(text: category?.title),
         primaryColor = _findMaterialColor(category?.primaryColor, 800) ??
             Colors.primaries.first,

@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
+import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/Category.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/widget/CategoryForm.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
-import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
-import '../AppLocalizations.dart';
+import '../../AppLocalizations.dart';
 
 class EditCategoryPage extends StatelessWidget {
-  final FirebaseReference<FirebaseCategory> categoryRef;
+  final Wallet wallet;
+  final Category category;
 
   const EditCategoryPage({
     Key? key,
-    required this.categoryRef,
+    required this.wallet,
+    required this.category,
   }) : super(key: key);
 
-  onSelectedRemove(BuildContext context, FirebaseCategory category) {
+  onSelectedRemove(BuildContext context, Category category) {
     ConfirmationDialog(
       title: Text(AppLocalizations.of(context)
           .categoryRemoveConfirmation(category.titleText)),
@@ -24,7 +25,11 @@ class EditCategoryPage extends StatelessWidget {
           .categoryRemoveConfirmationContent(category.titleText)),
       isDestructive: true,
       onConfirm: () {
-        DataSource.instance.removeCategory(category: categoryRef);
+        AggregatedWalletsProvider.instance!.firebaseProvider.categoriesProvider
+            .removeCategory(
+          walletId: wallet.identifier,
+          categoryId: category.identifier,
+        );
         Navigator.of(context).popUntil(
             (route) => route.settings.name?.endsWith("/categories") ?? false);
       },
@@ -33,14 +38,10 @@ class EditCategoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SimpleStreamWidget(
-      stream: DataSource.instance.getCategory(category: categoryRef),
-      builder: (context, FirebaseCategory category) =>
-          buildContent(context, category),
-    );
+    return buildContent(context, category);
   }
 
-  Widget buildContent(BuildContext context, FirebaseCategory category) {
+  Widget buildContent(BuildContext context, Category category) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).categoryEdit(category.title)),
@@ -58,12 +59,16 @@ class EditCategoryPage extends StatelessWidget {
             category: category,
             submitChild: Text(AppLocalizations.of(context).categoryEditSubmit),
             onSubmit: (context, title, primaryColor, backgroundColor, icon) {
-              DataSource.instance.updateCategory(
-                category: categoryRef,
+              AggregatedWalletsProvider
+                  .instance!.firebaseProvider.categoriesProvider
+                  .updateCategory(
+                walletId: wallet.identifier,
+                categoryId: category.identifier,
                 title: title,
                 primaryColor: primaryColor,
                 backgroundColor: backgroundColor,
                 icon: icon,
+                order: category.order,
               );
               Navigator.of(context).pop();
             },

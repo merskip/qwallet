@@ -1,9 +1,15 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/datasource/CategoriesProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Wallet.dart';
+
+import '../../IconsSerialization.dart';
+import '../../utils.dart';
 
 class FirebaseCategoriesProvider implements CategoriesProvider {
   final FirebaseFirestore firestore;
@@ -43,5 +49,61 @@ class FirebaseCategoriesProvider implements CategoriesProvider {
         });
       });
     });
+  }
+
+  Future<void> addCategory({
+    required Identifier<Wallet> walletId,
+    required String title,
+    required Color primaryColor,
+    required Color backgroundColor,
+    required IconData icon,
+    required int order,
+  }) {
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("categories")
+        .add({
+      "title": title,
+      "primaryColor": primaryColor.toHex(),
+      "backgroundColor": backgroundColor.toHex(),
+      "icon": serializeIcon(icon),
+      "order": order
+    });
+  }
+
+  Future<void> updateCategory({
+    required Identifier<Wallet> walletId,
+    required Identifier<Category> categoryId,
+    required String title,
+    required Color primaryColor,
+    required Color backgroundColor,
+    required IconData icon,
+    required int order,
+  }) {
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("categories")
+        .doc(categoryId.id)
+        .update({
+      "title": title,
+      "primaryColor": primaryColor.toHex(),
+      "backgroundColor": backgroundColor.toHex(),
+      "icon": serializeIcon(icon),
+      "order": order
+    });
+  }
+
+  Future<void> removeCategory({
+    required Identifier<Wallet> walletId,
+    required Identifier<Category> categoryId,
+  }) {
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("categories")
+        .doc(categoryId.id)
+        .delete();
   }
 }

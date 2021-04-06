@@ -9,7 +9,7 @@ import 'package:qwallet/widget/HorizontalDrawablePicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
-import '../AppLocalizations.dart';
+import '../../AppLocalizations.dart';
 
 class EditWalletDateRangePage extends StatelessWidget {
   final FirebaseReference<FirebaseWallet> wallet;
