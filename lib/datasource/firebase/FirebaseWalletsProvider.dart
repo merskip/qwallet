@@ -76,6 +76,12 @@ class FirebaseWalletsProvider implements WalletsProvider {
     });
   }
 
+  Future<void> removeWallet({
+    required Identifier<Wallet> walletId,
+  }) {
+    return firestore.collection("wallets").doc(walletId.id).delete();
+  }
+
   Stream<List<FirebaseWallet>> _parseWalletsSnapshot(
       QuerySnapshot walletsSnapshot) {
     final wallets = walletsSnapshot.docs.map(

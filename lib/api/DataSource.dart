@@ -92,6 +92,7 @@ extension WalletsDataSource on DataSource {
     }).then((reference) => FirebaseReference(reference));
   }
 
+  @deprecated
   Future<FirebaseReference<FirebaseWallet>> updateWallet(
     FirebaseReference<FirebaseWallet> walletRef, {
     String? name,
@@ -116,6 +117,7 @@ extension WalletsDataSource on DataSource {
     return walletRef;
   }
 
+  @deprecated
   Future<void> refreshWalletBalanceIfNeeded(
     LatestTransactions latestTransactions,
   ) async {

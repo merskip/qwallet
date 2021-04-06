@@ -57,10 +57,10 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       content: Text(AppLocalizations.of(context)
           .walletRemoveConfirmationContent(wallet.name)),
       isDestructive: true,
-      onConfirm: () {
-        throw UnimplementedError("Not implemented yet");
-        // Navigator.of(context).pop();
-        // DataSource.instance.removeWallet(wallet.reference);
+      onConfirm: () async {
+        Navigator.of(context).pop();
+        await AggregatedWalletsProvider.instance!.firebaseProvider
+            .removeWallet(walletId: wallet.identifier);
         Navigator.of(context).pop();
       },
     ).show(context);
@@ -164,11 +164,12 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       appBar: AppBar(
         title: Text(wallet.name),
         actions: [
-          IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () => onSelectedDelete(context),
-            tooltip: AppLocalizations.of(context).walletRemove,
-          )
+          if (wallet is FirebaseWallet)
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () => onSelectedDelete(context),
+              tooltip: AppLocalizations.of(context).walletRemove,
+            )
         ],
       ),
       body: ListView(
