@@ -1,15 +1,12 @@
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
 class GoogleAuthClient extends http.BaseClient {
-  final GoogleSignInAccount googleAccount;
+  final _client = new http.Client();
+  Map<String, String> authHeaders;
 
-  final http.Client _client = new http.Client();
+  GoogleAuthClient(this.authHeaders);
 
-  GoogleAuthClient(this.googleAccount);
-
-  Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    final httpHeaders = await googleAccount.authHeaders;
-    return _client.send(request..headers.addAll(httpHeaders));
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    return _client.send(request..headers.addAll(authHeaders));
   }
 }

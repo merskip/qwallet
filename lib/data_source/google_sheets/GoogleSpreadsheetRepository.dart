@@ -6,10 +6,10 @@ import '../AccountProvider.dart';
 import 'GoogleSpreadsheetWallet.dart';
 import 'SheetsApiProvider.dart';
 
-class GoogleSpreadsheetRepository extends SheetsApiProvider {
+class GoogleSpreadsheetRepository extends GoogleApiProvider {
   GoogleSpreadsheetRepository({
     required AccountProvider accountProvider,
-  }) : super(accountProvider: accountProvider);
+  }) : super(accountProvider);
 
   Future<GoogleSpreadsheetWallet> getWalletBySpreadsheetId(
     String spreadsheetId,

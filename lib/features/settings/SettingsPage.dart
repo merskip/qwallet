@@ -3,7 +3,9 @@ import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/data_source/Account.dart';
+import 'package:qwallet/data_source/RemoteUserPreferences.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/features/settings/SelectGoogleSpreadsheetPage.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/MarkdownPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -101,22 +103,27 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).settings),
       ),
-      body: Builder(
-        builder: (context) => ListView(children: [
-          buildAccountLoadingTile(context),
-          Divider(),
-          buildWallets(context),
-          Divider(),
-          buildThemeMode(context),
-          buildLanguage(context),
-          buildApplicationVersion(),
-          Divider(),
-          buildPrivacyPolicy(context),
-          buildTermsOfService(context),
-          buildLicences(context),
-          Divider(),
-          buildDeveloper(context),
-        ]),
+      body: SimpleStreamWidget(
+        stream: SharedProviders.remoteUserPreferences.getUserPreferences(),
+        builder: (context, RemoteUserPreferences userPreferences) {
+          return ListView(children: [
+            buildAccountLoadingTile(context),
+            Divider(),
+            buildWallets(context),
+            if (userPreferences.isGoogleSheetsWalletEnabled)
+              buildAddGoogleSheetsWallet(context),
+            Divider(),
+            buildThemeMode(context),
+            buildLanguage(context),
+            buildApplicationVersion(),
+            Divider(),
+            buildPrivacyPolicy(context),
+            buildTermsOfService(context),
+            buildLicences(context),
+            Divider(),
+            buildDeveloper(context),
+          ]);
+        },
       ),
     );
   }
@@ -154,6 +161,18 @@ class SettingsPage extends StatelessWidget {
       title: Text(AppLocalizations.of(context).settingsWallets),
       subtitle: Text(AppLocalizations.of(context).settingsWalletsHint),
       onTap: () => router.navigateTo(context, "/settings/wallets"),
+    );
+  }
+
+  Widget buildAddGoogleSheetsWallet(BuildContext context) {
+    return ListTile(
+      leading: Icon(Icons.add_circle),
+      title: Text("#Add wallet from Google Sheets"),
+      onTap: () => pushPage(
+        context,
+        builder: (context) => SelectGoogleSpreadsheetPage(),
+      ),
+      dense: true,
     );
   }
 

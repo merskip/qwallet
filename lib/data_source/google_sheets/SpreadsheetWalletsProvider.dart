@@ -15,7 +15,7 @@ import 'SpreadsheetWallet.dart';
 
 class SpreadsheetWalletsProvider implements WalletsProvider {
   final CachedGoogleSpreadsheetRepository repository;
-  final List<Identifier<Wallet>> walletsIds;
+  final Stream<List<Identifier<Wallet>>> walletsIds;
   final Map<Identifier<Wallet>, List<StreamController<Identifier<Wallet>>>>
       refreshController = {};
 
@@ -34,7 +34,7 @@ class SpreadsheetWalletsProvider implements WalletsProvider {
 
   @override
   Stream<List<SpreadsheetWallet>> getWallets() {
-    return Future(() async {
+    return walletsIds.asyncMap((walletsIds) async {
       final wallets = <SpreadsheetWallet>[];
       for (final walletId in walletsIds) {
         try {
@@ -45,7 +45,7 @@ class SpreadsheetWalletsProvider implements WalletsProvider {
         }
       }
       return wallets;
-    }).asStream();
+    });
   }
 
   @override

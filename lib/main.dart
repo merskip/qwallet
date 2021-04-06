@@ -15,7 +15,6 @@ import 'package:qwallet/data_source/firebase/FirebaseRemoteUserPreferencesProvid
 import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
 import 'package:qwallet/router.dart';
 
-import 'data_source/Identifier.dart';
 import 'data_source/common/AggregatedTransactionsProvider.dart';
 import 'data_source/common/AggregatedWalletsProvider.dart';
 import 'data_source/common/DefaultAccountProvider.dart';
@@ -68,12 +67,7 @@ void main() async {
 
       SharedProviders.spreadsheetWalletsProvider = SpreadsheetWalletsProvider(
         repository: googleSpreadsheetRepository,
-        walletsIds: [
-          Identifier(
-            domain: "google_sheets",
-            id: "1bCUZJfpZyS838rhMQYybBjgldVNNvEPqKJZlBs2oXHM",
-          ),
-        ],
+        walletsIds: LocalPreferences.walletsSpreadsheetIds,
       );
 
       SharedProviders.firebaseTransactionsProvider =

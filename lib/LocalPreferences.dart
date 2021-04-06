@@ -22,14 +22,24 @@ class LocalPreferences {
   static final _userPreferences = BehaviorSubject<LocalUserPreferences>(
     onListen: () => _emitUserPreferences(),
   );
-  static get userPreferences =>
-      _userPreferences.stream.doOnListen(() => _emitWalletsOrder());
+
+  static Stream<LocalUserPreferences> get userPreferences =>
+      _userPreferences.stream;
 
   static final _walletsOrder = BehaviorSubject<List<Identifier<Wallet>>>(
     onListen: () => _emitWalletsOrder(),
   );
 
-  static get walletsOrder => _walletsOrder.stream;
+  static Stream<List<Identifier<Wallet>>> get walletsOrder =>
+      _walletsOrder.stream;
+
+  static final _walletsSpreadsheetIds =
+      BehaviorSubject<List<Identifier<Wallet>>>(
+    onListen: () => _emitSpreadsheetWalletsIds(),
+  );
+
+  static Stream<List<Identifier<Wallet>>> get walletsSpreadsheetIds =>
+      _walletsSpreadsheetIds.stream;
 
   static Future<void> setOrderWallets(
       List<Identifier<Wallet>> walletIds) async {
@@ -59,7 +69,28 @@ class LocalPreferences {
     _walletsOrder.add(walletsOrder);
   }
 
-  static setUserThemeMode(ThemeMode themeMode) async {
+  static void _emitSpreadsheetWalletsIds() async {
+    final preferences = await SharedPreferences.getInstance();
+    final walletsSpreadsheetIds =
+        preferences.containsKey("walletsSpreadsheetIds")
+            ? preferences.getStringList("walletsSpreadsheetIds")!
+            : <String>[];
+    final walletsIds = walletsSpreadsheetIds
+        .map((id) => Identifier.tryParse<Wallet>(id))
+        .filterNonNull()
+        .toList();
+    _walletsSpreadsheetIds.add(walletsIds);
+  }
+
+  static void setSpreadsheetWalletsIds(
+      List<Identifier<Wallet>> walletIds) async {
+    final preferences = await SharedPreferences.getInstance();
+    final walletOrder = walletIds.map((w) => w.toString()).toList();
+    preferences.setStringList("walletsSpreadsheetIds", walletOrder);
+    _walletsOrder.add(walletIds);
+  }
+
+  static void setUserThemeMode(ThemeMode themeMode) async {
     final preferences = await SharedPreferences.getInstance();
     preferences.setString("user.themeMode", themeMode.toString());
     final locale = _userLocaleOrNull(preferences);
@@ -67,7 +98,7 @@ class LocalPreferences {
         .add(LocalUserPreferences(themeMode: themeMode, locale: locale));
   }
 
-  static setUserLocale(Locale locale) async {
+  static void setUserLocale(Locale locale) async {
     final preferences = await SharedPreferences.getInstance();
     preferences.setString("user.locale", locale.toString());
     final themeMode = _userThemeMode(preferences);

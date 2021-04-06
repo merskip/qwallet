@@ -73,7 +73,8 @@ class SpreadsheetCategoriesProvider extends CategoriesProvider {
   Future<T> onSheetsApi<T>(
       FutureOr<T> Function(SheetsApi sheetsApi) callback) async {
     final account = await accountProvider.getAccount().first;
-    final client = GoogleAuthClient(account.googleAccount!);
+    final authHeaders = await account.googleAccount!.authHeaders;
+    final client = GoogleAuthClient(authHeaders);
     final sheetsApi = SheetsApi(client);
     return callback(sheetsApi);
   }
