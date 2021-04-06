@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
@@ -119,7 +120,7 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
   Stream<List<Transaction>> getNextTransactions({
     Transaction? afterTransaction,
   }) {
-    return AggregatedTransactionsProvider.instance!.getPageableTransactions(
+    return SharedProviders.transactionsProvider.getPageableTransactions(
       walletId: widget.wallet.identifier,
       limit: itemsPerPage,
       afterTransaction: afterTransaction,

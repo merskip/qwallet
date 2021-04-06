@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/widget/CategoryForm.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
@@ -25,8 +25,7 @@ class EditCategoryPage extends StatelessWidget {
           .categoryRemoveConfirmationContent(category.titleText)),
       isDestructive: true,
       onConfirm: () {
-        AggregatedWalletsProvider.instance!.firebaseProvider.categoriesProvider
-            .removeCategory(
+        SharedProviders.firebaseCategoriesProvider.removeCategory(
           walletId: wallet.identifier,
           categoryId: category.identifier,
         );
@@ -59,9 +58,7 @@ class EditCategoryPage extends StatelessWidget {
             category: category,
             submitChild: Text(AppLocalizations.of(context).categoryEditSubmit),
             onSubmit: (context, title, primaryColor, backgroundColor, icon) {
-              AggregatedWalletsProvider
-                  .instance!.firebaseProvider.categoriesProvider
-                  .updateCategory(
+              SharedProviders.firebaseCategoriesProvider.updateCategory(
                 walletId: wallet.identifier,
                 categoryId: category.identifier,
                 title: title,

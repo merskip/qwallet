@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/Transaction.dart';
-import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
@@ -14,6 +14,7 @@ import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 import '../../AppLocalizations.dart';
+import '../../utils.dart';
 
 class TransactionPage extends StatefulWidget {
   final Wallet wallet;
@@ -56,7 +57,7 @@ class _TransactionPageState extends State<TransactionPage> {
           .transactionDetailsRemoveConfirmationContent),
       isDestructive: true,
       onConfirm: () async {
-        await AggregatedTransactionsProvider.instance!.removeTransaction(
+        await SharedProviders.firebaseTransactionsProvider.removeTransaction(
           walletId: widget.wallet.identifier,
           transaction: widget.transaction,
         );
@@ -83,7 +84,7 @@ class _TransactionPageState extends State<TransactionPage> {
         now.minute,
         now.second,
       );
-      AggregatedTransactionsProvider.instance!.updateTransaction(
+      SharedProviders.firebaseTransactionsProvider.updateTransaction(
         walletId: widget.wallet.identifier,
         transaction: widget.transaction,
         type: widget.transaction.type,
@@ -186,7 +187,7 @@ class _TransactionPageState extends State<TransactionPage> {
         },
       ),
       editingSave: () {
-        AggregatedTransactionsProvider.instance!.updateTransaction(
+        SharedProviders.firebaseTransactionsProvider.updateTransaction(
           walletId: widget.wallet.identifier,
           transaction: widget.transaction,
           type: widget.transaction.type,
@@ -208,7 +209,7 @@ class _TransactionPageState extends State<TransactionPage> {
       editingBegin: () => _selectedType = widget.transaction.type,
       editingContent: (context) => buildTypeEditing(context),
       editingSave: () =>
-          AggregatedTransactionsProvider.instance!.updateTransaction(
+          SharedProviders.firebaseTransactionsProvider.updateTransaction(
         walletId: widget.wallet.identifier,
         transaction: widget.transaction,
         type: _selectedType,
@@ -259,12 +260,12 @@ class _TransactionPageState extends State<TransactionPage> {
         maxLength: 50,
       ),
       editingSave: () =>
-          AggregatedTransactionsProvider.instance!.updateTransaction(
+          SharedProviders.firebaseTransactionsProvider.updateTransaction(
         walletId: widget.wallet.identifier,
         transaction: widget.transaction,
         type: widget.transaction.type,
         category: widget.transaction.category,
-        title: titleController.text.trim(),
+        title: titleController.text.trim().nullIfEmpty(),
         amount: widget.transaction.amount,
         date: widget.transaction.date,
       ),
@@ -287,7 +288,7 @@ class _TransactionPageState extends State<TransactionPage> {
       editingSave: () {
         final amount = amountController.value;
         if (amount != null) {
-          AggregatedTransactionsProvider.instance!.updateTransaction(
+          SharedProviders.firebaseTransactionsProvider.updateTransaction(
             walletId: widget.wallet.identifier,
             transaction: widget.transaction,
             type: widget.transaction.type,
@@ -331,8 +332,7 @@ class _TransactionPageState extends State<TransactionPage> {
         }),
       ),
       editingSave: () {
-        AggregatedTransactionsProvider.instance!.firebaseProvider
-            .updateTransactionExtra(
+        SharedProviders.firebaseTransactionsProvider.updateTransactionExtra(
           walletId: widget.wallet.identifier,
           transaction: widget.transaction,
           excludedFromDailyStatistics: _excludedFromDailyStatistics,

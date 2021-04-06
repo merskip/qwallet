@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
-import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
@@ -60,7 +58,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       isDestructive: true,
       onConfirm: () async {
         Navigator.of(context).pop();
-        await AggregatedWalletsProvider.instance!.firebaseProvider
+        await SharedProviders.firebaseWalletsProvider
             .removeWallet(walletId: wallet.identifier);
         Navigator.of(context).pop();
       },
@@ -79,7 +77,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       builder: (context) => page,
     );
     if (owners != null && owners.any((u) => u.isCurrentUser)) {
-      AggregatedWalletsProvider.instance!.firebaseProvider.updateWallet(
+      SharedProviders.firebaseWalletsProvider.updateWallet(
         wallet.identifier,
         name: wallet.name,
         currency: wallet.currency,
@@ -96,7 +94,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       builder: (context) => page,
     );
     if (currency != null) {
-      AggregatedWalletsProvider.instance!.firebaseProvider.updateWallet(
+      SharedProviders.firebaseWalletsProvider.updateWallet(
         wallet.identifier,
         name: wallet.name,
         currency: currency,
@@ -108,7 +106,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
 
   void onSelectedRefreshBalance(BuildContext context) async {
     setState(() => isBalanceRefreshing = true);
-    final latestTransactions = await AggregatedTransactionsProvider.instance!
+    final latestTransactions = await SharedProviders.transactionsProvider
         .getLatestTransactions(walletId: wallet.identifier)
         .first;
 
@@ -130,8 +128,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           "expenses=$totalExpense, "
           "balance=${totalIncome - totalExpense}");
 
-      await AggregatedWalletsProvider.instance!.firebaseProvider
-          .updateWalletBalance(
+      await SharedProviders.firebaseWalletsProvider.updateWalletBalance(
         walletId: wallet.identifier,
         totalIncome: totalIncome,
         totalExpense: totalExpense,
@@ -145,7 +142,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     final dateRange = await router.navigateTo(
         context, "/wallet/${wallet.identifier}/editDateRange");
     if (dateRange != null) {
-      AggregatedWalletsProvider.instance!.firebaseProvider.updateWallet(
+      SharedProviders.firebaseWalletsProvider.updateWallet(
         wallet.identifier,
         name: wallet.name,
         currency: wallet.currency,
@@ -221,7 +218,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
         final name = nameController.text.trim();
         if (name.isNotEmpty) {
           final wallet = this.wallet as FirebaseWallet;
-          AggregatedWalletsProvider.instance!.firebaseProvider.updateWallet(
+          SharedProviders.firebaseWalletsProvider.updateWallet(
             wallet.identifier,
             name: name,
             currency: wallet.currency,

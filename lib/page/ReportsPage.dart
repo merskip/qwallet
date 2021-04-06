@@ -2,8 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/TransactionsProvider.dart';
 import 'package:qwallet/datasource/Wallet.dart';
@@ -27,7 +27,7 @@ class _ReportsPageState extends State<ReportsPage> {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: AggregatedTransactionsProvider.instance!
+      stream: SharedProviders.transactionsProvider
           .getLatestTransactions(walletId: widget.wallet.identifier),
       builder: (context, LatestTransactions latestTransactions) =>
           buildTabController(

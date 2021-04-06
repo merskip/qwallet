@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
-import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/dialog/SelectWalletDialog.dart';
@@ -198,7 +197,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   onSelectedWallet(BuildContext context) async {
     final wallets =
-        await AggregatedWalletsProvider.instance!.getOrderedWallets().first;
+        await SharedProviders.orderedWalletsProvider.getOrderedWallets().first;
     final selectedWallet = await showDialog(
       context: context,
       builder: (context) => SelectWalletDialog(
@@ -215,7 +214,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       final transactionId =
-          await AggregatedTransactionsProvider.instance!.addTransaction(
+          await SharedProviders.firebaseTransactionsProvider.addTransaction(
         walletId: wallet.identifier,
         type: type,
         category: category,

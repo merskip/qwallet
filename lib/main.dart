@@ -10,6 +10,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
+import 'package:qwallet/datasource/OrderedWalletsProvider.dart';
 import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/firebase/FirebaseCategoriesProvider.dart';
 import 'package:qwallet/datasource/firebase/FirebasePrivateLoansProvider.dart';
@@ -47,21 +48,23 @@ void main() async {
         FirebaseCrashlytics.instance.recordFlutterError(details);
       };
 
-      final accountProvider = DefaultAccountProvider();
+      SharedProviders.accountProvider = DefaultAccountProvider();
 
-      final firebaseWalletsProvider = FirebaseWalletsProvider(
-        accountProvider: accountProvider,
+      SharedProviders.firebaseCategoriesProvider = FirebaseCategoriesProvider(
         firestore: FirebaseFirestore.instance,
-        categoriesProvider: FirebaseCategoriesProvider(
-          firestore: FirebaseFirestore.instance,
-        ),
+      );
+
+      SharedProviders.firebaseWalletsProvider = FirebaseWalletsProvider(
+        accountProvider: SharedProviders.accountProvider,
+        firestore: FirebaseFirestore.instance,
+        categoriesProvider: SharedProviders.firebaseCategoriesProvider,
       );
 
       final googleSpreadsheetRepository = CachedGoogleSpreadsheetRepository(
-        accountProvider: accountProvider,
+        accountProvider: SharedProviders.accountProvider,
       );
 
-      final googleSheetsWalletsProvider = SpreadsheetWalletsProvider(
+      SharedProviders.spreadsheetWalletsProvider = SpreadsheetWalletsProvider(
         repository: googleSpreadsheetRepository,
         walletsIds: [
           Identifier(
@@ -71,20 +74,30 @@ void main() async {
         ],
       );
 
-      AggregatedWalletsProvider.instance = AggregatedWalletsProvider(
-        firebaseProvider: firebaseWalletsProvider,
-        spreadsheetProvider: googleSheetsWalletsProvider,
+      SharedProviders.firebaseTransactionsProvider =
+          FirebaseTransactionsProvider(
+        walletsProvider: SharedProviders.firebaseWalletsProvider,
+        firestore: FirebaseFirestore.instance,
       );
 
-      AggregatedTransactionsProvider.instance = AggregatedTransactionsProvider(
-        firebaseProvider: FirebaseTransactionsProvider(
-          walletsProvider: firebaseWalletsProvider,
-          firestore: FirebaseFirestore.instance,
-        ),
-        spreadsheetProvider: SpreadsheetTransactionsProvider(
-          repository: googleSpreadsheetRepository,
-          walletsProvider: googleSheetsWalletsProvider,
-        ),
+      SharedProviders.spreadsheetTransactionsProvider =
+          SpreadsheetTransactionsProvider(
+        repository: googleSpreadsheetRepository,
+        walletsProvider: SharedProviders.spreadsheetWalletsProvider,
+      );
+
+      SharedProviders.walletsProvider = AggregatedWalletsProvider(
+        firebaseProvider: SharedProviders.firebaseWalletsProvider,
+        spreadsheetProvider: SharedProviders.spreadsheetWalletsProvider,
+      );
+
+      SharedProviders.orderedWalletsProvider = OrderedWalletsProvider(
+        SharedProviders.walletsProvider,
+      );
+
+      SharedProviders.transactionsProvider = AggregatedTransactionsProvider(
+        firebaseProvider: SharedProviders.firebaseTransactionsProvider,
+        spreadsheetProvider: SharedProviders.spreadsheetTransactionsProvider,
       );
 
       SharedProviders.usersProvider = FirebaseUsersProvider(
@@ -92,7 +105,7 @@ void main() async {
       );
 
       SharedProviders.privateLoansProvider = FirebasePrivateLoansProvider(
-        accountProvider: accountProvider,
+        accountProvider: SharedProviders.accountProvider,
         usersProvider: SharedProviders.usersProvider,
         firestore: FirebaseFirestore.instance,
       );

@@ -3,8 +3,6 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
-import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
-import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/Transaction.dart';
@@ -77,8 +75,7 @@ void initRoutes(FluroRouter router) {
         handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
       final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
       return SimpleStreamWidget(
-        stream:
-            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        stream: SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
         builder: (context, Wallet wallet) => WalletPage(
           wallet: wallet,
         ),
@@ -94,8 +91,7 @@ void initRoutes(FluroRouter router) {
       final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
 
       return SimpleStreamWidget(
-        stream:
-            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        stream: SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
         builder: (context, Wallet wallet) => AddTransactionPage(
           initialWallet: wallet,
         ),
@@ -112,8 +108,7 @@ void initRoutes(FluroRouter router) {
       final initialAmount = double.tryParse(params["amount"][0]);
 
       return SimpleStreamWidget(
-        stream:
-            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        stream: SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
         builder: (context, Wallet wallet) => AddTransactionPage(
           initialWallet: wallet,
           initialAmount: initialAmount,
@@ -135,8 +130,7 @@ void initRoutes(FluroRouter router) {
           ? DateTime.tryParse(params["initialDate"][0])
           : null;
       return SimpleStreamWidget(
-        stream:
-            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        stream: SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
         builder: (context, Wallet wallet) => AddSeriesTransactionsPage(
           initialWallet: wallet,
           initialTotalAmount: initialTotalAmount,
@@ -157,9 +151,11 @@ void initRoutes(FluroRouter router) {
 
       return SimpleStreamWidget(
         stream: Rx.combineLatestList([
-          AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
-          AggregatedTransactionsProvider.instance!.getTransactionById(
-              walletId: walletId, transactionId: transactionId)
+          SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
+          SharedProviders.transactionsProvider.getTransactionById(
+            walletId: walletId,
+            transactionId: transactionId,
+          )
         ]),
         builder: (context, List values) {
           final wallet = values[0] as Wallet;
@@ -181,8 +177,7 @@ void initRoutes(FluroRouter router) {
       final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
 
       return SimpleStreamWidget(
-        stream:
-            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        stream: SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
         builder: (context, Wallet wallet) => CategoriesPage(wallet: wallet),
       );
     }),
@@ -196,8 +191,7 @@ void initRoutes(FluroRouter router) {
       final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
 
       return SimpleStreamWidget(
-        stream:
-            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        stream: SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
         builder: (context, Wallet wallet) => AddCategoryPage(wallet: wallet),
       );
     }),
@@ -212,8 +206,7 @@ void initRoutes(FluroRouter router) {
       final categoryId = Identifier.parse<Category>(params["categoryId"][0]);
 
       return SimpleStreamWidget(
-        stream:
-            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        stream: SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
         builder: (context, Wallet wallet) {
           final category =
               wallet.categories.firstWhere((c) => c.identifier == categoryId);
@@ -233,8 +226,7 @@ void initRoutes(FluroRouter router) {
         handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
       final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
       return SimpleStreamWidget(
-        stream:
-            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        stream: SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
         builder: (context, Wallet wallet) => TransactionsListPage(
           wallet: wallet,
         ),
@@ -250,7 +242,7 @@ void initRoutes(FluroRouter router) {
       final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
 
       return SimpleStreamWidget(
-        stream: AggregatedWalletsProvider.instance!.firebaseProvider
+        stream: SharedProviders.firebaseWalletsProvider
             .getWalletByIdentifier(walletId),
         builder: (context, FirebaseWallet wallet) => EditWalletDateRangePage(
           wallet: wallet,
@@ -266,8 +258,7 @@ void initRoutes(FluroRouter router) {
         handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
       final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
       return SimpleStreamWidget(
-        stream:
-            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        stream: SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
         builder: (context, Wallet wallet) => ReportsPage(
           wallet: wallet,
         ),

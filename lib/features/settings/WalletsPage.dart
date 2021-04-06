@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
-import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -41,7 +41,7 @@ class _WalletsPageState extends State<WalletsPage> {
 
   Widget buildContent(BuildContext context) {
     return SimpleStreamWidget(
-      stream: AggregatedWalletsProvider.instance!.getOrderedWallets(),
+      stream: SharedProviders.orderedWalletsProvider.getOrderedWallets(),
       builder: (context, List<Wallet> wallets) {
         if (isReordering) {
           return buildReorderableWalletsList(context, wallets);

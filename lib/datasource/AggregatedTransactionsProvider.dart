@@ -8,15 +8,14 @@ import 'Category.dart';
 import 'google_sheets/SpreadsheetTransactionsProvider.dart';
 
 class AggregatedTransactionsProvider implements TransactionsProvider {
-  final FirebaseTransactionsProvider firebaseProvider;
-  final SpreadsheetTransactionsProvider spreadsheetProvider;
+  final FirebaseTransactionsProvider _firebaseProvider;
+  final SpreadsheetTransactionsProvider _spreadsheetProvider;
 
   AggregatedTransactionsProvider({
-    required this.firebaseProvider,
-    required this.spreadsheetProvider,
-  });
-
-  static AggregatedTransactionsProvider? instance;
+    required FirebaseTransactionsProvider firebaseProvider,
+    required SpreadsheetTransactionsProvider spreadsheetProvider,
+  })   : _firebaseProvider = firebaseProvider,
+        _spreadsheetProvider = spreadsheetProvider;
 
   @override
   Stream<LatestTransactions> getLatestTransactions({
@@ -24,9 +23,9 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
   }) {
     switch (walletId.domain) {
       case "firebase":
-        return firebaseProvider.getLatestTransactions(walletId: walletId);
+        return _firebaseProvider.getLatestTransactions(walletId: walletId);
       case "google_sheets":
-        return spreadsheetProvider.getLatestTransactions(walletId: walletId);
+        return _spreadsheetProvider.getLatestTransactions(walletId: walletId);
       default:
         return Stream.error(ArgumentError.value(
             walletId.domain, "walletId.domain", "Unknown domain"));
@@ -40,10 +39,10 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
   }) {
     switch (transactionId.domain) {
       case "firebase":
-        return firebaseProvider.getTransactionById(
+        return _firebaseProvider.getTransactionById(
             walletId: walletId, transactionId: transactionId);
       case "google_sheets":
-        return spreadsheetProvider.getTransactionById(
+        return _spreadsheetProvider.getTransactionById(
             walletId: walletId, transactionId: transactionId);
       default:
         return Stream.error(ArgumentError.value(
@@ -59,12 +58,12 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
   }) =>
       onDomain(
         walletId,
-        ifFirebase: () => firebaseProvider.getPageableTransactions(
+        ifFirebase: () => _firebaseProvider.getPageableTransactions(
           walletId: walletId,
           limit: limit,
           afterTransaction: afterTransaction,
         ),
-        ifGoogleSheets: () => spreadsheetProvider.getPageableTransactions(
+        ifGoogleSheets: () => _spreadsheetProvider.getPageableTransactions(
           walletId: walletId,
           limit: limit,
           afterTransaction: afterTransaction,
@@ -82,7 +81,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
   }) {
     switch (walletId.domain) {
       case "firebase":
-        return firebaseProvider.addTransaction(
+        return _firebaseProvider.addTransaction(
           walletId: walletId,
           type: type,
           category: category,
@@ -91,7 +90,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
           date: date,
         );
       case "google_sheets":
-        return spreadsheetProvider.addTransaction(
+        return _spreadsheetProvider.addTransaction(
           walletId: walletId,
           type: type,
           category: category,
@@ -120,7 +119,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
   }) {
     switch (transaction.identifier.domain) {
       case "firebase":
-        return firebaseProvider.updateTransaction(
+        return _firebaseProvider.updateTransaction(
           walletId: walletId,
           transaction: transaction,
           type: type,
@@ -130,7 +129,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
           date: date,
         );
       case "google_sheets":
-        return spreadsheetProvider.updateTransaction(
+        return _spreadsheetProvider.updateTransaction(
           walletId: walletId,
           transaction: transaction,
           type: type,
@@ -155,12 +154,12 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
   }) {
     switch (transaction.identifier.domain) {
       case "firebase":
-        return firebaseProvider.removeTransaction(
+        return _firebaseProvider.removeTransaction(
           walletId: walletId,
           transaction: transaction,
         );
       case "google_sheets":
-        return spreadsheetProvider.removeTransaction(
+        return _spreadsheetProvider.removeTransaction(
           walletId: walletId,
           transaction: transaction,
         );

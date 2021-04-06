@@ -6,8 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/CurrencyList.dart';
 import 'package:qwallet/MoneyTextDetector.dart';
-import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/TransactionsProvider.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/dialog/EnterMoneyDialog.dart';
@@ -55,7 +55,7 @@ class DashboardPageState extends State<DashboardPage> {
     ) as Money?;
     if (newBalance != null) {
       // Fixes #44 bug
-      final freshWallet = await AggregatedWalletsProvider.instance!
+      final freshWallet = await SharedProviders.walletsProvider
           .getWalletByIdentifier(wallet.identifier)
           .first;
       final initialAmount = newBalance.amount - freshWallet.balance.amount;
@@ -141,7 +141,7 @@ class DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: AggregatedWalletsProvider.instance!.getOrderedWallets(),
+      stream: SharedProviders.orderedWalletsProvider.getOrderedWallets(),
       builder: (context, List<Wallet> wallets) =>
           buildContent(context, wallets),
     );
@@ -181,7 +181,7 @@ class DashboardPageState extends State<DashboardPage> {
   Widget buildWalletCards(BuildContext context, Wallet wallet) {
     return SimpleStreamWidget(
       key: Key("wallet-cards-${wallet.identifier}"),
-      stream: AggregatedTransactionsProvider.instance!
+      stream: SharedProviders.transactionsProvider
           .getLatestTransactions(walletId: wallet.identifier),
       loadingBuilder: (context) => SliverFillRemaining(
         child: Center(

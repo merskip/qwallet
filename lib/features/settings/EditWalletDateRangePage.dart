@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/CalendarRangesPreview.dart';
@@ -60,7 +60,7 @@ class _EditWalletDateRangePageContentState
   }
 
   void onSelectedSubmit(BuildContext context) {
-    AggregatedWalletsProvider.instance!.firebaseProvider.updateWallet(
+    SharedProviders.firebaseWalletsProvider.updateWallet(
       widget.wallet.identifier,
       name: widget.wallet.name,
       currency: widget.wallet.currency,

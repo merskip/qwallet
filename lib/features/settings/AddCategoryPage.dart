@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/widget/CategoryForm.dart';
 
@@ -23,9 +23,7 @@ class AddCategoryPage extends StatelessWidget {
             category: null,
             submitChild: Text(AppLocalizations.of(context).addCategorySubmit),
             onSubmit: (context, title, primaryColor, backgroundColor, icon) {
-              AggregatedWalletsProvider
-                  .instance!.firebaseProvider.categoriesProvider
-                  .addCategory(
+              SharedProviders.firebaseCategoriesProvider.addCategory(
                 walletId: wallet.identifier,
                 title: title,
                 primaryColor: primaryColor,

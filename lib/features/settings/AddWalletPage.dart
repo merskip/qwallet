@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/Money.dart';
-import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
@@ -94,7 +93,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
 
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      AggregatedWalletsProvider.instance!.firebaseProvider.addWallet(
+      SharedProviders.firebaseWalletsProvider.addWallet(
         name: nameController.text,
         ownersUid: ownersController.value!.map((user) => user.uid).toList(),
         currency: currency.code,

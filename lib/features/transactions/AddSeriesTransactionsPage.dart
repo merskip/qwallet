@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
-import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/dialog/SelectWalletDialog.dart';
@@ -124,7 +123,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
 
   onSelectedWallet(BuildContext context) async {
     final wallets =
-        await AggregatedWalletsProvider.instance!.getOrderedWallets().first;
+        await SharedProviders.orderedWalletsProvider.getOrderedWallets().first;
     final selectedWallet = await showDialog(
       context: context,
       builder: (context) => SelectWalletDialog(
@@ -142,7 +141,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final transactionId =
-        await AggregatedTransactionsProvider.instance!.addTransaction(
+        await SharedProviders.firebaseTransactionsProvider.addTransaction(
       walletId: wallet.identifier,
       type: TransactionType.expense,
       category: transactionCategory,
@@ -156,7 +155,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
       transactionCategory = null;
     });
 
-    subscriptions.add(AggregatedTransactionsProvider.instance!
+    subscriptions.add(SharedProviders.firebaseTransactionsProvider
         .getTransactionById(
             walletId: wallet.identifier, transactionId: transactionId)
         .listen((transaction) {
