@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qwallet/Currency.dart';
-import 'package:qwallet/page/dashboard/DailySpendingComputing.dart';
+import 'package:qwallet/features/dashboard/DailySpendingComputing.dart';
 
 void main() {
   final computing = DailySpendingComputing();

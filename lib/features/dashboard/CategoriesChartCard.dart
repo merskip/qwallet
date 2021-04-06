@@ -1,0 +1,312 @@
+import 'package:collection/collection.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Transaction.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/widget/CategoryIcon.dart';
+
+import '../../AppLocalizations.dart';
+import '../../Money.dart';
+import '../../utils/IterableFinding.dart';
+
+class CategoriesChartCard extends StatelessWidget {
+  final Wallet wallet;
+  final List<Transaction> transactions;
+
+  const CategoriesChartCard({
+    Key? key,
+    required this.wallet,
+    required this.transactions,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: _CategoriesChartContent(
+        wallet: wallet,
+        transactions: transactions,
+      ),
+    );
+  }
+}
+
+class _CategoriesChartContent extends StatefulWidget {
+  final Wallet wallet;
+  final List<Transaction> transactions;
+
+  const _CategoriesChartContent({
+    Key? key,
+    required this.wallet,
+    required this.transactions,
+  }) : super(key: key);
+
+  @override
+  _CategoriesChartContentState createState() => _CategoriesChartContentState();
+}
+
+class _CategoriesChartContentState extends State<_CategoriesChartContent> {
+  @override
+  Widget build(BuildContext context) {
+    return _CategoriesChartWithLegend(
+      wallet: widget.wallet,
+      items: _getCategoryChartItems(),
+      summaryTitle:
+          AppLocalizations.of(context).categoriesChartCardTotalExpenses,
+    );
+  }
+
+  List<_CategoryChartItem> _getCategoryChartItems() {
+    final transactionInType =
+        widget.transactions.where((t) => t.type == TransactionType.expense);
+    final transactionsByCategory =
+        groupBy(transactionInType, (Transaction t) => t.category);
+
+    if (transactionsByCategory.isEmpty) {
+      return [_CategoryChartItem(widget.wallet, null, [])];
+    }
+
+    return transactionsByCategory.keys.map((categoryRef) {
+      final category = widget.wallet.categories.findFirstOrNull(
+          (c) => c.identifier.id == categoryRef?.identifier.id);
+      final transactions = transactionsByCategory[categoryRef]!;
+      return _CategoryChartItem(widget.wallet, category, transactions);
+    }).toList()
+      ..sort((lhs, rhs) => rhs.sum.amount.compareTo(lhs.sum.amount));
+  }
+}
+
+class _CategoriesChartWithLegend extends StatefulWidget {
+  final Wallet wallet;
+  final List<_CategoryChartItem> items;
+  final String summaryTitle;
+
+  const _CategoriesChartWithLegend({
+    Key? key,
+    required this.wallet,
+    required this.items,
+    required this.summaryTitle,
+  }) : super(key: key);
+
+  @override
+  _CategoriesChartWithLegendState createState() =>
+      _CategoriesChartWithLegendState();
+}
+
+class _CategoriesChartWithLegendState
+    extends State<_CategoriesChartWithLegend> {
+  _CategoryChartItem? selectedItem;
+  bool showAllTitles = false;
+
+  @override
+  void didUpdateWidget(_CategoriesChartWithLegend oldWidget) {
+    selectedItem = widget.items.findFirstOrNull((item) => item == selectedItem);
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Center(
+              child: _CategoriesChart(
+                items: widget.items,
+                showAllTitles: showAllTitles,
+                selectedItem: selectedItem,
+                onSelectedItem: (selectedItem) {
+                  setState(() {
+                    this.selectedItem = selectedItem;
+                  });
+                },
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  this.selectedItem = null;
+                });
+              },
+              child: selectedItem == null
+                  ? buildSummary(context)
+                  : buildCategorySummary(context, selectedItem!),
+            ),
+          ],
+        ),
+        buildLegend(context, widget.items),
+        SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget buildSummary(BuildContext context) {
+    final double sum = widget.items.fold(
+      0.0,
+      (value, item) => value + item.sum.amount,
+    );
+    return Column(children: [
+      Text(
+        Money(sum, widget.wallet.currency).formatted,
+        style: Theme.of(context).textTheme.headline6,
+      ),
+      Text(
+        widget.summaryTitle,
+        style: Theme.of(context).textTheme.caption,
+      ),
+    ]);
+  }
+
+  Widget buildCategorySummary(BuildContext context, _CategoryChartItem item) {
+    return Column(children: [
+      CategoryIcon(item.category, size: 16),
+      SizedBox(height: 8),
+      Text(
+        item.sum.formatted,
+        style: Theme.of(context).textTheme.headline6,
+      ),
+      Text(
+        item.category?.titleText ??
+            AppLocalizations.of(context).categoriesChartCardNoCategory,
+        style: Theme.of(context).textTheme.caption,
+      ),
+    ]);
+  }
+
+  Widget buildLegend(BuildContext context, List<_CategoryChartItem> items) {
+    return InkWell(
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          ...items.map((item) {
+            return Row(mainAxisSize: MainAxisSize.min, children: [
+              SizedBox(
+                width: 12,
+                height: 12,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: item.category?.primaryColor ?? Colors.black12,
+                    borderRadius: BorderRadius.all(Radius.circular(3)),
+                  ),
+                ),
+              ),
+              SizedBox(width: 3),
+              Text(item.category?.titleText ??
+                  AppLocalizations.of(context).categoriesChartCardNoCategory),
+            ]);
+          })
+        ],
+      ),
+      onTap: () => setState(() => showAllTitles = !showAllTitles),
+    );
+  }
+}
+
+class _CategoriesChart extends StatelessWidget {
+  final List<_CategoryChartItem> items;
+  final bool showAllTitles;
+  final _CategoryChartItem? selectedItem;
+  final Function(_CategoryChartItem?) onSelectedItem;
+
+  final double totalAmount;
+
+  _CategoriesChart({
+    Key? key,
+    required this.items,
+    required this.showAllTitles,
+    this.selectedItem,
+    required this.onSelectedItem,
+  })   : totalAmount = items.fold(0.0, (acc, i) => acc + i.sum.amount),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (items.isEmpty)
+      return Container();
+    else
+      return SizedBox(
+        height: 292,
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: PieChart(
+            PieChartData(
+              sections: [
+                ...items.map((item) => createSection(context, item)),
+              ],
+              borderData: FlBorderData(show: false),
+              pieTouchData: PieTouchData(
+                enabled: !showAllTitles,
+                touchCallback: (touch) {
+                  if (!touch.clickHappened) return;
+
+                  final section = touch.touchedSection;
+                  if (section != null && section.touchedSectionIndex >= 0) {
+                    final selectedItem = items[section.touchedSectionIndex];
+                    if (this.selectedItem == selectedItem) {
+                      onSelectedItem(null);
+                    } else {
+                      onSelectedItem(selectedItem);
+                    }
+                  }
+                },
+              ),
+              centerSpaceRadius: 72,
+              startDegreeOffset: -90,
+            ),
+          ),
+        ),
+      );
+  }
+
+  PieChartSectionData createSection(
+    BuildContext context,
+    _CategoryChartItem item,
+  ) {
+    final percentage =
+        totalAmount > 0.0 ? (item.sum.amount / totalAmount * 100).round() : 0.0;
+    final titleStyle = Theme.of(context).textTheme.bodyText1!.copyWith(
+          backgroundColor: item.category?.backgroundColor ?? Colors.grey,
+        );
+
+    final badge =
+        item.category?.symbol != null ? Text(item.category!.symbol!) : null;
+    final showTitle = (showAllTitles || this.selectedItem == item);
+
+    return PieChartSectionData(
+      value: item.sum.amount > 0.0 ? item.sum.amount : 1.0,
+      color: item.category?.primaryColor ?? Colors.black12,
+      title: "$percentage%",
+      titleStyle: titleStyle,
+      showTitle: showTitle,
+      badgeWidget: !showTitle ? badge : null,
+      radius: (this.selectedItem == item ? 64 : 52),
+    );
+  }
+}
+
+class _CategoryChartItem {
+  final Wallet wallet;
+  final Category? category;
+  final List<Transaction> transactions;
+
+  Money get sum => Money(
+      transactions.fold<double>(0, (amount, t) => amount + t.amount),
+      wallet.currency);
+
+  _CategoryChartItem(this.wallet, this.category, this.transactions);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _CategoryChartItem &&
+          runtimeType == other.runtimeType &&
+          category == other.category;
+
+  @override
+  int get hashCode => category.hashCode;
+}

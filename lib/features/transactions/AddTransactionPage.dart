@@ -1,42 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/Money.dart';
-import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
-import 'package:qwallet/api/Transaction.dart';
-import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/dialog/SelectWalletDialog.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Transaction.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
-import 'package:qwallet/widget/SimpleStreamWidget.dart';
+import 'package:qwallet/widget/SelectWalletDialog.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 import 'package:qwallet/widget/VectorImage.dart';
 
 import '../../AppLocalizations.dart';
 import '../../router.dart';
+import '../../utils.dart';
 
 class AddTransactionPage extends StatelessWidget {
-  final Reference<Wallet> initialWalletRef;
+  final Wallet initialWallet;
   final double? initialAmount;
 
   const AddTransactionPage({
     Key? key,
-    required this.initialWalletRef,
+    required this.initialWallet,
     this.initialAmount,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SimpleStreamWidget(
-      stream: DataSource.instance.getWallet(initialWalletRef),
-      builder: (context, Wallet wallet) => _AddTransactionPageContent(
-        initialWallet: wallet,
-        initialAmount: initialAmount,
-      ),
+    return _AddTransactionPageContent(
+      initialWallet: initialWallet,
+      initialAmount: initialAmount,
     );
   }
 }
@@ -71,7 +67,7 @@ class _AddTransactionPageContent extends StatelessWidget {
     router.pop(context, null);
     router.navigateTo(
         context,
-        "/wallet/${wallet.id}/addSeriesTransactions"
+        "/wallet/${wallet.identifier}/addSeriesTransactions"
         "?initialTotalAmount=$amount"
         "&initialDate=${date.toIso8601String()}");
   }
@@ -201,8 +197,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   onSelectedWallet(BuildContext context) async {
     final wallets =
-        await LocalPreferences.orderedWallets(DataSource.instance.getWallets())
-            .first;
+        await SharedProviders.orderedWalletsProvider.getOrderedWallets().first;
     final selectedWallet = await showDialog(
       context: context,
       builder: (context) => SelectWalletDialog(
@@ -210,7 +205,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         wallets: wallets,
         selectedWallet: this.wallet,
       ),
-    ) as Wallet?;
+    ) as FirebaseWallet?;
     if (selectedWallet != null) {
       setState(() => this.wallet = selectedWallet);
     }
@@ -218,15 +213,16 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      final transactionRef = DataSource.instance.addTransaction(
-        wallet.reference,
+      final transactionId =
+          await SharedProviders.transactionsProvider.addTransaction(
+        walletId: wallet.identifier,
         type: type,
-        title: titleController.text.trim(),
+        category: category,
+        title: titleController.text.trim().nullIfEmpty(),
         amount: amountController.value!.amount,
-        category: category?.reference,
         date: date,
       );
-      router.pop(context, transactionRef);
+      router.pop(context, transactionId);
     }
   }
 
@@ -318,11 +314,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   Widget buildCategory(BuildContext context) {
-    return SimpleStreamWidget(
-      stream: DataSource.instance.getCategories(wallet: wallet.reference),
-      builder: (context, List<Category> categories) =>
-          buildCategoryPicker(context, categories),
-    );
+    return buildCategoryPicker(context, wallet.categories);
   }
 
   Widget buildCategoryPicker(BuildContext context, List<Category> categories) {

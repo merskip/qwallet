@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Category.dart';
+import 'package:qwallet/data_source/Category.dart';
 
 import 'CategoryButton.dart';
 
@@ -85,7 +85,7 @@ class CategoryPicker extends StatelessWidget {
   }
 
   Widget buildCategoryButton(BuildContext context, Category category) {
-    final isSelected = selectedCategory == category;
+    final isSelected = selectedCategory?.identifier == category.identifier;
     return CategoryButton(
       category: category,
       isSelected: isSelected,

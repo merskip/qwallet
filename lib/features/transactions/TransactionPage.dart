@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
-import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
-import 'package:qwallet/api/Transaction.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Transaction.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/data_source/firebase/FirebaseTransaction.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
-import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 import '../../AppLocalizations.dart';
+import '../../utils.dart';
 
 class TransactionPage extends StatefulWidget {
-  final Reference<Wallet> walletRef;
+  final Wallet wallet;
   final Transaction transaction;
 
   const TransactionPage({
     Key? key,
-    required this.walletRef,
+    required this.wallet,
     required this.transaction,
   }) : super(key: key);
 
@@ -56,10 +56,10 @@ class _TransactionPageState extends State<TransactionPage> {
       content: Text(AppLocalizations.of(context)
           .transactionDetailsRemoveConfirmationContent),
       isDestructive: true,
-      onConfirm: () {
-        DataSource.instance.removeTransaction(
-          widget.walletRef,
-          widget.transaction,
+      onConfirm: () async {
+        await SharedProviders.firebaseTransactionsProvider.removeTransaction(
+          walletId: widget.wallet.identifier,
+          transaction: widget.transaction,
         );
         Navigator.of(context).popUntil(
             (route) => !(route.settings.name?.contains("transaction") ?? true));
@@ -84,9 +84,13 @@ class _TransactionPageState extends State<TransactionPage> {
         now.minute,
         now.second,
       );
-      DataSource.instance.updateTransaction(
-        widget.walletRef,
-        widget.transaction,
+      SharedProviders.firebaseTransactionsProvider.updateTransaction(
+        walletId: widget.wallet.identifier,
+        transaction: widget.transaction,
+        type: widget.transaction.type,
+        category: widget.transaction.category,
+        title: widget.transaction.title,
+        amount: widget.transaction.amount,
         date: dateTime,
       );
     }
@@ -98,7 +102,9 @@ class _TransactionPageState extends State<TransactionPage> {
       appBar: AppBar(
         title: Text(
           widget.transaction.title ??
-              widget.transaction.getTypeLocalizedText(context),
+              (widget.transaction.type == TransactionType.expense
+                  ? AppLocalizations.of(context).transactionTypeExpense
+                  : AppLocalizations.of(context).transactionTypeIncome),
         ),
         actions: [
           IconButton(
@@ -107,19 +113,17 @@ class _TransactionPageState extends State<TransactionPage> {
           ),
         ],
       ),
-      body: SimpleStreamWidget(
-        stream: DataSource.instance.getWallet(widget.walletRef),
-        builder: (context, Wallet wallet) => ListView(
-          children: [
-            buildWallet(context, wallet),
-            buildCategory(context),
-            buildType(context),
-            buildTitle(context),
-            buildAmount(context, wallet),
-            buildDate(context),
+      body: ListView(
+        children: [
+          buildWallet(context, widget.wallet),
+          buildCategory(context),
+          buildType(context),
+          buildTitle(context),
+          buildAmount(context, widget.wallet),
+          buildDate(context),
+          if (widget.transaction is FirebaseTransaction)
             buildExcludedFromDailyStatistics(context),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -139,16 +143,12 @@ class _TransactionPageState extends State<TransactionPage> {
   Widget buildCategory(BuildContext context) {
     final category = widget.transaction.category;
     if (category != null) {
-      return SimpleStreamWidget(
-        stream: DataSource.instance.getCategory(category: category),
-        builder: (context, Category category) {
-          return buildCategoryDetailsItem(
-            context,
-            leading: CategoryIcon(category, size: 20),
-            value: Text(category.titleText),
-            category: category,
-          );
-        },
+      return buildCategoryDetailsItem(
+        context,
+        leading: CategoryIcon(category, size: 20),
+        value: Text(category.titleText),
+        wallet: widget.wallet,
+        category: category,
       );
     } else {
       return buildCategoryDetailsItem(
@@ -158,6 +158,7 @@ class _TransactionPageState extends State<TransactionPage> {
           AppLocalizations.of(context).transactionDetailsCategoryEmpty,
           style: TextStyle(fontStyle: FontStyle.italic),
         ),
+        wallet: widget.wallet,
         category: null,
       );
     }
@@ -167,6 +168,7 @@ class _TransactionPageState extends State<TransactionPage> {
     BuildContext context, {
     required Widget leading,
     required Widget value,
+    required Wallet wallet,
     Category? category,
   }) {
     return DetailsItemTile(
@@ -174,26 +176,25 @@ class _TransactionPageState extends State<TransactionPage> {
       title: Text(AppLocalizations.of(context).transactionDetailsCategory),
       value: value,
       editingBegin: () => _selectedCategory = category,
-      editingContent: (context) => SimpleStreamWidget(
-        stream: DataSource.instance.getCategories(wallet: widget.walletRef),
-        builder: (context, List<Category> categories) {
-          return CategoryPicker(
-            title:
-                Text(AppLocalizations.of(context).transactionDetailsCategory),
-            selectedCategory: _selectedCategory,
-            categories: categories,
-            onChangeCategory: (category) {
-              final effectiveCategory =
-                  category != _selectedCategory ? category : null;
-              setState(() => _selectedCategory = effectiveCategory);
-            },
-          );
+      editingContent: (context) => CategoryPicker(
+        title: Text(AppLocalizations.of(context).transactionDetailsCategory),
+        selectedCategory: _selectedCategory,
+        categories: wallet.categories,
+        onChangeCategory: (category) {
+          final effectiveCategory =
+              category != _selectedCategory ? category : null;
+          setState(() => _selectedCategory = effectiveCategory);
         },
       ),
       editingSave: () {
-        DataSource.instance.updateTransactionCategory(
-          widget.transaction,
-          _selectedCategory?.reference,
+        SharedProviders.firebaseTransactionsProvider.updateTransaction(
+          walletId: widget.wallet.identifier,
+          transaction: widget.transaction,
+          type: widget.transaction.type,
+          category: _selectedCategory,
+          title: widget.transaction.title,
+          amount: widget.transaction.amount,
+          date: widget.transaction.date,
         );
       },
     );
@@ -202,13 +203,20 @@ class _TransactionPageState extends State<TransactionPage> {
   Widget buildType(BuildContext context) {
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).transactionDetailsType),
-      value: Text(widget.transaction.getTypeLocalizedText(context)),
+      value: Text(widget.transaction.type == TransactionType.expense
+          ? AppLocalizations.of(context).transactionTypeExpense
+          : AppLocalizations.of(context).transactionTypeIncome),
       editingBegin: () => _selectedType = widget.transaction.type,
       editingContent: (context) => buildTypeEditing(context),
-      editingSave: () => DataSource.instance.updateTransaction(
-        widget.walletRef,
-        widget.transaction,
+      editingSave: () =>
+          SharedProviders.firebaseTransactionsProvider.updateTransaction(
+        walletId: widget.wallet.identifier,
+        transaction: widget.transaction,
         type: _selectedType,
+        category: widget.transaction.category,
+        title: widget.transaction.title,
+        amount: widget.transaction.amount,
+        date: widget.transaction.date,
       ),
     );
   }
@@ -251,10 +259,15 @@ class _TransactionPageState extends State<TransactionPage> {
         autofocus: true,
         maxLength: 50,
       ),
-      editingSave: () => DataSource.instance.updateTransaction(
-        widget.walletRef,
-        widget.transaction,
-        title: titleController.text.trim(),
+      editingSave: () =>
+          SharedProviders.firebaseTransactionsProvider.updateTransaction(
+        walletId: widget.wallet.identifier,
+        transaction: widget.transaction,
+        type: widget.transaction.type,
+        category: widget.transaction.category,
+        title: titleController.text.trim().nullIfEmpty(),
+        amount: widget.transaction.amount,
+        date: widget.transaction.date,
       ),
     );
   }
@@ -275,10 +288,14 @@ class _TransactionPageState extends State<TransactionPage> {
       editingSave: () {
         final amount = amountController.value;
         if (amount != null) {
-          DataSource.instance.updateTransaction(
-            widget.walletRef,
-            widget.transaction,
+          SharedProviders.firebaseTransactionsProvider.updateTransaction(
+            walletId: widget.wallet.identifier,
+            transaction: widget.transaction,
+            type: widget.transaction.type,
+            category: widget.transaction.category,
+            title: widget.transaction.title,
             amount: amount.amount,
+            date: widget.transaction.date,
           );
         }
       },
@@ -315,9 +332,9 @@ class _TransactionPageState extends State<TransactionPage> {
         }),
       ),
       editingSave: () {
-        DataSource.instance.updateTransaction(
-          widget.walletRef,
-          widget.transaction,
+        SharedProviders.firebaseTransactionsProvider.updateTransactionExtra(
+          walletId: widget.wallet.identifier,
+          transaction: widget.transaction,
           excludedFromDailyStatistics: _excludedFromDailyStatistics,
         );
       },

@@ -1,87 +1,115 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Wallet.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'data_source/Identifier.dart';
+import 'data_source/Wallet.dart';
 import 'utils/IterableFinding.dart';
 
-class UserPreferences {
+class LocalUserPreferences {
   final ThemeMode themeMode;
   final Locale? locale;
 
-  UserPreferences({required this.themeMode, this.locale});
+  LocalUserPreferences({required this.themeMode, this.locale});
 
-  factory UserPreferences.empty() =>
-      UserPreferences(themeMode: ThemeMode.light, locale: null);
+  factory LocalUserPreferences.empty() =>
+      LocalUserPreferences(themeMode: ThemeMode.light, locale: null);
 }
 
 class LocalPreferences {
-  static final _walletsOrder = StreamController<List<Wallet>>.broadcast();
-
-  static final _userPreferences = BehaviorSubject<UserPreferences>(
-    onListen: () => emitUserPreferences(),
+  static final _userPreferences = BehaviorSubject<LocalUserPreferences>(
+    onListen: () => _emitUserPreferences(),
   );
 
-  static Stream<UserPreferences> get userPreferences => _userPreferences.stream;
+  static Stream<LocalUserPreferences> get userPreferences =>
+      _userPreferences.stream;
 
-  static Future<void> orderWallets(List<Wallet> wallets) async {
+  static final _walletsOrder = BehaviorSubject<List<Identifier<Wallet>>>(
+    onListen: () => _emitWalletsOrder(),
+  );
+
+  static Stream<List<Identifier<Wallet>>> get walletsOrder =>
+      _walletsOrder.stream;
+
+  static final _walletsSpreadsheetIds =
+      BehaviorSubject<List<Identifier<Wallet>>>(
+    onListen: () => _emitSpreadsheetWalletsIds(),
+  );
+
+  static Stream<List<Identifier<Wallet>>> get walletsSpreadsheetIds =>
+      _walletsSpreadsheetIds.stream;
+
+  static Future<void> setOrderWallets(
+      List<Identifier<Wallet>> walletIds) async {
     final preferences = await SharedPreferences.getInstance();
-    final walletsOrderIds = wallets.map((wallet) => wallet.id).toList();
-    preferences.setStringList("walletsOrder", walletsOrderIds);
-    _walletsOrder.add(wallets);
+    final walletOrder = walletIds.map((w) => w.toString()).toList();
+    preferences.setStringList("walletsOrder", walletOrder);
+    _walletsOrder.add(walletIds);
   }
 
-  static Stream<List<Wallet>> orderedWallets(Stream<List<Wallet>> wallets) {
-    return MergeStream([_walletsOrder.stream, wallets])
-        .asyncMap((wallets) async {
-      final remainingWallets = List.of(wallets);
-
-      final preferences = await SharedPreferences.getInstance();
-      final walletsOrderIds = preferences.containsKey("walletsOrder")
-          ? preferences.getStringList("walletsOrder")!
-          : [];
-
-      final result = <Wallet>[];
-      for (final walletId in walletsOrderIds) {
-        final foundWallet =
-            remainingWallets.findFirstOrNull((wallet) => wallet.id == walletId);
-        if (foundWallet != null) {
-          result.add(foundWallet);
-          remainingWallets.remove(foundWallet);
-        }
-      }
-      result.addAll(remainingWallets);
-      return result;
-    });
-  }
-
-  static void emitUserPreferences() async {
+  static void _emitUserPreferences() async {
     final preferences = await SharedPreferences.getInstance();
     final themeMode = _userThemeMode(preferences);
     final locale = _userLocaleOrNull(preferences);
-    _userPreferences.add(UserPreferences(themeMode: themeMode, locale: locale));
+    _userPreferences
+        .add(LocalUserPreferences(themeMode: themeMode, locale: locale));
   }
 
-  static setUserThemeMode(ThemeMode themeMode) async {
+  static void _emitWalletsOrder() async {
+    final preferences = await SharedPreferences.getInstance();
+    final walletsOrderIds = preferences.containsKey("walletsOrder")
+        ? preferences.getStringList("walletsOrder")!
+        : <String>[];
+    final walletsOrder = walletsOrderIds
+        .map((id) => Identifier.tryParse<Wallet>(id))
+        .filterNonNull()
+        .toList();
+    _walletsOrder.add(walletsOrder);
+  }
+
+  static void _emitSpreadsheetWalletsIds() async {
+    final preferences = await SharedPreferences.getInstance();
+    final walletsSpreadsheetIds =
+        preferences.containsKey("walletsSpreadsheetIds")
+            ? preferences.getStringList("walletsSpreadsheetIds")!
+            : <String>[];
+    final walletsIds = walletsSpreadsheetIds
+        .map((id) => Identifier.tryParse<Wallet>(id))
+        .filterNonNull()
+        .toList();
+    _walletsSpreadsheetIds.add(walletsIds);
+  }
+
+  static void setSpreadsheetWalletsIds(
+      List<Identifier<Wallet>> walletIds) async {
+    final preferences = await SharedPreferences.getInstance();
+    final walletOrder = walletIds.map((w) => w.toString()).toList();
+    preferences.setStringList("walletsSpreadsheetIds", walletOrder);
+    _walletsSpreadsheetIds.add(walletIds);
+  }
+
+  static void setUserThemeMode(ThemeMode themeMode) async {
     final preferences = await SharedPreferences.getInstance();
     preferences.setString("user.themeMode", themeMode.toString());
     final locale = _userLocaleOrNull(preferences);
-    _userPreferences.add(UserPreferences(themeMode: themeMode, locale: locale));
+    _userPreferences
+        .add(LocalUserPreferences(themeMode: themeMode, locale: locale));
   }
 
-  static setUserLocale(Locale locale) async {
+  static void setUserLocale(Locale locale) async {
     final preferences = await SharedPreferences.getInstance();
     preferences.setString("user.locale", locale.toString());
     final themeMode = _userThemeMode(preferences);
-    _userPreferences.add(UserPreferences(themeMode: themeMode, locale: locale));
+    _userPreferences
+        .add(LocalUserPreferences(themeMode: themeMode, locale: locale));
   }
 
   static ThemeMode _userThemeMode(SharedPreferences preferences) =>
       preferences.containsKey("user.themeMode")
           ? _parseThemeMode(preferences.getString("user.themeMode")!)
-          : UserPreferences.empty().themeMode;
+          : LocalUserPreferences.empty().themeMode;
 
   static Locale? _userLocaleOrNull(SharedPreferences preferences) =>
       preferences.containsKey("user.locale")

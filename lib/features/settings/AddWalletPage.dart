@@ -1,0 +1,189 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:qwallet/AppLocalizations.dart';
+import 'package:qwallet/Money.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/model/user.dart';
+import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/CurrencySelectionPage.dart';
+import 'package:qwallet/widget/PrimaryButton.dart';
+
+import '../../Currency.dart';
+import '../../widget/UsersFormField.dart';
+import 'UserSelectionPage.dart';
+
+class AddWalletPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context).addWalletNew),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: _AddWalletForm(),
+        ),
+      ),
+    );
+  }
+}
+
+class _AddWalletForm extends StatefulWidget {
+  @override
+  _AddWalletFormState createState() => _AddWalletFormState();
+}
+
+class _AddWalletFormState extends State<_AddWalletForm> {
+  final _formKey = GlobalKey<FormState>();
+
+  final nameController = TextEditingController();
+  final nameFocus = FocusNode();
+
+  late User currentUser;
+  final ownersController = UsersEditingController();
+
+  Currency currency = Currency.getDefaultBasedOnLocale();
+
+  @override
+  void initState() {
+    _initOwners();
+    super.initState();
+  }
+
+  _initOwners() async {
+    final currentUser = await SharedProviders.usersProvider.getCurrentUser();
+    setState(() {
+      this.currentUser = currentUser;
+      ownersController.value = [currentUser];
+    });
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
+  }
+
+  onSelectedOwners(BuildContext context) async {
+    final List<User>? selectedUsers = await pushPage(
+      context,
+      builder: (context) => UserSelectionPage(
+        title: AppLocalizations.of(context).addWalletOwners,
+        selectedUsers: ownersController.value!,
+      ),
+    );
+    if (selectedUsers != null) {
+      setState(() {
+        ownersController.value = selectedUsers;
+      });
+    }
+  }
+
+  onSelectedCurrency(BuildContext context) async {
+    final Currency? currency = await pushPage(
+      context,
+      builder: (context) =>
+          CurrencySelectionPage(selectedCurrency: this.currency),
+    );
+    if (currency != null) {
+      setState(() => this.currency = currency);
+    }
+  }
+
+  onSelectedSubmit(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      SharedProviders.firebaseWalletsProvider.addWallet(
+        name: nameController.text,
+        ownersUid: ownersController.value!.map((user) => user.uid).toList(),
+        currency: currency.code,
+      );
+      Navigator.of(context).pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(children: [
+        SizedBox(height: 8),
+        buildNameField(context),
+        SizedBox(height: 16),
+        buildOwners(context),
+        SizedBox(height: 24),
+        buildCurrency(context),
+        SizedBox(height: 24),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: buildSubmitButton(context),
+        )
+      ]),
+    );
+  }
+
+  Widget buildNameField(BuildContext context) {
+    return TextFormField(
+      controller: nameController,
+      focusNode: nameFocus,
+      decoration: InputDecoration(
+        labelText: AppLocalizations.of(context).addWalletName,
+      ),
+      autofocus: true,
+      maxLength: 50,
+      textCapitalization: TextCapitalization.sentences,
+      textInputAction: TextInputAction.next,
+      validator: (name) {
+        if (name!.length <= 0 || name.length > 50)
+          return AppLocalizations.of(context).addWalletCurrencyErrorIsEmpty;
+        return null;
+      },
+      onFieldSubmitted: (name) => nameFocus.nextFocus(),
+    );
+  }
+
+  Widget buildOwners(BuildContext context) {
+    return InkWell(
+      child: UsersFormField(
+        initialValue: [currentUser],
+        controller: ownersController,
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context).addWalletOwners,
+          helperText: AppLocalizations.of(context).addWalletOwnersHint,
+          helperMaxLines: 3,
+        ),
+        validator: (users) {
+          if (users!.isEmpty)
+            return AppLocalizations.of(context).addWalletOwnersErrorIsEmpty;
+          final isSelectedCurrentUser = users.any((u) => u.isCurrentUser);
+          if (!isSelectedCurrentUser)
+            return AppLocalizations.of(context).addWalletOwnersErrorNoYou;
+          return null;
+        },
+      ),
+      onTap: () => onSelectedOwners(context),
+    );
+  }
+
+  Widget buildCurrency(BuildContext context) {
+    String text = Money(1234.456, currency).formatted;
+    return InkWell(
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context).addWalletCurrency,
+          helperText:
+              AppLocalizations.of(context).addWalletCurrencyExample(text),
+        ),
+        child: Text(currency.getCommonName(context)),
+      ),
+      onTap: () => onSelectedCurrency(context),
+    );
+  }
+
+  Widget buildSubmitButton(BuildContext context) {
+    return PrimaryButton(
+      child: Text(AppLocalizations.of(context).addWalletSubmit),
+      onPressed: () => onSelectedSubmit(context),
+    );
+  }
+}

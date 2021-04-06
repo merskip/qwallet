@@ -178,6 +178,11 @@ extension SettingsLocalizations on AppLocalizations {
         pl: "Zarządzaj portflami",
       );
 
+  String get settingsLinkWalletsFromSpreadsheet => _locale(
+        en: "Link wallet from Google Sheets",
+        pl: "Połącz portfel z Google Sheets",
+      );
+
   String get settingsThemeMode => _locale(
         en: "Theme",
         pl: "Motyw",
@@ -262,6 +267,44 @@ extension SettingsLocalizations on AppLocalizations {
       );
 }
 
+extension LinkWalletGoogleSheetsLocalizations on AppLocalizations {
+  String get linkWalletGoogleSheetsTitle => _locale(
+        en: "Link wallet from Google Sheets",
+        pl: "Połącz portfel z Google Sheets",
+      );
+
+  String get linkWalletGoogleSheetsAlreadyLinked => _locale(
+        en: "Already linked",
+        pl: "Już połączony",
+      );
+
+  String get linkWalletGoogleSheetsName => _locale(
+        en: "Name",
+        pl: "Nazwa",
+      );
+
+  String get linkWalletGoogleSheetsTotalIncome => _locale(
+        en: "Total income",
+        pl: "Całkowity przychód",
+      );
+  String get linkWalletGoogleSheetsTotalExpenses => _locale(
+        en: "Total expenses",
+        pl: "Całkowite wydatki",
+      );
+  String get linkWalletGoogleSheetsDateTimeRange => _locale(
+        en: "Date range",
+        pl: "Zakres daty",
+      );
+  String get linkWalletGoogleSheetsCategories => _locale(
+        en: "Catgegories",
+        pl: "Kategorie",
+      );
+  String get linkWalletGoogleSheetsConfirm => _locale(
+        en: "Confirm",
+        pl: "Zatwierdź",
+      );
+}
+
 extension UserLocalizations on AppLocalizations {
   String get userAnonymous => _locale(
         en: "Anonymous",
@@ -343,7 +386,7 @@ extension WalletLocalizations on AppLocalizations {
       );
 
   String get walletTotalIncome => _locale(
-        en: "Total expense",
+        en: "Total income",
         pl: "Łączne przychody",
       );
 
@@ -377,21 +420,43 @@ extension WalletLocalizations on AppLocalizations {
         pl: "Odśwież",
       );
 
+  String get walletSpreadsheetLink => _locale(
+        en: "Open spreadsheet",
+        pl: "Otwórz arkusz kalkulacyjny",
+      );
+
   String get walletRemove => _locale(
         en: "Remove wallet",
         pl: "Usuń portfel",
       );
 
+  String get walletUnlink => _locale(
+        en: "Unlink wallet",
+        pl: "Odłącz portfel",
+      );
+
   String Function(String) get walletRemoveConfirmation =>
       (String walletName) => _locale(
             en: "Remove wallet \"$walletName\"?",
-            pl: "Czy usunąć portfel \"$walletName\"?",
+            pl: "Czy chcesz usunąć portfel \"$walletName\"?",
           );
 
   String Function(String) get walletRemoveConfirmationContent =>
       (String walletName) => _locale(
             en: "Are you sure remove the wallet \"$walletName\"? This operation cannot be undone.",
             pl: "Czy jesteś pewny, że chcesz usunąć portfel \"$walletName\"? Tej operacji nie można cofnąć.",
+          );
+
+  String Function(String) get walletUnlinkConfirmation =>
+      (String walletName) => _locale(
+            en: "Unlink wallet \"$walletName\"?",
+            pl: "Czy chcesz odłączyć portfel \"$walletName\"?",
+          );
+
+  String Function(String) get walletUnlinkConfirmationContent =>
+      (String walletName) => _locale(
+            en: "Are you sure remove the wallet \"$walletName\"?",
+            pl: "Czy jesteś pewny, że chcesz odłączyć portfel \"$walletName\"?",
           );
 }
 
@@ -787,11 +852,6 @@ extension TransactionsCardLocalizations on AppLocalizations {
         pl: "wczoraj",
       );
 
-  String get transactionsCardShowMore => _locale(
-        en: "Show more",
-        pl: "Pokaż więcej",
-      );
-
   String get transactionsCardShowAll => _locale(
         en: "Show all",
         pl: "Pokaż wszystkie",
@@ -920,11 +980,6 @@ extension CategoriesChartCardLocalizations on AppLocalizations {
   String get categoriesChartCardTotalExpenses => _locale(
         en: "Total expenses",
         pl: "Łączne wydatki",
-      );
-
-  String get categoriesChartCardTotalIncomes => _locale(
-        en: "Total incomes",
-        pl: "Łączne przychody",
       );
 
   String get categoriesChartCardNoCategory => _locale(

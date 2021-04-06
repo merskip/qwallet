@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qwallet/WalletDateRangeProvider.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
+import 'package:qwallet/features/settings/WalletDateRangeProvider.dart';
 import 'package:qwallet/utils.dart';
 
 void main() {
@@ -37,7 +37,8 @@ void main() {
 
   test("Test current month", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(type: WalletDateRangeType.currentMonth),
+      dateRange: FirebaseWalletDateRange(
+          type: FirebaseWalletDateRangeType.currentMonth),
       now: DateTime(2021, 2, 24),
     );
     expect(dateTimeRange.start, DateTime(2021, 2, 1).beginningOfDay);
@@ -47,7 +48,8 @@ void main() {
 
   test("Test previous month", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(type: WalletDateRangeType.currentMonth),
+      dateRange: FirebaseWalletDateRange(
+          type: FirebaseWalletDateRangeType.currentMonth),
       now: DateTime(2021, 2, 24),
       index: -1,
     );
@@ -58,7 +60,8 @@ void main() {
 
   test("Test next month", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(type: WalletDateRangeType.currentMonth),
+      dateRange: FirebaseWalletDateRange(
+          type: FirebaseWalletDateRangeType.currentMonth),
       now: DateTime(2021, 2, 24),
       index: 1,
     );
@@ -69,8 +72,8 @@ void main() {
 
   test("Test current month when start from 10th", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(
-        type: WalletDateRangeType.currentMonth,
+      dateRange: FirebaseWalletDateRange(
+        type: FirebaseWalletDateRangeType.currentMonth,
         monthStartDay: 10,
       ),
       now: DateTime(2021, 2, 24),
@@ -82,8 +85,8 @@ void main() {
 
   test("Test current month when start from 31th and this is February", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(
-        type: WalletDateRangeType.currentMonth,
+      dateRange: FirebaseWalletDateRange(
+        type: FirebaseWalletDateRangeType.currentMonth,
         monthStartDay: 31,
       ),
       now: DateTime(2021, 2, 24),
@@ -95,8 +98,8 @@ void main() {
 
   test("Test next month when start from 31th and this is February", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(
-        type: WalletDateRangeType.currentMonth,
+      dateRange: FirebaseWalletDateRange(
+        type: FirebaseWalletDateRangeType.currentMonth,
         monthStartDay: 31,
       ),
       now: DateTime(2021, 2, 24),
@@ -109,8 +112,8 @@ void main() {
 
   test("Test next next month when start from 31th", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(
-        type: WalletDateRangeType.currentMonth,
+      dateRange: FirebaseWalletDateRange(
+        type: FirebaseWalletDateRangeType.currentMonth,
         monthStartDay: 31,
       ),
       now: DateTime(2021, 2, 24),
@@ -123,7 +126,8 @@ void main() {
 
   test("Test current week", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(type: WalletDateRangeType.currentWeek),
+      dateRange: FirebaseWalletDateRange(
+          type: FirebaseWalletDateRangeType.currentWeek),
       now: DateTime(2021, 2, 24),
     );
     expect(dateTimeRange.start, DateTime(2021, 2, 22).beginningOfDay);
@@ -133,7 +137,8 @@ void main() {
 
   test("Test previous week", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(type: WalletDateRangeType.currentWeek),
+      dateRange: FirebaseWalletDateRange(
+          type: FirebaseWalletDateRangeType.currentWeek),
       now: DateTime(2021, 2, 24),
       index: -1,
     );
@@ -144,7 +149,8 @@ void main() {
 
   test("Test next week", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(type: WalletDateRangeType.currentWeek),
+      dateRange: FirebaseWalletDateRange(
+          type: FirebaseWalletDateRangeType.currentWeek),
       now: DateTime(2021, 2, 24),
       index: 1,
     );
@@ -155,8 +161,8 @@ void main() {
 
   test("Test current week when week start with sunday", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(
-        type: WalletDateRangeType.currentWeek,
+      dateRange: FirebaseWalletDateRange(
+        type: FirebaseWalletDateRangeType.currentWeek,
         weekdayStart: DateTime.sunday,
       ),
       now: DateTime(2021, 2, 24),
@@ -168,8 +174,8 @@ void main() {
 
   test("Test previous week when week start with sunday", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(
-        type: WalletDateRangeType.currentWeek,
+      dateRange: FirebaseWalletDateRange(
+        type: FirebaseWalletDateRangeType.currentWeek,
         weekdayStart: DateTime.sunday,
       ),
       now: DateTime(2021, 2, 24),
@@ -182,8 +188,8 @@ void main() {
 
   test("Test next week when week start with sunday", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(
-        type: WalletDateRangeType.currentWeek,
+      dateRange: FirebaseWalletDateRange(
+        type: FirebaseWalletDateRangeType.currentWeek,
         weekdayStart: DateTime.sunday,
       ),
       now: DateTime(2021, 2, 24),
@@ -216,8 +222,8 @@ void main() {
     for (final now in dates) {
       for (final weekdayStart in weekdays) {
         final dateTimeRange = _getDateTimeRange(
-          dateRange: WalletDateRange(
-            type: WalletDateRangeType.currentWeek,
+          dateRange: FirebaseWalletDateRange(
+            type: FirebaseWalletDateRangeType.currentWeek,
             weekdayStart: weekdayStart,
           ),
           now: now,
@@ -235,7 +241,8 @@ void main() {
 
   test("Test last 30 days", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(type: WalletDateRangeType.lastDays),
+      dateRange:
+          FirebaseWalletDateRange(type: FirebaseWalletDateRangeType.lastDays),
       now: DateTime(2021, 2, 24),
     );
     expect(dateTimeRange.start, DateTime(2021, 1, 25).beginningOfDay);
@@ -245,7 +252,8 @@ void main() {
 
   test("Test yesterday last 30 days", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(type: WalletDateRangeType.lastDays),
+      dateRange:
+          FirebaseWalletDateRange(type: FirebaseWalletDateRangeType.lastDays),
       now: DateTime(2021, 2, 24),
       index: -1,
     );
@@ -256,7 +264,8 @@ void main() {
 
   test("Test tomorrow last 30 days", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: WalletDateRange(type: WalletDateRangeType.lastDays),
+      dateRange:
+          FirebaseWalletDateRange(type: FirebaseWalletDateRangeType.lastDays),
       now: DateTime(2021, 2, 24),
       index: 1,
     );
@@ -267,7 +276,7 @@ void main() {
 }
 
 DateTimeRange _getDateTimeRange({
-  required WalletDateRange dateRange,
+  required FirebaseWalletDateRange dateRange,
   required DateTime now,
   int index = 0,
 }) {

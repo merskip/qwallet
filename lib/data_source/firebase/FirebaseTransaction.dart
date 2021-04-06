@@ -1,0 +1,64 @@
+import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
+import 'package:flutter/widgets.dart';
+import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/Transaction.dart';
+
+import '../../AppLocalizations.dart';
+import 'FirebaseCategory.dart';
+import 'FirebaseConverting.dart';
+import 'FirebaseModel.dart';
+import 'FirebaseWallet.dart';
+
+class FirebaseTransaction extends FirebaseModel<FirebaseTransaction>
+    implements Transaction {
+  final Identifier<Transaction> identifier;
+  final TransactionType type;
+  final String? title;
+  final double amount;
+  final DateTime date;
+  final FirebaseCategory? category;
+  final bool excludedFromDailyStatistics;
+
+  FirebaseTransaction(
+      CloudFirestore.DocumentSnapshot snapshot, FirebaseWallet wallet)
+      : identifier = Identifier(domain: "firebase", id: snapshot.id),
+        type = snapshot.getOneOf("type", TransactionType.values)!,
+        title = snapshot.getString("title"),
+        amount = snapshot.getDouble("amount")!,
+        date = snapshot.getDateTime("date")!,
+        category = wallet.getCategory(snapshot.getReference("category")),
+        excludedFromDailyStatistics =
+            snapshot.getBool("excludedFromDailyStatistics") ?? false,
+        super(snapshot);
+
+  String getTypeLocalizedText(BuildContext context) => ifType(
+        expense: AppLocalizations.of(context).transactionsCardExpense,
+        income: AppLocalizations.of(context).transactionsCardIncome,
+      );
+
+  @deprecated
+  T ifType<T>({required T expense, required T income}) {
+    switch (type) {
+      case TransactionType.expense:
+        return expense;
+      case TransactionType.income:
+        return income;
+    }
+  }
+
+  @override
+  String toString() {
+    return 'Transaction{type: $type, title: $title, amount: $amount}';
+  }
+}
+
+extension TransactionTypeConverting on TransactionType {
+  String get rawValue {
+    switch (this) {
+      case TransactionType.expense:
+        return "expense";
+      case TransactionType.income:
+        return "income";
+    }
+  }
+}

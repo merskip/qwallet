@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Model.dart';
+import 'package:qwallet/data_source/firebase/FirebaseModel.dart';
 
 typedef ValueWidgetBuilder<T> = Widget Function(BuildContext context, T value);
 
@@ -11,12 +11,12 @@ class SimpleStreamWidget<T> extends StatelessWidget {
   final ValueWidgetBuilder<T> builder;
   final WidgetBuilder? loadingBuilder;
 
-  const SimpleStreamWidget(
-      {Key? key,
-      required this.stream,
-      required this.builder,
-      this.loadingBuilder})
-      : super(key: key);
+  const SimpleStreamWidget({
+    Key? key,
+    required this.stream,
+    required this.builder,
+    this.loadingBuilder,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
           return _error(context, snapshot.error!, debugDescription);
         else if (snapshot.hasData) {
           final data = snapshot.data;
-          if (data is Model && !data.documentSnapshot.exists)
+          if (data is FirebaseModel && !data.documentSnapshot.exists)
             return buildLoading(context);
           return builder(context, data!);
         } else

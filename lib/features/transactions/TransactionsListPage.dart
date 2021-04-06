@@ -4,10 +4,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/AppLocalizations.dart';
-import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Transaction.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Transaction.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
@@ -111,16 +111,20 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
 
   void onSelectedMore(BuildContext context, Transaction lastTransaction) {
     setState(() {
-      transactionsPages.add(getNextTransactions(after: lastTransaction));
+      transactionsPages
+          .add(getNextTransactions(afterTransaction: lastTransaction));
     });
   }
 
-  Stream<List<Transaction>> getNextTransactions({Transaction? after}) =>
-      DataSource.instance.getTransactions(
-        wallet: widget.wallet.reference,
-        afterTransaction: after,
-        limit: itemsPerPage,
-      );
+  Stream<List<Transaction>> getNextTransactions({
+    Transaction? afterTransaction,
+  }) {
+    return SharedProviders.transactionsProvider.getPageableTransactions(
+      walletId: widget.wallet.identifier,
+      limit: itemsPerPage,
+      afterTransaction: afterTransaction,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +187,7 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
           assert(filter.includeWithoutCategory != null);
 
           if (!filter.categories!
-              .any((c) => c.id == transaction.category?.id)) {
+              .any((c) => c.identifier == transaction.category?.identifier)) {
             if (transaction.category == null)
               return filter.includeWithoutCategory!;
             return false;

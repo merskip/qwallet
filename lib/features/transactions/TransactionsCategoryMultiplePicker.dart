@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Category.dart';
+import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/utils.dart';
 
 import '../../AppLocalizations.dart';
@@ -67,9 +67,7 @@ class TransactionsCategoryMultiplePickerState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
-        children: [
-          buildCategories(context)
-        ],
+        children: [buildCategories(context)],
       ),
     );
   }
@@ -99,7 +97,7 @@ class TransactionsCategoryMultiplePickerState
     return RawCategoryButton(
       title: AppLocalizations.of(context)
           .transactionsListFilterSelectCategoriesWithoutCategory,
-      icon: Icons.category,
+      icon: Icon(Icons.category),
       primaryColor: colorFromHex("#838383"),
       backgroundColor: colorFromHex("#dcdcdc"),
       isSelected: includeWithoutCategory,

@@ -17,3 +17,13 @@ extension IterableFinding<E> on Iterable<E> {
     return last;
   }
 }
+
+extension IterableOptional<E> on Iterable<E?> {
+  List<E> filterNonNull() {
+    final result = <E>[];
+    for (final element in this) {
+      if (element != null) result.add(element);
+    }
+    return result;
+  }
+}
