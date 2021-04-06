@@ -8,11 +8,12 @@ import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Transaction.dart';
-import 'package:qwallet/page/WalletPage.dart';
 import 'package:qwallet/page/loans/AddLoanPage.dart';
 import 'package:qwallet/page/loans/EditLoanPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'file:///C:/Users/Piotr%20Merski/Workspace/qwallet/lib/features/settings/WalletPage.dart';
 
 import 'datasource/Category.dart';
 import 'datasource/Wallet.dart';

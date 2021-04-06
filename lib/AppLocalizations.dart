@@ -377,6 +377,11 @@ extension WalletLocalizations on AppLocalizations {
         pl: "Odśwież",
       );
 
+  String get walletSpreadsheetLink => _locale(
+        en: "Open spreadsheet",
+        pl: "Otwórz arkusz kalkulacyjny",
+      );
+
   String get walletRemove => _locale(
         en: "Remove wallet",
         pl: "Usuń portfel",

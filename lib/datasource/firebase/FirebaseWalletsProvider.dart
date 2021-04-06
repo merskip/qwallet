@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/datasource/CategoriesProvider.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/firebase/FirebaseCategoriesProvider.dart';
 import 'package:rxdart/rxdart.dart';

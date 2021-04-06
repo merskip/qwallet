@@ -38,6 +38,7 @@ class GoogleSpreadsheetRepository extends SheetsApiProvider {
       categories: categories,
       shops: shops,
       statistics: statistics,
+      spreadsheet: spreadsheet,
       generalSheet: generalSheet,
       dailyBalanceSheet: dailyBalanceSheet,
       statisticsSheet: statisticsSheet,

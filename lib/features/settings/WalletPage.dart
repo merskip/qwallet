@@ -1,22 +1,23 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/AppLocalizations.dart';
+import 'package:qwallet/Currency.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/datasource/google_sheets/SpreadsheetWallet.dart';
+import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import '../AppLocalizations.dart';
-import '../Currency.dart';
-import '../model/user.dart';
-import 'UserSelectionPage.dart';
+import '../../page/UserSelectionPage.dart';
 
 class WalletPage extends StatelessWidget {
   final Wallet wallet;
@@ -158,6 +159,14 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     router.navigateTo(context, "/wallet/${wallet.identifier}/categories");
   }
 
+  void onSelectedOpenSpreadsheet(BuildContext context) async {
+    final spreadsheetWallet = wallet as SpreadsheetWallet;
+    final url = spreadsheetWallet.spreadsheetWallet.spreadsheet.spreadsheetUrl;
+    if (url != null && await canLaunch(url)) {
+      launch(url);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -184,7 +193,8 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           if (wallet is FirebaseWallet)
             buildCurrentDateRange(context, wallet as FirebaseWallet),
           Divider(),
-          buildCategories(context)
+          buildCategories(context),
+          if (wallet is SpreadsheetWallet) buildSpreadsheetLink(context),
         ],
       ),
     );
@@ -316,6 +326,15 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       title: Text(AppLocalizations.of(context).categories),
       trailing: Icon(Icons.chevron_right),
       onTap: () => onSelectedCategories(context),
+    );
+  }
+
+  Widget buildSpreadsheetLink(BuildContext context) {
+    return ListTile(
+      leading: Icon(Icons.link),
+      title: Text(AppLocalizations.of(context).walletSpreadsheetLink),
+      trailing: Icon(Icons.open_in_browser),
+      onTap: () => onSelectedOpenSpreadsheet(context),
     );
   }
 }

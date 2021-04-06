@@ -12,6 +12,7 @@ class GoogleSpreadsheetWallet {
   final List<String> shops;
   final GoogleSpreadsheetStatistics statistics;
 
+  final Spreadsheet spreadsheet;
   final Sheet generalSheet;
   final Sheet dailyBalanceSheet;
   final Sheet statisticsSheet;
@@ -26,6 +27,7 @@ class GoogleSpreadsheetWallet {
     required this.categories,
     required this.shops,
     required this.statistics,
+    required this.spreadsheet,
     required this.generalSheet,
     required this.dailyBalanceSheet,
     required this.statisticsSheet,
