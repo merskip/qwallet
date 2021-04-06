@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/Money.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/page/UserSelectionPage.dart';
@@ -12,7 +12,6 @@ import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../../Currency.dart';
 import '../../page/UsersFormField.dart';
-import '../../utils/IterableFinding.dart';
 
 class AddWalletPage extends StatelessWidget {
   @override
@@ -42,6 +41,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   final nameController = TextEditingController();
   final nameFocus = FocusNode();
 
+  late User currentUser;
   final ownersController = UsersEditingController();
 
   Currency currency = Currency.getDefaultBasedOnLocale();
@@ -52,9 +52,12 @@ class _AddWalletFormState extends State<_AddWalletForm> {
     super.initState();
   }
 
-  _initOwners() {
-    final currentUser = User.currentUser();
-    setState(() => ownersController.value = [currentUser]);
+  _initOwners() async {
+    final currentUser = await SharedProviders.usersProvider.getCurrentUser();
+    setState(() {
+      this.currentUser = currentUser;
+      ownersController.value = [currentUser];
+    });
   }
 
   @override
@@ -143,7 +146,7 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   Widget buildOwners(BuildContext context) {
     return InkWell(
       child: UsersFormField(
-        initialValue: [User.currentUser()],
+        initialValue: [currentUser],
         controller: ownersController,
         decoration: InputDecoration(
           labelText: AppLocalizations.of(context).addWalletOwners,
@@ -153,10 +156,8 @@ class _AddWalletFormState extends State<_AddWalletForm> {
         validator: (users) {
           if (users!.isEmpty)
             return AppLocalizations.of(context).addWalletOwnersErrorIsEmpty;
-          final currentUserInSelected = users.findFirstOrNull(
-            (user) => user.uid == DataSource.instance.currentUser?.uid,
-          );
-          if (currentUserInSelected == null)
+          final isSelectedCurrentUser = users.any((u) => u.isCurrentUser);
+          if (!isSelectedCurrentUser)
             return AppLocalizations.of(context).addWalletOwnersErrorNoYou;
           return null;
         },

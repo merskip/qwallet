@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
-import 'package:qwallet/api/DataSource.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/dialog/UserDialog.dart';
+import 'package:qwallet/model/user.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/MarkdownPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -121,28 +122,39 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget buildUserPanel(BuildContext context) {
-    final user = DataSource.instance.currentUser!;
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundImage:
-            user.avatarUrl != null ? NetworkImage(user.avatarUrl!) : null,
-        backgroundColor: Colors.black12,
-        child: user.avatarUrl == null
-            ? Icon(
-                user.email != null ? Icons.alternate_email : Icons.person,
-                color: Colors.black54,
-              )
-            : null,
-      ),
-      title: Text(user.getCommonName(context)),
-      subtitle: Text(user.getSubtitle() ?? ""),
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => UserDialog(user: user),
-        );
-      },
-    );
+    return FutureBuilder(
+        future: SharedProviders.usersProvider.getCurrentUser(),
+        builder: (context, AsyncSnapshot<User> snapshot) {
+          if (snapshot.hasData) {
+            final user = snapshot.data!;
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundImage: user.avatarUrl != null
+                    ? NetworkImage(user.avatarUrl!)
+                    : null,
+                backgroundColor: Colors.black12,
+                child: user.avatarUrl == null
+                    ? Icon(
+                        user.email != null
+                            ? Icons.alternate_email
+                            : Icons.person,
+                        color: Colors.black54,
+                      )
+                    : null,
+              ),
+              title: Text(user.getCommonName(context)),
+              subtitle: Text(user.getSubtitle() ?? ""),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => UserDialog(user: user),
+                );
+              },
+            );
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 
   Widget buildWallets(BuildContext context) {

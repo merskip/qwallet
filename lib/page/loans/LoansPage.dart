@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/loans/RepaidLoanPage.dart';
 import 'package:qwallet/utils.dart';
@@ -26,8 +26,8 @@ class _LoansPageState extends State<LoansPage> {
     return Scaffold(
       body: SimpleStreamWidget(
         stream: CombineLatestStream.list([
-          DataSource.instance.getPrivateLoans(),
-          DataSource.instance.getUsers().asStream(),
+          SharedProviders.privateLoansProvider.getPrivateLoans(),
+          SharedProviders.usersProvider.getUsers().asStream(),
         ]),
         builder: (context, List<dynamic> values) => buildLoans(
           context,

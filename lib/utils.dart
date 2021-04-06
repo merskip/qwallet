@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -90,6 +90,9 @@ extension DateTimeUtils on DateTime {
       this.microsecond + microsecond,
     );
   }
+
+  CloudFirestore.Timestamp toTimestamp() =>
+      CloudFirestore.Timestamp.fromDate(this);
 }
 
 extension DateTimeRangeUtils on DateTimeRange {
@@ -222,26 +225,26 @@ extension DateTimeRangeFormatting on DateTimeRange {
   }
 }
 
-extension FieldPathAdding on FieldPath {
-  FieldPath adding(dynamic components) {
+extension FieldPathAdding on CloudFirestore.FieldPath {
+  CloudFirestore.FieldPath adding(dynamic components) {
     List<String> addComponents;
     if (components is String)
       addComponents = [components];
     else if (components is List<String>)
       addComponents = components;
-    else if (components is FieldPath)
+    else if (components is CloudFirestore.FieldPath)
       addComponents = components.components;
     else
       throw ArgumentError.value(
           components, "Must be String or List<String> or FieldPath");
-    return FieldPath(this.components + addComponents);
+    return CloudFirestore.FieldPath(this.components + addComponents);
   }
 }
 
-FieldPath toFieldPath(dynamic field) {
+CloudFirestore.FieldPath toFieldPath(dynamic field) {
   if (field is String)
-    return FieldPath.fromString(field);
-  else if (field is FieldPath)
+    return CloudFirestore.FieldPath.fromString(field);
+  else if (field is CloudFirestore.FieldPath)
     return field;
   else
     throw ("Unsupported field type");

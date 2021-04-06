@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/DataSource.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/model/user.dart';
 
 class UserChoicePage extends StatefulWidget {
@@ -28,7 +28,7 @@ class _UserChoicePageState extends State<UserChoicePage> {
         title: Text(widget.title),
       ),
       body: FutureBuilder(
-        future: DataSource.instance.getUsers(),
+        future: SharedProviders.usersProvider.getUsers(),
         builder: (context, AsyncSnapshot<List<User>> snapshot) {
           return snapshot.hasData
               ? buildUsersList(context, snapshot.data!)

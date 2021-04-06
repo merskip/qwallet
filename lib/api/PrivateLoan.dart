@@ -1,12 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:qwallet/datasource/Identifiable.dart';
+import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/model/user.dart';
 
 import '../Money.dart';
 import 'Converting.dart';
 import 'Model.dart';
 
-class PrivateLoan extends FirebaseModel<PrivateLoan> {
+class PrivateLoan extends FirebaseModel<PrivateLoan>
+    implements Identifiable<PrivateLoan> {
+  Identifier<PrivateLoan> identifier;
   final String title;
   final DateTime date;
   final User? lenderUser;
@@ -24,7 +28,8 @@ class PrivateLoan extends FirebaseModel<PrivateLoan> {
   bool get currentUserIsBorrower => borrowerUser?.isCurrentUser ?? false;
 
   PrivateLoan(DocumentSnapshot snapshot, List<User> users)
-      : this.title = snapshot.getString("title")!,
+      : this.identifier = Identifier(domain: "firebase", id: snapshot.id),
+        this.title = snapshot.getString("title")!,
         this.date = snapshot.getDateTime("date")!,
         this.lenderUser = snapshot.getUser("lenderUid", users),
         this.lenderName = snapshot.getString("lenderName"),

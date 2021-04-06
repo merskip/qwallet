@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
 import 'package:qwallet/AppLocalizations.dart';
-import 'package:qwallet/api/DataSource.dart';
 
 import '../utils/IterableFinding.dart';
 
@@ -14,7 +13,7 @@ class User {
 
   final auth.User? firebaseUser;
 
-  bool get isCurrentUser => User.currentUser().uid == uid;
+  final bool isCurrentUser;
 
   User({
     required this.uid,
@@ -23,24 +22,23 @@ class User {
     this.email,
     this.avatarUrl,
     this.firebaseUser,
+    this.isCurrentUser = false,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
+  factory User.fromJson(Map<String, dynamic> json, String currentUserUid) {
     return User(
       uid: json['uid'] as String,
       isAnonymous: json['isAnonymous'] as bool,
       displayName: json['displayName'] as String?,
       email: json['email'] as String?,
       avatarUrl: json['avatarUrl'] as String?,
-      firebaseUser: null,
+      isCurrentUser: (json['uid'] as String) == currentUserUid,
     );
   }
 
-  factory User.currentUser() => DataSource.instance.currentUser!;
-
   factory User.emptyFromUid(String uid) => User(uid: uid, isAnonymous: false);
 
-  factory User.fromFirebase(auth.User firebaseUser) {
+  factory User.fromFirebase(auth.User firebaseUser, bool isCurrentUser) {
     return User(
       uid: firebaseUser.uid,
       isAnonymous: firebaseUser.isAnonymous,
@@ -48,6 +46,7 @@ class User {
       email: firebaseUser.email,
       avatarUrl: firebaseUser.photoURL,
       firebaseUser: firebaseUser,
+      isCurrentUser: isCurrentUser,
     );
   }
 
@@ -55,7 +54,7 @@ class User {
     var commonName = displayName ?? email;
     if (commonName == null || isAnonymous)
       commonName = AppLocalizations.of(context).userAnonymous;
-    if (this == User.currentUser())
+    if (isCurrentUser)
       commonName += " (${AppLocalizations.of(context).userMe})";
     return commonName;
   }

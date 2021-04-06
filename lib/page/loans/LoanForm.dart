@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/Currency.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/dialog/EnterMoneyDialog.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
@@ -117,7 +117,7 @@ class LoanFormState extends State<LoanForm> {
       titleTextController.text = loan.title;
       date = loan.date;
 
-      final users = await DataSource.instance.getUsers();
+      final users = await SharedProviders.usersProvider.getUsers();
       lenderUser = loan.lenderUser;
       lenderTextController.text = loan.getLenderCommonName(context);
 
@@ -131,7 +131,7 @@ class LoanFormState extends State<LoanForm> {
       repaidAmountTextController.text = repaidAmount.formattedOnlyAmount;
       date = getDateWithoutTime(DateTime.now());
 
-      final users = await DataSource.instance.getUsers();
+      final users = await SharedProviders.usersProvider.getUsers();
       setState(() => this.users = users);
     }
   }
@@ -212,8 +212,10 @@ class LoanFormState extends State<LoanForm> {
   }
 
   bool _validPersons() {
-    if (lenderUser != User.currentUser() &&
-        borrowerUser != User.currentUser()) {
+    if (lenderUser != null &&
+        !lenderUser!.isCurrentUser &&
+        borrowerUser != null &&
+        !borrowerUser!.isCurrentUser) {
       setState(() => personsValidationMessage = AppLocalizations.of(context)
           .privateLoanValidationCurrentUserIsNotLenderOrBorrower);
       return false;

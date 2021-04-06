@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/Currency.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/datasource/google_sheets/SpreadsheetWallet.dart';
@@ -69,7 +69,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
 
   void onSelectedOwners(BuildContext context, FirebaseWallet wallet) async {
     final currentOwners =
-        await DataSource.instance.getUsersByUids(wallet.ownersUid);
+        await SharedProviders.usersProvider.getUsersByUids(wallet.ownersUid);
     final page = UserSelectionPage(
       title: AppLocalizations.of(context).walletOwners,
       selectedUsers: currentOwners,
@@ -78,7 +78,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       context,
       builder: (context) => page,
     );
-    if (owners != null && owners.contains(DataSource.instance.currentUser)) {
+    if (owners != null && owners.any((u) => u.isCurrentUser)) {
       AggregatedWalletsProvider.instance!.firebaseProvider.updateWallet(
         wallet.identifier,
         name: wallet.name,
@@ -237,7 +237,9 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletOwners),
       value: SimpleStreamWidget(
-        stream: DataSource.instance.getUsersByUids(wallet.ownersUid).asStream(),
+        stream: SharedProviders.usersProvider
+            .getUsersByUids(wallet.ownersUid)
+            .asStream(),
         builder: (context, List<User> users) {
           final text =
               users.map((user) => user.getCommonName(context)).join(", ");

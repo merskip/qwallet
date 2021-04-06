@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 
@@ -27,8 +27,8 @@ class EditLoanPage extends StatelessWidget {
     String title,
     DateTime date,
   ) {
-    DataSource.instance.updatePrivateLoan(
-      loanRef: loan.reference,
+    SharedProviders.privateLoansProvider.updatePrivateLoan(
+      loanId: loan.identifier,
       lenderUid: lenderUser?.uid,
       lenderName: lenderUser == null ? lenderName : null,
       borrowerUid: borrowerUser?.uid,
@@ -43,8 +43,8 @@ class EditLoanPage extends StatelessWidget {
   }
 
   void onSelectedToggleArchive(BuildContext context) {
-    DataSource.instance.updatePrivateLoanRepaidAmount(
-      loanRef: loan.reference,
+    SharedProviders.privateLoansProvider.updatePrivateLoanRepaidAmount(
+      loanId: loan.identifier,
       amount: loan.amount.amount,
       repaidAmount: loan.isFullyRepaid ? 0.0 : loan.amount.amount,
     );
@@ -59,7 +59,8 @@ class EditLoanPage extends StatelessWidget {
           .privateLoanRemoveConfirmationContent(loan.title)),
       isDestructive: true,
       onConfirm: () {
-        DataSource.instance.removePrivateLoan(loanRef: loan.reference);
+        SharedProviders.privateLoansProvider
+            .removePrivateLoan(loanId: loan.identifier);
         Navigator.of(context)
             .popUntil((route) => route.settings.name?.endsWith("/") ?? false);
       },

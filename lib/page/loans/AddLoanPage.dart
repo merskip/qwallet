@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/DataSource.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/model/user.dart';
 
 import '../../AppLocalizations.dart';
@@ -18,7 +18,7 @@ class AddLoanPage extends StatelessWidget {
     String title,
     DateTime date,
   ) {
-    DataSource.instance.addPrivateLoan(
+    SharedProviders.privateLoansProvider.addPrivateLoan(
       lenderUid: lenderUser?.uid,
       lenderName: lenderUser == null ? lenderName : null,
       borrowerUid: borrowerUser?.uid,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Currency.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/page/loans/LoansPage.dart';
 import 'package:qwallet/page/loans/RepayingMatcher.dart';
 import 'package:qwallet/router.dart';
@@ -21,7 +21,7 @@ class RepaidLoanPage extends StatelessWidget {
     List<MutatingPrivateLoan> repayingLoans,
   ) {
     final loans = repayingLoans.map((l) => l.loan).toList();
-    DataSource.instance.updateRepaidAmountsForPrivateLoans(
+    SharedProviders.privateLoansProvider.updateRepaidAmountsForPrivateLoans(
       privateLoans: loans,
       getRepaidAmount: (PrivateLoan loan) =>
           repayingLoans[loans.indexOf(loan)].repaidAmount.amount,

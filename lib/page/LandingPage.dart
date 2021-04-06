@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/model/user.dart';
 
 import 'MainNavigationPage.dart';
 import 'SignInPage.dart';
@@ -48,8 +46,6 @@ class _LandingPageState extends State<LandingPage> {
     debugPrint("Sign in state: uid=${user?.uid}");
     if (mounted) {
       setState(() {
-        DataSource.instance.currentUser =
-            user != null ? User.fromFirebase(user) : null;
         isLogged = (user != null);
         isLoading = false;
       });

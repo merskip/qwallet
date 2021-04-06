@@ -2,11 +2,11 @@ import 'package:fluro/fluro.dart' as fluro;
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/PrivateLoan.dart';
 import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/Identifier.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/page/loans/AddLoanPage.dart';
 import 'package:qwallet/page/loans/EditLoanPage.dart';
@@ -291,7 +291,7 @@ void initRoutes(FluroRouter router) {
         handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
       final loanId = params["loanId"][0];
       return SimpleStreamWidget(
-        stream: DataSource.instance.getPrivateLoan(loanId),
+        stream: SharedProviders.privateLoansProvider.getPrivateLoan(loanId),
         builder: (context, PrivateLoan loan) => EditLoanPage(
           loan: loan,
         ),

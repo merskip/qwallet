@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -9,7 +10,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
+import 'package:qwallet/datasource/SharedProviders.dart';
 import 'package:qwallet/datasource/firebase/FirebaseCategoriesProvider.dart';
+import 'package:qwallet/datasource/firebase/FirebasePrivateLoansProvider.dart';
 import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
 import 'package:qwallet/router.dart';
 
@@ -17,6 +20,7 @@ import 'datasource/AggregatedWalletsProvider.dart';
 import 'datasource/DefaultAccountProvider.dart';
 import 'datasource/Identifier.dart';
 import 'datasource/firebase/FirebaseTransactionsProvider.dart';
+import 'datasource/firebase/FirebaseUsersProvider.dart';
 import 'datasource/google_sheets/CachedGoogleSpreadsheetRepository.dart';
 import 'datasource/google_sheets/SpreadsheetTransactionsProvider.dart';
 import 'datasource/google_sheets/SpreadsheetWalletsProvider.dart';
@@ -81,6 +85,16 @@ void main() async {
           repository: googleSpreadsheetRepository,
           walletsProvider: googleSheetsWalletsProvider,
         ),
+      );
+
+      SharedProviders.usersProvider = FirebaseUsersProvider(
+        firebaseFunctions: FirebaseFunctions.instance,
+      );
+
+      SharedProviders.privateLoansProvider = FirebasePrivateLoansProvider(
+        accountProvider: accountProvider,
+        usersProvider: SharedProviders.usersProvider,
+        firestore: FirebaseFirestore.instance,
       );
 
       runApp(MyApp());

@@ -7,9 +7,9 @@ import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/TransactionsProvider.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
+import 'package:qwallet/utils.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../utils.dart';
 import '../Category.dart';
 import '../Transaction.dart';
 
@@ -197,9 +197,4 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
         .doc(transaction.identifier.id)
         .delete();
   }
-}
-
-extension DateTimeUtils on DateTime {
-  CloudFirestore.Timestamp toTimestamp() =>
-      CloudFirestore.Timestamp.fromDate(this);
 }
