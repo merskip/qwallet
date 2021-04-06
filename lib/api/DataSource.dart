@@ -12,7 +12,6 @@ import 'package:qwallet/model/user.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../Currency.dart';
-import '../LocalPreferences.dart';
 import '../utils.dart';
 import 'Category.dart';
 import 'Model.dart';
@@ -31,9 +30,10 @@ class DataSource {
 }
 
 extension WalletsDataSource on DataSource {
-  Stream<List<FirebaseWallet>> getOrderedWallets() =>
-      LocalPreferences.orderedWallets(getWallets());
+  @deprecated
+  Stream<List<FirebaseWallet>> getOrderedWallets() => getWallets();
 
+  @deprecated
   Stream<List<FirebaseWallet>> getWallets() {
     return firestore
         .collection("wallets")
@@ -52,13 +52,16 @@ extension WalletsDataSource on DataSource {
     });
   }
 
+  @deprecated
   Stream<FirebaseWallet> getWalletById(String walletId) =>
       getWallet(getWalletReference(walletId));
 
+  @deprecated
   FirebaseReference<FirebaseWallet> getWalletReference(String id) {
     return FirebaseReference(firestore.collection("wallets").doc(id));
   }
 
+  @deprecated
   Stream<FirebaseWallet> getWallet(
       FirebaseReference<FirebaseWallet> walletRef) {
     final walletSnapshots = firestore
@@ -148,6 +151,7 @@ extension WalletsDataSource on DataSource {
 }
 
 extension TransactionsDataSource on DataSource {
+  @deprecated
   Stream<LatestTransactions> getLatestTransactions(
     FirebaseReference<FirebaseWallet> wallet,
   ) {
@@ -168,6 +172,7 @@ extension TransactionsDataSource on DataSource {
     });
   }
 
+  @deprecated
   Stream<List<FirebaseTransaction>> _getTransactionsInDateTimeRange({
     required FirebaseReference<FirebaseWallet> walletReference,
     required DateTimeRange dateRange,
@@ -193,6 +198,7 @@ extension TransactionsDataSource on DataSource {
     );
   }
 
+  @deprecated
   Stream<List<FirebaseTransaction>> getTransactions({
     required FirebaseReference<FirebaseWallet> walletReference,
     required int limit,
@@ -221,6 +227,7 @@ extension TransactionsDataSource on DataSource {
     );
   }
 
+  @deprecated
   FirebaseReference<FirebaseTransaction> getTransactionReference({
     required FirebaseReference<FirebaseWallet> wallet,
     required String id,
@@ -229,6 +236,7 @@ extension TransactionsDataSource on DataSource {
         wallet.documentReference.collection("transactions").doc(id));
   }
 
+  @deprecated
   Stream<FirebaseTransaction?> getTransaction(
       FirebaseReference<FirebaseWallet> walletReference,
       FirebaseReference<FirebaseTransaction> transaction) {
@@ -247,6 +255,7 @@ extension TransactionsDataSource on DataSource {
     );
   }
 
+  @deprecated
   Future<FirebaseReference<FirebaseTransaction>> addTransaction(
     FirebaseReference<FirebaseWallet> wallet, {
     required TransactionType type,
@@ -277,6 +286,7 @@ extension TransactionsDataSource on DataSource {
             (values[0] as CloudFirestore.DocumentReference).toReference());
   }
 
+  @deprecated
   Future<FirebaseReference<FirebaseTransaction>> updateTransaction(
     FirebaseReference<FirebaseWallet> walletRef,
     FirebaseTransaction transaction, {
@@ -335,6 +345,7 @@ extension TransactionsDataSource on DataSource {
     return transaction.reference;
   }
 
+  @deprecated
   Future<void> updateTransactionCategory(
     FirebaseTransaction transaction,
     FirebaseReference<FirebaseCategory>? category,
@@ -344,6 +355,7 @@ extension TransactionsDataSource on DataSource {
     });
   }
 
+  @deprecated
   Future<void> removeTransaction(
     FirebaseReference<FirebaseWallet> walletRef,
     FirebaseTransaction transaction,

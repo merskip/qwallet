@@ -1,8 +1,10 @@
+import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../utils/IterableFinding.dart';
 import 'WalletsProvider.dart';
 import 'google_sheets/SpreadsheetWalletsProvider.dart';
 
@@ -16,6 +18,27 @@ class AggregatedWalletsProvider extends WalletsProvider {
   });
 
   static AggregatedWalletsProvider? instance;
+
+  Stream<List<Wallet>> getOrderedWallets() {
+    return CombineLatestStream.combine2(
+      getWallets(),
+      LocalPreferences.walletsOrder,
+      (List<Wallet> wallets, List<Identifier<Wallet>> walletsIdsOrder) {
+        final orderedWallets = <Wallet>[];
+        final remainingWallets = List.of(wallets);
+        for (final walletId in walletsIdsOrder) {
+          final wallet =
+              wallets.findFirstOrNull((w) => w.identifier == walletId);
+          if (wallet != null) {
+            orderedWallets.add(wallet);
+            remainingWallets.remove(wallet);
+          }
+        }
+        orderedWallets.addAll(remainingWallets);
+        return orderedWallets;
+      },
+    );
+  }
 
   @override
   Stream<List<Wallet>> getWallets() {

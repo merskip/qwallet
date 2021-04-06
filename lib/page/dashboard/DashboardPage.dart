@@ -141,7 +141,7 @@ class DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: AggregatedWalletsProvider.instance!.getWallets(),
+      stream: AggregatedWalletsProvider.instance!.getOrderedWallets(),
       builder: (context, List<Wallet> wallets) =>
           buildContent(context, wallets),
     );

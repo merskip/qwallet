@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/VectorImage.dart';
@@ -41,8 +41,8 @@ class _WalletsPageState extends State<WalletsPage> {
 
   Widget buildContent(BuildContext context) {
     return SimpleStreamWidget(
-      stream: LocalPreferences.orderedWallets(DataSource.instance.getWallets()),
-      builder: (context, List<FirebaseWallet> wallets) {
+      stream: AggregatedWalletsProvider.instance!.getOrderedWallets(),
+      builder: (context, List<Wallet> wallets) {
         if (isReordering) {
           return buildReorderableWalletsList(context, wallets);
         } else {
@@ -52,7 +52,7 @@ class _WalletsPageState extends State<WalletsPage> {
     );
   }
 
-  Widget buildWalletsList(BuildContext context, List<FirebaseWallet> wallets) {
+  Widget buildWalletsList(BuildContext context, List<Wallet> wallets) {
     return ListView.separated(
       itemCount: wallets.length,
       itemBuilder: (context, index) => buildWallet(context, wallets[index]),
@@ -60,7 +60,7 @@ class _WalletsPageState extends State<WalletsPage> {
     );
   }
 
-  Widget buildWallet(BuildContext context, FirebaseWallet wallet) {
+  Widget buildWallet(BuildContext context, Wallet wallet) {
     return ListTile(
       title: Text(wallet.name),
       trailing: Text(wallet.balance.formatted),
@@ -70,7 +70,7 @@ class _WalletsPageState extends State<WalletsPage> {
   }
 
   Widget buildReorderableWalletsList(
-      BuildContext context, List<FirebaseWallet> wallets) {
+      BuildContext context, List<Wallet> wallets) {
     return ReorderableListView(
       padding: const EdgeInsets.all(8),
       header: Text(
@@ -86,14 +86,15 @@ class _WalletsPageState extends State<WalletsPage> {
           final category = wallets.removeAt(oldIndex);
           wallets.insert(newIndex, category);
         });
-        LocalPreferences.orderWallets(wallets);
+        final walletsOrderIds = wallets.map((w) => w.identifier).toList();
+        LocalPreferences.setOrderWallets(walletsOrderIds);
       },
     );
   }
 
-  Widget buildReorderableWallet(BuildContext context, FirebaseWallet wallet) {
+  Widget buildReorderableWallet(BuildContext context, Wallet wallet) {
     return ListTile(
-      key: Key(wallet.id),
+      key: Key(wallet.identifier.toString()),
       title: Text(wallet.name),
       trailing: Icon(Icons.drag_handle),
     );

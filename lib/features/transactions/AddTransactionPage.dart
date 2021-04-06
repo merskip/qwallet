@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/Money.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
+import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
@@ -199,8 +198,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   onSelectedWallet(BuildContext context) async {
     final wallets =
-        await LocalPreferences.orderedWallets(DataSource.instance.getWallets())
-            .first;
+        await AggregatedWalletsProvider.instance!.getOrderedWallets().first;
     final selectedWallet = await showDialog(
       context: context,
       builder: (context) => SelectWalletDialog(

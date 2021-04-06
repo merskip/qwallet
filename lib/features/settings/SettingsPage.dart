@@ -10,8 +10,8 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/VectorImage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../EsterEgg.dart';
-import '../router.dart';
+import '../../EsterEgg.dart';
+import '../../router.dart';
 
 class SettingsPage extends StatelessWidget {
   onSelectedChangeThemeMode(

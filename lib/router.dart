@@ -10,7 +10,7 @@ import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/page/WalletPage.dart';
-import 'package:qwallet/page/WalletsPage.dart';
+import 'file:///C:/Users/Piotr%20Merski/Workspace/qwallet/lib/features/settings/WalletsPage.dart';
 import 'package:qwallet/page/loans/AddLoanPage.dart';
 import 'package:qwallet/page/loans/EditLoanPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -29,7 +29,7 @@ import 'page/EditCategoryPage.dart';
 import 'page/EditWalletDateRangePage.dart';
 import 'page/LandingPage.dart';
 import 'page/ReportsPage.dart';
-import 'page/SettingsPage.dart';
+import 'features/settings/SettingsPage.dart';
 
 final router = new FluroRouter();
 

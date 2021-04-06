@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
+import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/Category.dart';
 import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
@@ -18,7 +18,6 @@ import 'package:qwallet/widget/SecondaryButton.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
 
 import '../../AppLocalizations.dart';
-import '../../LocalPreferences.dart';
 import '../../Money.dart';
 
 class AddSeriesTransactionsPage extends StatefulWidget {
@@ -125,8 +124,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
 
   onSelectedWallet(BuildContext context) async {
     final wallets =
-        await LocalPreferences.orderedWallets(DataSource.instance.getWallets())
-            .first;
+        await AggregatedWalletsProvider.instance!.getOrderedWallets().first;
     final selectedWallet = await showDialog(
       context: context,
       builder: (context) => SelectWalletDialog(
