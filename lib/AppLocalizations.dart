@@ -343,7 +343,7 @@ extension WalletLocalizations on AppLocalizations {
       );
 
   String get walletTotalIncome => _locale(
-        en: "Total expense",
+        en: "Total income",
         pl: "Łączne przychody",
       );
 

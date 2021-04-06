@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
 import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/Transaction.dart';
 import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/router.dart';
@@ -76,48 +78,80 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       builder: (context) => page,
     );
     if (owners != null && owners.contains(DataSource.instance.currentUser)) {
-      DataSource.instance.updateWallet(
-        wallet.reference,
+      AggregatedWalletsProvider.instance!.firebaseProvider.updateWallet(
+        wallet.identifier,
+        name: wallet.name,
+        currency: wallet.currency,
         ownersUid: owners.map((user) => user.uid).toList(),
+        dateRange: wallet.dateRange,
       );
     }
   }
 
-  void onSelectedCurrency(BuildContext context) async {
+  void onSelectedCurrency(BuildContext context, FirebaseWallet wallet) async {
     final page = CurrencySelectionPage(selectedCurrency: wallet.currency);
     final currency = await pushPage<Currency?>(
       context,
       builder: (context) => page,
     );
     if (currency != null) {
-      throw UnimplementedError("Not implemented yet");
-      // DataSource.instance.updateWallet(
-      //   wallet.reference,
-      //   currency: currency,
-      // );
+      AggregatedWalletsProvider.instance!.firebaseProvider.updateWallet(
+        wallet.identifier,
+        name: wallet.name,
+        currency: currency,
+        ownersUid: wallet.ownersUid,
+        dateRange: wallet.dateRange,
+      );
     }
   }
 
   void onSelectedRefreshBalance(BuildContext context) async {
-    throw UnimplementedError("Not implemented yet");
-    // setState(() => isBalanceRefreshing = true);
-    // final latestTransactions = await DataSource.instance
-    //     .getLatestTransactions(wallet.reference)
-    //     .first;
-    // await DataSource.instance.refreshWalletBalanceIfNeeded(latestTransactions);
-    // setState(() => isBalanceRefreshing = false);
+    setState(() => isBalanceRefreshing = true);
+    final latestTransactions = await AggregatedTransactionsProvider.instance!
+        .getLatestTransactions(walletId: wallet.identifier)
+        .first;
+
+    final transactions = latestTransactions.transactions;
+    double totalExpense = 0.0, totalIncome = 0.0;
+    for (final transaction in transactions) {
+      if (transaction.type == TransactionType.expense)
+        totalExpense += transaction.amount;
+      else
+        totalIncome += transaction.amount;
+    }
+    if (wallet.totalExpense.amount != totalExpense ||
+        wallet.totalIncome.amount != totalIncome) {
+      print("Detected incorrect wallet balance.\n"
+          " - Current: income=${wallet.totalIncome.amount}, "
+          "expenses=${wallet.totalExpense.amount}, "
+          "balance=${wallet.balance.amount}\n"
+          " - Calculated: income=$totalIncome, "
+          "expenses=$totalExpense, "
+          "balance=${totalIncome - totalExpense}");
+
+      await AggregatedWalletsProvider.instance!.firebaseProvider
+          .updateWalletBalance(
+        walletId: wallet.identifier,
+        totalIncome: totalIncome,
+        totalExpense: totalExpense,
+      );
+    }
+    setState(() => isBalanceRefreshing = false);
   }
 
-  void onSelectedEditDateRange(BuildContext context) async {
-    throw UnimplementedError("Not implemented yet");
-    // final dateRange = await router.navigateTo(
-    //     context, "/wallet/${wallet.identifier}/editDateRange");
-    // if (dateRange != null) {
-    //   DataSource.instance.updateWallet(
-    //     wallet.reference,
-    //     dateRange: dateRange,
-    //   );
-    // }
+  void onSelectedEditDateRange(
+      BuildContext context, FirebaseWallet wallet) async {
+    final dateRange = await router.navigateTo(
+        context, "/wallet/${wallet.identifier}/editDateRange");
+    if (dateRange != null) {
+      AggregatedWalletsProvider.instance!.firebaseProvider.updateWallet(
+        wallet.identifier,
+        name: wallet.name,
+        currency: wallet.currency,
+        ownersUid: wallet.ownersUid,
+        dateRange: dateRange,
+      );
+    }
   }
 
   void onSelectedCategories(BuildContext context) {
@@ -146,7 +180,8 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           buildTotalExpense(context),
           buildTotalIncome(context),
           buildBalance(context),
-          buildCurrentDateRange(context),
+          if (wallet is FirebaseWallet)
+            buildCurrentDateRange(context, wallet as FirebaseWallet),
           Divider(),
           buildCategories(context)
         ],
@@ -174,9 +209,13 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       editingSave: () {
         final name = nameController.text.trim();
         if (name.isNotEmpty) {
-          AggregatedWalletsProvider.instance!.firebaseProvider.updateWalletName(
+          final wallet = this.wallet as FirebaseWallet;
+          AggregatedWalletsProvider.instance!.firebaseProvider.updateWallet(
             wallet.identifier,
             name: name,
+            currency: wallet.currency,
+            ownersUid: wallet.ownersUid,
+            dateRange: wallet.dateRange,
           );
         }
       },
@@ -207,7 +246,9 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletCurrency),
       value: Text(wallet.currency.getCommonName(context)),
-      onEdit: (context) => onSelectedCurrency(context),
+      onEdit: wallet is FirebaseWallet
+          ? (context) => onSelectedCurrency(context, wallet as FirebaseWallet)
+          : null,
     );
   }
 
@@ -237,22 +278,22 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           : Text(wallet.balance.formatted),
       editIcon: Icons.refresh,
       editTooltip: AppLocalizations.of(context).walletBalanceRefresh,
-      onEdit: (context) => onSelectedRefreshBalance(context),
+      onEdit: wallet is FirebaseWallet
+          ? (context) => onSelectedRefreshBalance(context)
+          : null,
     );
   }
 
-  Widget buildCurrentDateRange(BuildContext context) {
+  Widget buildCurrentDateRange(BuildContext context, FirebaseWallet wallet) {
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletCurrentDateRange),
-      // TODO: Impl
-      value: Text("..."),
-      // value: Text(
-      //   _getWalletDateRangeTypeText(wallet.dateRange.type) +
-      //       "\n" +
-      //       wallet.dateRange.getDateTimeRange().formatted(),
-      // ),
+      value: Text(
+        _getWalletDateRangeTypeText(wallet.dateRange.type) +
+            "\n" +
+            wallet.dateRange.getDateTimeRange().formatted(),
+      ),
       editIcon: Icons.edit,
-      onEdit: (context) => onSelectedEditDateRange(context),
+      onEdit: (context) => onSelectedEditDateRange(context, wallet),
     );
   }
 

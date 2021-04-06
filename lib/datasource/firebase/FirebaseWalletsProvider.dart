@@ -6,6 +6,7 @@ import 'package:qwallet/datasource/CategoriesProvider.dart';
 import 'package:qwallet/datasource/Identifier.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../Currency.dart';
 import '../AccountProvider.dart';
 import '../Wallet.dart';
 import '../WalletsProvider.dart';
@@ -44,14 +45,35 @@ class FirebaseWalletsProvider implements WalletsProvider {
         .flatMap((walletSnapshot) => _parseWalletSnapshot(walletSnapshot));
   }
 
-  Future<void> updateWalletName(
+  Future<void> updateWallet(
     Identifier<Wallet> walletId, {
     required String name,
+    required Currency currency,
+    required List<String> ownersUid,
+    required FirebaseWalletDateRange dateRange,
   }) {
-    return firestore
-        .collection("wallets")
-        .doc(walletId.id)
-        .update({"name": name});
+    return firestore.collection("wallets").doc(walletId.id).update({
+      "name": name,
+      "currency": currency.code,
+      "ownersUid": ownersUid,
+      'dateRange': {
+        'type': dateRange.type.rawValue,
+        'monthStartDay': dateRange.monthStartDay,
+        'weekdayStart': dateRange.weekdayStart,
+        'numberOfLastDays': dateRange.numberOfLastDays,
+      }
+    });
+  }
+
+  Future<void> updateWalletBalance({
+    required Identifier<Wallet> walletId,
+    required double totalIncome,
+    required double totalExpense,
+  }) {
+    return firestore.collection("wallets").doc(walletId.id).update({
+      'totalExpense': totalExpense,
+      'totalIncome': totalIncome,
+    });
   }
 
   Stream<List<FirebaseWallet>> _parseWalletsSnapshot(
