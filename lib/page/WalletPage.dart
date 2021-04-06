@@ -1,37 +1,29 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/model/user.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
-import 'package:qwallet/page/UserSelectionPage.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
-import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../AppLocalizations.dart';
 import '../Currency.dart';
 
 class WalletPage extends StatelessWidget {
-  final FirebaseReference<FirebaseWallet> walletRef;
+  final Wallet wallet;
 
-  const WalletPage({Key? key, required this.walletRef}) : super(key: key);
+  const WalletPage({Key? key, required this.wallet}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SimpleStreamWidget(
-      stream: DataSource.instance.getWallet(walletRef),
-      builder: (context, FirebaseWallet wallet) =>
-          _WalletPageContent(wallet: wallet),
-    );
+    return _WalletPageContent(wallet: wallet);
   }
 }
 
 class _WalletPageContent extends StatefulWidget {
-  final FirebaseWallet wallet;
+  final Wallet wallet;
 
   _WalletPageContent({Key? key, required this.wallet}) : super(key: key);
 
@@ -57,30 +49,32 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           .walletRemoveConfirmationContent(widget.wallet.name)),
       isDestructive: true,
       onConfirm: () {
-        Navigator.of(context).pop();
-        DataSource.instance.removeWallet(widget.wallet.reference);
+        throw UnimplementedError("Not implemented yet");
+        // Navigator.of(context).pop();
+        // DataSource.instance.removeWallet(widget.wallet.reference);
         Navigator.of(context).pop();
       },
     ).show(context);
   }
 
   void onSelectedOwners(BuildContext context) async {
-    final currentOwners =
-        await DataSource.instance.getUsersByUids(widget.wallet.ownersUid);
-    final page = UserSelectionPage(
-      title: AppLocalizations.of(context).walletOwners,
-      selectedUsers: currentOwners,
-    );
-    final owners = await pushPage<List<User>?>(
-      context,
-      builder: (context) => page,
-    );
-    if (owners != null && owners.contains(DataSource.instance.currentUser)) {
-      DataSource.instance.updateWallet(
-        widget.wallet.reference,
-        ownersUid: owners.map((user) => user.uid).toList(),
-      );
-    }
+    throw UnimplementedError("Not implemented yet");
+    // final currentOwners =
+    //     await DataSource.instance.getUsersByUids(widget.wallet.ownersUid);
+    // final page = UserSelectionPage(
+    //   title: AppLocalizations.of(context).walletOwners,
+    //   selectedUsers: currentOwners,
+    // );
+    // final owners = await pushPage<List<User>?>(
+    //   context,
+    //   builder: (context) => page,
+    // );
+    // if (owners != null && owners.contains(DataSource.instance.currentUser)) {
+    //   DataSource.instance.updateWallet(
+    //     widget.wallet.reference,
+    //     ownersUid: owners.map((user) => user.uid).toList(),
+    //   );
+    // }
   }
 
   void onSelectedCurrency(BuildContext context) async {
@@ -91,31 +85,34 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       builder: (context) => page,
     );
     if (currency != null) {
-      DataSource.instance.updateWallet(
-        widget.wallet.reference,
-        currency: currency,
-      );
+      throw UnimplementedError("Not implemented yet");
+      // DataSource.instance.updateWallet(
+      //   widget.wallet.reference,
+      //   currency: currency,
+      // );
     }
   }
 
   void onSelectedRefreshBalance(BuildContext context) async {
-    setState(() => isBalanceRefreshing = true);
-    final latestTransactions = await DataSource.instance
-        .getLatestTransactions(widget.wallet.reference)
-        .first;
-    await DataSource.instance.refreshWalletBalanceIfNeeded(latestTransactions);
-    setState(() => isBalanceRefreshing = false);
+    throw UnimplementedError("Not implemented yet");
+    // setState(() => isBalanceRefreshing = true);
+    // final latestTransactions = await DataSource.instance
+    //     .getLatestTransactions(widget.wallet.reference)
+    //     .first;
+    // await DataSource.instance.refreshWalletBalanceIfNeeded(latestTransactions);
+    // setState(() => isBalanceRefreshing = false);
   }
 
   void onSelectedEditDateRange(BuildContext context) async {
-    final dateRange = await router.navigateTo(
-        context, "/wallet/${widget.wallet.identifier}/editDateRange");
-    if (dateRange != null) {
-      DataSource.instance.updateWallet(
-        widget.wallet.reference,
-        dateRange: dateRange,
-      );
-    }
+    throw UnimplementedError("Not implemented yet");
+    // final dateRange = await router.navigateTo(
+    //     context, "/wallet/${widget.wallet.identifier}/editDateRange");
+    // if (dateRange != null) {
+    //   DataSource.instance.updateWallet(
+    //     widget.wallet.reference,
+    //     dateRange: dateRange,
+    //   );
+    // }
   }
 
   void onSelectedCategories(BuildContext context) {
@@ -168,31 +165,34 @@ class _WalletPageContentState extends State<_WalletPageContent> {
         );
       },
       editingSave: () {
-        final name = nameController.text.trim();
-        if (name.isNotEmpty) {
-          DataSource.instance.updateWallet(
-            widget.wallet.reference,
-            name: name,
-          );
-        }
+        throw UnimplementedError("Not implemented yet");
+        // final name = nameController.text.trim();
+        // if (name.isNotEmpty) {
+        //   DataSource.instance.updateWallet(
+        //     widget.wallet.reference,
+        //     name: name,
+        //   );
+        // }
       },
     );
   }
 
   Widget buildOwners(BuildContext context) {
+    // TODO: Impl
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletOwners),
-      value: SimpleStreamWidget(
-        stream: DataSource.instance
-            .getUsersByUids(widget.wallet.ownersUid)
-            .asStream(),
-        builder: (context, List<User> users) {
-          final text =
-              users.map((user) => user.getCommonName(context)).join(", ");
-          return Text(text);
-        },
-        loadingBuilder: (context) => Text("..."),
-      ),
+      value: Text("..."),
+      // value: SimpleStreamWidget(
+      //   stream: DataSource.instance
+      //       .getUsersByUids(widget.wallet.ownersUid)
+      //       .asStream(),
+      //   builder: (context, List<User> users) {
+      //     final text =
+      //         users.map((user) => user.getCommonName(context)).join(", ");
+      //     return Text(text);
+      //   },
+      //   loadingBuilder: (context) => Text("..."),
+      // ),
       onEdit: (context) => onSelectedOwners(context),
     );
   }
@@ -238,11 +238,13 @@ class _WalletPageContentState extends State<_WalletPageContent> {
   Widget buildCurrentDateRange(BuildContext context) {
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletCurrentDateRange),
-      value: Text(
-        _getWalletDateRangeTypeText(widget.wallet.dateRange.type) +
-            "\n" +
-            widget.wallet.dateRange.getDateTimeRange().formatted(),
-      ),
+      // TODO: Impl
+      value: Text("..."),
+      // value: Text(
+      //   _getWalletDateRangeTypeText(widget.wallet.dateRange.type) +
+      //       "\n" +
+      //       widget.wallet.dateRange.getDateTimeRange().formatted(),
+      // ),
       editIcon: Icons.edit,
       onEdit: (context) => onSelectedEditDateRange(context),
     );
