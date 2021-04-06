@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:qwallet/datasource/Identifiable.dart';
-import 'package:qwallet/datasource/Identifier.dart';
+import 'package:qwallet/data_source/Identifiable.dart';
+import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/model/user.dart';
 
-import '../Money.dart';
-import 'Converting.dart';
-import 'Model.dart';
+import '../../Money.dart';
+import 'FirebaseConverting.dart';
+import 'FirebaseModel.dart';
 
 class PrivateLoan extends FirebaseModel<PrivateLoan>
     implements Identifiable<PrivateLoan> {

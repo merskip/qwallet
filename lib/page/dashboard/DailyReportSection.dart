@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:qwallet/datasource/Transaction.dart';
-import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/data_source/Transaction.dart';
+import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/page/dashboard/DailySpendingComputing.dart';
 import 'package:qwallet/widget/SpendingGauge.dart';
 

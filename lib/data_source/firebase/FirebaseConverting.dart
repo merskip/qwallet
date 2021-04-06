@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/IconsSerialization.dart';
 import 'package:qwallet/model/user.dart';
 
-import '../Currency.dart';
-import '../Money.dart';
-import '../utils.dart';
-import '../utils/IterableFinding.dart';
-import 'Model.dart';
+import '../../Currency.dart';
+import '../../Money.dart';
+import '../../utils.dart';
+import '../../utils/IterableFinding.dart';
+import 'FirebaseModel.dart';
 
 extension DocumentSnapshotConverting on DocumentSnapshot {
   Money? getMoney(dynamic amountField, dynamic currencyField) {

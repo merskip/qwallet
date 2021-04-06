@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
-import 'package:qwallet/datasource/Category.dart';
-import 'package:qwallet/datasource/Identifier.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Identifier.dart';
 
 class SpreadsheetCategory implements Category {
   final Identifier<Category> identifier;

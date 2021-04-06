@@ -1,6 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart' as CloudFunctions;
 import 'package:firebase_auth/firebase_auth.dart' as FirebaseAuth;
-import 'package:qwallet/datasource/UsersProvider.dart';
+import 'package:qwallet/data_source/UsersProvider.dart';
 import 'package:qwallet/model/user.dart';
 
 class FirebaseUsersProvider implements UsersProvider {

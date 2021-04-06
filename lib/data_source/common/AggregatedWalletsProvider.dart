@@ -1,10 +1,10 @@
-import 'package:qwallet/datasource/Identifier.dart';
-import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
+import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
+import 'package:qwallet/data_source/google_sheets/SpreadsheetWalletsProvider.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'WalletsProvider.dart';
-import 'google_sheets/SpreadsheetWalletsProvider.dart';
+import '../WalletsProvider.dart';
 
 class AggregatedWalletsProvider extends WalletsProvider {
   final FirebaseWalletsProvider _firebaseProvider;

@@ -1,10 +1,10 @@
-import 'package:qwallet/datasource/WalletsProvider.dart';
+import 'package:qwallet/data_source/WalletsProvider.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../LocalPreferences.dart';
-import '../utils/IterableFinding.dart';
-import 'Identifier.dart';
-import 'Wallet.dart';
+import '../../LocalPreferences.dart';
+import '../../utils/IterableFinding.dart';
+import '../Identifier.dart';
+import '../Wallet.dart';
 
 class OrderedWalletsProvider {
   WalletsProvider walletsProviders;

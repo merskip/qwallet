@@ -1,11 +1,11 @@
-import 'package:qwallet/datasource/Identifier.dart';
-import 'package:qwallet/datasource/Transaction.dart';
-import 'package:qwallet/datasource/TransactionsProvider.dart';
-import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/datasource/firebase/FirebaseTransactionsProvider.dart';
+import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/Transaction.dart';
+import 'package:qwallet/data_source/TransactionsProvider.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/firebase/FirebaseTransactionsProvider.dart';
 
-import 'Category.dart';
-import 'google_sheets/SpreadsheetTransactionsProvider.dart';
+import '../Category.dart';
+import '../google_sheets/SpreadsheetTransactionsProvider.dart';
 
 class AggregatedTransactionsProvider implements TransactionsProvider {
   final FirebaseTransactionsProvider _firebaseProvider;

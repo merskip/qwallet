@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
-import 'package:qwallet/datasource/SharedProviders.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/dialog/UserDialog.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/utils.dart';

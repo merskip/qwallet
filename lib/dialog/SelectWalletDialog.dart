@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/data_source/Wallet.dart';
 
 class SelectWalletDialog extends StatelessWidget {
   final String title;

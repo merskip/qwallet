@@ -1,7 +1,7 @@
-import 'package:qwallet/api/PrivateLoan.dart';
-import 'package:qwallet/datasource/Identifier.dart';
+import 'package:qwallet/data_source/Identifier.dart';
 
 import '../Currency.dart';
+import 'firebase/PrivateLoan.dart';
 
 abstract class PrivateLoansProvider {
   Stream<List<PrivateLoan>> getPrivateLoans({

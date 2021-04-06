@@ -1,15 +1,15 @@
-import 'package:qwallet/datasource/AccountProvider.dart';
-import 'package:qwallet/datasource/OrderedWalletsProvider.dart';
-import 'package:qwallet/datasource/firebase/FirebaseCategoriesProvider.dart';
-import 'package:qwallet/datasource/google_sheets/SpreadsheetTransactionsProvider.dart';
-import 'package:qwallet/datasource/google_sheets/SpreadsheetWalletsProvider.dart';
+import 'package:qwallet/data_source/firebase/FirebaseCategoriesProvider.dart';
+import 'package:qwallet/data_source/google_sheets/SpreadsheetTransactionsProvider.dart';
+import 'package:qwallet/data_source/google_sheets/SpreadsheetWalletsProvider.dart';
 
-import 'PrivateLoansProvider.dart';
-import 'TransactionsProvider.dart';
-import 'UsersProvider.dart';
-import 'WalletsProvider.dart';
-import 'firebase/FirebaseTransactionsProvider.dart';
-import 'firebase/FirebaseWalletsProvider.dart';
+import '../AccountProvider.dart';
+import '../PrivateLoansProvider.dart';
+import '../TransactionsProvider.dart';
+import '../UsersProvider.dart';
+import '../WalletsProvider.dart';
+import '../firebase/FirebaseTransactionsProvider.dart';
+import '../firebase/FirebaseWalletsProvider.dart';
+import 'OrderedWalletsProvider.dart';
 
 class SharedProviders {
   SharedProviders._();

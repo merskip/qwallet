@@ -1,7 +1,7 @@
-import 'package:qwallet/datasource/Category.dart';
-import 'package:qwallet/datasource/Identifier.dart';
-import 'package:qwallet/datasource/Transaction.dart';
-import 'package:qwallet/datasource/google_sheets/GoogleSpreadsheetWallet.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/Transaction.dart';
+import 'package:qwallet/data_source/google_sheets/GoogleSpreadsheetWallet.dart';
 
 class SpreadsheetTransaction implements Transaction {
   final GoogleSpreadsheetTransaction spreadsheetTransfer;

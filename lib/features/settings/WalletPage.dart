@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/Currency.dart';
-import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/datasource/SharedProviders.dart';
-import 'package:qwallet/datasource/Transaction.dart';
-import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/datasource/google_sheets/SpreadsheetWallet.dart';
+import 'package:qwallet/data_source/Transaction.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
+import 'package:qwallet/data_source/google_sheets/SpreadsheetWallet.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/router.dart';

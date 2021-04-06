@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
-import 'package:qwallet/datasource/SharedProviders.dart';
-import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/VectorImage.dart';

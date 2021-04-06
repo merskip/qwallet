@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:googleapis/sheets/v4.dart';
-import 'package:qwallet/datasource/CategoriesProvider.dart';
-import 'package:qwallet/datasource/Category.dart';
-import 'package:qwallet/datasource/Identifier.dart';
-import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/data_source/CategoriesProvider.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/utils/IterableFinding.dart';
 
 import '../AccountProvider.dart';

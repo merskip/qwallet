@@ -2,11 +2,11 @@ import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/datasource/Category.dart';
-import 'package:qwallet/datasource/SharedProviders.dart';
-import 'package:qwallet/datasource/Transaction.dart';
-import 'package:qwallet/datasource/TransactionsProvider.dart';
-import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Transaction.dart';
+import 'package:qwallet/data_source/TransactionsProvider.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 

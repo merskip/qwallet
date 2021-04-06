@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/datasource/Category.dart';
+import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/utils.dart';
 
 import '../../AppLocalizations.dart';

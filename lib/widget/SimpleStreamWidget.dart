@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Model.dart';
+import 'package:qwallet/data_source/firebase/FirebaseModel.dart';
 
 typedef ValueWidgetBuilder<T> = Widget Function(BuildContext context, T value);
 

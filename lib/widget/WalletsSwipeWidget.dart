@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/utils.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
+
+import '../utils.dart';
 
 class WalletsSwipeWidget extends StatefulWidget {
   final List<Wallet> wallets;

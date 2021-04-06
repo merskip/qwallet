@@ -1,5 +1,5 @@
-import 'package:qwallet/datasource/Account.dart';
-import 'package:qwallet/datasource/AccountProvider.dart';
+import 'package:qwallet/data_source/Account.dart';
+import 'package:qwallet/data_source/AccountProvider.dart';
 
 class AccountProviderMock implements AccountProvider {
   final Account account;

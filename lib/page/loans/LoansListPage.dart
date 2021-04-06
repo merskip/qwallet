@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qwallet/api/PrivateLoan.dart';
-import 'package:qwallet/datasource/SharedProviders.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/data_source/firebase/PrivateLoan.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';

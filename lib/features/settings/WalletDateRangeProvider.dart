@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
 import 'package:qwallet/utils.dart';
 
 class WalletDateRangeCalculator {

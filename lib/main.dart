@@ -9,22 +9,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
-import 'package:qwallet/datasource/AggregatedTransactionsProvider.dart';
-import 'package:qwallet/datasource/OrderedWalletsProvider.dart';
-import 'package:qwallet/datasource/SharedProviders.dart';
-import 'package:qwallet/datasource/firebase/FirebaseCategoriesProvider.dart';
-import 'package:qwallet/datasource/firebase/FirebasePrivateLoansProvider.dart';
-import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
+import 'package:qwallet/data_source/firebase/FirebaseCategoriesProvider.dart';
+import 'package:qwallet/data_source/firebase/FirebasePrivateLoansProvider.dart';
+import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
 import 'package:qwallet/router.dart';
 
-import 'datasource/AggregatedWalletsProvider.dart';
-import 'datasource/DefaultAccountProvider.dart';
-import 'datasource/Identifier.dart';
-import 'datasource/firebase/FirebaseTransactionsProvider.dart';
-import 'datasource/firebase/FirebaseUsersProvider.dart';
-import 'datasource/google_sheets/CachedGoogleSpreadsheetRepository.dart';
-import 'datasource/google_sheets/SpreadsheetTransactionsProvider.dart';
-import 'datasource/google_sheets/SpreadsheetWalletsProvider.dart';
+import 'data_source/Identifier.dart';
+import 'data_source/common/AggregatedTransactionsProvider.dart';
+import 'data_source/common/AggregatedWalletsProvider.dart';
+import 'data_source/common/DefaultAccountProvider.dart';
+import 'data_source/common/OrderedWalletsProvider.dart';
+import 'data_source/common/SharedProviders.dart';
+import 'data_source/firebase/FirebaseTransactionsProvider.dart';
+import 'data_source/firebase/FirebaseUsersProvider.dart';
+import 'data_source/google_sheets/CachedGoogleSpreadsheetRepository.dart';
+import 'data_source/google_sheets/SpreadsheetTransactionsProvider.dart';
+import 'data_source/google_sheets/SpreadsheetWalletsProvider.dart';
 
 void main() async {
   runZonedGuarded(

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'datasource/Identifier.dart';
-import 'datasource/Wallet.dart';
+import 'data_source/Identifier.dart';
+import 'data_source/Wallet.dart';
 import 'utils/IterableFinding.dart';
 
 class UserPreferences {

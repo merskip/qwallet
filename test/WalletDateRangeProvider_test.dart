@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qwallet/WalletDateRangeProvider.dart';
-import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
+import 'package:qwallet/features/settings/WalletDateRangeProvider.dart';
 import 'package:qwallet/utils.dart';
 
 void main() {

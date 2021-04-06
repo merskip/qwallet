@@ -1,5 +1,5 @@
-import 'package:qwallet/datasource/Category.dart';
-import 'package:qwallet/datasource/Identifier.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Identifier.dart';
 
 import 'Transaction.dart';
 import 'Wallet.dart';

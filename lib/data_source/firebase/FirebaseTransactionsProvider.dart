@@ -1,17 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/api/Transaction.dart' as FirebaseTransaction;
-import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/datasource/Identifier.dart';
-import 'package:qwallet/datasource/TransactionsProvider.dart';
-import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
+import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/TransactionsProvider.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
 import 'package:qwallet/utils.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../Category.dart';
 import '../Transaction.dart';
+import 'FirebaseCategory.dart';
+import 'FirebaseTransaction.dart';
+import 'FirebaseWallet.dart';
 
 class FirebaseTransactionsProvider implements TransactionsProvider {
   final FirebaseWalletsProvider walletsProvider;
@@ -48,8 +48,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
           .doc(transactionId.id)
           .snapshots()
           .map((transactionSnapshot) {
-        return FirebaseTransaction.FirebaseTransaction(
-            transactionSnapshot, wallet);
+        return FirebaseTransaction(transactionSnapshot, wallet);
       });
     });
   }
@@ -70,8 +69,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
         .limit(limit);
     if (afterTransaction != null) {
       final afterFirebaseTransaction =
-          (afterTransaction as FirebaseTransaction.FirebaseTransaction)
-              .documentSnapshot;
+          (afterTransaction as FirebaseTransaction).documentSnapshot;
       query = query.startAfterDocument(afterFirebaseTransaction);
     }
 
@@ -81,8 +79,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
       (FirebaseWallet wallet,
           CloudFirestore.QuerySnapshot transactionsSnapshot) {
         return transactionsSnapshot.docs.map((transactionSnapshot) {
-          return FirebaseTransaction.FirebaseTransaction(
-              transactionSnapshot, wallet);
+          return FirebaseTransaction(transactionSnapshot, wallet);
         }).toList();
       },
     );
@@ -172,7 +169,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
   }) {
     return firestore
         .collection("wallets")
-        .doc(wallet.id)
+        .doc(wallet.identifier.id)
         .collection("transactions")
         .where("date", isGreaterThanOrEqualTo: dateRange.start.toTimestamp())
         .where("date", isLessThanOrEqualTo: dateRange.end.toTimestamp())
@@ -180,8 +177,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
         .snapshots()
         .map((querySnapshot) => querySnapshot.docs
             .map((transactionSnapshot) =>
-                FirebaseTransaction.FirebaseTransaction(
-                    transactionSnapshot, wallet))
+                FirebaseTransaction(transactionSnapshot, wallet))
             .toList());
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/datasource/SharedProviders.dart';
-import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/widget/CategoryForm.dart';
 
 import '../../AppLocalizations.dart';

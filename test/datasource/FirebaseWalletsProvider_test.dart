@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_firestore_mocks/cloud_firestore_mocks.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qwallet/datasource/Account.dart';
-import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/datasource/WalletsProvider.dart';
-import 'package:qwallet/datasource/firebase/DocumentIdentifiable.dart';
-import 'package:qwallet/datasource/firebase/FirebaseCategoriesProvider.dart';
-import 'package:qwallet/datasource/firebase/FirebaseWalletsProvider.dart';
+import 'package:qwallet/data_source/Account.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/WalletsProvider.dart';
+import 'package:qwallet/data_source/firebase/DocumentIdentifiable.dart';
+import 'package:qwallet/data_source/firebase/FirebaseCategoriesProvider.dart';
+import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
 
 import '../utils.dart';
 import 'AccountProviderMock.dart';

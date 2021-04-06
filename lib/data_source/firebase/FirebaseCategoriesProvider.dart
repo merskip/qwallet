@@ -2,14 +2,14 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
-import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/datasource/CategoriesProvider.dart';
-import 'package:qwallet/datasource/Category.dart';
-import 'package:qwallet/datasource/Identifier.dart';
-import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/data_source/CategoriesProvider.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/Wallet.dart';
 
 import '../../IconsSerialization.dart';
 import '../../utils.dart';
+import 'FirebaseCategory.dart';
 
 class FirebaseCategoriesProvider implements CategoriesProvider {
   final FirebaseFirestore firestore;

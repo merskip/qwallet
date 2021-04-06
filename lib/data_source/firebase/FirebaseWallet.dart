@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/WalletDateRangeProvider.dart';
-import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/datasource/Identifier.dart';
-import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/features/settings/WalletDateRangeProvider.dart';
 import 'package:qwallet/utils.dart';
 
-import '../Currency.dart';
-import '../Money.dart';
-import '../utils/IterableFinding.dart';
-import 'Converting.dart';
-import 'Model.dart';
+import '../../Currency.dart';
+import '../../Money.dart';
+import '../../utils/IterableFinding.dart';
+import 'FirebaseCategory.dart';
+import 'FirebaseConverting.dart';
+import 'FirebaseModel.dart';
 
 class FirebaseWallet extends FirebaseModel<FirebaseWallet> implements Wallet {
   final Identifier<Wallet> identifier;

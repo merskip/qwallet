@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/Money.dart';
-import 'package:qwallet/datasource/Category.dart';
-import 'package:qwallet/datasource/Identifier.dart';
-import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/datasource/google_sheets/GoogleSpreadsheetWallet.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/google_sheets/GoogleSpreadsheetWallet.dart';
 
 class SpreadsheetWallet implements Wallet {
   final Identifier<Wallet> identifier;

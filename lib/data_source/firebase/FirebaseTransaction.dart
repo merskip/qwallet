@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
 import 'package:flutter/widgets.dart';
-import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/datasource/Identifier.dart';
-import 'package:qwallet/datasource/Transaction.dart';
+import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/Transaction.dart';
 
-import '../AppLocalizations.dart';
-import 'Category.dart';
-import 'Converting.dart';
-import 'Model.dart';
+import '../../AppLocalizations.dart';
+import 'FirebaseCategory.dart';
+import 'FirebaseConverting.dart';
+import 'FirebaseModel.dart';
+import 'FirebaseWallet.dart';
 
 class FirebaseTransaction extends FirebaseModel<FirebaseTransaction>
     implements Transaction {

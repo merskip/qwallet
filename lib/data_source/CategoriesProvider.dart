@@ -1,4 +1,4 @@
-import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/data_source/Wallet.dart';
 
 import 'Category.dart';
 import 'Identifier.dart';

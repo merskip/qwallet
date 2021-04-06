@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/datasource/Category.dart';
-import 'package:qwallet/datasource/Transaction.dart';
-import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Transaction.dart';
+import 'package:qwallet/data_source/Wallet.dart';
 
 import '../AppLocalizations.dart';
 import '../Money.dart';

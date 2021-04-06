@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
+import 'package:firebase_auth/firebase_auth.dart' as FirebaseAuth;
 import 'package:qwallet/Currency.dart';
-import 'package:qwallet/api/PrivateLoan.dart';
-import 'package:qwallet/datasource/Identifier.dart';
-import 'package:qwallet/datasource/PrivateLoansProvider.dart';
-import 'package:qwallet/datasource/UsersProvider.dart';
+import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/PrivateLoansProvider.dart';
+import 'package:qwallet/data_source/UsersProvider.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:firebase_auth/firebase_auth.dart' as FirebaseAuth;
 
 import '../../utils.dart';
 import '../AccountProvider.dart';
+import 'PrivateLoan.dart';
 
 class FirebasePrivateLoansProvider implements PrivateLoansProvider {
   final AccountProvider accountProvider;
@@ -151,7 +151,8 @@ class FirebasePrivateLoansProvider implements PrivateLoansProvider {
     return firestore.collection("privateLoans").doc(loanId.id).delete();
   }
 
-  Stream<T> onFirebaseUser<T>(Stream<T> Function(FirebaseAuth.User user) callback) {
+  Stream<T> onFirebaseUser<T>(
+      Stream<T> Function(FirebaseAuth.User user) callback) {
     return accountProvider.getAccount().asStream().flatMap((account) {
       final user = account.firebaseUser;
       if (user == null) return Stream.empty();

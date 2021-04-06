@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
-import 'package:qwallet/api/Model.dart';
-import 'package:qwallet/datasource/Category.dart';
-import 'package:qwallet/datasource/Identifier.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Identifier.dart';
 
-import 'Converting.dart';
+import 'FirebaseConverting.dart';
+import 'FirebaseModel.dart';
 
 class FirebaseCategory extends FirebaseModel<FirebaseCategory>
     implements Category {

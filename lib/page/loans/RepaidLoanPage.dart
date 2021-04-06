@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Currency.dart';
-import 'package:qwallet/api/PrivateLoan.dart';
-import 'package:qwallet/datasource/SharedProviders.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/data_source/firebase/PrivateLoan.dart';
 import 'package:qwallet/page/loans/LoansPage.dart';
 import 'package:qwallet/page/loans/RepayingMatcher.dart';
 import 'package:qwallet/router.dart';

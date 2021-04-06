@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/datasource/SharedProviders.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/CalendarRangesPreview.dart';

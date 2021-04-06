@@ -1,10 +1,8 @@
 import 'package:flutter/foundation.dart' as Foundation;
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/api/Wallet.dart';
-import 'package:qwallet/datasource/Category.dart';
-import 'package:qwallet/datasource/Transaction.dart';
-import 'package:qwallet/datasource/Wallet.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Transaction.dart';
+import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../../AppLocalizations.dart';
@@ -326,8 +324,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
     );
   }
 
-  Widget buildAnyCategoryChip(
-      BuildContext context, Category? category) {
+  Widget buildAnyCategoryChip(BuildContext context, Category? category) {
     return Chip(
       label: Text(
         category?.titleText ??

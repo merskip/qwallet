@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/datasource/SharedProviders.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/model/user.dart';
 
 import '../../AppLocalizations.dart';

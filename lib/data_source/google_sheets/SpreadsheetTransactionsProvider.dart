@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:qwallet/datasource/Category.dart';
-import 'package:qwallet/datasource/Identifier.dart';
-import 'package:qwallet/datasource/TransactionsProvider.dart';
-import 'package:qwallet/datasource/Wallet.dart';
-import 'package:qwallet/datasource/google_sheets/GoogleSpreadsheetWallet.dart';
-import 'package:qwallet/datasource/google_sheets/SpreadsheetTransaction.dart';
-import 'package:qwallet/datasource/google_sheets/SpreadsheetWallet.dart';
-import 'package:qwallet/datasource/google_sheets/SpreadsheetWalletsProvider.dart';
+import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/TransactionsProvider.dart';
+import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/google_sheets/GoogleSpreadsheetWallet.dart';
+import 'package:qwallet/data_source/google_sheets/SpreadsheetTransaction.dart';
+import 'package:qwallet/data_source/google_sheets/SpreadsheetWallet.dart';
+import 'package:qwallet/data_source/google_sheets/SpreadsheetWalletsProvider.dart';
 
 import '../../utils/IterableFinding.dart';
 import '../Transaction.dart';
