@@ -25,4 +25,23 @@ class FirebaseCategoriesProvider implements CategoriesProvider {
             ..sort((lhs, rhs) => lhs.compareTo(rhs)),
         );
   }
+
+  Future<void> updateCategoriesOrder({
+    required Identifier<Wallet> walletId,
+    required List<Identifier<Category>> categoriesOrder,
+  }) async {
+    await firestore.runTransaction((transaction) async {
+      categoriesOrder.forEach((category) {
+        final categoryReference = firestore
+            .collection("wallets")
+            .doc(walletId.id)
+            .collection("categories")
+            .doc(category.id);
+
+        transaction.update(categoryReference, {
+          'order': categoriesOrder.indexOf(category),
+        });
+      });
+    });
+  }
 }

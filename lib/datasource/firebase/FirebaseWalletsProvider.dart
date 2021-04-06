@@ -4,6 +4,7 @@ import 'package:qwallet/api/Category.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/datasource/CategoriesProvider.dart';
 import 'package:qwallet/datasource/Identifier.dart';
+import 'package:qwallet/datasource/firebase/FirebaseCategoriesProvider.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../Currency.dart';
@@ -14,7 +15,7 @@ import 'DocumentIdentifiable.dart';
 
 class FirebaseWalletsProvider implements WalletsProvider {
   final AccountProvider accountProvider;
-  final CategoriesProvider categoriesProvider;
+  final FirebaseCategoriesProvider categoriesProvider;
   final FirebaseFirestore firestore;
 
   FirebaseWalletsProvider({

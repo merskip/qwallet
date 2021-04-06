@@ -1,33 +1,32 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/api/Category.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
+import 'package:qwallet/datasource/Category.dart';
+import 'package:qwallet/datasource/Wallet.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
-import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
-import '../AppLocalizations.dart';
+import '../../AppLocalizations.dart';
 
 class CategoriesPage extends StatelessWidget {
-  final FirebaseReference<FirebaseWallet> walletRef;
+  final Wallet wallet;
 
-  const CategoriesPage({Key? key, required this.walletRef}) : super(key: key);
+  const CategoriesPage({
+    Key? key,
+    required this.wallet,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SimpleStreamWidget(
-      stream: DataSource.instance.getWallet(walletRef),
-      builder: (context, FirebaseWallet wallet) =>
-          _WalletCategoriesPageContent(wallet: wallet),
-    );
+    return _WalletCategoriesPageContent(wallet: wallet);
   }
 }
 
 class _WalletCategoriesPageContent extends StatefulWidget {
-  final FirebaseWallet wallet;
+  final Wallet wallet;
 
   const _WalletCategoriesPageContent({
     Key? key,
@@ -35,13 +34,15 @@ class _WalletCategoriesPageContent extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  __WalletCategoriesPageContentState createState() =>
-      __WalletCategoriesPageContentState();
+  _WalletCategoriesPageContentState createState() =>
+      _WalletCategoriesPageContentState();
 }
 
-class __WalletCategoriesPageContentState
+class _WalletCategoriesPageContentState
     extends State<_WalletCategoriesPageContent> {
   bool isReordering = false;
+
+  List<Category> get categories => widget.wallet.categories;
 
   final GlobalKey<_CategoriesReorderableListState> _reorderableListState =
       GlobalKey();
@@ -61,8 +62,11 @@ class __WalletCategoriesPageContentState
     final sortingCategories =
         _reorderableListState.currentState?.sortingCategories;
     if (sortingCategories != null) {
-      await DataSource.instance.updateCategoriesOrder(
-        categoriesOrder: sortingCategories.map((c) => c.reference).toList(),
+      await AggregatedWalletsProvider
+          .instance!.firebaseProvider.categoriesProvider
+          .updateCategoriesOrder(
+        walletId: widget.wallet.identifier,
+        categoriesOrder: sortingCategories.map((c) => c.identifier).toList(),
       );
     }
     setState(() {
@@ -70,10 +74,10 @@ class __WalletCategoriesPageContentState
     });
   }
 
-  onSelectedCategory(BuildContext context, FirebaseCategory category) {
+  onSelectedCategory(BuildContext context, Category category) {
     router.navigateTo(
       context,
-      "/wallet/${widget.wallet.identifier}/category/${category.id}",
+      "/wallet/${widget.wallet.identifier}/category/${category.identifier}",
     );
   }
 
@@ -82,22 +86,24 @@ class __WalletCategoriesPageContentState
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).categories),
-        actions: [
-          if (!isReordering)
-            IconButton(
-              icon: Icon(Icons.reorder),
-              onPressed: () => onSelectedReorder(context),
-              tooltip: AppLocalizations.of(context).categoriesChangeOrder,
-            )
-          else
-            IconButton(
-              icon: Icon(Icons.done),
-              onPressed: () => onSelectedCloseReorder(context),
-            )
-        ],
+        actions: widget.wallet is FirebaseWallet
+            ? [
+                if (!isReordering)
+                  IconButton(
+                    icon: Icon(Icons.reorder),
+                    onPressed: () => onSelectedReorder(context),
+                    tooltip: AppLocalizations.of(context).categoriesChangeOrder,
+                  )
+                else
+                  IconButton(
+                    icon: Icon(Icons.done),
+                    onPressed: () => onSelectedCloseReorder(context),
+                  )
+              ]
+            : null,
       ),
       body: buildCategories(context),
-      floatingActionButton: !isReordering
+      floatingActionButton: !isReordering && widget.wallet is FirebaseWallet
           ? FloatingActionButton(
               child: Icon(Icons.add),
               onPressed: () => onSelectedAddCategory(context),
@@ -108,28 +114,22 @@ class __WalletCategoriesPageContentState
   }
 
   Widget buildCategories(BuildContext context) {
-    return SimpleStreamWidget(
-      stream:
-          DataSource.instance.getCategories(wallet: widget.wallet.reference),
-      builder: (context, List<FirebaseCategory> categories) {
-        if (categories.isNotEmpty) {
-          return !isReordering
-              ? buildCategoriesGrid(context, categories)
-              : _CategoriesReorderableList(
-                  key: _reorderableListState,
-                  categories: categories,
-                );
-        } else
-          return EmptyStateWidget(
-            icon: Icons.category,
-            text: AppLocalizations.of(context).categoriesEmpty,
-          );
-      },
-    );
+    if (categories.isNotEmpty) {
+      return !isReordering
+          ? buildCategoriesGrid(context, categories)
+          : _CategoriesReorderableList(
+              key: _reorderableListState,
+              categories: categories,
+            );
+    } else {
+      return EmptyStateWidget(
+        icon: Icons.category,
+        text: AppLocalizations.of(context).categoriesEmpty,
+      );
+    }
   }
 
-  Widget buildCategoriesGrid(
-      BuildContext context, List<FirebaseCategory> categories) {
+  Widget buildCategoriesGrid(BuildContext context, List<Category> categories) {
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
@@ -144,19 +144,15 @@ class __WalletCategoriesPageContentState
     );
   }
 
-  Widget buildCategoryTile(BuildContext context, FirebaseCategory category) {
+  Widget buildCategoryTile(BuildContext context, Category category) {
     return InkWell(
-      key: Key(category.id),
+      key: Key(category.identifier.toString()),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             CircleAvatar(
-              child: Icon(
-                category.icon,
-                color: category.primaryColor,
-                size: 32,
-              ),
+              child: buildIcon(context, category),
               backgroundColor: category.backgroundColor,
               radius: 28,
             ),
@@ -171,13 +167,39 @@ class __WalletCategoriesPageContentState
           ],
         ),
       ),
-      onTap: () => onSelectedCategory(context, category),
+      onTap: category is FirebaseCategory
+          ? () => onSelectedCategory(context, category)
+          : null,
     );
+  }
+
+  Widget buildIcon(BuildContext context, Category category) {
+    if (category.icon != null) {
+      return Icon(
+        category.icon,
+        color: category.primaryColor ?? Colors.black26,
+        size: 28,
+      );
+    } else if (category.symbol != null) {
+      final symbols = category.symbol!;
+      return DefaultTextStyle(
+        child: Stack(children: [
+          ...symbols.characters.map((c) => Text(c)),
+        ]),
+        style: TextStyle(fontSize: 22),
+      );
+    } else {
+      return Icon(
+        Icons.category,
+        color: Colors.black26,
+        size: 28,
+      );
+    }
   }
 }
 
 class _CategoriesReorderableList extends StatefulWidget {
-  final List<FirebaseCategory> categories;
+  final List<Category> categories;
 
   const _CategoriesReorderableList({
     Key? key,
@@ -191,7 +213,7 @@ class _CategoriesReorderableList extends StatefulWidget {
 
 class _CategoriesReorderableListState
     extends State<_CategoriesReorderableList> {
-  List<FirebaseCategory> sortingCategories;
+  List<Category> sortingCategories;
 
   _CategoriesReorderableListState(this.sortingCategories);
 
@@ -219,10 +241,9 @@ class _CategoriesReorderableListState
     );
   }
 
-  Widget buildReorderableCategory(
-      BuildContext context, FirebaseCategory category) {
+  Widget buildReorderableCategory(BuildContext context, Category category) {
     return ListTile(
-      key: Key(category.id),
+      key: Key(category.identifier.toString()),
       leading: CategoryIcon(category, size: 18),
       title: Text(category.titleText),
       trailing: Icon(Icons.drag_handle),

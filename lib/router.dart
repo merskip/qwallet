@@ -17,6 +17,7 @@ import 'package:rxdart/rxdart.dart';
 
 import 'api/Model.dart';
 import 'datasource/Wallet.dart';
+import 'features/settings/CategoriesPage.dart';
 import 'features/settings/SettingsPage.dart';
 import 'features/settings/WalletsPage.dart';
 import 'features/transactions/AddSeriesTransactionsPage.dart';
@@ -25,7 +26,6 @@ import 'features/transactions/TransactionPage.dart';
 import 'features/transactions/TransactionsListPage.dart';
 import 'page/AddCategoryPage.dart';
 import 'page/AddWalletPage.dart';
-import 'page/CategoriesPage.dart';
 import 'page/EditCategoryPage.dart';
 import 'page/EditWalletDateRangePage.dart';
 import 'page/LandingPage.dart';
@@ -177,9 +177,12 @@ void initRoutes(FluroRouter router) {
     transitionType: fluro.TransitionType.nativeModal,
     handler: fluro.Handler(
         handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
-      final walletId = params["walletId"][0];
-      return CategoriesPage(
-        walletRef: DataSource.instance.getWalletReference(walletId),
+      final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
+
+      return SimpleStreamWidget(
+        stream:
+            AggregatedWalletsProvider.instance!.getWalletByIdentifier(walletId),
+        builder: (context, Wallet wallet) => CategoriesPage(wallet: wallet),
       );
     }),
   );
