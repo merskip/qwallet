@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/api/DataSource.dart';
 import 'package:qwallet/api/Wallet.dart';
 import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/datasource/Wallet.dart';
@@ -8,9 +9,12 @@ import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../AppLocalizations.dart';
 import '../Currency.dart';
+import '../model/user.dart';
+import 'UserSelectionPage.dart';
 
 class WalletPage extends StatelessWidget {
   final Wallet wallet;
@@ -60,24 +64,23 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     ).show(context);
   }
 
-  void onSelectedOwners(BuildContext context) async {
-    throw UnimplementedError("Not implemented yet");
-    // final currentOwners =
-    //     await DataSource.instance.getUsersByUids(wallet.ownersUid);
-    // final page = UserSelectionPage(
-    //   title: AppLocalizations.of(context).walletOwners,
-    //   selectedUsers: currentOwners,
-    // );
-    // final owners = await pushPage<List<User>?>(
-    //   context,
-    //   builder: (context) => page,
-    // );
-    // if (owners != null && owners.contains(DataSource.instance.currentUser)) {
-    //   DataSource.instance.updateWallet(
-    //     wallet.reference,
-    //     ownersUid: owners.map((user) => user.uid).toList(),
-    //   );
-    // }
+  void onSelectedOwners(BuildContext context, FirebaseWallet wallet) async {
+    final currentOwners =
+        await DataSource.instance.getUsersByUids(wallet.ownersUid);
+    final page = UserSelectionPage(
+      title: AppLocalizations.of(context).walletOwners,
+      selectedUsers: currentOwners,
+    );
+    final owners = await pushPage<List<User>?>(
+      context,
+      builder: (context) => page,
+    );
+    if (owners != null && owners.contains(DataSource.instance.currentUser)) {
+      DataSource.instance.updateWallet(
+        wallet.reference,
+        ownersUid: owners.map((user) => user.uid).toList(),
+      );
+    }
   }
 
   void onSelectedCurrency(BuildContext context) async {
@@ -137,7 +140,8 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       body: ListView(
         children: [
           buildName(context),
-          buildOwners(context),
+          if (wallet is FirebaseWallet)
+            buildOwners(context, wallet as FirebaseWallet),
           buildCurrency(context),
           buildTotalExpense(context),
           buildTotalIncome(context),
@@ -179,23 +183,23 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     );
   }
 
-  Widget buildOwners(BuildContext context) {
-    // TODO: Impl
+  Widget buildOwners(BuildContext context, FirebaseWallet wallet) {
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletOwners),
-      value: Text("..."),
-      // value: SimpleStreamWidget(
-      //   stream: DataSource.instance
-      //       .getUsersByUids(wallet.ownersUid)
-      //       .asStream(),
-      //   builder: (context, List<User> users) {
-      //     final text =
-      //         users.map((user) => user.getCommonName(context)).join(", ");
-      //     return Text(text);
-      //   },
-      //   loadingBuilder: (context) => Text("..."),
-      // ),
-      onEdit: (context) => onSelectedOwners(context),
+      value: SimpleStreamWidget(
+        stream: DataSource.instance.getUsersByUids(wallet.ownersUid).asStream(),
+        builder: (context, List<User> users) {
+          final text =
+              users.map((user) => user.getCommonName(context)).join(", ");
+          return Text(text);
+        },
+        loadingBuilder: (context) => SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      onEdit: (context) => onSelectedOwners(context, wallet),
     );
   }
 
