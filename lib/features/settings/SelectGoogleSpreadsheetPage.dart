@@ -12,6 +12,7 @@ import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
+import '../../AppLocalizations.dart';
 import '../../LocalPreferences.dart';
 
 class SelectGoogleSpreadsheetPage extends StatelessWidget {
@@ -27,7 +28,7 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Select spreadsheet with wallet"),
+        title: Text(AppLocalizations.of(context).linkWalletGoogleSheetsTitle),
       ),
       body: buildSpreadsheets(context),
     );
@@ -99,7 +100,7 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
             ),
             SizedBox(width: 4),
             Text(
-              "Already linked",
+              AppLocalizations.of(context).linkWalletGoogleSheetsAlreadyLinked,
               style: Theme.of(context)
                   .textTheme
                   .bodyText1
@@ -194,7 +195,7 @@ class GoogleSpreadsheetWalletConfirmationPage extends StatelessWidget {
         Identifier<Wallet>(domain: "google_sheets", id: spreadsheetFile.id!));
     LocalPreferences.setSpreadsheetWalletsIds(walletsIds);
     Navigator.of(context)
-        .popUntil((route) => route.settings.name == "/settings");
+        .popUntil((route) => route.settings.name == "/");
   }
 
   @override
@@ -220,23 +221,23 @@ class GoogleSpreadsheetWalletConfirmationPage extends StatelessWidget {
     return ListView(
       children: [
         DetailsItemTile(
-          title: Text("#Name"),
+          title: Text(AppLocalizations.of(context).linkWalletGoogleSheetsName),
           value: Text(wallet.name),
         ),
         DetailsItemTile(
-          title: Text("#Total income"),
+          title: Text(AppLocalizations.of(context).linkWalletGoogleSheetsTotalIncome),
           value: Text(wallet.totalIncome.formatted),
         ),
         DetailsItemTile(
-          title: Text("#Total expenses"),
+          title: Text(AppLocalizations.of(context).linkWalletGoogleSheetsTotalExpenses),
           value: Text(wallet.totalExpense.formatted),
         ),
         DetailsItemTile(
-          title: Text("#Date time range"),
+          title: Text(AppLocalizations.of(context).linkWalletGoogleSheetsDateTimeRange),
           value: Text(wallet.dateTimeRange.formatted()),
         ),
         DetailsItemTile(
-          title: Text("#Categories"),
+          title: Text(AppLocalizations.of(context).linkWalletGoogleSheetsCategories),
           value: Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: buildCategoriesTable(
@@ -246,7 +247,7 @@ class GoogleSpreadsheetWalletConfirmationPage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 48),
           child: PrimaryButton(
-            child: Text("#Confirm"),
+            child: Text(AppLocalizations.of(context).linkWalletGoogleSheetsConfirm),
             onPressed: () => onSelectedConfirm(context),
           ),
         ),

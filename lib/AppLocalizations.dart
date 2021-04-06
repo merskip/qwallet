@@ -178,6 +178,11 @@ extension SettingsLocalizations on AppLocalizations {
         pl: "Zarządzaj portflami",
       );
 
+  String get settingsLinkWalletsFromSpreadsheet => _locale(
+        en: "Link wallet from Google Sheets",
+        pl: "Połącz portfel z Google Sheets",
+      );
+
   String get settingsThemeMode => _locale(
         en: "Theme",
         pl: "Motyw",
@@ -259,6 +264,44 @@ extension SettingsLocalizations on AppLocalizations {
   String get settingsLicenses => _locale(
         en: "Third-party licenses",
         pl: "Licencje",
+      );
+}
+
+extension LinkWalletGoogleSheetsLocalizations on AppLocalizations {
+  String get linkWalletGoogleSheetsTitle => _locale(
+        en: "Link wallet from Google Sheets",
+        pl: "Połącz portfel z Google Sheets",
+      );
+
+  String get linkWalletGoogleSheetsAlreadyLinked => _locale(
+        en: "Already linked",
+        pl: "Już połączony",
+      );
+
+  String get linkWalletGoogleSheetsName => _locale(
+        en: "Name",
+        pl: "Nazwa",
+      );
+
+  String get linkWalletGoogleSheetsTotalIncome => _locale(
+        en: "Total income",
+        pl: "Całkowity przychód",
+      );
+  String get linkWalletGoogleSheetsTotalExpenses => _locale(
+        en: "Total expenses",
+        pl: "Całkowite wydatki",
+      );
+  String get linkWalletGoogleSheetsDateTimeRange => _locale(
+        en: "Date range",
+        pl: "Zakres daty",
+      );
+  String get linkWalletGoogleSheetsCategories => _locale(
+        en: "Catgegories",
+        pl: "Kategorie",
+      );
+  String get linkWalletGoogleSheetsConfirm => _locale(
+        en: "Confirm",
+        pl: "Zatwierdź",
       );
 }
 

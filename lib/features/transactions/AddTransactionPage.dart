@@ -214,7 +214,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       final transactionId =
-          await SharedProviders.firebaseTransactionsProvider.addTransaction(
+          await SharedProviders.transactionsProvider.addTransaction(
         walletId: wallet.identifier,
         type: type,
         category: category,

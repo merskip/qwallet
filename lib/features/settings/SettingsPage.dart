@@ -167,7 +167,8 @@ class SettingsPage extends StatelessWidget {
   Widget buildAddGoogleSheetsWallet(BuildContext context) {
     return ListTile(
       leading: Icon(Icons.add_link),
-      title: Text("#Link wallet from Google Sheets"),
+      title:
+          Text(AppLocalizations.of(context).settingsLinkWalletsFromSpreadsheet),
       onTap: () => pushPage(
         context,
         builder: (context) => SelectGoogleSpreadsheetPage(),
