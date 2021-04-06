@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/api/DataSource.dart';
+import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/page/CurrencySelectionPage.dart';
 import 'package:qwallet/page/UserSelectionPage.dart';
@@ -10,8 +11,8 @@ import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../../Currency.dart';
-import '../../utils/IterableFinding.dart';
 import '../../page/UsersFormField.dart';
+import '../../utils/IterableFinding.dart';
 
 class AddWalletPage extends StatelessWidget {
   @override
@@ -90,10 +91,10 @@ class _AddWalletFormState extends State<_AddWalletForm> {
 
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      DataSource.instance.addWallet(
-        nameController.text,
-        ownersController.value!.map((user) => user.uid).toList(),
-        currency.code,
+      AggregatedWalletsProvider.instance!.firebaseProvider.addWallet(
+        name: nameController.text,
+        ownersUid: ownersController.value!.map((user) => user.uid).toList(),
+        currency: currency.code,
       );
       Navigator.of(context).pop();
     }

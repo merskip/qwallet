@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/api/DataSource.dart';
-import 'package:qwallet/api/Model.dart';
 import 'package:qwallet/api/Wallet.dart';
+import 'package:qwallet/datasource/AggregatedWalletsProvider.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/CalendarRangesPreview.dart';
 import 'package:qwallet/widget/HorizontalDrawablePicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
-import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../../AppLocalizations.dart';
 
 class EditWalletDateRangePage extends StatelessWidget {
-  final FirebaseReference<FirebaseWallet> wallet;
+  final FirebaseWallet wallet;
 
   const EditWalletDateRangePage({
     Key? key,
@@ -25,12 +23,8 @@ class EditWalletDateRangePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).editWalletDateRangeTitle),
       ),
-      body: SimpleStreamWidget(
-        stream: DataSource.instance.getWallet(wallet),
-        builder: (context, FirebaseWallet wallet) =>
-            _EditWalletDateRangePageContent(
-          wallet: wallet,
-        ),
+      body: _EditWalletDateRangePageContent(
+        wallet: wallet,
       ),
     );
   }
@@ -66,8 +60,11 @@ class _EditWalletDateRangePageContentState
   }
 
   void onSelectedSubmit(BuildContext context) {
-    DataSource.instance.updateWallet(
-      widget.wallet.reference,
+    AggregatedWalletsProvider.instance!.firebaseProvider.updateWallet(
+      widget.wallet.identifier,
+      name: widget.wallet.name,
+      currency: widget.wallet.currency,
+      ownersUid: widget.wallet.ownersUid,
       dateRange: _getWalletDateRange(),
     );
     router.pop(context);

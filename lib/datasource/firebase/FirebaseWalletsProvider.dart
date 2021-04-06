@@ -45,6 +45,21 @@ class FirebaseWalletsProvider implements WalletsProvider {
         .flatMap((walletSnapshot) => _parseWalletSnapshot(walletSnapshot));
   }
 
+  Future<Identifier<Wallet>> addWallet({
+    required String name,
+    required List<String> ownersUid,
+    required String currency,
+  }) {
+    return firestore.collection("wallets").add({
+      "name": name,
+      "ownersUid": ownersUid,
+      "currency": currency,
+      "totalExpense": 0.0,
+      "totalIncome": 0.0
+    }).then((reference) =>
+        Identifier<Wallet>(domain: "firebase", id: reference.id));
+  }
+
   Future<void> updateWallet(
     Identifier<Wallet> walletId, {
     required String name,

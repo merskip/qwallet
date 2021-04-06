@@ -15,6 +15,7 @@ import 'package:rxdart/rxdart.dart';
 
 import 'file:///C:/Users/Piotr%20Merski/Workspace/qwallet/lib/features/settings/WalletPage.dart';
 
+import 'api/Wallet.dart';
 import 'datasource/Category.dart';
 import 'datasource/Wallet.dart';
 import 'features/settings/AddCategoryPage.dart';
@@ -246,9 +247,14 @@ void initRoutes(FluroRouter router) {
     transitionType: fluro.TransitionType.nativeModal,
     handler: fluro.Handler(
         handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
-      final walletId = params["walletId"][0];
-      return EditWalletDateRangePage(
-        wallet: DataSource.instance.getWalletReference(walletId),
+      final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
+
+      return SimpleStreamWidget(
+        stream: AggregatedWalletsProvider.instance!.firebaseProvider
+            .getWalletByIdentifier(walletId),
+        builder: (context, FirebaseWallet wallet) => EditWalletDateRangePage(
+          wallet: wallet,
+        ),
       );
     }),
   );
