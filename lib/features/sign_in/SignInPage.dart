@@ -10,8 +10,8 @@ import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/VectorImage.dart';
 
-import '../AppLocalizations.dart';
-import '../LocalPreferences.dart';
+import '../../AppLocalizations.dart';
+import '../../LocalPreferences.dart';
 
 class SignInPage extends StatefulWidget {
   @override

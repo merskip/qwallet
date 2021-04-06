@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/page/loans/LoansListPage.dart';
-import 'package:qwallet/page/loans/LoansPage.dart';
 
 import '../../AppLocalizations.dart';
+import 'LoansListPage.dart';
+import 'LoansPage.dart';
 
 class LoansTabPage extends StatelessWidget {
   @override

@@ -3,13 +3,13 @@ import 'package:intl/intl.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/data_source/firebase/PrivateLoan.dart';
-import 'package:qwallet/page/loans/LoansPage.dart';
-import 'package:qwallet/page/loans/RepayingMatcher.dart';
 import 'package:qwallet/router.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../../AppLocalizations.dart';
 import '../../Money.dart';
+import 'LoansPage.dart';
+import 'RepayingMatcher.dart';
 
 class RepaidLoanPage extends StatelessWidget {
   final LoansGroup loansGroup;

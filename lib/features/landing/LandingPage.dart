@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 
 import 'MainNavigationPage.dart';
-import 'SignInPage.dart';
+import '../sign_in/SignInPage.dart';
 
 class LandingPage extends StatefulWidget {
   @override

@@ -10,9 +10,9 @@ import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
-import '../AppLocalizations.dart';
-import '../Money.dart';
-import '../utils.dart';
+import '../../AppLocalizations.dart';
+import '../../Money.dart';
+import '../../utils.dart';
 
 class ReportsPage extends StatefulWidget {
   final Wallet wallet;

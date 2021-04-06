@@ -4,13 +4,13 @@ import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/model/user.dart';
-import 'package:qwallet/page/CurrencySelectionPage.dart';
-import 'package:qwallet/page/UserSelectionPage.dart';
 import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/CurrencySelectionPage.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../../Currency.dart';
-import '../../page/UsersFormField.dart';
+import '../../widget/UsersFormField.dart';
+import 'UserSelectionPage.dart';
 
 class AddWalletPage extends StatelessWidget {
   @override

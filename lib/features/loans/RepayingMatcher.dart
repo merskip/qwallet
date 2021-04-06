@@ -1,9 +1,8 @@
 import 'dart:math';
 
-import 'package:qwallet/page/loans/LoansPage.dart';
-import 'package:qwallet/page/loans/RepaidLoanPage.dart';
-
 import '../../Money.dart';
+import 'LoansPage.dart';
+import 'RepaidLoanPage.dart';
 
 class RepayingMatcher {
   final LoansGroup loansGroup;

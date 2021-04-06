@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qwallet/Currency.dart';
-import 'package:qwallet/dialog/EnterMoneyDialog.dart';
 
 import '../Money.dart';
+import 'EnterMoneyDialog.dart';
 
 class AmountFormField extends FormField<Money> {
   final AmountEditingController controller;

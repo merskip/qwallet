@@ -3,11 +3,11 @@ import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
-import 'package:qwallet/dialog/UserDialog.dart';
 import 'package:qwallet/model/user.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/MarkdownPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
+import 'package:qwallet/widget/UserDialog.dart';
 import 'package:qwallet/widget/VectorImage.dart';
 import 'package:url_launcher/url_launcher.dart';
 

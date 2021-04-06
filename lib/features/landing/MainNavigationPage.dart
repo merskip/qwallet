@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/page/dashboard/DashboardPage.dart';
-import 'package:qwallet/page/loans/LoansTabPage.dart';
+import 'package:qwallet/features/dashboard/DashboardPage.dart';
+import 'package:qwallet/features/loans/LoansTabPage.dart';
 import 'package:qwallet/widget/VectorImage.dart';
 
-import '../AppLocalizations.dart';
-import '../router.dart';
+import '../../AppLocalizations.dart';
+import '../../router.dart';
 
 class MainNavigationPage extends StatefulWidget {
   @override

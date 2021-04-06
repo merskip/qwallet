@@ -7,10 +7,10 @@ import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
-import 'package:qwallet/dialog/SelectWalletDialog.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
+import 'package:qwallet/widget/SelectWalletDialog.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 import 'package:qwallet/widget/VectorImage.dart';
 

@@ -4,8 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/Transaction.dart';
-import 'package:qwallet/page/loans/AddLoanPage.dart';
-import 'package:qwallet/page/loans/EditLoanPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -14,6 +12,10 @@ import 'data_source/Wallet.dart';
 import 'data_source/common/SharedProviders.dart';
 import 'data_source/firebase/FirebaseWallet.dart';
 import 'data_source/firebase/PrivateLoan.dart';
+import 'features/dashboard/ReportsPage.dart';
+import 'features/landing/LandingPage.dart';
+import 'features/loans/AddLoanPage.dart';
+import 'features/loans/EditLoanPage.dart';
 import 'features/settings/AddCategoryPage.dart';
 import 'features/settings/AddWalletPage.dart';
 import 'features/settings/CategoriesPage.dart';
@@ -26,8 +28,6 @@ import 'features/transactions/AddSeriesTransactionsPage.dart';
 import 'features/transactions/AddTransactionPage.dart';
 import 'features/transactions/TransactionPage.dart';
 import 'features/transactions/TransactionsListPage.dart';
-import 'page/LandingPage.dart';
-import 'page/ReportsPage.dart';
 
 final router = new FluroRouter();
 
