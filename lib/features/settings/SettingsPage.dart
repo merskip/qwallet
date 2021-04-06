@@ -160,7 +160,7 @@ class SettingsPage extends StatelessWidget {
   Widget buildThemeMode(BuildContext context) {
     return SimpleStreamWidget(
         stream: LocalPreferences.userPreferences,
-        builder: (context, UserPreferences userPreferences) {
+        builder: (context, LocalUserPreferences userPreferences) {
           return ListTile(
             title: Text(AppLocalizations.of(context).settingsThemeMode),
             subtitle:
@@ -188,7 +188,7 @@ class SettingsPage extends StatelessWidget {
   Widget buildLanguage(BuildContext context) {
     return SimpleStreamWidget(
         stream: LocalPreferences.userPreferences,
-        builder: (context, UserPreferences userPreferences) {
+        builder: (context, LocalUserPreferences userPreferences) {
           final currentLocale =
               userPreferences.locale ?? AppLocalizations.of(context).locale;
           return ListTile(

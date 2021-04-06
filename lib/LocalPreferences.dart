@@ -8,18 +8,18 @@ import 'data_source/Identifier.dart';
 import 'data_source/Wallet.dart';
 import 'utils/IterableFinding.dart';
 
-class UserPreferences {
+class LocalUserPreferences {
   final ThemeMode themeMode;
   final Locale? locale;
 
-  UserPreferences({required this.themeMode, this.locale});
+  LocalUserPreferences({required this.themeMode, this.locale});
 
-  factory UserPreferences.empty() =>
-      UserPreferences(themeMode: ThemeMode.light, locale: null);
+  factory LocalUserPreferences.empty() =>
+      LocalUserPreferences(themeMode: ThemeMode.light, locale: null);
 }
 
 class LocalPreferences {
-  static final _userPreferences = BehaviorSubject<UserPreferences>(
+  static final _userPreferences = BehaviorSubject<LocalUserPreferences>(
     onListen: () => _emitUserPreferences(),
   );
   static get userPreferences =>
@@ -43,7 +43,8 @@ class LocalPreferences {
     final preferences = await SharedPreferences.getInstance();
     final themeMode = _userThemeMode(preferences);
     final locale = _userLocaleOrNull(preferences);
-    _userPreferences.add(UserPreferences(themeMode: themeMode, locale: locale));
+    _userPreferences
+        .add(LocalUserPreferences(themeMode: themeMode, locale: locale));
   }
 
   static void _emitWalletsOrder() async {
@@ -62,20 +63,22 @@ class LocalPreferences {
     final preferences = await SharedPreferences.getInstance();
     preferences.setString("user.themeMode", themeMode.toString());
     final locale = _userLocaleOrNull(preferences);
-    _userPreferences.add(UserPreferences(themeMode: themeMode, locale: locale));
+    _userPreferences
+        .add(LocalUserPreferences(themeMode: themeMode, locale: locale));
   }
 
   static setUserLocale(Locale locale) async {
     final preferences = await SharedPreferences.getInstance();
     preferences.setString("user.locale", locale.toString());
     final themeMode = _userThemeMode(preferences);
-    _userPreferences.add(UserPreferences(themeMode: themeMode, locale: locale));
+    _userPreferences
+        .add(LocalUserPreferences(themeMode: themeMode, locale: locale));
   }
 
   static ThemeMode _userThemeMode(SharedPreferences preferences) =>
       preferences.containsKey("user.themeMode")
           ? _parseThemeMode(preferences.getString("user.themeMode")!)
-          : UserPreferences.empty().themeMode;
+          : LocalUserPreferences.empty().themeMode;
 
   static Locale? _userLocaleOrNull(SharedPreferences preferences) =>
       preferences.containsKey("user.locale")

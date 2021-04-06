@@ -11,6 +11,7 @@ import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/data_source/firebase/FirebaseCategoriesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebasePrivateLoansProvider.dart';
+import 'package:qwallet/data_source/firebase/FirebaseRemoteUserPreferencesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
 import 'package:qwallet/router.dart';
 
@@ -111,6 +112,12 @@ void main() async {
         firestore: FirebaseFirestore.instance,
       );
 
+      SharedProviders.remoteUserPreferences =
+          FirebaseRemoteUserPreferencesProvider(
+        accountProvider: SharedProviders.accountProvider,
+        firestore: FirebaseFirestore.instance,
+      );
+
       runApp(MyApp());
     },
     (error, stackTrace) {
@@ -130,8 +137,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: LocalPreferences.userPreferences,
-        initialData: UserPreferences.empty(),
-        builder: (context, AsyncSnapshot<UserPreferences> snapshot) {
+        initialData: LocalUserPreferences.empty(),
+        builder: (context, AsyncSnapshot<LocalUserPreferences> snapshot) {
           final userPreferences = snapshot.data!;
           return MaterialApp(
             title: "QWallet",

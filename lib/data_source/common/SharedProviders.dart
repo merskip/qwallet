@@ -5,6 +5,7 @@ import 'package:qwallet/data_source/google_sheets/SpreadsheetWalletsProvider.dar
 
 import '../AccountProvider.dart';
 import '../PrivateLoansProvider.dart';
+import '../RemoteUserPreferencesProvider.dart';
 import '../TransactionsProvider.dart';
 import '../UsersProvider.dart';
 import '../WalletsProvider.dart';
@@ -21,6 +22,7 @@ class SharedProviders {
   static late AccountProvider accountProvider;
   static late UsersProvider usersProvider;
   static late PrivateLoansProvider privateLoansProvider;
+  static late RemoteUserPreferencesProvider remoteUserPreferences;
 
   static late DefaultAccountProvider defaultAccountProvider;
   static late FirebaseWalletsProvider firebaseWalletsProvider;

@@ -56,7 +56,7 @@ class _SignInPageState extends State<SignInPage> {
         alignment: Alignment.centerRight,
         child: SimpleStreamWidget(
           stream: LocalPreferences.userPreferences,
-          builder: (context, UserPreferences userPreferences) {
+          builder: (context, LocalUserPreferences userPreferences) {
             final currentLocale =
                 userPreferences.locale ?? AppLocalizations.of(context).locale;
 
