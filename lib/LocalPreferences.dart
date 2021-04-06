@@ -87,7 +87,7 @@ class LocalPreferences {
     final preferences = await SharedPreferences.getInstance();
     final walletOrder = walletIds.map((w) => w.toString()).toList();
     preferences.setStringList("walletsSpreadsheetIds", walletOrder);
-    _walletsOrder.add(walletIds);
+    _walletsSpreadsheetIds.add(walletIds);
   }
 
   static void setUserThemeMode(ThemeMode themeMode) async {

@@ -387,16 +387,33 @@ extension WalletLocalizations on AppLocalizations {
         pl: "Usuń portfel",
       );
 
+  String get walletUnlink => _locale(
+        en: "Unlink wallet",
+        pl: "Odłącz portfel",
+      );
+
   String Function(String) get walletRemoveConfirmation =>
       (String walletName) => _locale(
             en: "Remove wallet \"$walletName\"?",
-            pl: "Czy usunąć portfel \"$walletName\"?",
+            pl: "Czy chcesz usunąć portfel \"$walletName\"?",
           );
 
   String Function(String) get walletRemoveConfirmationContent =>
       (String walletName) => _locale(
             en: "Are you sure remove the wallet \"$walletName\"? This operation cannot be undone.",
             pl: "Czy jesteś pewny, że chcesz usunąć portfel \"$walletName\"? Tej operacji nie można cofnąć.",
+          );
+
+  String Function(String) get walletUnlinkConfirmation =>
+      (String walletName) => _locale(
+            en: "Unlink wallet \"$walletName\"?",
+            pl: "Czy chcesz odłączyć portfel \"$walletName\"?",
+          );
+
+  String Function(String) get walletUnlinkConfirmationContent =>
+      (String walletName) => _locale(
+            en: "Are you sure remove the wallet \"$walletName\"?",
+            pl: "Czy jesteś pewny, że chcesz odłączyć portfel \"$walletName\"?",
           );
 }
 

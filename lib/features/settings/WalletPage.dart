@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/Currency.dart';
+import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
@@ -61,6 +62,22 @@ class _WalletPageContentState extends State<_WalletPageContent> {
         await SharedProviders.firebaseWalletsProvider
             .removeWallet(walletId: wallet.identifier);
         Navigator.of(context).pop();
+      },
+    ).show(context);
+  }
+
+  onSelectedUnlink(BuildContext context) async {
+    ConfirmationDialog(
+      title: Text(
+          AppLocalizations.of(context).walletUnlinkConfirmation(wallet.name)),
+      content: Text(AppLocalizations.of(context)
+          .walletUnlinkConfirmationContent(wallet.name)),
+      isDestructive: true,
+      onConfirm: () async {
+        final walletsIds = await LocalPreferences.walletsSpreadsheetIds.first;
+        walletsIds.removeWhere((id) => id == wallet.identifier);
+        LocalPreferences.setSpreadsheetWalletsIds(walletsIds);
+        Navigator.of(context).popUntil((route) => route.settings.name == "/");
       },
     ).show(context);
   }
@@ -175,6 +192,12 @@ class _WalletPageContentState extends State<_WalletPageContent> {
               icon: Icon(Icons.delete),
               onPressed: () => onSelectedDelete(context),
               tooltip: AppLocalizations.of(context).walletRemove,
+            ),
+          if (wallet is SpreadsheetWallet)
+            IconButton(
+              icon: Icon(Icons.link_off),
+              onPressed: () => onSelectedUnlink(context),
+              tooltip: AppLocalizations.of(context).walletUnlink,
             )
         ],
       ),
