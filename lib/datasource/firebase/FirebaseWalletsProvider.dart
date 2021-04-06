@@ -37,15 +37,21 @@ class FirebaseWalletsProvider implements WalletsProvider {
 
   @override
   Stream<FirebaseWallet> getWalletByIdentifier(Identifier<Wallet> walletId) {
-    return onFirebaseUser((user) {
-      return firestore
-          .collection("wallets")
-          .doc(walletId.id)
-          .snapshots()
-          .flatMap(
-            (walletSnapshot) => _parseWalletSnapshot(walletSnapshot),
-          );
-    });
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .snapshots()
+        .flatMap((walletSnapshot) => _parseWalletSnapshot(walletSnapshot));
+  }
+
+  Future<void> updateWalletName(
+    Identifier<Wallet> walletId, {
+    required String name,
+  }) {
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .update({"name": name});
   }
 
   Stream<List<FirebaseWallet>> _parseWalletsSnapshot(
