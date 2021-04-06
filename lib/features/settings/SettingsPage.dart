@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
+import 'package:qwallet/data_source/Account.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
-import 'package:qwallet/model/user.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/MarkdownPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
-import 'package:qwallet/widget/UserDialog.dart';
 import 'package:qwallet/widget/VectorImage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../EsterEgg.dart';
 import '../../router.dart';
+import 'AccountDialog.dart';
 
 class SettingsPage extends StatelessWidget {
   onSelectedChangeThemeMode(
@@ -103,7 +103,7 @@ class SettingsPage extends StatelessWidget {
       ),
       body: Builder(
         builder: (context) => ListView(children: [
-          buildUserPanel(context),
+          buildAccountLoadingTile(context),
           Divider(),
           buildWallets(context),
           Divider(),
@@ -121,40 +121,32 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget buildUserPanel(BuildContext context) {
-    return FutureBuilder(
-        future: SharedProviders.usersProvider.getCurrentUser(),
-        builder: (context, AsyncSnapshot<User> snapshot) {
-          if (snapshot.hasData) {
-            final user = snapshot.data!;
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundImage: user.avatarUrl != null
-                    ? NetworkImage(user.avatarUrl!)
-                    : null,
-                backgroundColor: Colors.black12,
-                child: user.avatarUrl == null
-                    ? Icon(
-                        user.email != null
-                            ? Icons.alternate_email
-                            : Icons.person,
-                        color: Colors.black54,
-                      )
-                    : null,
-              ),
-              title: Text(user.getCommonName(context)),
-              subtitle: Text(user.getSubtitle() ?? ""),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => UserDialog(user: user),
-                );
-              },
-            );
-          } else {
-            return CircularProgressIndicator();
-          }
-        });
+  Widget buildAccountLoadingTile(BuildContext context) {
+    return SimpleStreamWidget(
+      stream: SharedProviders.accountProvider.getAccount(),
+      builder: (context, Account account) => buildAccountTile(context, account),
+    );
+  }
+
+  Widget buildAccountTile(BuildContext context, Account account) {
+    final avatarUrl = account.getAvatarUrl();
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+        backgroundColor: Colors.black12,
+        child: avatarUrl == null
+            ? Icon(Icons.person, color: Colors.black54)
+            : null,
+      ),
+      title: Text(account.getCommonName(context)),
+      subtitle: Text(account.getCommonSubtitle(context)),
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => AccountDialog(),
+        );
+      },
+    );
   }
 
   Widget buildWallets(BuildContext context) {

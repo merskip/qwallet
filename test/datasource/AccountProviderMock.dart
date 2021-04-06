@@ -7,5 +7,5 @@ class AccountProviderMock implements AccountProvider {
   AccountProviderMock(this.account);
 
   @override
-  Future<Account> getAccount() async => account;
+  Stream<Account> getAccount() => Stream.value(account);
 }

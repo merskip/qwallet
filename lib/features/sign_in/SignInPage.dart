@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/widget/HandCursor.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -19,8 +18,6 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  final _googleSignIn = GoogleSignIn();
-
   bool isLoginInProgress = false;
 
   @override
@@ -35,10 +32,12 @@ class _SignInPageState extends State<SignInPage> {
               Spacer(flex: 1),
               buildHeader(context),
               Spacer(flex: 1),
-              if (isLoginInProgress)
-                CircularProgressIndicator(backgroundColor: Colors.white),
-              if (!isLoginInProgress) buildSingInButtons(context),
-              Spacer(),
+              Flexible(
+                child: isLoginInProgress
+                    ? CircularProgressIndicator(backgroundColor: Colors.white)
+                    : buildSingInButtons(context),
+              ),
+              Spacer(flex: 1),
             ]),
           ),
         ),
@@ -96,23 +95,12 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget buildSingInButtons(BuildContext context) {
     return Column(children: <Widget>[
-      _singInButton(
-        text: AppLocalizations.of(context).singInAnonymous,
-        icon: Icon(Icons.person_outline),
-        onPressed: () => _signInAnonymous(context),
-      ),
       SizedBox(height: 16),
       _singInButton(
         text: AppLocalizations.of(context).singInWithGoogle,
         icon: VectorImage("assets/ic-google.svg",
             color: Theme.of(context).primaryColor),
         onPressed: () => _singInWithGoogle(context),
-      ),
-      SizedBox(height: 16),
-      _singInButton(
-        text: AppLocalizations.of(context).singInWithEmail,
-        icon: Icon(Icons.alternate_email),
-        onPressed: () => _showDialogForSignInWithEmail(context),
       ),
     ]);
   }
@@ -137,29 +125,19 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  _signInAnonymous(BuildContext context) async {
-    setState(() => isLoginInProgress = true);
-    try {
-      await FirebaseAuth.instance.signInAnonymously();
-    } catch (e) {
-      _handleError(context, e);
-    } finally {
-      if (mounted) setState(() => isLoginInProgress = false);
-    }
-  }
-
   _singInWithGoogle(BuildContext context) async {
     setState(() => isLoginInProgress = true);
     try {
-      final signInAccount = await _googleSignIn.signIn();
-      final authentication = await signInAccount!.authentication;
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: authentication.accessToken,
-        idToken: authentication.idToken,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      final signInAccount =
+          await SharedProviders.defaultAccountProvider.googleSignIn.signIn();
+      if (signInAccount != null) {
+        final authentication = await signInAccount.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: authentication.accessToken,
+          idToken: authentication.idToken,
+        );
+        await FirebaseAuth.instance.signInWithCredential(credential);
+      }
     } catch (e) {
       _handleError(context, e);
     } finally {
@@ -167,11 +145,6 @@ class _SignInPageState extends State<SignInPage> {
         setState(() => isLoginInProgress = false);
       }
     }
-  }
-
-  _showDialogForSignInWithEmail(BuildContext context) {
-    showDialog(
-        context: context, builder: (context) => _SignInWithEmailDialog());
   }
 
   _handleError(BuildContext context, dynamic error) {
@@ -194,101 +167,6 @@ class _SignInPageState extends State<SignInPage> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _SignInWithEmailDialog extends StatefulWidget {
-  @override
-  _SignInWithEmailDialogState createState() => _SignInWithEmailDialogState();
-}
-
-class _SignInWithEmailDialogState extends State<_SignInWithEmailDialog> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
-  String? _errorMessage;
-
-  _signUpWithEmail(BuildContext context) async {
-    try {
-      final email = emailController.text;
-      final password = passwordController.text;
-
-      final userAuth = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      userAuth.user!.sendEmailVerification();
-      await _signInWithEmail(context);
-    } on PlatformException catch (e) {
-      _handleError(e);
-    }
-  }
-
-  _signInWithEmail(BuildContext context) async {
-    try {
-      final email = emailController.text;
-      final password = passwordController.text;
-
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      Navigator.of(context).pop();
-    } on PlatformException catch (e) {
-      _handleError(e);
-    }
-  }
-
-  _handleError(PlatformException exception) {
-    setState(() {
-      this._errorMessage = exception.message;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(AppLocalizations.of(context).singInWithEmail),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          if (_errorMessage != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text(
-                _errorMessage!,
-                style: TextStyle(color: Theme.of(context).errorColor),
-              ),
-            ),
-          TextField(
-            autofocus: true,
-            controller: emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: AppLocalizations.of(context).singInEmail,
-            ),
-          ),
-          SizedBox(height: 16),
-          TextField(
-            obscureText: true,
-            controller: passwordController,
-            decoration: InputDecoration(
-              labelText: AppLocalizations.of(context).singInEmailPassword,
-            ),
-          ),
-        ],
-      ),
-      actions: <Widget>[
-        TextButton(
-          child: Text(AppLocalizations.of(context).singInEmailCancel),
-          onPressed: () => Navigator.pop(context),
-        ),
-        TextButton(
-          child: Text(AppLocalizations.of(context).singInEmailSignUp),
-          onPressed: () => _signUpWithEmail(context),
-        ),
-        ElevatedButton(
-          child: Text(AppLocalizations.of(context).singInEmailSignIn),
-          onPressed: () => _signInWithEmail(context),
-        )
-      ],
     );
   }
 }

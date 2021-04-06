@@ -13,7 +13,7 @@ class SheetsApiProvider {
   });
 
   Future<SheetsApi> get sheetsApi async {
-    final account = await accountProvider.getAccount();
+    final account = await accountProvider.getAccount().first;
     final googleAccount = account.googleAccount;
     if (googleAccount == null)
       return Future.error("account.googleAccount is null");

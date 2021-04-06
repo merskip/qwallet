@@ -119,10 +119,9 @@ class FirebaseWalletsProvider implements WalletsProvider {
   }
 
   Stream<T> onFirebaseUser<T>(Stream<T> Function(User user) callback) {
-    return accountProvider.getAccount().asStream().flatMap((account) {
+    return accountProvider.getAccount().flatMap((account) {
       final user = account.firebaseUser;
-      if (user == null) return Stream.empty();
-
+      if (user == null) return Stream.error("account.firebaseUser is null");
       return callback(user);
     });
   }

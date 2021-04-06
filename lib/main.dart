@@ -48,7 +48,8 @@ void main() async {
         FirebaseCrashlytics.instance.recordFlutterError(details);
       };
 
-      SharedProviders.accountProvider = DefaultAccountProvider();
+      SharedProviders.defaultAccountProvider = DefaultAccountProvider();
+      SharedProviders.accountProvider = SharedProviders.defaultAccountProvider;
 
       SharedProviders.firebaseCategoriesProvider = FirebaseCategoriesProvider(
         firestore: FirebaseFirestore.instance,

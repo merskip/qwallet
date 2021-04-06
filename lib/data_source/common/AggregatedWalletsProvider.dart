@@ -19,8 +19,8 @@ class AggregatedWalletsProvider extends WalletsProvider {
   @override
   Stream<List<Wallet>> getWallets() {
     return CombineLatestStream.combine2(
-      _firebaseProvider.getWallets(),
-      _spreadsheetProvider.getWallets(),
+      _firebaseProvider.getWallets().onErrorReturn([]),
+      _spreadsheetProvider.getWallets().onErrorReturn([]),
       (List<Wallet> firebaseWallets, List<Wallet> googleSheetWallets) {
         final wallets = <Wallet>[];
         wallets.addAll(firebaseWallets);
