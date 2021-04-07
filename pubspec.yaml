@@ -47,12 +47,12 @@ dependencies:
   fluro: ^2.0.3
   universal_html: ^2.0.4
   dots_indicator: ^2.0.0
-  fl_chart: ^0.30.0
+  fl_chart: ^0.35.0
   package_info: ^2.0.0
   shared_preferences: ^2.0.4
   rxdart: ^0.26.0
   flutter_iconpicker: ^3.0.0
-  firebase_crashlytics: ^1.0.0
+  firebase_crashlytics: ^2.0.0
   firebase_performance: ^0.6.0
   expressions: ^0.2.0
   camera: ^0.8.0
