@@ -6,9 +6,15 @@ class VectorImage extends StatelessWidget {
   final String assetName;
   final Size? size;
   final Color? color;
+  final bool useThemeColor;
 
-  const VectorImage(this.assetName, {Key? key, this.size, this.color})
-      : super(key: key);
+  const VectorImage(
+    this.assetName, {
+    Key? key,
+    this.size,
+    this.color,
+    this.useThemeColor = true,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +23,7 @@ class VectorImage extends StatelessWidget {
       assetName,
       width: size?.width ?? iconTheme.size,
       height: size?.height ?? iconTheme.size,
-      color: color ?? iconTheme.color,
+      color: color ?? (useThemeColor ? iconTheme.color : null),
     );
   }
 }

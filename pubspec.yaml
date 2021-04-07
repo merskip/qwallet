@@ -112,6 +112,7 @@ flutter:
 
 flutter_icons:
   # run: flutter pub run flutter_launcher_icons:main
-  image_path: 'assets/app-logo.png'
-  android: true
+  image_path: 'assets/ic-wallet-icon.png'
+  android: false
   ios: true
+  remove_alpha_ios: true

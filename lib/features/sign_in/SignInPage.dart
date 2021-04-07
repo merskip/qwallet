@@ -80,10 +80,9 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget buildHeader(BuildContext context) {
     return Column(children: [
-      VectorImage(
-        "assets/app-logo-black.svg",
-        size: Size.square(128),
-        color: Theme.of(context).primaryTextTheme.headline4!.color,
+      Image(
+        image: AssetImage("assets/ic-wallet-icon.png"),
+        width: 164,
       ),
       SizedBox(height: 24),
       Text(
