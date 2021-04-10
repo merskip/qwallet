@@ -4,11 +4,12 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/firebase/FirebaseModel.dart';
 
-typedef ValueWidgetBuilder<T> = Widget Function(BuildContext context, T value);
+typedef WidgetWithValueBuilder<T> = Widget Function(
+    BuildContext context, T value);
 
 class SimpleStreamWidget<T> extends StatelessWidget {
   final Stream<T> stream;
-  final ValueWidgetBuilder<T> builder;
+  final WidgetWithValueBuilder<T> builder;
   final WidgetBuilder? loadingBuilder;
 
   const SimpleStreamWidget({
@@ -128,9 +129,19 @@ class SimpleStreamWidget<T> extends StatelessWidget {
     if (loadingBuilder != null) {
       return loadingBuilder!(context);
     } else {
-      return Center(
+      final progressWidget = Center(
         child: CircularProgressIndicator(),
       );
+
+      final hasScaffold = Scaffold.maybeOf(context) != null;
+      if (!hasScaffold) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
+          body: progressWidget,
+        );
+      } else {
+        return progressWidget;
+      }
     }
   }
 }
