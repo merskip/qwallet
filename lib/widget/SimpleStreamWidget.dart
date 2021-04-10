@@ -82,33 +82,35 @@ class SimpleStreamWidget<T> extends StatelessWidget {
   ) {
     final content = SafeArea(
       child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(children: <Widget>[
-            Icon(Icons.error_outline, size: 48, color: Colors.red.shade500),
-            SizedBox(height: 16),
-            SelectableText(
-              "Error: $description",
-              style: TextStyle(
-                fontFamily: "monospace",
-                color: Colors.red.shade500,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
-            ),
-            if (stackTrace != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  stackTrace.toString(),
-                  style: TextStyle(
-                    fontFamily: "monospace",
-                    color: Colors.red.shade300,
-                    fontSize: 11,
-                  ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(children: <Widget>[
+              Icon(Icons.error_outline, size: 48, color: Colors.red.shade500),
+              SizedBox(height: 16),
+              SelectableText(
+                "Error: $description",
+                style: TextStyle(
+                  fontFamily: "monospace",
+                  color: Colors.red.shade500,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
                 ),
               ),
-          ]),
+              if (stackTrace != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    stackTrace.toString(),
+                    style: TextStyle(
+                      fontFamily: "monospace",
+                      color: Colors.red.shade300,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+            ]),
+          ),
         ),
       ),
     );

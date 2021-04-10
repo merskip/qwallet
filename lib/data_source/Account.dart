@@ -12,6 +12,8 @@ class Account {
     this.googleAccount,
   });
 
+  bool isSignIn() => firebaseUser != null;
+
   String? getAvatarUrl() {
     return firebaseUser?.photoURL ?? googleAccount?.photoUrl;
   }

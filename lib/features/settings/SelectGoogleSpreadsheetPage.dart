@@ -30,7 +30,42 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).linkWalletGoogleSheetsTitle),
       ),
-      body: buildSpreadsheets(context),
+      body: buildCheckPermission(
+        context,
+        onMissingPermission: (context) => buildRequestPermission(context),
+        onGainPermission: (context) => buildSpreadsheets(context),
+      ),
+    );
+  }
+
+  Widget buildCheckPermission(
+    BuildContext context, {
+    required WidgetBuilder onMissingPermission,
+    required WidgetBuilder onGainPermission,
+  }) {
+    return SimpleStreamWidget(
+      stream: SharedProviders.accountProvider.hasGoogleSheetsPermission(),
+      builder: (context, bool hasPermission) {
+        if (hasPermission) {
+          return onGainPermission(context);
+        } else {
+          return onMissingPermission(context);
+        }
+      },
+    );
+  }
+
+  Widget buildRequestPermission(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(64.0),
+        child: PrimaryButton(
+          child: Text("Allow to Google Sheets"),
+          onPressed: () {
+            SharedProviders.accountProvider.requestGoogleSheetsPermission();
+          },
+        ),
+      ),
     );
   }
 
@@ -146,6 +181,7 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
   Stream<_SpreadsheetFilesResponse> getSpreadsheetFiles() {
     final googleApiProvider =
         GoogleApiProvider(SharedProviders.accountProvider);
+
     final files = googleApiProvider.driveApi
         .then((driveApi) => driveApi.files.list(
               q: "mimeType = 'application/vnd.google-apps.spreadsheet'",
@@ -194,8 +230,7 @@ class GoogleSpreadsheetWalletConfirmationPage extends StatelessWidget {
     walletsIds.add(
         Identifier<Wallet>(domain: "google_sheets", id: spreadsheetFile.id!));
     LocalPreferences.setSpreadsheetWalletsIds(walletsIds);
-    Navigator.of(context)
-        .popUntil((route) => route.settings.name == "/");
+    Navigator.of(context).popUntil((route) => route.settings.name == "/");
   }
 
   @override
@@ -225,19 +260,23 @@ class GoogleSpreadsheetWalletConfirmationPage extends StatelessWidget {
           value: Text(wallet.name),
         ),
         DetailsItemTile(
-          title: Text(AppLocalizations.of(context).linkWalletGoogleSheetsTotalIncome),
+          title: Text(
+              AppLocalizations.of(context).linkWalletGoogleSheetsTotalIncome),
           value: Text(wallet.totalIncome.formatted),
         ),
         DetailsItemTile(
-          title: Text(AppLocalizations.of(context).linkWalletGoogleSheetsTotalExpenses),
+          title: Text(
+              AppLocalizations.of(context).linkWalletGoogleSheetsTotalExpenses),
           value: Text(wallet.totalExpense.formatted),
         ),
         DetailsItemTile(
-          title: Text(AppLocalizations.of(context).linkWalletGoogleSheetsDateTimeRange),
+          title: Text(
+              AppLocalizations.of(context).linkWalletGoogleSheetsDateTimeRange),
           value: Text(wallet.dateTimeRange.formatted()),
         ),
         DetailsItemTile(
-          title: Text(AppLocalizations.of(context).linkWalletGoogleSheetsCategories),
+          title: Text(
+              AppLocalizations.of(context).linkWalletGoogleSheetsCategories),
           value: Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: buildCategoriesTable(
@@ -247,7 +286,8 @@ class GoogleSpreadsheetWalletConfirmationPage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 48),
           child: PrimaryButton(
-            child: Text(AppLocalizations.of(context).linkWalletGoogleSheetsConfirm),
+            child: Text(
+                AppLocalizations.of(context).linkWalletGoogleSheetsConfirm),
             onPressed: () => onSelectedConfirm(context),
           ),
         ),

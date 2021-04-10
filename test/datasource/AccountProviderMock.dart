@@ -8,4 +8,24 @@ class AccountProviderMock implements AccountProvider {
 
   @override
   Stream<Account> getAccount() => Stream.value(account);
+
+  @override
+  Stream<bool> hasGoogleSheetsPermission() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> requestGoogleSheetsPermission() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> signInWithGoogle() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> signOut() {
+    throw UnimplementedError();
+  }
 }

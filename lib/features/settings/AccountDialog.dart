@@ -7,8 +7,7 @@ import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 class AccountDialog extends StatelessWidget {
   void onSelectedSignOut(BuildContext context) async {
-    await SharedProviders.defaultAccountProvider.firebaseAuth.signOut();
-    await SharedProviders.defaultAccountProvider.googleSignIn.signOut();
+    await SharedProviders.accountProvider.signOut();
     Navigator.of(context).popUntil((route) => route.settings.name == "/");
   }
 
@@ -26,10 +25,7 @@ class AccountDialog extends StatelessWidget {
     );
   }
 
-  Widget buildAccountTile(
-    BuildContext context,
-    Account account,
-  ) {
+  Widget buildAccountTile(BuildContext context, Account account) {
     final avatarUrl = account.getAvatarUrl();
     final firebaseUser = account.firebaseUser!;
     return ListTile(

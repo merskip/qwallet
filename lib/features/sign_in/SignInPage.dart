@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
@@ -127,16 +126,7 @@ class _SignInPageState extends State<SignInPage> {
   _singInWithGoogle(BuildContext context) async {
     setState(() => isLoginInProgress = true);
     try {
-      final signInAccount =
-          await SharedProviders.defaultAccountProvider.googleSignIn.signIn();
-      if (signInAccount != null) {
-        final authentication = await signInAccount.authentication;
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: authentication.accessToken,
-          idToken: authentication.idToken,
-        );
-        await FirebaseAuth.instance.signInWithCredential(credential);
-      }
+      SharedProviders.accountProvider.signInWithGoogle();
     } catch (e) {
       _handleError(context, e);
     } finally {
