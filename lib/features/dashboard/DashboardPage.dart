@@ -188,18 +188,7 @@ class DashboardPageState extends State<DashboardPage> {
         ),
       ),
       builder: (context, LatestTransactions latestTransactions) {
-        // assert(wallet.identifier == latestTransactions.wallet.identifier);
-
-        // DataSource.instance
-        //     .refreshWalletBalanceIfNeeded(latestTransactions)
-        //     .catchError((error) {
-        //   if (error is Could.FirebaseException &&
-        //       error.code == "permission-denied") {
-        //     print(
-        //         "Permission denied while updating wallet balance, clearing cache");
-        //     DataSource.instance.firestore.clearPersistence();
-        //   }
-        // });
+        assert(wallet.identifier == latestTransactions.wallet.identifier);
 
         return SliverToBoxAdapter(
           child: Column(
