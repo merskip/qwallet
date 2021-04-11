@@ -213,8 +213,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      final transactionId =
-          await SharedProviders.transactionsProvider.addTransaction(
+      SharedProviders.transactionsProvider.addTransaction(
         walletId: wallet.identifier,
         type: type,
         category: category,
@@ -222,7 +221,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         amount: amountController.value!.amount,
         date: date,
       );
-      router.pop(context, transactionId);
+      router.pop(context);
     }
   }
 
