@@ -21,21 +21,18 @@ class DailyReportSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dailySpending = _computeDailySpending();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned(
-            right: 112,
-            child: buildDailySpendingText(context, dailySpending),
-          ),
-          Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: buildSpendingGauge(context, dailySpending),
-          ),
-        ],
-      ),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Positioned(
+          right: 112,
+          child: buildDailySpendingText(context, dailySpending),
+        ),
+        Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: buildSpendingGauge(context, dailySpending),
+        ),
+      ],
     );
   }
 

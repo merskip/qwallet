@@ -169,46 +169,39 @@ class DashboardPageState extends State<DashboardPage> {
           actions: buildAppBarActions(context, true),
         ),
         if (_selectedWallet.value != null)
-          buildWalletCards(context, getSelectedWallet()),
-        SliverPadding(
-          padding: EdgeInsets.only(bottom: 48),
-        ),
+          SliverPadding(
+            padding: EdgeInsets.only(top: 16, bottom: 48),
+            sliver: buildWalletCards(context, getSelectedWallet()),
+          ),
       ]),
     );
   }
 
   Widget buildWalletCards(BuildContext context, Wallet wallet) {
-    return SimpleStreamWidget(
-      key: Key("wallet-cards-${wallet.identifier}"),
-      stream: SharedProviders.transactionsProvider
-          .getLatestTransactions(walletId: wallet.identifier),
-      loadingBuilder: (context) => SliverFillRemaining(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-      builder: (context, LatestTransactions latestTransactions) {
-        assert(wallet.identifier == latestTransactions.wallet.identifier);
+    return SliverToBoxAdapter(
+      child: SimpleStreamWidget(
+        key: Key("wallet-cards-${wallet.identifier}"),
+        stream: SharedProviders.transactionsProvider
+            .getLatestTransactions(walletId: wallet.identifier),
+        builder: (context, LatestTransactions latestTransactions) {
+          assert(wallet.identifier == latestTransactions.wallet.identifier);
 
-        return SliverToBoxAdapter(
-          child: Column(
-            children: [
-              DailyReportSection(
-                wallet: wallet,
-                transactions: latestTransactions.transactions,
-              ),
-              TransactionsCard(
-                wallet: wallet,
-                transactions: latestTransactions.transactions,
-              ),
-              CategoriesChartCard(
-                wallet: wallet,
-                transactions: latestTransactions.transactions,
-              ),
-            ],
-          ),
-        );
-      },
+          return Column(children: [
+            DailyReportSection(
+              wallet: wallet,
+              transactions: latestTransactions.transactions,
+            ),
+            TransactionsCard(
+              wallet: wallet,
+              transactions: latestTransactions.transactions,
+            ),
+            CategoriesChartCard(
+              wallet: wallet,
+              transactions: latestTransactions.transactions,
+            ),
+          ]);
+        },
+      ),
     );
   }
 
