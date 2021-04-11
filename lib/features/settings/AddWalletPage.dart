@@ -40,23 +40,15 @@ class _AddWalletFormState extends State<_AddWalletForm> {
   final nameController = TextEditingController();
   final nameFocus = FocusNode();
 
-  late User currentUser;
+  final currentUser = SharedProviders.usersProvider.getCurrentUser();
   final ownersController = UsersEditingController();
 
   Currency currency = Currency.getDefaultBasedOnLocale();
 
   @override
   void initState() {
-    _initOwners();
+    ownersController.value = [currentUser];
     super.initState();
-  }
-
-  _initOwners() async {
-    final currentUser = await SharedProviders.usersProvider.getCurrentUser();
-    setState(() {
-      this.currentUser = currentUser;
-      ownersController.value = [currentUser];
-    });
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:qwallet/data_source/CategoriesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseCategoriesProvider.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetTransactionsProvider.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetWalletsProvider.dart';
@@ -17,6 +18,7 @@ class SharedProviders {
 
   static late OrderedWalletsProvider orderedWalletsProvider;
   static late WalletsProvider walletsProvider;
+  static late CategoriesProvider categoriesProvider;
   static late TransactionsProvider transactionsProvider;
   static late AccountProvider accountProvider;
   static late UsersProvider usersProvider;

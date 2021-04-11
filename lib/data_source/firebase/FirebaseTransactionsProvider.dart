@@ -9,6 +9,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../Category.dart';
 import '../Transaction.dart';
+import 'CloudFirestoreUtils.dart';
 import 'FirebaseCategory.dart';
 import 'FirebaseTransaction.dart';
 import 'FirebaseWallet.dart';
@@ -47,9 +48,9 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
           .collection("transactions")
           .doc(transactionId.id)
           .snapshots()
-          .map((transactionSnapshot) {
-        return FirebaseTransaction(transactionSnapshot, wallet);
-      });
+          .filterNotExists()
+          .map((transactionSnapshot) =>
+              FirebaseTransaction(transactionSnapshot, wallet));
     });
   }
 

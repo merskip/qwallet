@@ -13,10 +13,10 @@ class FirebaseUsersProvider implements UsersProvider {
   });
 
   @override
-  Future<User> getCurrentUser() async {
+  User getCurrentUser() {
     final firebaseUser = FirebaseAuth.FirebaseAuth.instance.currentUser;
     if (firebaseUser == null)
-      return Future.error("No current user in FirebaseAuth");
+      return throw Exception("No current user in FirebaseAuth");
     return User.fromFirebase(firebaseUser, true);
   }
 

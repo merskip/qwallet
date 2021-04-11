@@ -8,7 +8,7 @@ import '../../Currency.dart';
 import '../AccountProvider.dart';
 import '../Wallet.dart';
 import '../WalletsProvider.dart';
-import 'DocumentIdentifiable.dart';
+import 'CloudFirestoreUtils.dart';
 import 'FirebaseCategory.dart';
 import 'FirebaseWallet.dart';
 
@@ -16,6 +16,8 @@ class FirebaseWalletsProvider implements WalletsProvider {
   final AccountProvider accountProvider;
   final FirebaseCategoriesProvider categoriesProvider;
   final FirebaseFirestore firestore;
+
+  final _removedWallets = <Identifier<Wallet>>[];
 
   FirebaseWalletsProvider({
     required this.accountProvider,
@@ -42,6 +44,8 @@ class FirebaseWalletsProvider implements WalletsProvider {
         .collection("wallets")
         .doc(walletId.id)
         .snapshots()
+        .filterNotExists()
+        .filterPermissionDenied()
         .flatMap((walletSnapshot) => _parseWalletSnapshot(walletSnapshot));
   }
 
@@ -94,7 +98,9 @@ class FirebaseWalletsProvider implements WalletsProvider {
   Future<void> removeWallet({
     required Identifier<Wallet> walletId,
   }) {
-    return firestore.collection("wallets").doc(walletId.id).delete();
+    return firestore.collection("wallets").doc(walletId.id).delete().then((_) {
+      _removedWallets.add(walletId);
+    });
   }
 
   Stream<List<FirebaseWallet>> _parseWalletsSnapshot(
@@ -110,6 +116,7 @@ class FirebaseWalletsProvider implements WalletsProvider {
   }
 
   Stream<FirebaseWallet> _parseWalletSnapshot(DocumentSnapshot walletSnapshot) {
+    assert(walletSnapshot.exists);
     return categoriesProvider
         .getCategories(walletSnapshot.toIdentifier())
         .map((categories) => FirebaseWallet(

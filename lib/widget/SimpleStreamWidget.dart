@@ -136,7 +136,6 @@ class SimpleStreamWidget<T> extends StatelessWidget {
       final hasScaffold = Scaffold.maybeOf(context) != null;
       if (!hasScaffold) {
         return Scaffold(
-          backgroundColor: Theme.of(context).primaryColor,
           body: progressWidget,
         );
       } else {

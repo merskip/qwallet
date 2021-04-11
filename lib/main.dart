@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
+import 'package:qwallet/data_source/common/AggregatedCategoriesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseCategoriesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebasePrivateLoansProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseRemoteUserPreferencesProvider.dart';
@@ -23,6 +24,7 @@ import 'data_source/common/SharedProviders.dart';
 import 'data_source/firebase/FirebaseTransactionsProvider.dart';
 import 'data_source/firebase/FirebaseUsersProvider.dart';
 import 'data_source/google_sheets/CachedGoogleSpreadsheetRepository.dart';
+import 'data_source/google_sheets/SpreadsheetCategoriesProvider.dart';
 import 'data_source/google_sheets/SpreadsheetTransactionsProvider.dart';
 import 'data_source/google_sheets/SpreadsheetWalletsProvider.dart';
 
@@ -84,6 +86,13 @@ void main() async {
       SharedProviders.walletsProvider = AggregatedWalletsProvider(
         firebaseProvider: SharedProviders.firebaseWalletsProvider,
         spreadsheetProvider: SharedProviders.spreadsheetWalletsProvider,
+      );
+
+      SharedProviders.categoriesProvider = AggregatedCategoriesProvider(
+        firebaseProvider: SharedProviders.firebaseCategoriesProvider,
+        spreadsheetProvider: SpreadsheetCategoriesProvider(
+          walletsProvider: SharedProviders.spreadsheetWalletsProvider,
+        ),
       );
 
       SharedProviders.orderedWalletsProvider = OrderedWalletsProvider(

@@ -1,8 +1,7 @@
 import 'package:qwallet/model/user.dart';
 
 abstract class UsersProvider {
-
-  Future<User> getCurrentUser();
+  User getCurrentUser();
 
   Future<List<User>> getUsers();
 

@@ -58,7 +58,6 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           .walletRemoveConfirmationContent(wallet.name)),
       isDestructive: true,
       onConfirm: () async {
-        Navigator.of(context).pop();
         await SharedProviders.firebaseWalletsProvider
             .removeWallet(walletId: wallet.identifier);
         Navigator.of(context).pop();

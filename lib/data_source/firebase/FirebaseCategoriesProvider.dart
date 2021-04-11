@@ -9,6 +9,7 @@ import 'package:qwallet/data_source/Wallet.dart';
 
 import '../../IconsSerialization.dart';
 import '../../utils.dart';
+import 'CloudFirestoreUtils.dart';
 import 'FirebaseCategory.dart';
 
 class FirebaseCategoriesProvider implements CategoriesProvider {
@@ -30,6 +31,21 @@ class FirebaseCategoriesProvider implements CategoriesProvider {
           (snapshot) => snapshot.docs.map((s) => FirebaseCategory(s)).toList()
             ..sort((lhs, rhs) => lhs.compareTo(rhs)),
         );
+  }
+
+  @override
+  Stream<Category> getCategoryByIdentifier(
+      Identifier<Wallet> walletId, Identifier<Category> categoryId) {
+    assert(walletId.domain == "firebase");
+    assert(categoryId.domain == "firebase");
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("categories")
+        .doc(categoryId.id)
+        .snapshots()
+        .filterNotExists()
+        .map((s) => FirebaseCategory(s));
   }
 
   Future<void> updateCategoriesOrder({

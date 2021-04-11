@@ -205,10 +205,14 @@ void initRoutes(FluroRouter router) {
       final categoryId = Identifier.parse<Category>(params["categoryId"][0]);
 
       return SimpleStreamWidget(
-        stream: SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
-        builder: (context, Wallet wallet) {
-          final category =
-              wallet.categories.firstWhere((c) => c.identifier == categoryId);
+        stream: Rx.combineLatestList([
+          SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
+          SharedProviders.categoriesProvider
+              .getCategoryByIdentifier(walletId, categoryId),
+        ]),
+        builder: (context, List values) {
+          final wallet = values[0] as Wallet;
+          final category = values[1] as Category;
           return EditCategoryPage(
             wallet: wallet,
             category: category,

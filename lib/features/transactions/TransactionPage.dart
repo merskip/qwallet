@@ -61,8 +61,9 @@ class _TransactionPageState extends State<TransactionPage> {
           walletId: widget.wallet.identifier,
           transaction: widget.transaction,
         );
-        Navigator.of(context).popUntil(
-            (route) => !(route.settings.name?.contains("transaction") ?? true));
+        Navigator.of(context).popUntil((route) {
+          return !(route.settings.name?.contains("transaction") ?? true);
+        });
       },
     ).show(context);
   }

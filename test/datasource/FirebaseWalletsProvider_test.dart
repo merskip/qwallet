@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qwallet/data_source/Account.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/WalletsProvider.dart';
-import 'package:qwallet/data_source/firebase/DocumentIdentifiable.dart';
+import 'package:qwallet/data_source/firebase/CloudFirestoreUtils.dart';
 import 'package:qwallet/data_source/firebase/FirebaseCategoriesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
 

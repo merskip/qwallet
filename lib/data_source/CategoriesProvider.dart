@@ -5,4 +5,7 @@ import 'Identifier.dart';
 
 abstract class CategoriesProvider {
   Stream<List<Category>> getCategories(Identifier<Wallet> walletId);
+
+  Stream<Category> getCategoryByIdentifier(
+      Identifier<Wallet> walletId, Identifier<Category> categoryId);
 }
