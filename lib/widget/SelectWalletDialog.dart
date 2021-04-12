@@ -27,8 +27,8 @@ class SelectWalletDialog extends StatelessWidget {
     return RadioListTile(
       title: Text(wallet.name),
       secondary: Text(wallet.balance.formatted),
-      groupValue: selectedWallet,
-      value: wallet,
+      groupValue: selectedWallet?.identifier,
+      value: wallet.identifier,
       toggleable: true,
       onChanged: (_) => Navigator.of(context).pop(wallet),
     );

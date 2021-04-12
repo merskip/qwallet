@@ -6,7 +6,6 @@ import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
-import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
@@ -205,7 +204,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         wallets: wallets,
         selectedWallet: this.wallet,
       ),
-    ) as FirebaseWallet?;
+    ) as Wallet?;
     if (selectedWallet != null) {
       setState(() => this.wallet = selectedWallet);
     }
