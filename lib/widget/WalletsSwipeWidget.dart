@@ -102,7 +102,7 @@ class _WalletsSwipeWidgetState extends State<WalletsSwipeWidget> {
       position: snapshot.data?.toDouble() ?? 0.0,
       decorator: DotsDecorator(
         size: Size.square(4),
-        activeSize: Size.square(4),
+        activeSize: Size.square(7),
         activeColor: Colors.white,
         spacing: EdgeInsets.symmetric(horizontal: 3, vertical: 6),
       ),

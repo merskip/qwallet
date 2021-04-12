@@ -236,8 +236,9 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         SizedBox(height: 16),
         buildAmount(context),
         SizedBox(height: 16),
-        if (wallet.categories.isNotEmpty) buildCategory(context),
-        SizedBox(height: 24),
+        if (wallet.categories.isNotEmpty)
+          buildCategoryPicker(context, wallet.categories),
+        SizedBox(height: 16),
         buildTitle(context),
         SizedBox(height: 16),
         buildDate(context),
@@ -310,10 +311,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     final balanceAfterMoney = Money(balanceAfter, wallet.currency);
     return AppLocalizations.of(context)
         .addTransactionBalanceAfter(balanceAfterMoney);
-  }
-
-  Widget buildCategory(BuildContext context) {
-    return buildCategoryPicker(context, wallet.categories);
   }
 
   Widget buildCategoryPicker(BuildContext context, List<Category> categories) {

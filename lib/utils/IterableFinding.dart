@@ -18,6 +18,16 @@ extension IterableFinding<E> on Iterable<E> {
   }
 }
 
+extension ListSplitting<T> on List<T> {
+  List<List<T>> split(int chunkSize) {
+    List<List<T>> chunks = [];
+    for (var i = 0; i < length; i += chunkSize) {
+      chunks.add(sublist(i, i + chunkSize > length ? length : i + chunkSize));
+    }
+    return chunks;
+  }
+}
+
 extension IterableOptional<E> on Iterable<E?> {
   List<E> filterNonNull() {
     final result = <E>[];

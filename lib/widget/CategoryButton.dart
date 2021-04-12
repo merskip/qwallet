@@ -6,6 +6,8 @@ class CategoryButton extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onPressed;
 
+  static Size size = const Size(72, 88);
+
   const CategoryButton({
     Key? key,
     required this.category,
@@ -15,8 +17,6 @@ class CategoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget icon;
-
     return RawCategoryButton(
       title: category.titleText,
       icon: _getIcon(),
@@ -68,8 +68,9 @@ class RawCategoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
+    return SizedBox.fromSize(
+      size: CategoryButton.size,
+      child: Column(children: [
         RawMaterialButton(
           elevation: isSelected ? 8 : 4,
           constraints: BoxConstraints(),
@@ -92,19 +93,19 @@ class RawCategoryButton extends StatelessWidget {
           onPressed: onPressed,
         ),
         SizedBox(height: 4),
-        SizedBox(
-          width: 64,
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.caption!.copyWith(
-                  color: isSelected ? primaryColor : null,
-                  fontWeight: isSelected ? FontWeight.bold : null,
-                ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
+        Text(
+          title,
+          style: TextStyle(
+            color: isSelected ? primaryColor : null,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+            fontSize: 11,
+            letterSpacing: -0.2,
           ),
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
-      ],
+      ]),
     );
   }
 }
