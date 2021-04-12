@@ -11,6 +11,7 @@ import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
+import 'package:qwallet/widget/EnterMoneyDialog.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 import '../../AppLocalizations.dart';
@@ -68,7 +69,65 @@ class _TransactionPageState extends State<TransactionPage> {
     ).show(context);
   }
 
-  void onSelectedDate(BuildContext context) async {
+  void onSelectedSaveCategory(BuildContext context) {
+    SharedProviders.transactionsProvider.updateTransaction(
+      wallet: widget.wallet,
+      transaction: widget.transaction,
+      type: widget.transaction.type,
+      category: _selectedCategory,
+      title: widget.transaction.title,
+      amount: widget.transaction.amount,
+      date: widget.transaction.date,
+    );
+  }
+
+  void onSelectedSaveType(BuildContext context) {
+    SharedProviders.transactionsProvider.updateTransaction(
+      wallet: widget.wallet,
+      transaction: widget.transaction,
+      type: _selectedType,
+      category: widget.transaction.category,
+      title: widget.transaction.title,
+      amount: widget.transaction.amount,
+      date: widget.transaction.date,
+    );
+  }
+
+  void onSelectedSaveTitle(BuildContext context) {
+    SharedProviders.transactionsProvider.updateTransaction(
+      wallet: widget.wallet,
+      transaction: widget.transaction,
+      type: widget.transaction.type,
+      category: widget.transaction.category,
+      title: titleController.text.trim().nullIfEmpty(),
+      amount: widget.transaction.amount,
+      date: widget.transaction.date,
+    );
+  }
+
+  void onSelectedEditAmount(BuildContext context) async {
+    final amount = Money(widget.transaction.amount, widget.wallet.currency);
+    final newAmount = await showDialog(
+      context: context,
+      builder: (context) => EnterMoneyDialog(
+        initialMoney: amount,
+        currency: amount.currency,
+      ),
+    );
+    if (newAmount != null) {
+      SharedProviders.transactionsProvider.updateTransaction(
+        wallet: widget.wallet,
+        transaction: widget.transaction,
+        type: widget.transaction.type,
+        category: widget.transaction.category,
+        title: widget.transaction.title,
+        amount: newAmount.amount,
+        date: widget.transaction.date,
+      );
+    }
+  }
+
+  void onSelectedEditDate(BuildContext context) async {
     final selectedDate = await showDatePicker(
       context: context,
       initialDate: widget.transaction.date,
@@ -148,7 +207,6 @@ class _TransactionPageState extends State<TransactionPage> {
         context,
         leading: CategoryIcon(category, size: 20),
         value: Text(category.titleText),
-        wallet: widget.wallet,
         category: category,
       );
     } else {
@@ -159,7 +217,6 @@ class _TransactionPageState extends State<TransactionPage> {
           AppLocalizations.of(context).transactionDetailsCategoryEmpty,
           style: TextStyle(fontStyle: FontStyle.italic),
         ),
-        wallet: widget.wallet,
         category: null,
       );
     }
@@ -169,7 +226,6 @@ class _TransactionPageState extends State<TransactionPage> {
     BuildContext context, {
     required Widget leading,
     required Widget value,
-    required Wallet wallet,
     Category? category,
   }) {
     return DetailsItemTile(
@@ -177,26 +233,22 @@ class _TransactionPageState extends State<TransactionPage> {
       title: Text(AppLocalizations.of(context).transactionDetailsCategory),
       value: value,
       editingBegin: () => _selectedCategory = category,
-      editingContent: (context) => CategoryPicker(
-        title: Text(AppLocalizations.of(context).transactionDetailsCategory),
-        selectedCategory: _selectedCategory,
-        categories: wallet.categories,
-        onChangeCategory: (category) {
-          final effectiveCategory =
-              category != _selectedCategory ? category : null;
-          setState(() => _selectedCategory = effectiveCategory);
-        },
-      ),
-      editingSave: () {
-        SharedProviders.transactionsProvider.updateTransaction(
-          wallet: widget.wallet,
-          transaction: widget.transaction,
-          type: widget.transaction.type,
-          category: _selectedCategory,
-          title: widget.transaction.title,
-          amount: widget.transaction.amount,
-          date: widget.transaction.date,
-        );
+      editingContent: widget.wallet.categories.isNotEmpty
+          ? (context) => buildCategoryEditing(context)
+          : null,
+      editingSave: () => onSelectedSaveCategory(context),
+    );
+  }
+
+  Widget buildCategoryEditing(BuildContext context) {
+    return CategoryPicker(
+      title: Text(AppLocalizations.of(context).transactionDetailsCategory),
+      selectedCategory: _selectedCategory,
+      categories: widget.wallet.categories,
+      onChangeCategory: (category) {
+        final effectiveCategory =
+            category != _selectedCategory ? category : null;
+        setState(() => _selectedCategory = effectiveCategory);
       },
     );
   }
@@ -209,15 +261,7 @@ class _TransactionPageState extends State<TransactionPage> {
           : AppLocalizations.of(context).transactionTypeIncome),
       editingBegin: () => _selectedType = widget.transaction.type,
       editingContent: (context) => buildTypeEditing(context),
-      editingSave: () => SharedProviders.transactionsProvider.updateTransaction(
-        wallet: widget.wallet,
-        transaction: widget.transaction,
-        type: _selectedType,
-        category: widget.transaction.category,
-        title: widget.transaction.title,
-        amount: widget.transaction.amount,
-        date: widget.transaction.date,
-      ),
+      editingSave: () => onSelectedSaveType(context),
     );
   }
 
@@ -251,53 +295,28 @@ class _TransactionPageState extends State<TransactionPage> {
           ? Text(title)
           : Text(AppLocalizations.of(context).transactionDetailsTitleEmpty,
               style: TextStyle(fontStyle: FontStyle.italic)),
-      editingContent: (context) => TextField(
-        controller: titleController,
-        decoration: InputDecoration(
-          labelText: AppLocalizations.of(context).transactionDetailsTitle,
-        ),
-        autofocus: true,
-        maxLength: 50,
+      editingContent: (context) => buildTitleEditing(context),
+      editingSave: () => onSelectedSaveTitle(context),
+    );
+  }
+
+  Widget buildTitleEditing(BuildContext context) {
+    return TextField(
+      controller: titleController,
+      decoration: InputDecoration(
+        labelText: AppLocalizations.of(context).transactionDetailsTitle,
       ),
-      editingSave: () => SharedProviders.transactionsProvider.updateTransaction(
-        wallet: widget.wallet,
-        transaction: widget.transaction,
-        type: widget.transaction.type,
-        category: widget.transaction.category,
-        title: titleController.text.trim().nullIfEmpty(),
-        amount: widget.transaction.amount,
-        date: widget.transaction.date,
-      ),
+      autofocus: true,
+      maxLength: 50,
     );
   }
 
   Widget buildAmount(BuildContext context, Wallet wallet) {
-    final amount = Money(widget.transaction.amount, wallet.currency);
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).transactionDetailsAmount),
-      value: Text(amount.formatted),
-      editingContent: (context) => AmountFormField(
-        initialMoney: amount,
-        currency: wallet.currency,
-        controller: amountController,
-        decoration: InputDecoration(
-          labelText: AppLocalizations.of(context).transactionDetailsAmount,
-        ),
-      ),
-      editingSave: () {
-        final amount = amountController.value;
-        if (amount != null) {
-          SharedProviders.transactionsProvider.updateTransaction(
-            wallet: widget.wallet,
-            transaction: widget.transaction,
-            type: widget.transaction.type,
-            category: widget.transaction.category,
-            title: widget.transaction.title,
-            amount: amount.amount,
-            date: widget.transaction.date,
-          );
-        }
-      },
+      value: Text(
+          Money(widget.transaction.amount, widget.wallet.currency).formatted),
+      onEdit: (context) => onSelectedEditAmount(context),
     );
   }
 
@@ -306,7 +325,7 @@ class _TransactionPageState extends State<TransactionPage> {
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).transactionDetailsDate),
       value: Text(format.format(widget.transaction.date)),
-      onEdit: (context) => onSelectedDate(context),
+      onEdit: (context) => onSelectedEditDate(context),
     );
   }
 
