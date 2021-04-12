@@ -212,8 +212,6 @@ PODS:
     - abseil/base/base_internal
     - abseil/base/config
     - abseil/meta/type_traits
-  - android_notification_listener2 (0.0.1):
-    - Flutter
   - AppAuth (1.4.0):
     - AppAuth/Core (= 1.4.0)
     - AppAuth/ExternalUserAgent (= 1.4.0)
@@ -461,7 +459,6 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - android_notification_listener2 (from `.symlinks/plugins/android_notification_listener2/ios`)
   - camera (from `.symlinks/plugins/camera/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - cloud_functions (from `.symlinks/plugins/cloud_functions/ios`)
@@ -513,8 +510,6 @@ SPEC REPOS:
     - Protobuf
 
 EXTERNAL SOURCES:
-  android_notification_listener2:
-    :path: ".symlinks/plugins/android_notification_listener2/ios"
   camera:
     :path: ".symlinks/plugins/camera/ios"
   cloud_firestore:
@@ -550,7 +545,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
-  android_notification_listener2: db57beacb0972325dbc92b2082e0097fba667f75
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
   camera: a0ca5080336f7af47b88436e5e26da3dee5568f0

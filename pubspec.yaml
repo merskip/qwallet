@@ -56,7 +56,6 @@ dependencies:
   firebase_performance: ^0.6.0
   expressions: ^0.2.0
   camera: ^0.8.0
-  android_notification_listener2: ^2.0.1
   badges: ^2.0.0-nullsafety.1
   flutter_markdown: ^0.6.0
   googleapis: ^2.0.0
