@@ -9,7 +9,6 @@ import 'package:rxdart/rxdart.dart';
 
 import '../Category.dart';
 import '../Transaction.dart';
-import 'CloudFirestoreUtils.dart';
 import 'FirebaseCategory.dart';
 import 'FirebaseTransaction.dart';
 import 'FirebaseWallet.dart';
@@ -37,7 +36,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
   }
 
   @override
-  Stream<Transaction> getTransactionById({
+  Stream<Transaction?> getTransactionById({
     required Identifier<Wallet> walletId,
     required Identifier<Transaction> transactionId,
   }) {
@@ -49,9 +48,8 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
           .collection("transactions")
           .doc(transactionId.id)
           .snapshots()
-          .filterNotExists()
-          .map((transactionSnapshot) =>
-              FirebaseTransaction(transactionSnapshot, wallet));
+          .map((snapshot) =>
+              snapshot.exists ? FirebaseTransaction(snapshot, wallet) : null);
     });
   }
 

@@ -38,7 +38,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
   }
 
   @override
-  Stream<Transaction> getTransactionById({
+  Stream<Transaction?> getTransactionById({
     required Identifier<Wallet> walletId,
     required Identifier<Transaction> transactionId,
   }) {
@@ -46,7 +46,8 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
       final transaction = wallet.spreadsheetWallet.transfers
           .findFirstOrNull((t) => t.row.toString() == transactionId.id);
-      return _toTransaction(wallet, transaction!);
+      if (transaction == null) return null;
+      return _toTransaction(wallet, transaction);
     });
   }
 

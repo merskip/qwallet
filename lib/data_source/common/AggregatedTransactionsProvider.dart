@@ -30,7 +30,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
       );
 
   @override
-  Stream<Transaction> getTransactionById({
+  Stream<Transaction?> getTransactionById({
     required Identifier<Wallet> walletId,
     required Identifier<Transaction> transactionId,
   }) =>

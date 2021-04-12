@@ -151,10 +151,12 @@ void initRoutes(FluroRouter router) {
       return SimpleStreamWidget(
         stream: Rx.combineLatestList([
           SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
-          SharedProviders.transactionsProvider.getTransactionById(
-            walletId: walletId,
-            transactionId: transactionId,
-          )
+          SharedProviders.transactionsProvider
+              .getTransactionById(
+                walletId: walletId,
+                transactionId: transactionId,
+              )
+              .where((t) => t != null)
         ]),
         builder: (context, List values) {
           final wallet = values[0] as Wallet;

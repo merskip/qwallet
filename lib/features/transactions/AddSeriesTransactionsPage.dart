@@ -141,7 +141,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final transactionId =
-        await SharedProviders.firebaseTransactionsProvider.addTransaction(
+        await SharedProviders.transactionsProvider.addTransaction(
       walletId: wallet.identifier,
       type: TransactionType.expense,
       category: transactionCategory,
@@ -155,16 +155,14 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
       transactionCategory = null;
     });
 
-    subscriptions.add(SharedProviders.firebaseTransactionsProvider
+    subscriptions.add(SharedProviders.transactionsProvider
         .getTransactionById(
             walletId: wallet.identifier, transactionId: transactionId)
         .listen((transaction) {
-      transactions.removeWhere((t) => t.identifier.id == transactionId.id);
-      transactions.add(transaction);
-      setState(() {});
-    }, onError: (error) {
-      transactions.removeWhere((t) => t.identifier.id == transactionId.id);
-      setState(() {});
+      setState(() {
+        transactions.removeWhere((t) => t.identifier.id == transactionId.id);
+        if (transaction != null) transactions.add(transaction);
+      });
     }));
   }
 
@@ -384,8 +382,8 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
         SizedBox(height: 16),
         buildTransactionAmount(context),
         SizedBox(height: 16),
-        buildTransactionCategoryPicker(context, wallet.categories),
-        SizedBox(height: 16),
+        if (wallet.categories.isNotEmpty)
+          buildTransactionCategoryPicker(context, wallet.categories),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: buildAddTransactionButton(context),

@@ -9,7 +9,7 @@ abstract class TransactionsProvider {
     required Identifier<Wallet> walletId,
   });
 
-  Stream<Transaction> getTransactionById({
+  Stream<Transaction?> getTransactionById({
     required Identifier<Wallet> walletId,
     required Identifier<Transaction> transactionId,
   });

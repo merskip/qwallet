@@ -174,7 +174,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     if (firstCell != null) {
       final firstMatch = RegExp("[A-Z]+([0-9]+)").firstMatch(firstCell);
       final row = firstMatch?.group(1);
-      if (row != null) return int.parse(row);
+      if (row != null) return int.parse(row) - 1;
     }
     return Future.error("Failed appending row");
   }
