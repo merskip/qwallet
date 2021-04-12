@@ -30,7 +30,7 @@ abstract class TransactionsProvider {
   });
 
   Future<void> updateTransaction({
-    required Identifier<Wallet> walletId,
+    required Wallet wallet,
     required Transaction transaction,
     required TransactionType type,
     required Category? category,

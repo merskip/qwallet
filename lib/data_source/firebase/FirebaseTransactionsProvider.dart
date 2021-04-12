@@ -126,7 +126,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
 
   @override
   Future<void> updateTransaction({
-    required Identifier<Wallet> walletId,
+    required Wallet wallet,
     required Transaction transaction,
     required TransactionType type,
     required Category? category,
@@ -135,17 +135,39 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required DateTime date,
   }) {
     final firebaseCategory = category as FirebaseCategory?;
-    return firestore
-        .collection("wallets")
-        .doc(walletId.id)
-        .collection("transactions")
-        .doc(transaction.identifier.id)
-        .update({
-      "type": type == TransactionType.expense ? "expense" : "income",
-      "category": firebaseCategory?.reference.documentReference,
-      "title": title,
-      "amount": amount,
-      "date": CloudFirestore.Timestamp.fromDate(date),
+    return firestore.runTransaction((firebaseTransaction) async {
+      var walletTotalExpense = wallet.totalExpense.amount;
+      var walletTotalIncome = wallet.totalIncome.amount;
+
+      if (transaction.type == TransactionType.expense)
+        walletTotalExpense -= transaction.amount;
+      else
+        walletTotalIncome -= transaction.amount;
+
+      if (type == TransactionType.expense)
+        walletTotalExpense += amount;
+      else
+        walletTotalIncome += amount;
+
+      final walletReference =
+          firestore.collection("wallets").doc(wallet.identifier.id);
+
+      firebaseTransaction.update(walletReference, {
+        "totalExpense": walletTotalExpense,
+        "totalIncome": walletTotalIncome,
+      });
+
+      final transactionReference = walletReference
+          .collection("transactions")
+          .doc(transaction.identifier.id);
+
+      firebaseTransaction.update(transactionReference, {
+        "type": type == TransactionType.expense ? "expense" : "income",
+        "category": firebaseCategory?.reference.documentReference,
+        "title": title,
+        "amount": amount,
+        "date": CloudFirestore.Timestamp.fromDate(date),
+      });
     });
   }
 

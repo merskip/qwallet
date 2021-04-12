@@ -20,35 +20,31 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
   @override
   Stream<LatestTransactions> getLatestTransactions({
     required Identifier<Wallet> walletId,
-  }) {
-    switch (walletId.domain) {
-      case "firebase":
-        return _firebaseProvider.getLatestTransactions(walletId: walletId);
-      case "google_sheets":
-        return _spreadsheetProvider.getLatestTransactions(walletId: walletId);
-      default:
-        return Stream.error(ArgumentError.value(
-            walletId.domain, "walletId.domain", "Unknown domain"));
-    }
-  }
+  }) =>
+      onDomain(
+        walletId,
+        ifFirebase: () =>
+            _firebaseProvider.getLatestTransactions(walletId: walletId),
+        ifGoogleSheets: () =>
+            _spreadsheetProvider.getLatestTransactions(walletId: walletId),
+      );
 
   @override
   Stream<Transaction> getTransactionById({
     required Identifier<Wallet> walletId,
     required Identifier<Transaction> transactionId,
-  }) {
-    switch (transactionId.domain) {
-      case "firebase":
-        return _firebaseProvider.getTransactionById(
-            walletId: walletId, transactionId: transactionId);
-      case "google_sheets":
-        return _spreadsheetProvider.getTransactionById(
-            walletId: walletId, transactionId: transactionId);
-      default:
-        return Stream.error(ArgumentError.value(
-            transactionId.domain, "transactionId.domain", "Unknown domain"));
-    }
-  }
+  }) =>
+      onDomain(
+        walletId,
+        ifFirebase: () => _firebaseProvider.getTransactionById(
+          walletId: walletId,
+          transactionId: transactionId,
+        ),
+        ifGoogleSheets: () => _spreadsheetProvider.getTransactionById(
+          walletId: walletId,
+          transactionId: transactionId,
+        ),
+      );
 
   @override
   Stream<List<Transaction>> getPageableTransactions({
@@ -78,99 +74,75 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
-  }) {
-    switch (walletId.domain) {
-      case "firebase":
-        return _firebaseProvider.addTransaction(
+  }) =>
+      onDomain(
+        walletId,
+        ifFirebase: () => _firebaseProvider.addTransaction(
           walletId: walletId,
           type: type,
           category: category,
           title: title,
           amount: amount,
           date: date,
-        );
-      case "google_sheets":
-        return _spreadsheetProvider.addTransaction(
+        ),
+        ifGoogleSheets: () => _spreadsheetProvider.addTransaction(
           walletId: walletId,
           type: type,
           category: category,
           title: title,
           amount: amount,
           date: date,
-        );
-      default:
-        return Future.error(ArgumentError.value(
-          walletId.domain,
-          "walletId.domain",
-          "Unknown domain",
-        ));
-    }
-  }
+        ),
+      );
 
   @override
   Future<void> updateTransaction({
-    required Identifier<Wallet> walletId,
+    required Wallet wallet,
     required Transaction transaction,
     required TransactionType type,
     required Category? category,
     required String? title,
     required double amount,
     required DateTime date,
-  }) {
-    switch (transaction.identifier.domain) {
-      case "firebase":
-        return _firebaseProvider.updateTransaction(
-          walletId: walletId,
+  }) =>
+      onDomain(
+        wallet.identifier,
+        ifFirebase: () => _firebaseProvider.updateTransaction(
+          wallet: wallet,
           transaction: transaction,
           type: type,
           category: category,
           title: title,
           amount: amount,
           date: date,
-        );
-      case "google_sheets":
-        return _spreadsheetProvider.updateTransaction(
-          walletId: walletId,
+        ),
+        ifGoogleSheets: () => _spreadsheetProvider.updateTransaction(
+          wallet: wallet,
           transaction: transaction,
           type: type,
           category: category,
           title: title,
           amount: amount,
           date: date,
-        );
-      default:
-        return Future.error(ArgumentError.value(
-          transaction.identifier.domain,
-          "transactionId.domain",
-          "Unknown domain",
-        ));
-    }
-  }
+        ),
+      );
 
   @override
   Future<void> removeTransaction({
     required Identifier<Wallet> walletId,
     required Transaction transaction,
-  }) {
-    switch (transaction.identifier.domain) {
-      case "firebase":
-        return _firebaseProvider.removeTransaction(
+  }) =>
+      onDomain(
+        walletId,
+        ifFirebase: () => _firebaseProvider.removeTransaction(
           walletId: walletId,
           transaction: transaction,
-        );
-      case "google_sheets":
-        return _spreadsheetProvider.removeTransaction(
+        ),
+        ifGoogleSheets: () => _spreadsheetProvider.removeTransaction(
           walletId: walletId,
           transaction: transaction,
-        );
-      default:
-        return Future.error(ArgumentError.value(
-          transaction.identifier.domain,
-          "transactionId.domain",
-          "Unknown domain",
-        ));
-    }
-  }
+        ),
+      );
 
   T onDomain<T>(
     Identifier identifier, {

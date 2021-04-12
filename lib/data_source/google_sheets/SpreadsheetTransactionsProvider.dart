@@ -75,7 +75,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
 
   @override
   Future<void> updateTransaction({
-    required Identifier<Wallet> walletId,
+    required Wallet wallet,
     required Transaction transaction,
     required TransactionType type,
     required Category? category,
@@ -83,14 +83,14 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     required double amount,
     required DateTime date,
   }) {
-    assert(walletId.domain == "google_sheets");
+    assert(wallet.identifier.domain == "google_sheets");
     final spreadsheetTransaction = transaction as SpreadsheetTransaction;
     final symbol = category?.symbol;
 
     if (symbol != null) {
       return repository
           .updateTransaction(
-            spreadsheetId: walletId.id,
+            spreadsheetId: wallet.identifier.id,
             transferRow: spreadsheetTransaction.spreadsheetTransfer.row,
             date: date,
             type: spreadsheetTransaction.spreadsheetTransfer.type,
@@ -101,7 +101,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
             shop: spreadsheetTransaction.spreadsheetTransfer.shop,
             description: title,
           )
-          .then((value) => walletsProvider.refreshWallet(walletId));
+          .then((value) => walletsProvider.refreshWallet(wallet.identifier));
     } else {
       return Future.value();
     }

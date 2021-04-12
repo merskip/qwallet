@@ -85,8 +85,8 @@ class _TransactionPageState extends State<TransactionPage> {
         now.minute,
         now.second,
       );
-      SharedProviders.firebaseTransactionsProvider.updateTransaction(
-        walletId: widget.wallet.identifier,
+      SharedProviders.transactionsProvider.updateTransaction(
+        wallet: widget.wallet,
         transaction: widget.transaction,
         type: widget.transaction.type,
         category: widget.transaction.category,
@@ -188,8 +188,8 @@ class _TransactionPageState extends State<TransactionPage> {
         },
       ),
       editingSave: () {
-        SharedProviders.firebaseTransactionsProvider.updateTransaction(
-          walletId: widget.wallet.identifier,
+        SharedProviders.transactionsProvider.updateTransaction(
+          wallet: widget.wallet,
           transaction: widget.transaction,
           type: widget.transaction.type,
           category: _selectedCategory,
@@ -209,9 +209,8 @@ class _TransactionPageState extends State<TransactionPage> {
           : AppLocalizations.of(context).transactionTypeIncome),
       editingBegin: () => _selectedType = widget.transaction.type,
       editingContent: (context) => buildTypeEditing(context),
-      editingSave: () =>
-          SharedProviders.firebaseTransactionsProvider.updateTransaction(
-        walletId: widget.wallet.identifier,
+      editingSave: () => SharedProviders.transactionsProvider.updateTransaction(
+        wallet: widget.wallet,
         transaction: widget.transaction,
         type: _selectedType,
         category: widget.transaction.category,
@@ -260,9 +259,8 @@ class _TransactionPageState extends State<TransactionPage> {
         autofocus: true,
         maxLength: 50,
       ),
-      editingSave: () =>
-          SharedProviders.firebaseTransactionsProvider.updateTransaction(
-        walletId: widget.wallet.identifier,
+      editingSave: () => SharedProviders.transactionsProvider.updateTransaction(
+        wallet: widget.wallet,
         transaction: widget.transaction,
         type: widget.transaction.type,
         category: widget.transaction.category,
@@ -289,8 +287,8 @@ class _TransactionPageState extends State<TransactionPage> {
       editingSave: () {
         final amount = amountController.value;
         if (amount != null) {
-          SharedProviders.firebaseTransactionsProvider.updateTransaction(
-            walletId: widget.wallet.identifier,
+          SharedProviders.transactionsProvider.updateTransaction(
+            wallet: widget.wallet,
             transaction: widget.transaction,
             type: widget.transaction.type,
             category: widget.transaction.category,
