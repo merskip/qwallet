@@ -18,6 +18,7 @@ import 'package:qwallet/widget/TransactionListTile.dart';
 
 import '../../AppLocalizations.dart';
 import '../../Money.dart';
+import '../../utils.dart';
 
 class AddSeriesTransactionsPage extends StatefulWidget {
   final Wallet initialWallet;
@@ -47,6 +48,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
 
   final transactionAmountController = AmountEditingController();
   Category? transactionCategory;
+  final transactionTitleController = TextEditingController();
 
   List<Transaction> transactions = [];
 
@@ -81,6 +83,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
     totalAmountController.dispose();
     dateFocus.dispose();
     dateController.dispose();
+    transactionTitleController.dispose();
     subscriptions.forEach((s) => s.cancel());
     super.dispose();
   }
@@ -145,7 +148,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
       walletId: wallet.identifier,
       type: TransactionType.expense,
       category: transactionCategory,
-      title: null,
+      title: transactionTitleController.text.trim().nullIfEmpty(),
       amount: transactionAmountController.value!.amount,
       date: date,
     );
@@ -153,6 +156,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
     setState(() {
       transactionAmountController.value = null;
       transactionCategory = null;
+      transactionTitleController.clear();
     });
 
     subscriptions.add(SharedProviders.transactionsProvider
@@ -384,6 +388,8 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
         SizedBox(height: 16),
         if (wallet.categories.isNotEmpty)
           buildTransactionCategoryPicker(context, wallet.categories),
+        SizedBox(height: 16),
+        buildTransactionTitle(context),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: buildAddTransactionButton(context),
@@ -472,6 +478,19 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
               (this.transactionCategory != category ? category : null);
         });
       },
+    );
+  }
+
+  Widget buildTransactionTitle(BuildContext context) {
+    return TextFormField(
+      controller: transactionTitleController,
+      decoration: InputDecoration(
+        labelText: AppLocalizations.of(context).addTransactionTitle,
+        isDense: true,
+      ),
+      maxLength: 50,
+      textCapitalization: TextCapitalization.sentences,
+      textInputAction: TextInputAction.done,
     );
   }
 
