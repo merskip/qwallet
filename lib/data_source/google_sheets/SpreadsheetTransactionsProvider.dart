@@ -56,6 +56,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     required int limit,
     required Transaction? afterTransaction,
   }) {
+    assert(walletId.domain == "google_sheets");
     return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
       var transactions = wallet.spreadsheetWallet.transfers
           .map((t) => _toTransaction(wallet, t))

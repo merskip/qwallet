@@ -32,7 +32,7 @@ class FirebaseUsersProvider implements UsersProvider {
     final callable = firebaseFunctions.httpsCallable("getUsers");
     dynamic response = await callable.call();
     final content = response.data as List;
-    final currentUser = await getCurrentUser();
+    final currentUser = getCurrentUser();
 
     return content
         .map((userJson) =>

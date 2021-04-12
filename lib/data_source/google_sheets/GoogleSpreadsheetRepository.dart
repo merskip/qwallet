@@ -15,8 +15,12 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     String spreadsheetId,
   ) async {
     final sheetsApi = await this.sheetsApi;
-    final spreadsheet =
-        await sheetsApi.spreadsheets.get(spreadsheetId, includeGridData: true);
+    final spreadsheet = await sheetsApi.spreadsheets.get(
+      spreadsheetId,
+      $fields:
+          "properties(title),sheets(properties(sheetId,title),data(rowData(values(effectiveValue,formattedValue))))",
+      includeGridData: true,
+    );
 
     final generalSheet = spreadsheet.findSheetByTitle("Ogólne")!;
     final dailyBalanceSheet = spreadsheet.findSheetByTitle("Balans dzienny")!;
@@ -52,7 +56,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
   List<GoogleSpreadsheetTransaction> _getTransfers(Sheet dailyBalanceSheet) {
     return dailyBalanceSheet.mapRow((index, row) {
       final date = row.getDate(column: 0);
-      final type = row.getTransaferType(column: 1);
+      final type = row.getTransactionType(column: 1);
       final amount = row.getDouble(column: 2);
       final categorySymbol = row.getString(column: 3);
       if (date == null ||
@@ -104,7 +108,9 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
   }
 
   List<String> _getShops(Sheet statisticsSheet) {
-    return statisticsSheet.mapRow((index, row) => row.getString(column: 16));
+    return statisticsSheet.mapRow(
+      (index, row) => row.hasColumn(16) ? row.getString(column: 16) : null,
+    );
   }
 
   GoogleSpreadsheetStatistics _getStatistics(Sheet statisticsSheet) {
@@ -252,22 +258,28 @@ extension _SheetIterator on Sheet {
 }
 
 extension _RowDataConverting on RowData {
+  bool hasColumn(int column) => column < (values ?? []).length;
+
   double? getDouble({required int column}) {
+    if (!hasColumn(column)) return null;
     return values?[column].effectiveValue?.numberValue;
   }
 
   String? getString({required int column}) {
+    if (!hasColumn(column)) return null;
     final string = values?[column].effectiveValue?.stringValue;
     return string != null && string.isNotEmpty ? string : null;
   }
 
   DateTime? getDate({required int column}) {
+    if (!hasColumn(column)) return null;
     final string = values?[column].formattedValue;
     if (string == null) return null;
     return DateTime.tryParse(string);
   }
 
-  GoogleSpreadsheetTransactionType? getTransaferType({required int column}) {
+  GoogleSpreadsheetTransactionType? getTransactionType({required int column}) {
+    if (!hasColumn(column)) return null;
     final string = values?[column].effectiveValue?.stringValue;
     if (string == "Bieżące")
       return GoogleSpreadsheetTransactionType.current;

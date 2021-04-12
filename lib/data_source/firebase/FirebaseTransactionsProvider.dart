@@ -41,6 +41,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required Identifier<Wallet> walletId,
     required Identifier<Transaction> transactionId,
   }) {
+    assert(walletId.domain == "firebase");
     return walletsProvider.getWalletByIdentifier(walletId).flatMap((wallet) {
       return firestore
           .collection("wallets")
@@ -60,8 +61,9 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required int limit,
     required Transaction? afterTransaction,
   }) {
-    final wallet = walletsProvider.getWalletByIdentifier(walletId);
+    assert(walletId.domain == "firebase");
 
+    final wallet = walletsProvider.getWalletByIdentifier(walletId);
     var query = firestore
         .collection("wallets")
         .doc(walletId.id)
@@ -95,6 +97,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required double amount,
     required DateTime date,
   }) {
+    assert(walletId.domain == "firebase");
     final addingTransaction = firestore
         .collection("wallets")
         .doc(walletId.id)
@@ -134,6 +137,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required double amount,
     required DateTime date,
   }) {
+    assert(wallet.identifier.domain == "firebase");
     final firebaseCategory = category as FirebaseCategory?;
     return firestore.runTransaction((firebaseTransaction) async {
       var walletTotalExpense = wallet.totalExpense.amount;
@@ -176,6 +180,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required Transaction transaction,
     required bool excludedFromDailyStatistics,
   }) {
+    assert(walletId.domain == "firebase");
     return firestore
         .collection("wallets")
         .doc(walletId.id)
@@ -190,6 +195,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required FirebaseWallet wallet,
     required DateTimeRange dateRange,
   }) {
+    assert(wallet.identifier.domain == "firebase");
     return firestore
         .collection("wallets")
         .doc(wallet.identifier.id)
@@ -209,6 +215,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required Identifier<Wallet> walletId,
     required Transaction transaction,
   }) {
+    assert(walletId.domain == "firebase");
     return firestore
         .collection("wallets")
         .doc(walletId.id)

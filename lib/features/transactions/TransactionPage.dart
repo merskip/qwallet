@@ -58,7 +58,7 @@ class _TransactionPageState extends State<TransactionPage> {
           .transactionDetailsRemoveConfirmationContent),
       isDestructive: true,
       onConfirm: () async {
-        await SharedProviders.firebaseTransactionsProvider.removeTransaction(
+        await SharedProviders.transactionsProvider.removeTransaction(
           walletId: widget.wallet.identifier,
           transaction: widget.transaction,
         );

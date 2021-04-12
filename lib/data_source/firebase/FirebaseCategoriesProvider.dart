@@ -37,7 +37,6 @@ class FirebaseCategoriesProvider implements CategoriesProvider {
   Stream<Category> getCategoryByIdentifier(
       Identifier<Wallet> walletId, Identifier<Category> categoryId) {
     assert(walletId.domain == "firebase");
-    assert(categoryId.domain == "firebase");
     return firestore
         .collection("wallets")
         .doc(walletId.id)
@@ -52,6 +51,7 @@ class FirebaseCategoriesProvider implements CategoriesProvider {
     required Identifier<Wallet> walletId,
     required List<Identifier<Category>> categoriesOrder,
   }) async {
+    assert(walletId.domain == "firebase");
     await firestore.runTransaction((transaction) async {
       categoriesOrder.forEach((category) {
         final categoryReference = firestore
@@ -75,6 +75,7 @@ class FirebaseCategoriesProvider implements CategoriesProvider {
     required IconData icon,
     required int order,
   }) {
+    assert(walletId.domain == "firebase");
     return firestore
         .collection("wallets")
         .doc(walletId.id)
@@ -97,6 +98,7 @@ class FirebaseCategoriesProvider implements CategoriesProvider {
     required IconData icon,
     required int order,
   }) {
+    assert(walletId.domain == "firebase");
     return firestore
         .collection("wallets")
         .doc(walletId.id)
@@ -115,6 +117,7 @@ class FirebaseCategoriesProvider implements CategoriesProvider {
     required Identifier<Wallet> walletId,
     required Identifier<Category> categoryId,
   }) {
+    assert(walletId.domain == "firebase");
     return firestore
         .collection("wallets")
         .doc(walletId.id)

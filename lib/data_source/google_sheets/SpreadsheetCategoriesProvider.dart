@@ -17,16 +17,20 @@ class SpreadsheetCategoriesProvider extends CategoriesProvider {
   Stream<Category> getCategoryByIdentifier(
     Identifier<Wallet> walletId,
     Identifier<Category> categoryId,
-  ) =>
-      getCategories(walletId).map(
-        (categories) => categories.firstWhere(
-          (category) => category.identifier == categoryId,
-        ),
-      );
+  ) {
+    assert(walletId.domain == "google_sheets");
+    return getCategories(walletId).map(
+      (categories) => categories.firstWhere(
+        (category) => category.identifier == categoryId,
+      ),
+    );
+  }
 
   @override
-  Stream<List<Category>> getCategories(Identifier<Wallet> walletId) =>
-      walletsProvider
-          .getWalletByIdentifier(walletId)
-          .map((wallet) => wallet.categories);
+  Stream<List<Category>> getCategories(Identifier<Wallet> walletId) {
+    assert(walletId.domain == "google_sheets");
+    return walletsProvider
+        .getWalletByIdentifier(walletId)
+        .map((wallet) => wallet.categories);
+  }
 }

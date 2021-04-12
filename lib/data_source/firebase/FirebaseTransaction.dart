@@ -31,20 +31,10 @@ class FirebaseTransaction extends FirebaseModel<FirebaseTransaction>
             snapshot.getBool("excludedFromDailyStatistics") ?? false,
         super(snapshot);
 
-  String getTypeLocalizedText(BuildContext context) => ifType(
-        expense: AppLocalizations.of(context).transactionsCardExpense,
-        income: AppLocalizations.of(context).transactionsCardIncome,
-      );
-
-  @deprecated
-  T ifType<T>({required T expense, required T income}) {
-    switch (type) {
-      case TransactionType.expense:
-        return expense;
-      case TransactionType.income:
-        return income;
-    }
-  }
+  String getTypeLocalizedText(BuildContext context) =>
+      type == TransactionType.expense
+          ? AppLocalizations.of(context).transactionsCardExpense
+          : AppLocalizations.of(context).transactionsCardIncome;
 
   @override
   String toString() {

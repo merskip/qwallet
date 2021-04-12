@@ -6,6 +6,7 @@ import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/google_sheets/GoogleSpreadsheetWallet.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetCategory.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../Money.dart';
 import '../WalletsProvider.dart';
@@ -16,8 +17,9 @@ import 'SpreadsheetWallet.dart';
 class SpreadsheetWalletsProvider implements WalletsProvider {
   final CachedGoogleSpreadsheetRepository repository;
   final Stream<List<Identifier<Wallet>>> walletsIds;
+  final refreshWallets = BehaviorSubject<void>.seeded(null);
   final Map<Identifier<Wallet>, List<StreamController<Identifier<Wallet>>>>
-      refreshController = {};
+      refreshWalletController = {};
 
   SpreadsheetWalletsProvider({
     required this.repository,
@@ -25,18 +27,27 @@ class SpreadsheetWalletsProvider implements WalletsProvider {
   });
 
   void refreshWallet(Identifier<Wallet> walletId) {
+    assert(walletId.domain == "google_sheets");
     Future(() {
       repository.clearCacheForSpreadsheetId(walletId.id);
-      refreshController[walletId]
+      refreshWallets.add(null);
+      refreshWalletController[walletId]
           ?.forEach((streamController) => streamController.add(walletId));
     });
   }
 
   @override
   Stream<List<SpreadsheetWallet>> getWallets() {
-    return walletsIds.asyncMap((walletsIds) async {
+    final wallets = Rx.combineLatest2(
+      walletsIds.doOnListen(() => (event) => print(event)),
+      refreshWallets.stream,
+      (List<Identifier<Wallet>> walletsIds, _) {
+        return walletsIds;
+      },
+    ).asyncMap((walletsIds) async {
       final wallets = <SpreadsheetWallet>[];
       for (final walletId in walletsIds) {
+        assert(walletId.domain == "google_sheets");
         try {
           final wallet = await getWalletByIdentifier(walletId).first;
           wallets.add(wallet);
@@ -46,6 +57,7 @@ class SpreadsheetWalletsProvider implements WalletsProvider {
       }
       return wallets;
     });
+    return wallets;
   }
 
   @override
@@ -53,12 +65,12 @@ class SpreadsheetWalletsProvider implements WalletsProvider {
     assert(walletId.domain == "google_sheets");
 
     final streamController = StreamController<Identifier<Wallet>>(onCancel: () {
-      refreshController[walletId]?.remove(walletId);
+      refreshWalletController[walletId]?.remove(walletId);
     });
-    if (refreshController.containsKey(walletId))
-      refreshController[walletId]?.add(streamController);
+    if (refreshWalletController.containsKey(walletId))
+      refreshWalletController[walletId]?.add(streamController);
     else
-      refreshController[walletId] = [streamController];
+      refreshWalletController[walletId] = [streamController];
 
     Future(() {
       streamController.add(walletId);
