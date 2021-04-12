@@ -116,9 +116,10 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
         "totalIncome": CloudFirestore.FieldValue.increment(amount),
     });
 
-    return Future.wait([addingTransaction, updatingWallet])
-        .timeout(Duration(seconds: 5))
-        .then((values) {
+    return Future.wait([
+      addingTransaction,
+      updatingWallet,
+    ]).timeout(Duration(seconds: 5)).then((values) {
       final documentReference = values[0] as CloudFirestore.DocumentReference;
       return Identifier<Transaction>(
           domain: "firebase", id: documentReference.id);
@@ -214,11 +215,26 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required Transaction transaction,
   }) {
     assert(walletId.domain == "firebase");
-    return firestore
+
+    final updatingWallet =
+        firestore.collection("wallets").doc(walletId.id).update({
+      if (transaction.type == TransactionType.expense)
+        "totalExpense":
+            CloudFirestore.FieldValue.increment(-transaction.amount),
+      if (transaction.type == TransactionType.income)
+        "totalIncome": CloudFirestore.FieldValue.increment(-transaction.amount),
+    });
+
+    final removingTransaction = firestore
         .collection("wallets")
         .doc(walletId.id)
         .collection("transactions")
         .doc(transaction.identifier.id)
         .delete();
+
+    return Future.wait([
+      updatingWallet,
+      removingTransaction,
+    ]);
   }
 }
