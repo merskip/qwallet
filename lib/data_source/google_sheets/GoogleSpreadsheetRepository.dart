@@ -17,8 +17,10 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     final sheetsApi = await this.sheetsApi;
     final spreadsheet = await sheetsApi.spreadsheets.get(
       spreadsheetId,
-      $fields:
-          "properties(title),sheets(properties(sheetId,title),data(rowData(values(effectiveValue,formattedValue))))",
+      $fields: "spreadsheetId,"
+          "spreadsheetUrl,"
+          "properties(title),"
+          "sheets(properties(sheetId,title),data(rowData(values(effectiveValue))))",
       includeGridData: true,
     );
 
@@ -273,9 +275,11 @@ extension _RowDataConverting on RowData {
 
   DateTime? getDate({required int column}) {
     if (!hasColumn(column)) return null;
-    final string = values?[column].formattedValue;
-    if (string == null) return null;
-    return DateTime.tryParse(string);
+    final date = values?[column].effectiveValue?.numberValue;
+    if (date == null) return null;
+
+    final epoch = DateTime.utc(1899, 12, 30);
+    return epoch.add(Duration(days: date.truncate()));
   }
 
   GoogleSpreadsheetTransactionType? getTransactionType({required int column}) {
