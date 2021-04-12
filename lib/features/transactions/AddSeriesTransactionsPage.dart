@@ -201,9 +201,11 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
         title: Text(AppLocalizations.of(context).addSeriesTransactionsTitle),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: buildForm(context),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: buildForm(context),
+          ),
         ),
       ),
     );

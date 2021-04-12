@@ -28,18 +28,20 @@ class ConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            buildTitle(context),
-            SizedBox(height: 12),
-            buildContent(context),
-            buildActions(context),
-          ],
+    return SafeArea(
+      child: Container(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              buildTitle(context),
+              SizedBox(height: 12),
+              buildContent(context),
+              buildActions(context),
+            ],
+          ),
         ),
       ),
     );
