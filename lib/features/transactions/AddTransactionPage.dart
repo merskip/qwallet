@@ -226,27 +226,29 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(children: [
-        buildWallet(context),
-        SizedBox(height: 8),
-        buildType(context),
-        SizedBox(height: 16),
-        buildAmount(context),
-        SizedBox(height: 16),
-        if (wallet.categories.isNotEmpty)
-          buildCategoryPicker(context, wallet.categories),
-        SizedBox(height: 16),
-        buildTitle(context),
-        SizedBox(height: 16),
-        buildDate(context),
-        SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: buildSubmitButton(context),
-        )
-      ]),
+    return SafeArea(
+      child: Form(
+        key: _formKey,
+        child: Column(children: [
+          buildWallet(context),
+          SizedBox(height: 8),
+          buildType(context),
+          SizedBox(height: 16),
+          buildAmount(context),
+          SizedBox(height: 16),
+          if (wallet.categories.isNotEmpty)
+            buildCategoryPicker(context, wallet.categories),
+          SizedBox(height: 16),
+          buildTitle(context),
+          SizedBox(height: 16),
+          buildDate(context),
+          SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: buildSubmitButton(context),
+          )
+        ]),
+      ),
     );
   }
 
