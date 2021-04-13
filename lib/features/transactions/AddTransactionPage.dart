@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +8,7 @@ import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/features/transactions/ImagesCarousel.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
@@ -16,39 +19,22 @@ import 'package:qwallet/widget/VectorImage.dart';
 import '../../AppLocalizations.dart';
 import '../../router.dart';
 import '../../utils.dart';
+import 'TakePhotoPage.dart';
+
+final _formKey = GlobalKey<_AddTransactionFormState>();
 
 class AddTransactionPage extends StatelessWidget {
   final Wallet initialWallet;
   final double? initialAmount;
 
-  const AddTransactionPage({
-    Key? key,
-    required this.initialWallet,
-    this.initialAmount,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return _AddTransactionPageContent(
-      initialWallet: initialWallet,
-      initialAmount: initialAmount,
-    );
-  }
-}
-
-class _AddTransactionPageContent extends StatelessWidget {
-  final formKey = GlobalKey<_AddTransactionFormState>();
-  final Wallet initialWallet;
-  final double? initialAmount;
-
-  _AddTransactionPageContent({
+  AddTransactionPage({
     Key? key,
     required this.initialWallet,
     this.initialAmount,
   }) : super(key: key);
 
   void onSelectedAddSeriesTransactions(BuildContext context) {
-    final currentState = this.formKey.currentState;
+    final currentState = _formKey.currentState;
     if (currentState == null) return;
 
     final type = currentState.type;
@@ -90,7 +76,7 @@ class _AddTransactionPageContent extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(16),
           child: _AddTransactionForm(
-            key: formKey,
+            key: _formKey,
             initialWallet: initialWallet,
             initialAmount: initialAmount?.abs(),
             initialTransactionType: (initialAmount ?? 0) <= 0
@@ -139,6 +125,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   final dateFocus = FocusNode();
   final dateController = TextEditingController();
   DateTime date = DateTime.now();
+
+  final images = <File>[];
 
   _AddTransactionFormState(this.wallet, this.type);
 
@@ -210,6 +198,24 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     }
   }
 
+  void onSelectedAddImage(BuildContext context) async {
+    final imageFile = await pushPage(
+      context,
+      builder: (context) => TakePhotoPage(),
+    ) as File?;
+    if (imageFile != null) {
+      setState(() {
+        images.add(imageFile);
+      });
+    }
+  }
+
+  void onSelectedRemoveImage(BuildContext context, File image) {
+    setState(() {
+      images.remove(image);
+    });
+  }
+
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       SharedProviders.transactionsProvider.addTransaction(
@@ -233,6 +239,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           buildWallet(context),
           SizedBox(height: 8),
           buildType(context),
+          SizedBox(height: 16),
+          buildAttachedImages(context),
           SizedBox(height: 16),
           buildAmount(context),
           SizedBox(height: 16),
@@ -277,6 +285,14 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         trailing: Text(wallet.balance.formatted),
         onTap: () => onSelectedWallet(context),
       ),
+    );
+  }
+
+  Widget buildAttachedImages(BuildContext context) {
+    return ImagesCarousel(
+      images: images,
+      onAddImage: () => onSelectedAddImage(context),
+      onDeleteImage: (context, image) => onSelectedRemoveImage(context, image),
     );
   }
 
