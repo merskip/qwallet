@@ -28,6 +28,9 @@ import 'data_source/google_sheets/SpreadsheetCategoriesProvider.dart';
 import 'data_source/google_sheets/SpreadsheetTransactionsProvider.dart';
 import 'data_source/google_sheets/SpreadsheetWalletsProvider.dart';
 
+final firestore = FirebaseFirestore.instance;
+final crashlytics = FirebaseCrashlytics.instance;
+
 void main() async {
   runZonedGuarded(
     () async {
@@ -35,11 +38,11 @@ void main() async {
 
       await Firebase.initializeApp();
 
-      FirebaseFirestore.instance.settings = Settings(
+      firestore.settings = Settings(
         persistenceEnabled: true,
       );
       // // Connection to Firebase Local Emulator
-      // FirebaseFirestore.instance.settings = Settings(
+      // firestore.settings = Settings(
       //   host: Platform.isAndroid ? '10.0.2.2:8080' : 'localhost:8080',
       //   sslEnabled: false,
       //   persistenceEnabled: true,
@@ -47,18 +50,23 @@ void main() async {
 
       FlutterError.onError = (details) {
         FlutterError.dumpErrorToConsole(details);
-        FirebaseCrashlytics.instance.recordFlutterError(details);
+        crashlytics.recordFlutterError(details);
       };
+
+      if (kDebugMode) {
+        crashlytics.deleteUnsentReports();
+        crashlytics.setCrashlyticsCollectionEnabled(false);
+      }
 
       SharedProviders.accountProvider = DefaultAccountProvider();
 
       SharedProviders.firebaseCategoriesProvider = FirebaseCategoriesProvider(
-        firestore: FirebaseFirestore.instance,
+        firestore: firestore,
       );
 
       SharedProviders.firebaseWalletsProvider = FirebaseWalletsProvider(
         accountProvider: SharedProviders.accountProvider,
-        firestore: FirebaseFirestore.instance,
+        firestore: firestore,
         categoriesProvider: SharedProviders.firebaseCategoriesProvider,
       );
 
@@ -74,7 +82,7 @@ void main() async {
       SharedProviders.firebaseTransactionsProvider =
           FirebaseTransactionsProvider(
         walletsProvider: SharedProviders.firebaseWalletsProvider,
-        firestore: FirebaseFirestore.instance,
+        firestore: firestore,
       );
 
       SharedProviders.spreadsheetTransactionsProvider =
@@ -111,13 +119,13 @@ void main() async {
       SharedProviders.privateLoansProvider = FirebasePrivateLoansProvider(
         accountProvider: SharedProviders.accountProvider,
         usersProvider: SharedProviders.usersProvider,
-        firestore: FirebaseFirestore.instance,
+        firestore: firestore,
       );
 
       SharedProviders.remoteUserPreferences =
           FirebaseRemoteUserPreferencesProvider(
         accountProvider: SharedProviders.accountProvider,
-        firestore: FirebaseFirestore.instance,
+        firestore: firestore,
       );
 
       runApp(MyApp());
@@ -125,7 +133,7 @@ void main() async {
     (error, stackTrace) {
       print("Error: $error");
       print("Stack trace: $stackTrace");
-      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      crashlytics.recordError(error, stackTrace, fatal: true);
     },
   );
 }
