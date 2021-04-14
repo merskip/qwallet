@@ -141,9 +141,9 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
   Future<int> addTransaction({
     required String spreadsheetId,
     required DateTime date,
-    required GoogleSpreadsheetTransactionType type,
+    required GoogleSpreadsheetTransactionType? type,
     required double amount,
-    required String categorySymbol,
+    required String? categorySymbol,
     required bool isForeignCapital,
     required String? shop,
     required String? description,
@@ -154,9 +154,9 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       ..values = [
         [
           format.format(date),
-          type.toText(),
+          type?.toText() ?? "",
           amount,
-          categorySymbol,
+          categorySymbol ?? "",
           isForeignCapital ? "Kapitał obcy" : "",
           shop ?? "",
           description ?? "",

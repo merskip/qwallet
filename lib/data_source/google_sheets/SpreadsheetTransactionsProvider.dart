@@ -158,9 +158,13 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     final insertedRow = await repository.addTransaction(
       spreadsheetId: walletId.id,
       date: date,
-      type: GoogleSpreadsheetTransactionType.current,
+      type: type == TransactionType.expense
+          ? GoogleSpreadsheetTransactionType.current
+          : null,
       amount: type == TransactionType.expense ? -amount : amount,
-      categorySymbol: category?.symbol ?? wallet.categories.first.symbol,
+      categorySymbol: type == TransactionType.expense
+          ? (category?.symbol ?? wallet.categories.first.symbol)
+          : null,
       isForeignCapital: false,
       shop: null,
       description: title,
