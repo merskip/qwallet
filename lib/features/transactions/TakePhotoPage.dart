@@ -66,7 +66,7 @@ class _TakePhotoPageState extends State<TakePhotoPage>
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
     await controller.initialize();
-    controller.setFlashMode(FlashMode.off);
+    // controller.setFlashMode(FlashMode.off);
     setState(() {
       isInitialized = true;
     });
@@ -102,6 +102,7 @@ class _TakePhotoPageState extends State<TakePhotoPage>
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       backgroundColor: Colors.black,
       body: !isInitialized ? buildLoading(context) : buildCamera(context),
