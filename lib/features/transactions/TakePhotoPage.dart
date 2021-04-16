@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/utils.dart';
+
+import 'PhotoEditorPage.dart';
 
 class TakePhotoPage extends StatefulWidget {
   @override
@@ -61,6 +66,7 @@ class _TakePhotoPageState extends State<TakePhotoPage>
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
     await controller.initialize();
+    controller.setFlashMode(FlashMode.off);
     setState(() {
       isInitialized = true;
     });
@@ -79,6 +85,16 @@ class _TakePhotoPageState extends State<TakePhotoPage>
     } else {
       setCamera(cameras[0]);
     }
+  }
+
+  void onSelectedTakePhoto(BuildContext context) async {
+    final photo = await controller.takePicture();
+    pushPage(
+      context,
+      builder: (context) => PhotoEditorPage(
+        imageFile: File(photo.path),
+      ),
+    );
   }
 
   @override
@@ -111,10 +127,15 @@ class _TakePhotoPageState extends State<TakePhotoPage>
   }
 
   Widget buildCameraPreview(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 3 / 4,
-      child: CameraPreview(
-        controller,
+    return Expanded(
+      child: SizedBox(
+        width: double.infinity,
+        child: AspectRatio(
+          aspectRatio: 1 / controller.value.aspectRatio,
+          child: CameraPreview(
+            controller,
+          ),
+        ),
       ),
     );
   }
@@ -131,7 +152,7 @@ class _TakePhotoPageState extends State<TakePhotoPage>
             icon: Icon(Icons.camera),
             color: Colors.white,
             iconSize: 48,
-            onPressed: () {},
+            onPressed: () => onSelectedTakePhoto(context),
           ),
           Spacer(),
           IconButton(
