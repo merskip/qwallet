@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class PhotoEditorPage extends StatefulWidget {
   final File imageFile;
@@ -18,6 +19,9 @@ class PhotoEditorPage extends StatefulWidget {
 
 class _PhotoEditorPageState extends State<PhotoEditorPage> {
   ui.Image? image;
+
+  var selectedTab = _Tab.cropping;
+
   double rotation = 0;
   late CropState cropState;
 
@@ -52,62 +56,135 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       ),
       backgroundColor: Colors.black,
       body: image != null
-          ? buildImage(context, image!)
+          ? buildBodyWithImage(context, image!)
           : Center(child: CircularProgressIndicator()),
     );
   }
 
-  Widget buildImage(BuildContext context, ui.Image image) {
+  Widget buildBodyWithImage(BuildContext context, ui.Image image) {
     return Column(
       children: [
         Flexible(
-          child: FittedBox(
-            child: SizedBox(
-              width: image.width.toDouble(),
-              height: image.height.toDouble(),
-              child: GestureDetector(
-                onPanStart: (details) => setState(() {
-                  cropState = cropState.panStart(details, dragRadius: 36);
-                }),
-                onPanUpdate: (details) => setState(() {
-                  cropState = cropState.panUpdate(details, minSize: 96);
-                }),
-                onPanEnd: (details) => setState(() {
-                  cropState = cropState.panEnd();
-                }),
-                child: CustomPaint(
-                  painter: _ImagePainter(
-                    image: image,
-                    rotate: rotation,
-                  ),
-                  foregroundPainter: _CropPainter(
-                    cropState: cropState,
-                    dotRadius: 12,
-                    normalColor: Colors.white,
-                    selectedColor: Theme.of(context).accentColor,
-                  ),
-                ),
-              ),
+          child: buildImagePreview(context, image),
+        ),
+        buildToolbar(context),
+      ],
+    );
+  }
+
+  Widget buildImagePreview(BuildContext context, ui.Image image) {
+    return FittedBox(
+      child: SizedBox(
+        width: image.width.toDouble(),
+        height: image.height.toDouble(),
+        child: GestureDetector(
+          onPanStart: (details) => setState(() {
+            cropState = cropState.panStart(details, dragRadius: 36);
+          }),
+          onPanUpdate: (details) => setState(() {
+            cropState = cropState.panUpdate(details, minSize: 96);
+          }),
+          onPanEnd: (details) => setState(() {
+            cropState = cropState.panEnd();
+          }),
+          child: CustomPaint(
+            painter: _ImagePainter(
+              image: image,
+              rotate: rotation,
+            ),
+            foregroundPainter: _CropPainter(
+              cropState: cropState,
+              dotRadius: 12,
+              normalColor: Colors.white,
+              selectedColor: Theme.of(context).accentColor,
             ),
           ),
         ),
-        SizedBox(height: 24),
-        SizedBox(
-          height: 48,
-          child: Slider(
-            value: rotation,
-            min: -pi / 2,
-            max: pi / 2,
-            label: "$rotation rad",
-            onChanged: (value) => setState(() {
-              this.rotation = value;
-            }),
+      ),
+    );
+  }
+
+  Widget buildToolbar(BuildContext context) {
+    return Column(
+      children: [
+        if (selectedTab == _Tab.cropping) buildCroppingTab(context),
+        Container(
+          height: 64,
+          color: Colors.white10,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(width: 16),
+              buildToolbarIconButton(
+                context,
+                Icon(Icons.crop_rotate),
+                _Tab.cropping,
+              ),
+              SizedBox(width: 16),
+              buildToolbarIconButton(
+                context,
+                Icon(Icons.palette_outlined),
+                _Tab.coloring,
+              ),
+              Spacer(),
+              IconButton(
+                icon: Icon(Icons.done),
+                color: Colors.white,
+                onPressed: () {},
+              ),
+              SizedBox(width: 16),
+            ],
           ),
         ),
       ],
     );
   }
+
+  Widget buildToolbarIconButton(
+    BuildContext context,
+    Widget icon,
+    _Tab tab,
+  ) {
+    final isSelected = tab == selectedTab;
+    return IconButton(
+      icon: icon,
+      iconSize: 28,
+      color: isSelected
+          ? Theme.of(context).primaryColor
+          : Theme.of(context).buttonColor,
+      onPressed: () => setState(() {
+        selectedTab = tab;
+      }),
+    );
+  }
+
+  Widget buildCroppingTab(BuildContext context) {
+    return Row(children: [
+      IconButton(
+        icon: FaIcon(FontAwesomeIcons.undo, size: 16),
+        color: Colors.white,
+        onPressed: () {},
+      ),
+      Flexible(
+        child: Slider(
+          value: rotation,
+          min: -pi / 2,
+          max: pi / 2,
+          onChanged: (value) => setState(() {
+            this.rotation = value;
+          }),
+        ),
+      ),
+      IconButton(
+        icon: Icon(Icons.rotate_left),
+        color: Colors.white,
+        onPressed: () {},
+      ),
+    ]);
+  }
 }
+
+enum _Tab { cropping, coloring }
 
 class _ImagePainter extends CustomPainter {
   final ui.Image image;

@@ -60,6 +60,7 @@ dependencies:
   googleapis: ^2.0.0
   googleapis_auth: ^1.1.0
   share: ^2.0.1
+  font_awesome_flutter: ^9.0.0
 
 dev_dependencies:
   flutter_test:
