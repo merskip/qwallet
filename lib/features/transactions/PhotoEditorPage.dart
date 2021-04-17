@@ -53,7 +53,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       backgroundColor: Colors.black,
       body: image != null
           ? buildImage(context, image!)
-          : CircularProgressIndicator(),
+          : Center(child: CircularProgressIndicator()),
     );
   }
 
@@ -67,10 +67,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
               height: image.height.toDouble(),
               child: GestureDetector(
                 onPanStart: (details) => setState(() {
-                  cropState = cropState.panStart(details);
+                  cropState = cropState.panStart(details, dragRadius: 36);
                 }),
                 onPanUpdate: (details) => setState(() {
-                  cropState = cropState.panUpdate(details);
+                  cropState = cropState.panUpdate(details, minSize: 96);
                 }),
                 onPanEnd: (details) => setState(() {
                   cropState = cropState.panEnd();
@@ -82,6 +82,9 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                   ),
                   foregroundPainter: _CropPainter(
                     cropState: cropState,
+                    dotRadius: 12,
+                    normalColor: Colors.white,
+                    selectedColor: Theme.of(context).accentColor,
                   ),
                 ),
               ),
@@ -138,39 +141,89 @@ class _ImagePainter extends CustomPainter {
 
 class _CropPainter extends CustomPainter {
   final CropState cropState;
+  final double dotRadius;
+  final Color normalColor;
+  final Color selectedColor;
 
   _CropPainter({
     required this.cropState,
+    required this.dotRadius,
+    required this.normalColor,
+    required this.selectedColor,
   });
 
   @override
   void paint(Canvas canvas, ui.Size size) {
-    final crop = cropState.crop;
-
-    final dimmingPaint = Paint()..color = Colors.black54;
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, crop.top), dimmingPaint);
+    canvas.saveLayer(cropState.imageRect, Paint());
     canvas.drawRect(
-        Rect.fromLTWH(0, crop.bottom, size.width, size.height - crop.bottom),
-        dimmingPaint);
+      cropState.imageRect,
+      Paint()..color = Colors.black54,
+    );
     canvas.drawRect(
-        Rect.fromLTWH(0, crop.top, crop.left, crop.height), dimmingPaint);
-    canvas.drawRect(
-        Rect.fromLTWH(
-            crop.right, crop.top, size.width - crop.right, crop.height),
-        dimmingPaint);
+      cropState.crop,
+      Paint()..blendMode = BlendMode.clear,
+    );
+    canvas.restore();
 
-    final rectCropPaint = Paint()
-      ..strokeWidth = 4
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke;
-    canvas.drawRect(crop, rectCropPaint);
+    if (cropState.isDraggingOffset) {
+      canvas.drawRect(
+        cropState.crop,
+        Paint()..color = selectedColor.withOpacity(0.12),
+      );
+    }
 
-    final cropDotPaint = Paint()..color = Colors.white;
-    canvas.drawCircle(crop.topLeft, 12, cropDotPaint);
-    canvas.drawCircle(crop.topRight, 12, cropDotPaint);
-    canvas.drawCircle(crop.bottomRight, 12, cropDotPaint);
-    canvas.drawCircle(crop.bottomLeft, 12, cropDotPaint);
+    canvas.drawLine(
+      cropState.crop.bottomLeft,
+      cropState.crop.topLeft,
+      getEdgePaint(isSelected: cropState.isDraggingLeft),
+    );
+
+    canvas.drawLine(
+      cropState.crop.topLeft,
+      cropState.crop.topRight,
+      getEdgePaint(isSelected: cropState.isDraggingTop),
+    );
+
+    canvas.drawLine(
+      cropState.crop.topRight,
+      cropState.crop.bottomRight,
+      getEdgePaint(isSelected: cropState.isDraggingRight),
+    );
+
+    canvas.drawLine(
+      cropState.crop.bottomRight,
+      cropState.crop.bottomLeft,
+      getEdgePaint(isSelected: cropState.isDraggingBottom),
+    );
+
+    canvas.drawCircle(
+      cropState.crop.topLeft,
+      dotRadius,
+      getDotPaint(isSelected: cropState.isDraggingTopLeft),
+    );
+    canvas.drawCircle(
+      cropState.crop.topRight,
+      dotRadius,
+      getDotPaint(isSelected: cropState.isDraggingTopRight),
+    );
+    canvas.drawCircle(
+      cropState.crop.bottomRight,
+      dotRadius,
+      getDotPaint(isSelected: cropState.isDraggingBottomRight),
+    );
+    canvas.drawCircle(
+      cropState.crop.bottomLeft,
+      dotRadius,
+      getDotPaint(isSelected: cropState.isDraggingBottomLeft),
+    );
   }
+
+  Paint getEdgePaint({required bool isSelected}) => Paint()
+    ..strokeWidth = 4
+    ..color = isSelected ? selectedColor : normalColor;
+
+  Paint getDotPaint({required bool isSelected}) =>
+      Paint()..color = isSelected ? selectedColor : normalColor;
 
   @override
   bool shouldRepaint(covariant _CropPainter oldDelegate) {
@@ -189,7 +242,13 @@ class CropState {
   final bool isDraggingBottom;
   final bool isDraggingOffset;
 
-  final dragRadius = 36.0;
+  bool get isDraggingTopLeft => isDraggingTop && isDraggingLeft;
+
+  bool get isDraggingTopRight => isDraggingTop && isDraggingRight;
+
+  bool get isDraggingBottomRight => isDraggingBottom && isDraggingRight;
+
+  bool get isDraggingBottomLeft => isDraggingBottom && isDraggingLeft;
 
   CropState(Rect imageRect)
       : crop = imageRect,
@@ -212,7 +271,7 @@ class CropState {
     this.isDraggingOffset,
   );
 
-  CropState panStart(DragStartDetails details) {
+  CropState panStart(DragStartDetails details, {required double dragRadius}) {
     final dx = details.localPosition.dx;
     final dy = details.localPosition.dy;
     final isDraggingLeft = (dx - crop.left).abs() < dragRadius;
@@ -240,25 +299,47 @@ class CropState {
     );
   }
 
-  CropState panUpdate(DragUpdateDetails details) {
-    var crop = this.draggingCrop;
+  CropState panUpdate(DragUpdateDetails details, {required double minSize}) {
+    var draggingCrop = this.draggingCrop;
     if (isDraggingLeft)
-      crop = Rect.fromLTRB(
-          crop.left + details.delta.dx, crop.top, crop.right, crop.bottom);
+      draggingCrop = draggingCrop.copyLTRB(
+        left: draggingCrop.left + details.delta.dx,
+      );
     if (isDraggingTop)
-      crop = Rect.fromLTRB(
-          crop.left, crop.top + details.delta.dy, crop.right, crop.bottom);
+      draggingCrop = draggingCrop.copyLTRB(
+        top: draggingCrop.top + details.delta.dy,
+      );
     if (isDraggingRight)
-      crop = Rect.fromLTRB(
-          crop.left, crop.top, crop.right + details.delta.dx, crop.bottom);
+      draggingCrop = draggingCrop.copyLTRB(
+        right: draggingCrop.right + details.delta.dx,
+      );
     if (isDraggingBottom)
-      crop = Rect.fromLTRB(
-          crop.left, crop.top, crop.right, crop.bottom + details.delta.dy);
-    if (isDraggingOffset) crop = crop.shift(details.delta);
+      draggingCrop = draggingCrop.copyLTRB(
+        bottom: draggingCrop.bottom + details.delta.dy,
+      );
+    if (isDraggingOffset) draggingCrop = draggingCrop.shift(details.delta);
+
+    var effectiveCrop = imageRect.intersect(draggingCrop);
+    if (isDraggingLeft)
+      effectiveCrop = effectiveCrop.copyLTRB(
+        left: min(effectiveCrop.left, effectiveCrop.right - minSize),
+      );
+    if (isDraggingTop)
+      effectiveCrop = effectiveCrop.copyLTRB(
+        top: min(effectiveCrop.top, effectiveCrop.bottom - minSize),
+      );
+    if (isDraggingRight)
+      effectiveCrop = effectiveCrop.copyLTRB(
+        right: max(effectiveCrop.right, effectiveCrop.left + minSize),
+      );
+    if (isDraggingBottom)
+      effectiveCrop = effectiveCrop.copyLTRB(
+        bottom: max(effectiveCrop.bottom, effectiveCrop.top + minSize),
+      );
 
     return _copy(
-      draggingCrop: crop,
-      crop: imageRect.intersect(crop),
+      draggingCrop: draggingCrop,
+      crop: effectiveCrop,
     );
   }
 
@@ -290,5 +371,20 @@ class CropState {
         isDraggingRight ?? this.isDraggingRight,
         isDraggingBottom ?? this.isDraggingBottom,
         isDraggingOffset ?? this.isDraggingOffset,
+      );
+}
+
+extension RectCoping on Rect {
+  Rect copyLTRB({
+    double? left,
+    double? top,
+    double? right,
+    double? bottom,
+  }) =>
+      Rect.fromLTRB(
+        left ?? this.left,
+        top ?? this.top,
+        right ?? this.right,
+        bottom ?? this.bottom,
       );
 }
