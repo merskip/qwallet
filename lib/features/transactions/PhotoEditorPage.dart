@@ -47,6 +47,13 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     });
   }
 
+  void onSelectedCroppingReset(BuildContext context) {
+    setState(() {
+      rotation = 0.0;
+      cropState = cropState.reset();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,7 +170,8 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       IconButton(
         icon: FaIcon(FontAwesomeIcons.undo, size: 16),
         color: Colors.white,
-        onPressed: () {},
+        onPressed: () => onSelectedCroppingReset(context),
+        tooltip: "#Reset cropping",
       ),
       Flexible(
         child: Slider(
@@ -347,6 +355,16 @@ class CropState {
     this.isDraggingBottom,
     this.isDraggingOffset,
   );
+
+  CropState reset() => _copy(
+        crop: imageRect,
+        draggingCrop: imageRect,
+        isDraggingLeft: false,
+        isDraggingTop: false,
+        isDraggingRight: false,
+        isDraggingBottom: false,
+        isDraggingOffset: false,
+      );
 
   CropState panStart(DragStartDetails details, {required double dragRadius}) {
     final dx = details.localPosition.dx;
