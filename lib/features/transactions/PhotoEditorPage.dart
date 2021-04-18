@@ -22,8 +22,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
 
   var selectedTab = _Tab.cropping;
 
-  double rotation = 0;
-  late CropState cropState;
+  late CroppingState croppingState;
 
   @override
   void initState() {
@@ -42,15 +41,20 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
           image.width.toDouble(),
           image.height.toDouble(),
         );
-        cropState = CropState(imageRect);
+        croppingState = CroppingState(imageRect);
       });
     });
   }
 
   void onSelectedCroppingReset(BuildContext context) {
     setState(() {
-      rotation = 0.0;
-      cropState = cropState.reset();
+      croppingState = croppingState.reset();
+    });
+  }
+
+  void onSelectedRotateLeft(BuildContext context) {
+    setState(() {
+      croppingState = croppingState.rotateLeft();
     });
   }
 
@@ -86,21 +90,21 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
         height: image.height.toDouble(),
         child: GestureDetector(
           onPanStart: (details) => setState(() {
-            cropState = cropState.panStart(details, dragRadius: 36);
+            croppingState = croppingState.panStart(details, dragRadius: 36);
           }),
           onPanUpdate: (details) => setState(() {
-            cropState = cropState.panUpdate(details, minSize: 96);
+            croppingState = croppingState.panUpdate(details, minSize: 96);
           }),
           onPanEnd: (details) => setState(() {
-            cropState = cropState.panEnd();
+            croppingState = croppingState.panEnd();
           }),
           child: CustomPaint(
             painter: _ImagePainter(
               image: image,
-              rotate: rotation,
+              rotate: croppingState.effectiveRotation,
             ),
             foregroundPainter: _CropPainter(
-              cropState: cropState,
+              cropState: croppingState,
               dotRadius: 12,
               normalColor: Colors.white,
               selectedColor: Theme.of(context).accentColor,
@@ -175,18 +179,19 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       ),
       Flexible(
         child: Slider(
-          value: rotation,
+          value: croppingState.rotation,
           min: -pi / 2,
           max: pi / 2,
           onChanged: (value) => setState(() {
-            this.rotation = value;
+            croppingState = croppingState.setRotation(value);
           }),
         ),
       ),
       IconButton(
         icon: Icon(Icons.rotate_left),
         color: Colors.white,
-        onPressed: () {},
+        onPressed: () => onSelectedRotateLeft(context),
+        tooltip: "#Rotate left",
       ),
     ]);
   }
@@ -225,7 +230,7 @@ class _ImagePainter extends CustomPainter {
 }
 
 class _CropPainter extends CustomPainter {
-  final CropState cropState;
+  final CroppingState cropState;
   final double dotRadius;
   final Color normalColor;
   final Color selectedColor;
@@ -316,16 +321,20 @@ class _CropPainter extends CustomPainter {
   }
 }
 
-class CropState {
+class CroppingState {
   final Rect crop;
   final Rect draggingCrop;
   final Rect imageRect;
+  final double baseRotation;
+  final double rotation;
 
   final bool isDraggingLeft;
   final bool isDraggingTop;
   final bool isDraggingRight;
   final bool isDraggingBottom;
   final bool isDraggingOffset;
+
+  double get effectiveRotation => baseRotation + rotation;
 
   bool get isDraggingTopLeft => isDraggingTop && isDraggingLeft;
 
@@ -335,20 +344,24 @@ class CropState {
 
   bool get isDraggingBottomLeft => isDraggingBottom && isDraggingLeft;
 
-  CropState(Rect imageRect)
+  CroppingState(Rect imageRect)
       : crop = imageRect,
         draggingCrop = imageRect,
         imageRect = imageRect,
+        baseRotation = 0.0,
+        rotation = 0.0,
         isDraggingLeft = false,
         isDraggingTop = false,
         isDraggingRight = false,
         isDraggingBottom = false,
         isDraggingOffset = false;
 
-  CropState._(
+  CroppingState._(
     this.crop,
     this.draggingCrop,
     this.imageRect,
+    this.baseRotation,
+    this.rotation,
     this.isDraggingLeft,
     this.isDraggingTop,
     this.isDraggingRight,
@@ -356,17 +369,19 @@ class CropState {
     this.isDraggingOffset,
   );
 
-  CropState reset() => _copy(
-        crop: imageRect,
-        draggingCrop: imageRect,
-        isDraggingLeft: false,
-        isDraggingTop: false,
-        isDraggingRight: false,
-        isDraggingBottom: false,
-        isDraggingOffset: false,
+  CroppingState reset() => CroppingState(imageRect);
+
+  CroppingState rotateLeft() => _copy(
+        baseRotation: baseRotation - pi / 2,
+        rotation: 0.0,
       );
 
-  CropState panStart(DragStartDetails details, {required double dragRadius}) {
+  CroppingState setRotation(double rotation) => _copy(
+        rotation: rotation,
+      );
+
+  CroppingState panStart(DragStartDetails details,
+      {required double dragRadius}) {
     final dx = details.localPosition.dx;
     final dy = details.localPosition.dy;
     final isDraggingLeft = (dx - crop.left).abs() < dragRadius;
@@ -394,7 +409,8 @@ class CropState {
     );
   }
 
-  CropState panUpdate(DragUpdateDetails details, {required double minSize}) {
+  CroppingState panUpdate(DragUpdateDetails details,
+      {required double minSize}) {
     var draggingCrop = this.draggingCrop;
     if (isDraggingLeft)
       draggingCrop = draggingCrop.copyLTRB(
@@ -438,7 +454,7 @@ class CropState {
     );
   }
 
-  CropState panEnd() => _copy(
+  CroppingState panEnd() => _copy(
         draggingCrop: crop,
         isDraggingLeft: false,
         isDraggingTop: false,
@@ -447,20 +463,24 @@ class CropState {
         isDraggingOffset: false,
       );
 
-  CropState _copy({
+  CroppingState _copy({
     Rect? crop,
     Rect? draggingCrop,
     Rect? imageRect,
+    double? baseRotation,
+    double? rotation,
     bool? isDraggingLeft,
     bool? isDraggingTop,
     bool? isDraggingRight,
     bool? isDraggingBottom,
     bool? isDraggingOffset,
   }) =>
-      CropState._(
+      CroppingState._(
         crop ?? this.crop,
         draggingCrop ?? this.draggingCrop,
         imageRect ?? this.imageRect,
+        baseRotation ?? this.baseRotation,
+        rotation ?? this.rotation,
         isDraggingLeft ?? this.isDraggingLeft,
         isDraggingTop ?? this.isDraggingTop,
         isDraggingRight ?? this.isDraggingRight,
