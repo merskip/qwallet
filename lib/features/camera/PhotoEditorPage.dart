@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:qwallet/features/camera/ImageColoringEditor.dart';
 
 import 'ImageCroppingEditor.dart';
 
@@ -23,6 +24,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
   var selectedTab = _Tab.cropping;
 
   late ValueNotifier<CroppingState> croppingState;
+  late ValueNotifier<ColoringState> coloringState;
 
   @override
   void initState() {
@@ -42,6 +44,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
           image.height.toDouble(),
         );
         croppingState = ValueNotifier(CroppingState(imageRect));
+        coloringState = ValueNotifier(ColoringState());
       });
     });
   }
@@ -77,11 +80,15 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       case _Tab.cropping:
         imageEditor = ImageCroppingPreview(
           image: image,
-          croppingState: croppingState,
+          state: croppingState,
         );
         break;
       case _Tab.coloring:
-        imageEditor = buildImageColoring(context, image);
+        imageEditor = ImageColoringPreview(
+          image: image,
+          state: coloringState,
+          croppingState: croppingState.value,
+        );
         break;
     }
     return FittedBox(
@@ -93,27 +100,12 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     );
   }
 
-  Widget buildImageColoring(BuildContext context, ui.Image image) {
-    return FittedBox(
-      child: SizedBox(
-        width: image.width.toDouble(),
-        height: image.height.toDouble(),
-        child: CustomPaint(
-          painter: _ImageColoringPainter(
-            image: image,
-            croppingState: croppingState.value,
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget buildToolbar(BuildContext context) {
     return Column(
       children: [
         if (selectedTab == _Tab.cropping)
           ImageCroppingToolbar(
-            croppingState: croppingState,
+            state: croppingState,
           ),
         Container(
           height: 64,
@@ -169,35 +161,4 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
 enum _Tab {
   cropping,
   coloring,
-}
-
-class _ImageColoringPainter extends CustomPainter {
-  final ui.Image image;
-  final CroppingState croppingState;
-
-  _ImageColoringPainter({
-    required this.image,
-    required this.croppingState,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.clipRect(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-    );
-
-    canvas.save();
-    canvas.clipRect(croppingState.crop);
-    canvas.translate(size.width / 2, size.height / 2);
-    canvas.rotate(croppingState.effectiveRotation);
-    canvas.translate(-size.width / 2, -size.height / 2);
-
-    canvas.drawImage(image, Offset.zero, Paint());
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant _ImageColoringPainter oldDelegate) {
-    return true;
-  }
 }

@@ -6,36 +6,34 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ImageCroppingPreview extends StatelessWidget {
   final ui.Image image;
-  final ValueNotifier<CroppingState> croppingState;
+  final ValueNotifier<CroppingState> state;
 
   const ImageCroppingPreview({
     Key? key,
     required this.image,
-    required this.croppingState,
+    required this.state,
   }) : super(key: key);
 
   Widget build(BuildContext context) {
     return GestureDetector(
       onPanStart: (details) {
-        croppingState.value =
-            croppingState.value.panStart(details, dragRadius: 36);
+        state.value = state.value.panStart(details, dragRadius: 36);
       },
       onPanUpdate: (details) {
-        croppingState.value =
-            croppingState.value.panUpdate(details, minSize: 96);
+        state.value = state.value.panUpdate(details, minSize: 96);
       },
       onPanEnd: (details) {
-        croppingState.value = croppingState.value.panEnd();
+        state.value = state.value.panEnd();
       },
       child: ValueListenableBuilder<CroppingState>(
-        valueListenable: croppingState,
+        valueListenable: state,
         builder: (context, croppingState, child) {
           return CustomPaint(
-            painter: ImageCroppingPainter(
+            painter: _ImageCroppingPainter(
               image: image,
               rotate: croppingState.effectiveRotation,
             ),
-            foregroundPainter: CropPainter(
+            foregroundPainter: _CropPainter(
               cropState: croppingState,
               dotRadius: 12,
               normalColor: Colors.white,
@@ -49,29 +47,29 @@ class ImageCroppingPreview extends StatelessWidget {
 }
 
 class ImageCroppingToolbar extends StatelessWidget {
-  final ValueNotifier<CroppingState> croppingState;
+  final ValueNotifier<CroppingState> state;
 
   const ImageCroppingToolbar({
     Key? key,
-    required this.croppingState,
+    required this.state,
   }) : super(key: key);
 
   void onSelectedCroppingReset(BuildContext context) {
-    croppingState.value = croppingState.value.reset();
+    state.value = state.value.reset();
   }
 
   void onChangedRotation(BuildContext context, double rotation) {
-    croppingState.value = croppingState.value.setRotation(rotation);
+    state.value = state.value.setRotation(rotation);
   }
 
   void onSelectedRotateLeft(BuildContext context) {
-    croppingState.value = croppingState.value.rotateLeft();
+    state.value = state.value.rotateLeft();
   }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<CroppingState>(
-      valueListenable: croppingState,
+      valueListenable: state,
       builder: (context, croppingState, child) {
         return Row(children: [
           IconButton(
@@ -100,11 +98,11 @@ class ImageCroppingToolbar extends StatelessWidget {
   }
 }
 
-class ImageCroppingPainter extends CustomPainter {
+class _ImageCroppingPainter extends CustomPainter {
   final ui.Image image;
   final double rotate;
 
-  ImageCroppingPainter({
+  _ImageCroppingPainter({
     required this.image,
     required this.rotate,
   });
@@ -125,18 +123,18 @@ class ImageCroppingPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant ImageCroppingPainter oldDelegate) {
+  bool shouldRepaint(covariant _ImageCroppingPainter oldDelegate) {
     return image != oldDelegate.image || rotate != oldDelegate.rotate;
   }
 }
 
-class CropPainter extends CustomPainter {
+class _CropPainter extends CustomPainter {
   final CroppingState cropState;
   final double dotRadius;
   final Color normalColor;
   final Color selectedColor;
 
-  CropPainter({
+  _CropPainter({
     required this.cropState,
     required this.dotRadius,
     required this.normalColor,
@@ -217,7 +215,7 @@ class CropPainter extends CustomPainter {
       Paint()..color = isSelected ? selectedColor : normalColor;
 
   @override
-  bool shouldRepaint(covariant CropPainter oldDelegate) {
+  bool shouldRepaint(covariant _CropPainter oldDelegate) {
     return cropState != oldDelegate.cropState;
   }
 }
