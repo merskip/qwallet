@@ -19,7 +19,7 @@ import 'package:qwallet/widget/VectorImage.dart';
 import '../../AppLocalizations.dart';
 import '../../router.dart';
 import '../../utils.dart';
-import 'TakePhotoPage.dart';
+import '../camera/TakePhotoPage.dart';
 
 final _formKey = GlobalKey<_AddTransactionFormState>();
 
