@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:qwallet/features/camera/ImageColoringEditor.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import 'ImageCroppingEditor.dart';
 
@@ -19,7 +21,7 @@ class PhotoEditorPage extends StatefulWidget {
 }
 
 class _PhotoEditorPageState extends State<PhotoEditorPage> {
-  ui.Image? image;
+  ui.Image? originalImage;
 
   var selectedTab = _Tab.cropping;
 
@@ -36,7 +38,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     final bytes = await widget.imageFile.readAsBytes();
     ui.decodeImageFromList(bytes, (image) {
       setState(() {
-        this.image = image;
+        this.originalImage = image;
         final imageRect = Rect.fromLTWH(
           0.0,
           0.0,
@@ -49,6 +51,33 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     });
   }
 
+  Future<ui.Image> apply(
+    ui.Image originalImage, {
+    CroppingState? croppingState,
+    ColoringState? coloringState,
+  }) async {
+    var size = Size(
+      originalImage.width.toDouble(),
+      originalImage.height.toDouble(),
+    );
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+
+    if (croppingState != null) {
+      canvas.clipRect(Offset.zero & croppingState.crop.size);
+      canvas.translate(-croppingState.crop.left, -croppingState.crop.top);
+
+      canvas.translate(size.width / 2, size.height / 2);
+      canvas.rotate(croppingState.rotation);
+      canvas.translate(-size.width / 2, -size.height / 2);
+      size = croppingState.crop.size;
+    }
+    canvas.drawImage(originalImage, Offset.zero, Paint());
+
+    final picture = recorder.endRecording();
+    return await picture.toImage(size.width.toInt(), size.height.toInt());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,8 +86,8 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
         elevation: 0,
       ),
       backgroundColor: Colors.black,
-      body: image != null
-          ? buildBodyWithImage(context, image!)
+      body: originalImage != null
+          ? buildBodyWithImage(context, originalImage!)
           : Center(child: CircularProgressIndicator()),
     );
   }
@@ -67,37 +96,45 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     return Column(
       children: [
         Flexible(
-          child: buildImage(context, image),
+          fit: FlexFit.tight,
+          child: FittedBox(
+            child: buildImage(context, image),
+          ),
         ),
         buildToolbar(context),
       ],
     );
   }
 
-  Widget buildImage(BuildContext context, ui.Image image) {
-    final Widget imageEditor;
+  Widget buildImage(BuildContext context, ui.Image originalImage) {
     switch (selectedTab) {
       case _Tab.cropping:
-        imageEditor = ImageCroppingPreview(
-          image: image,
-          state: croppingState,
+        return SizedBox(
+          width: originalImage.width.toDouble(),
+          height: originalImage.height.toDouble(),
+          child: ImageCroppingPreview(
+            image: originalImage,
+            state: croppingState,
+          ),
         );
         break;
       case _Tab.coloring:
-        imageEditor = ImageColoringPreview(
-          image: image,
-          state: coloringState,
-          croppingState: croppingState.value,
+        return SimpleStreamWidget(
+          stream: apply(originalImage, croppingState: croppingState.value)
+              .asStream(),
+          builder: (BuildContext context, ui.Image image) {
+            return SizedBox(
+              width: image.width.toDouble(),
+              height: image.height.toDouble(),
+              child: ImageColoringPreview(
+                image: image,
+                state: coloringState,
+              ),
+            );
+          },
         );
         break;
     }
-    return FittedBox(
-      child: SizedBox(
-        width: image.width.toDouble(),
-        height: image.height.toDouble(),
-        child: imageEditor,
-      ),
-    );
   }
 
   Widget buildToolbar(BuildContext context) {
