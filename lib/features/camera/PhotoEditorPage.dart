@@ -144,6 +144,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
           ImageCroppingToolbar(
             state: croppingState,
           ),
+        if (selectedTab == _Tab.coloring)
+          ImageColoringToolbar(
+            state: coloringState,
+          ),
         Container(
           height: 64,
           color: Colors.white10,
