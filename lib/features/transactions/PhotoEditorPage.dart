@@ -76,14 +76,23 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     return Column(
       children: [
         Flexible(
-          child: buildImagePreview(context, image),
+          child: buildImage(context, image),
         ),
         buildToolbar(context),
       ],
     );
   }
 
-  Widget buildImagePreview(BuildContext context, ui.Image image) {
+  Widget buildImage(BuildContext context, ui.Image image) {
+    switch (selectedTab) {
+      case _Tab.cropping:
+        return buildImageCropping(context, image);
+      case _Tab.coloring:
+        return buildImageColoring(context, image);
+    }
+  }
+
+  Widget buildImageCropping(BuildContext context, ui.Image image) {
     return FittedBox(
       child: SizedBox(
         width: image.width.toDouble(),
@@ -99,7 +108,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
             croppingState = croppingState.panEnd();
           }),
           child: CustomPaint(
-            painter: _ImagePainter(
+            painter: _ImageCroppingPainter(
               image: image,
               rotate: croppingState.effectiveRotation,
             ),
@@ -109,6 +118,21 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
               normalColor: Colors.white,
               selectedColor: Theme.of(context).accentColor,
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildImageColoring(BuildContext context, ui.Image image) {
+    return FittedBox(
+      child: SizedBox(
+        width: image.width.toDouble(),
+        height: image.height.toDouble(),
+        child: CustomPaint(
+          painter: _ImageColoringPainter(
+            image: image,
+            croppingState: croppingState,
           ),
         ),
       ),
@@ -197,13 +221,16 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
   }
 }
 
-enum _Tab { cropping, coloring }
+enum _Tab {
+  cropping,
+  coloring,
+}
 
-class _ImagePainter extends CustomPainter {
+class _ImageCroppingPainter extends CustomPainter {
   final ui.Image image;
   final double rotate;
 
-  _ImagePainter({
+  _ImageCroppingPainter({
     required this.image,
     required this.rotate,
   });
@@ -224,8 +251,39 @@ class _ImagePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _ImagePainter oldDelegate) {
+  bool shouldRepaint(covariant _ImageCroppingPainter oldDelegate) {
     return image != oldDelegate.image || rotate != oldDelegate.rotate;
+  }
+}
+
+class _ImageColoringPainter extends CustomPainter {
+  final ui.Image image;
+  final CroppingState croppingState;
+
+  _ImageColoringPainter({
+    required this.image,
+    required this.croppingState,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.clipRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+    );
+
+    canvas.save();
+    canvas.clipRect(croppingState.crop);
+    canvas.translate(size.width / 2, size.height / 2);
+    canvas.rotate(croppingState.effectiveRotation);
+    canvas.translate(-size.width / 2, -size.height / 2);
+
+    canvas.drawImage(image, Offset.zero, Paint());
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _ImageCroppingPainter oldDelegate) {
+    return true;
   }
 }
 
