@@ -3,39 +3,60 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qwallet/features/camera/MutableImage.dart';
-import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
-class ImageColoringPreview extends StatelessWidget {
-  final ui.Image image;
+class ImageColoringPreview extends StatefulWidget {
+  final ui.Image originalImage;
   final ValueNotifier<ColoringState> state;
 
   const ImageColoringPreview({
     Key? key,
-    required this.image,
+    required this.originalImage,
     required this.state,
   }) : super(key: key);
 
   @override
+  _ImageColoringPreviewState createState() => _ImageColoringPreviewState();
+}
+
+class _ImageColoringPreviewState extends State<ImageColoringPreview> {
+  late ui.Image image;
+
+  var _isProcessing = false;
+
+  @override
+  void initState() {
+    image = widget.originalImage;
+    widget.state.addListener(_onChangedState);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.state.removeListener(_onChangedState);
+    super.dispose();
+  }
+
+  void _onChangedState() async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+    final mutableImage = await MutableImage.fromImage(widget.originalImage);
+    mutableImage.brightness((widget.state.value.brightness * 255).round());
+    mutableImage.contrast((widget.state.value.contrast * 255).round());
+
+    final image = await mutableImage.toImage();
+
+    setState(() {
+      this.image = image;
+    });
+    _isProcessing = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ColoringState>(
-      valueListenable: state,
-      builder: (context, state, child) {
-        return SimpleStreamWidget(
-            stream: MutableImage.fromImage(image)
-                .then((image) => image.copy())
-                .then((image) {
-              image.brightness((state.brightness * 255).round());
-              image.contrast((state.contrast * 255).round());
-              return image.toImage();
-            }).asStream(),
-            builder: (context, ui.Image image) {
-              return CustomPaint(
-                painter: _ImageColoringPainter(
-                  image: image,
-                ),
-              );
-            });
-      },
+    return CustomPaint(
+      painter: _ImageColoringPainter(
+        image: image,
+      ),
     );
   }
 }

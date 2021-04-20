@@ -127,7 +127,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
               width: image.width.toDouble(),
               height: image.height.toDouble(),
               child: ImageColoringPreview(
-                image: image,
+                originalImage: image,
                 state: coloringState,
               ),
             );
