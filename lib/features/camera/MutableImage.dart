@@ -18,6 +18,16 @@ class MutableImage {
     return MutableImage(data!.buffer.asUint32List(), image.width, image.height);
   }
 
+  Future<MutableImage> copy() {
+    return Future.microtask(() {
+      return MutableImage(
+        Uint32List.fromList(_data),
+        _width,
+        _height,
+      );
+    });
+  }
+
   Future<Image> toImage() {
     final completer = Completer<Image>();
     decodeImageFromPixels(
@@ -70,12 +80,38 @@ class MutableImage {
     _data = dstData;
   }
 
+  void brightness(double brightness) {
+    assert(brightness >= -1.0 && brightness <= 1.0);
+    final delta = (brightness * 255).truncate();
+    mapEachPixel((x, y, pixel) {
+      return pixel
+          .withRed(min(max(pixel.red + delta, 0), 255))
+          .withGreen(min(max(pixel.green + delta, 0), 255))
+          .withBlue(min(max(pixel.blue + delta, 0), 255));
+    });
+  }
+
   Color getLinearPixel(double x, double y) {
     return Color(_data[_getOffset(x.toInt(), y.toInt())]);
   }
 
+  void mapEachPixel(Color Function(int x, int y, Color color) mapper) {
+    for (var y = 0; y < _height; ++y) {
+      for (var x = 0; x < _width; ++x) {
+        final pixel = getPixel(x, y);
+        final newPixel = mapper(x, y, pixel);
+        setPixel(x, y, newPixel);
+      }
+    }
+  }
+
   Color getPixel(int x, int y) {
-    return Color(_data[_getOffset(x, y)]);
+    final pixel = _data[_getOffset(x, y)];
+    final alpha = pixel >> 24 & 0x0ff;
+    final blue = pixel >> 16 & 0xff;
+    final green = pixel >> 8 & 0xff;
+    final red = pixel & 0xff;
+    return Color.fromARGB(alpha, red, green, blue);
   }
 
   void setPixel(int x, int y, Color color) {

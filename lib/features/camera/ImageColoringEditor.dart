@@ -2,8 +2,8 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import '../../utils/IterableFinding.dart';
+import 'package:qwallet/features/camera/MutableImage.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 class ImageColoringPreview extends StatelessWidget {
   final ui.Image image;
@@ -20,12 +20,20 @@ class ImageColoringPreview extends StatelessWidget {
     return ValueListenableBuilder<ColoringState>(
       valueListenable: state,
       builder: (context, state, child) {
-        return CustomPaint(
-          painter: _ImageColoringPainter(
-            image: image,
-            state: state,
-          ),
-        );
+        return SimpleStreamWidget(
+            stream: MutableImage.fromImage(image)
+                .then((image) => image.copy())
+                .then((image) {
+              image.brightness(state.brightness);
+              return image.toImage();
+            }).asStream(),
+            builder: (context, ui.Image image) {
+              return CustomPaint(
+                painter: _ImageColoringPainter(
+                  image: image,
+                ),
+              );
+            });
       },
     );
   }
@@ -62,8 +70,8 @@ class ImageColoringToolbar extends StatelessWidget {
           Flexible(
             child: Slider(
               value: croppingState.brightness,
-              min: -0.5,
-              max: 0.5,
+              min: -1.0,
+              max: 1.0,
               onChanged: (value) => onChangedBrightness(context, value),
             ),
           ),
@@ -75,29 +83,14 @@ class ImageColoringToolbar extends StatelessWidget {
 
 class _ImageColoringPainter extends CustomPainter {
   final ui.Image image;
-  final ColoringState state;
 
   _ImageColoringPainter({
     required this.image,
-    required this.state,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.clipRect(Offset.zero & size);
-
-    final b = state.brightness * 255;
-
-    final List<List<double>> matrix = [
-      /* R */ [1, 0, 0, 0, b],
-      /* G */ [0, 1, 0, 0, b],
-      /* B */ [0, 0, 1, 0, b],
-      /* A */ [0, 0, 0, 1, 0],
-    ];
-
-    final imagePaint = Paint()
-      ..colorFilter = ColorFilter.matrix(matrix.flatten().toList());
-    canvas.drawImage(image, Offset.zero, imagePaint);
+    canvas.drawImage(image, Offset.zero, Paint());
   }
 
   @override
