@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:qwallet/features/camera/ImageColoringEditor.dart';
+import 'package:qwallet/features/camera/MutableImage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import 'ImageCroppingEditor.dart';
@@ -56,26 +57,28 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     CroppingState? croppingState,
     ColoringState? coloringState,
   }) async {
-    var size = Size(
-      originalImage.width.toDouble(),
-      originalImage.height.toDouble(),
-    );
-    final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder);
-
-    if (croppingState != null) {
-      canvas.clipRect(Offset.zero & croppingState.crop.size);
-      canvas.translate(-croppingState.crop.left, -croppingState.crop.top);
-
-      canvas.translate(size.width / 2, size.height / 2);
-      canvas.rotate(croppingState.rotation);
-      canvas.translate(-size.width / 2, -size.height / 2);
-      size = croppingState.crop.size;
-    }
-    canvas.drawImage(originalImage, Offset.zero, Paint());
-
-    final picture = recorder.endRecording();
-    return await picture.toImage(size.width.toInt(), size.height.toInt());
+    final mutableImage = await MutableImage.fromImage(originalImage);
+    return await mutableImage.toImage();
+    // var size = Size(
+    //   originalImage.width.toDouble(),
+    //   originalImage.height.toDouble(),
+    // );
+    // final recorder = ui.PictureRecorder();
+    // final canvas = Canvas(recorder);
+    //
+    // if (croppingState != null) {
+    //   canvas.clipRect(Offset.zero & croppingState.crop.size);
+    //   canvas.translate(-croppingState.crop.left, -croppingState.crop.top);
+    //
+    //   canvas.translate(size.width / 2, size.height / 2);
+    //   canvas.rotate(croppingState.rotation);
+    //   canvas.translate(-size.width / 2, -size.height / 2);
+    //   size = croppingState.crop.size;
+    // }
+    // canvas.drawImage(originalImage, Offset.zero, Paint());
+    //
+    // final picture = recorder.endRecording();
+    // return await picture.toImage(size.width.toInt(), size.height.toInt());
   }
 
   @override
