@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -30,19 +31,47 @@ class MutableImage {
   }
 
   void crop(int x, int y, int width, int height) {
-    final dstData = Uint32List(_width * _height);
+    final dstData = Uint32List(width * height);
 
-    for (var srcY = 0, dstY = y; dstY < _height; ++srcY, ++dstY) {
-      for (var srcX = 0, dstX = x; dstX < _width; ++srcX, ++dstX) {
-        final dstOffset = dstY * _width + dstX;
-        final srcOffset = srcY * width + srcX;
-        final pixel = _data[dstOffset];
-        dstData[srcOffset] = pixel;
+    for (var srcY = y, dstY = 0; dstY < height; ++srcY, ++dstY) {
+      for (var srcX = x, dstX = 0; dstX < width; ++srcX, ++dstX) {
+        final srcOffset = srcY * _width + srcX;
+        final dstOffset = dstY * width + dstX;
+        dstData[dstOffset] = _data[srcOffset];
       }
     }
     _data = dstData;
     _width = width;
     _height = height;
+  }
+
+  void rotate(double radians) {
+    final dstData = Uint32List(_width * _height);
+    final centerX = _width / 2, centerY = _height / 2;
+
+    for (var dstY = 0; dstY < _height; ++dstY) {
+      for (var dstX = 0; dstX < _width; ++dstX) {
+        final srcX = (dstX - centerX) * cos(radians) -
+            (dstY - centerY) * sin(radians) +
+            centerX;
+        final srcY = (dstX - centerX) * sin(radians) +
+            (dstY - centerY) * cos(radians) +
+            centerY;
+
+        if (srcX > 0 && srcX < _width && srcY > 0 && srcY < _height) {
+          final srcOffset = srcY.round() * _width + srcX.round();
+          if (srcOffset > 0 && srcOffset < _data.length) {
+            final dstOffset = dstY * _width + dstX;
+            dstData[dstOffset] = _data[srcOffset];
+          }
+        }
+      }
+    }
+    _data = dstData;
+  }
+
+  Color getLinearPixel(double x, double y) {
+    return Color(_data[_getOffset(x.toInt(), y.toInt())]);
   }
 
   Color getPixel(int x, int y) {

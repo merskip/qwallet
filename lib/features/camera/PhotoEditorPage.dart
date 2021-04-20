@@ -73,20 +73,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
         croppingState.crop.width.toInt(),
         croppingState.crop.height.toInt(),
       );
+
+      mutableImage.rotate(croppingState.effectiveRotation);
     }
     return await mutableImage.toImage();
-    //   canvas.clipRect(Offset.zero & croppingState.crop.size);
-    //   canvas.translate(-croppingState.crop.left, -croppingState.crop.top);
-    //
-    //   canvas.translate(size.width / 2, size.height / 2);
-    //   canvas.rotate(croppingState.rotation);
-    //   canvas.translate(-size.width / 2, -size.height / 2);
-    //   size = croppingState.crop.size;
-    // }
-    // canvas.drawImage(originalImage, Offset.zero, Paint());
-    //
-    // final picture = recorder.endRecording();
-    // return await picture.toImage(size.width.toInt(), size.height.toInt());
   }
 
   @override
@@ -128,7 +118,6 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
             state: croppingState,
           ),
         );
-        break;
       case _Tab.coloring:
         return SimpleStreamWidget(
           stream: apply(originalImage, croppingState: croppingState.value)
@@ -144,7 +133,6 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
             );
           },
         );
-        break;
     }
   }
 

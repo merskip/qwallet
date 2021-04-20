@@ -115,7 +115,7 @@ class _ImageCroppingPainter extends CustomPainter {
 
     canvas.save();
     canvas.translate(size.width / 2, size.height / 2);
-    canvas.rotate(rotate);
+    canvas.rotate(-rotate);
     canvas.translate(-size.width / 2, -size.height / 2);
 
     canvas.drawImage(image, Offset.zero, Paint());
