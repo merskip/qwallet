@@ -24,7 +24,8 @@ class ImageColoringPreview extends StatelessWidget {
             stream: MutableImage.fromImage(image)
                 .then((image) => image.copy())
                 .then((image) {
-              image.brightness(state.brightness);
+              image.brightness((state.brightness * 255).round());
+              image.contrast((state.contrast * 255).round());
               return image.toImage();
             }).asStream(),
             builder: (context, ui.Image image) {
@@ -55,6 +56,10 @@ class ImageColoringToolbar extends StatelessWidget {
     state.value = state.value.setBrightness(value);
   }
 
+  void onChangedContrast(BuildContext context, double value) {
+    state.value = state.value.setContrast(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ColoringState>(
@@ -68,11 +73,21 @@ class ImageColoringToolbar extends StatelessWidget {
             tooltip: "#Reset coloring",
           ),
           Flexible(
-            child: Slider(
-              value: croppingState.brightness,
-              min: -1.0,
-              max: 1.0,
-              onChanged: (value) => onChangedBrightness(context, value),
+            child: Column(
+              children: [
+                Slider(
+                  value: croppingState.brightness,
+                  min: -1.0,
+                  max: 1.0,
+                  onChanged: (value) => onChangedBrightness(context, value),
+                ),
+                Slider(
+                  value: croppingState.contrast,
+                  min: -1.0,
+                  max: 1.0,
+                  onChanged: (value) => onChangedContrast(context, value),
+                ),
+              ],
             ),
           ),
         ]);
@@ -101,9 +116,11 @@ class _ImageColoringPainter extends CustomPainter {
 
 class ColoringState {
   final double brightness;
+  final double contrast;
 
   ColoringState({
     this.brightness = 0.0,
+    this.contrast = 0.0,
   });
 
   ColoringState reset() => ColoringState();
@@ -112,10 +129,16 @@ class ColoringState {
         brightness: brightness,
       );
 
+  ColoringState setContrast(double contrast) => _copy(
+        contrast: contrast,
+      );
+
   ColoringState _copy({
     double? brightness,
+    double? contrast,
   }) =>
       ColoringState(
         brightness: brightness ?? this.brightness,
+        contrast: contrast ?? this.contrast,
       );
 }

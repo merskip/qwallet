@@ -80,15 +80,25 @@ class MutableImage {
     _data = dstData;
   }
 
-  void brightness(double brightness) {
-    assert(brightness >= -1.0 && brightness <= 1.0);
-    final delta = (brightness * 255).truncate();
-    mapEachPixel((x, y, pixel) {
-      return pixel
-          .withRed(min(max(pixel.red + delta, 0), 255))
-          .withGreen(min(max(pixel.green + delta, 0), 255))
-          .withBlue(min(max(pixel.blue + delta, 0), 255));
-    });
+  void brightness(int brightness) {
+    mapEachPixel(
+      (x, y, pixel) => pixel.set(
+        red: pixel.red + brightness,
+        green: pixel.green + brightness,
+        blue: pixel.blue + brightness,
+      ),
+    );
+  }
+
+  void contrast(int contrast) {
+    final factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+    mapEachPixel(
+      (x, y, pixel) => pixel.set(
+        red: (factor * (pixel.red - 127) + 128).truncate(),
+        green: (factor * (pixel.green - 127) + 128).truncate(),
+        blue: (factor * (pixel.blue - 127) + 128).truncate(),
+      ),
+    );
   }
 
   Color getLinearPixel(double x, double y) {
@@ -120,4 +130,24 @@ class MutableImage {
   }
 
   int _getOffset(int x, int y) => y * _width + x;
+}
+
+extension ColorMutating on Color {
+  Color set({
+    required int red,
+    required int green,
+    required int blue,
+    int? alpha,
+  }) {
+    return Color.fromARGB(
+      _clamp(alpha ?? this.alpha),
+      _clamp(red),
+      _clamp(green),
+      _clamp(blue),
+    );
+  }
+
+  int _clamp(int value) {
+    return min(max(value, 0), 255);
+  }
 }
