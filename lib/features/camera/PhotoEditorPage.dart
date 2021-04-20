@@ -58,7 +58,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     ColoringState? coloringState,
   }) async {
     final mutableImage = await MutableImage.fromImage(originalImage);
-    return await mutableImage.toImage();
+
     // var size = Size(
     //   originalImage.width.toDouble(),
     //   originalImage.height.toDouble(),
@@ -66,7 +66,15 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     // final recorder = ui.PictureRecorder();
     // final canvas = Canvas(recorder);
     //
-    // if (croppingState != null) {
+    if (croppingState != null) {
+      mutableImage.crop(
+        croppingState.crop.left.toInt(),
+        croppingState.crop.top.toInt(),
+        croppingState.crop.width.toInt(),
+        croppingState.crop.height.toInt(),
+      );
+    }
+    return await mutableImage.toImage();
     //   canvas.clipRect(Offset.zero & croppingState.crop.size);
     //   canvas.translate(-croppingState.crop.left, -croppingState.crop.top);
     //
