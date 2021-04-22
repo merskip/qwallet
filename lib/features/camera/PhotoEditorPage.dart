@@ -59,13 +59,6 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
   }) async {
     final mutableImage = await MutableImage.fromImage(originalImage);
 
-    // var size = Size(
-    //   originalImage.width.toDouble(),
-    //   originalImage.height.toDouble(),
-    // );
-    // final recorder = ui.PictureRecorder();
-    // final canvas = Canvas(recorder);
-    //
     if (croppingState != null) {
       mutableImage.crop(
         croppingState.crop.left.toInt(),

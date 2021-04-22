@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
@@ -12,6 +13,16 @@ class MutableImage {
       : _data = data,
         _width = width,
         _height = height;
+
+  static Future<MutableImage> fromFile(File file) async {
+    final bytes = await file.readAsBytes();
+    final completer = Completer<Image>();
+    decodeImageFromList(bytes, (image) {
+      completer.complete(image);
+    });
+    final image = await completer.future;
+    return MutableImage.fromImage(image);
+  }
 
   static Future<MutableImage> fromImage(Image image) async {
     final data = await image.toByteData();
