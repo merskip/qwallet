@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'dart:math';
 
-import 'package:camera/camera.dart';
+import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:flutter/material.dart';
-import 'package:qwallet/utils.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
+import '../../utils.dart';
 import 'PhotoEditorPage.dart';
 
 class TakePhotoPage extends StatefulWidget {
@@ -11,90 +14,47 @@ class TakePhotoPage extends StatefulWidget {
   _TakePhotoPageState createState() => _TakePhotoPageState();
 }
 
-class _TakePhotoPageState extends State<TakePhotoPage>
-    with WidgetsBindingObserver {
-  late CameraController controller;
-  late final List<CameraDescription> cameras;
-  var isInitialized = false;
+class _TakePhotoPageState extends State<TakePhotoPage> {
+  final _pictureController = PictureController();
+  final _switchFlash = ValueNotifier(CameraFlashes.NONE);
+  final _sensor = ValueNotifier(Sensors.BACK);
+  final _captureMode = ValueNotifier(CaptureModes.PHOTO);
+  final _photoSize = ValueNotifier(Size.zero);
 
-  @override
-  void initState() {
-    super.initState();
-    _setupCamera();
+  void onSelectedSwitchCamera(BuildContext context) {
+    _sensor.value =
+        _sensor.value == Sensors.BACK ? Sensors.FRONT : Sensors.BACK;
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    final cameraController = controller;
+  void onSelectedTakePhoto(BuildContext context) async {
+    final photoFile = await getNewPhotoFile();
+    await _pictureController.takePicture(photoFile.path);
 
-    // App state changed before we got the chance to initialize.
-    if (!cameraController.value.isInitialized) {
-      return;
-    }
-
-    if (state == AppLifecycleState.inactive) {
-      cameraController.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      print(cameraController.description);
-    }
-  }
-
-  void _setupCamera() async {
-    cameras = await availableCameras();
-    final defaultCamera = getDefaultCamera();
-    setCamera(defaultCamera);
-  }
-
-  CameraDescription getDefaultCamera() {
-    return cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.back,
-      orElse: () => cameras.first,
+    pushPage(
+      context,
+      builder: (context) => PhotoEditorPage(
+        imageFile: photoFile,
+      ),
     );
   }
 
-  void setCamera(CameraDescription camera) async {
-    if (isInitialized) {
-      controller.dispose();
-      // NOTE: Fixing crash on Android
-      await Future.delayed(Duration(milliseconds: 1));
-    }
-
-    controller = CameraController(
-      camera,
-      ResolutionPreset.high,
-      enableAudio: false,
-      imageFormatGroup: ImageFormatGroup.jpeg,
+  Future<File> getNewPhotoFile() async {
+    final picturesDirectories = await getExternalStorageDirectories(
+      type: StorageDirectory.pictures,
     );
-    await controller.initialize();
-    // controller.setFlashMode(FlashMode.off);
-    setState(() {
-      isInitialized = true;
-    });
+    final directory =
+        picturesDirectories?.first ?? await getApplicationDocumentsDirectory();
+    final fileName = Uuid().v1();
+    return File(directory.path + "/$fileName.jpg");
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _switchFlash.dispose();
+    _sensor.dispose();
+    _captureMode.dispose();
+    _photoSize.dispose();
     super.dispose();
-  }
-
-  void onSelectedSwitchCamera(BuildContext context) {
-    final currentCameraIndex = cameras.indexOf(controller.description);
-    if (currentCameraIndex + 1 < cameras.length) {
-      setCamera(cameras[currentCameraIndex + 1]);
-    } else {
-      setCamera(cameras[0]);
-    }
-  }
-
-  void onSelectedTakePhoto(BuildContext context) async {
-    final photo = await controller.takePicture();
-    pushPage(
-      context,
-      builder: (context) => PhotoEditorPage(
-        imageFile: File(photo.path),
-      ),
-    );
   }
 
   @override
@@ -105,7 +65,7 @@ class _TakePhotoPageState extends State<TakePhotoPage>
         elevation: 0,
       ),
       backgroundColor: Colors.black,
-      body: !isInitialized ? buildLoading(context) : buildCamera(context),
+      body: buildCamera(context),
     );
   }
 
@@ -129,23 +89,67 @@ class _TakePhotoPageState extends State<TakePhotoPage>
 
   Widget buildCameraPreview(BuildContext context) {
     return Expanded(
-      child: SizedBox(
-        width: double.infinity,
-        child: AspectRatio(
-          aspectRatio: 1 / controller.value.aspectRatio,
-          child: CameraPreview(
-            controller,
-          ),
+      child: ClipRect(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return CameraAwesome(
+              onPermissionsResult: (hasPermissions) {
+                print("hasPermissions: $hasPermissions");
+              },
+              selectDefaultSize: (List<Size> availableSizes) {
+                final targetSize = constraints.biggest *
+                    MediaQuery.of(context).devicePixelRatio;
+                print("Target size: $targetSize");
+                Size bestSize = availableSizes.first;
+                for (final size in availableSizes) {
+                  if (getDifference(targetSize, size) <
+                      getDifference(targetSize, bestSize)) {
+                    bestSize = size;
+                  }
+                  print(
+                      "Size: $size, aspect ratio: ${getHumanReadableAspectRatio(size.aspectRatio)}");
+                }
+                print("Best size: $bestSize");
+
+                return targetSize;
+              },
+              captureMode: _captureMode,
+              sensor: _sensor,
+              switchFlashMode: _switchFlash,
+              photoSize: _photoSize,
+            );
+          },
         ),
       ),
     );
+  }
+
+  num getDifference(Size targetSize, Size size) {
+    return pow(targetSize.width - size.width, 2) +
+        pow(targetSize.height - size.height, 2);
+  }
+
+  String getHumanReadableAspectRatio(double ratio) {
+    if (ratio == 10 / 16) return "10:16";
+    if (ratio == 9 / 16)
+      return "9:16";
+    else if (ratio == 3 / 4)
+      return "3:4";
+    else {
+      for (var w = 1; w < 50; w++) {
+        for (var h = 1; h < 50; h++) {
+          if (ratio == w / h) return "$w:$h";
+          if (ratio == h / w) return "$h:$w";
+        }
+      }
+      return ratio.toStringAsFixed(1) + " (?)";
+    }
   }
 
   Widget buildToolbar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
-        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(width: 36 + 2 * 8),
           Spacer(),

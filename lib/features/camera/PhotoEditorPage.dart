@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:qwallet/features/camera/ImageColoringEditor.dart';
-import 'package:qwallet/features/camera/MutableImage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import 'ImageCroppingEditor.dart';
@@ -57,19 +56,20 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     CroppingState? croppingState,
     ColoringState? coloringState,
   }) async {
-    final mutableImage = await MutableImage.fromImage(originalImage);
-
-    if (croppingState != null) {
-      mutableImage.crop(
-        croppingState.crop.left.toInt(),
-        croppingState.crop.top.toInt(),
-        croppingState.crop.width.toInt(),
-        croppingState.crop.height.toInt(),
-      );
-
-      mutableImage.rotate(croppingState.effectiveRotation);
-    }
-    return await mutableImage.toImage();
+    return Future.error("TODO");
+    // final mutableImage = await MutableImage.fromImage(originalImage);
+    //
+    // if (croppingState != null) {
+    //   mutableImage.crop(
+    //     croppingState.crop.left.toInt(),
+    //     croppingState.crop.top.toInt(),
+    //     croppingState.crop.width.toInt(),
+    //     croppingState.crop.height.toInt(),
+    //   );
+    //
+    //   mutableImage.rotate(croppingState.effectiveRotation);
+    // }
+    // return await mutableImage.toImage();
   }
 
   @override
@@ -78,6 +78,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: [
+          if (originalImage != null)
+            Text("${originalImage!.width}x${originalImage!.height}"),
+        ],
       ),
       backgroundColor: Colors.black,
       body: originalImage != null
