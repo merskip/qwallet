@@ -150,29 +150,31 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
         Container(
           height: 64,
           color: Colors.white10,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(width: 16),
-              buildToolbarIconButton(
-                context,
-                Icon(Icons.crop_rotate),
-                _Tab.cropping,
-              ),
-              SizedBox(width: 16),
-              buildToolbarIconButton(
-                context,
-                Icon(Icons.palette_outlined),
-                _Tab.coloring,
-              ),
-              Spacer(),
-              IconButton(
-                icon: Icon(Icons.done),
-                color: Colors.white,
-                onPressed: () {},
-              ),
-              SizedBox(width: 16),
-            ],
+          child: SafeArea(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(width: 16),
+                buildToolbarIconButton(
+                  context,
+                  Icon(Icons.crop_rotate),
+                  _Tab.cropping,
+                ),
+                SizedBox(width: 16),
+                buildToolbarIconButton(
+                  context,
+                  Icon(Icons.palette_outlined),
+                  _Tab.coloring,
+                ),
+                Spacer(),
+                IconButton(
+                  icon: Icon(Icons.done),
+                  color: Colors.white,
+                  onPressed: () {},
+                ),
+                SizedBox(width: 16),
+              ],
+            ),
           ),
         ),
       ],
