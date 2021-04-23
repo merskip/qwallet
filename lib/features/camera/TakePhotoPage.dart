@@ -37,12 +37,13 @@ class _TakePhotoPageState extends State<TakePhotoPage> {
     final photoFile = await getNewPhotoFile();
     await _pictureController.takePicture(photoFile.path);
 
-    pushPage(
+    final result = await pushPage(
       context,
       builder: (context) => PhotoEditorPage(
         imageFile: photoFile,
       ),
     );
+    Navigator.of(context).pop(result);
   }
 
   Future<File> getNewPhotoFile() async {

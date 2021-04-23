@@ -71,7 +71,26 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
         croppingState.crop.height.toInt(),
       );
     }
+    if (coloringState != null) {
+      mutableImage =
+          mutableImage.brightness((coloringState.brightness * 255).round());
+      mutableImage =
+          mutableImage.contrast((coloringState.contrast * 255).round());
+    }
+
     return await mutableImage.toImage();
+  }
+
+  void onSelectedDone(BuildContext context) async {
+    final image = await apply(
+      originalImage!,
+      croppingState: croppingState.value,
+      coloringState: coloringState.value,
+    );
+    final mutableImage = await MutableImage.fromImage(image);
+    await mutableImage.saveToFile(widget.imageFile);
+
+    Navigator.of(context).pop(widget.imageFile);
   }
 
   @override
@@ -165,7 +184,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                 IconButton(
                   icon: Icon(Icons.done),
                   color: Colors.white,
-                  onPressed: () {},
+                  onPressed: () => onSelectedDone(context),
                 ),
                 SizedBox(width: 16),
               ],
