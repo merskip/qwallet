@@ -31,4 +31,12 @@ class FirebaseFileStorageProvider {
         ));
     return fileReference.fullPath;
   }
+
+  Future<List<Uri>> getDownloadsUrls(List<String> paths) async {
+    final urlsFutures = paths
+        .map((path) => FirebaseStorage.instance.ref(path))
+        .map((ref) => ref.getDownloadURL());
+    final urls = await Future.wait(urlsFutures);
+    return urls.map((url) => Uri.parse(url)).toList();
+  }
 }

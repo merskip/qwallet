@@ -305,9 +305,10 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   Widget buildAttachedImages(BuildContext context) {
     return ImagesCarousel(
-      images: images,
+      images: images.map((i) => Uri.file(i.path)).toList(),
       onAddImage: () => onSelectedAddImage(context),
-      onDeleteImage: (context, image) => onSelectedRemoveImage(context, image),
+      onDeleteImage: (context, image) =>
+          onSelectedRemoveImage(context, File(image.path)),
     );
   }
 

@@ -5,13 +5,16 @@ import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/data_source/firebase/FirebaseFileStorageProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseTransaction.dart';
+import 'package:qwallet/features/transactions/ImagesCarousel.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/EnterMoneyDialog.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 import '../../AppLocalizations.dart';
@@ -176,6 +179,8 @@ class _TransactionPageState extends State<TransactionPage> {
       body: ListView(
         children: [
           buildWallet(context, widget.wallet),
+          if (widget.transaction is FirebaseTransaction)
+            buildImages(context, widget.transaction as FirebaseTransaction),
           buildCategory(context),
           buildType(context),
           buildTitle(context),
@@ -197,6 +202,23 @@ class _TransactionPageState extends State<TransactionPage> {
           title: Text(AppLocalizations.of(context).transactionDetailsWallet),
           value: Text(wallet.name + " (${wallet.balance.formatted})"),
         ),
+      ),
+    );
+  }
+
+  Widget buildImages(
+      BuildContext context, FirebaseTransaction firebaseTransaction) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: SimpleStreamWidget(
+        stream: FirebaseFileStorageProvider()
+            .getDownloadsUrls(firebaseTransaction.attachedFiles)
+            .asStream(),
+        builder: (context, List<Uri> images) {
+          return ImagesCarousel(
+            images: images,
+          );
+        },
       ),
     );
   }
