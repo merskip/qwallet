@@ -18,6 +18,7 @@ class FirebaseTransaction extends FirebaseModel<FirebaseTransaction>
   final DateTime date;
   final FirebaseCategory? category;
   final bool excludedFromDailyStatistics;
+  final List<String> attachedFiles;
 
   FirebaseTransaction(
       CloudFirestore.DocumentSnapshot snapshot, FirebaseWallet wallet)
@@ -29,6 +30,7 @@ class FirebaseTransaction extends FirebaseModel<FirebaseTransaction>
         category = wallet.getCategory(snapshot.getReference("category")),
         excludedFromDailyStatistics =
             snapshot.getBool("excludedFromDailyStatistics") ?? false,
+        attachedFiles = snapshot.getList<String>("attachedFiles") ?? [],
         super(snapshot);
 
   String getTypeLocalizedText(BuildContext context) =>

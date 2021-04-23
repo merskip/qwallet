@@ -182,7 +182,8 @@ class _TransactionPageState extends State<TransactionPage> {
           buildAmount(context, widget.wallet),
           buildDate(context),
           if (widget.transaction is FirebaseTransaction)
-            buildExcludedFromDailyStatistics(context),
+            buildExcludedFromDailyStatistics(
+                context, widget.transaction as FirebaseTransaction),
         ],
       ),
     );
@@ -329,7 +330,10 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  Widget buildExcludedFromDailyStatistics(BuildContext context) {
+  Widget buildExcludedFromDailyStatistics(
+    BuildContext context,
+    FirebaseTransaction firebaseTransaction,
+  ) {
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context)
           .transactionDetailsExcludedFromDailyStatistics),

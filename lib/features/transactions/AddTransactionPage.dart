@@ -8,6 +8,7 @@ import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/data_source/firebase/FirebaseFileStorageProvider.dart';
 import 'package:qwallet/features/transactions/ImagesCarousel.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
@@ -155,7 +156,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         final date = await showDatePicker(
           context: context,
           initialDate: this.date,
-          firstDate: DateTime(2000),
+          firstDate: DateTime(1900),
           lastDate: DateTime(2100),
         );
         if (date != null) {
@@ -219,7 +220,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      SharedProviders.transactionsProvider.addTransaction(
+      final transactionId =
+          await SharedProviders.transactionsProvider.addTransaction(
         walletId: wallet.identifier,
         type: type,
         category: category,
@@ -227,6 +229,18 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         amount: amountController.value!.amount,
         date: date,
       );
+      final uploadedFilesFutures = images.map(
+        (image) => FirebaseFileStorageProvider()
+            .upload(wallet.identifier, transactionId, image),
+      );
+      final uploadedFiles = await Future.wait(uploadedFilesFutures);
+      await SharedProviders.firebaseTransactionsProvider
+          .updateTransactionAttachedFiles(
+        walletId: wallet.identifier,
+        transaction: transactionId,
+        attachedFiles: uploadedFiles,
+      );
+
       router.pop(context);
     }
   }

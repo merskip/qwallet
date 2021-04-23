@@ -190,6 +190,22 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     });
   }
 
+  Future<void> updateTransactionAttachedFiles({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transaction,
+    required List<String> attachedFiles,
+  }) {
+    assert(walletId.domain == "firebase");
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("transactions")
+        .doc(transaction.id)
+        .update({
+      "attachedFiles": attachedFiles,
+    });
+  }
+
   Stream<List<Transaction>> _getTransactionsInDateTimeRange({
     required FirebaseWallet wallet,
     required DateTimeRange dateRange,

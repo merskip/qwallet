@@ -60,6 +60,7 @@ dependencies:
   share: ^2.0.1
   font_awesome_flutter: ^9.0.0
   image: ^3.0.2
+  mime: ^1.0.0
 
 dev_dependencies:
   flutter_test:
