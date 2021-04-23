@@ -78,10 +78,6 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          if (originalImage != null)
-            Text("${originalImage!.width}x${originalImage!.height}"),
-        ],
       ),
       backgroundColor: Colors.black,
       body: originalImage != null
