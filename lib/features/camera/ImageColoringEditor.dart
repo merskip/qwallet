@@ -37,19 +37,21 @@ class _ImageColoringPreviewState extends State<ImageColoringPreview> {
     super.dispose();
   }
 
-  void _onChangedState() async {
+  void _onChangedState() {
     if (_isProcessing) return;
     _isProcessing = true;
-    final mutableImage = await MutableImage.fromImage(widget.originalImage);
-    mutableImage.brightness((widget.state.value.brightness * 255).round());
-    mutableImage.contrast((widget.state.value.contrast * 255).round());
 
-    final image = await mutableImage.toImage();
+    Future(() async {
+      final mutableImage = await MutableImage.fromImage(widget.originalImage);
+      mutableImage.brightness((widget.state.value.brightness * 255).round());
+      mutableImage.contrast((widget.state.value.contrast * 255).round());
 
-    setState(() {
-      this.image = image;
+      final image = await mutableImage.toImage();
+      setState(() {
+        this.image = image;
+      });
+      _isProcessing = false;
     });
-    _isProcessing = false;
   }
 
   @override
