@@ -42,9 +42,11 @@ class _ImageColoringPreviewState extends State<ImageColoringPreview> {
     _isProcessing = true;
 
     Future(() async {
-      final mutableImage = await MutableImage.fromImage(widget.originalImage);
-      mutableImage.brightness((widget.state.value.brightness * 255).round());
-      mutableImage.contrast((widget.state.value.contrast * 255).round());
+      var mutableImage = await MutableImage.fromImage(widget.originalImage);
+      mutableImage = mutableImage
+          .brightness((widget.state.value.brightness * 255).round());
+      mutableImage =
+          mutableImage.contrast((widget.state.value.contrast * 255).round());
 
       final image = await mutableImage.toImage();
       setState(() {

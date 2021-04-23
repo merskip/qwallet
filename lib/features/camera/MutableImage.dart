@@ -27,12 +27,11 @@ class MutableImage {
   static Future<MutableImage> fromImage(ui.Image uiImage) async {
     final data = await uiImage.toByteData(format: ui.ImageByteFormat.rawRgba);
     if (data == null) return Future.error("Failed convert image to byte data");
-    final image = Image.Image.fromBytes(
+    return Image.Image.fromBytes(
       uiImage.width,
       uiImage.height,
       data.buffer.asUint8List(),
-    );
-    return MutableImage(image);
+    ).toMutableImage();
   }
 
   Future<ui.Image> toImage() async {
@@ -49,8 +48,7 @@ class MutableImage {
   }
 
   MutableImage crop(int x, int y, int width, int height) {
-    final image = Image.copyCrop(_image, x, y, width, height);
-    return MutableImage(image);
+    return Image.copyCrop(_image, x, y, width, height).toMutableImage();
   }
 
   MutableImage rotate(double angle, {bool keepSize = false}) {
@@ -64,16 +62,16 @@ class MutableImage {
         height,
       );
     }
-    return MutableImage(image);
+    return image.toMutableImage();
   }
 
   MutableImage resize(int width, int height) {
-    final image = Image.copyResize(_image, width: width, height: height);
-    return MutableImage(image);
+    return Image.copyResize(_image, width: width, height: height)
+        .toMutableImage();
   }
 
-  void brightness(int brightness) {
-    mapEachPixel(
+  MutableImage brightness(int brightness) {
+    return mapEachPixel(
       (x, y, pixel) => pixel.set(
         red: pixel.red + brightness,
         green: pixel.green + brightness,
@@ -82,9 +80,9 @@ class MutableImage {
     );
   }
 
-  void contrast(int contrast) {
+  MutableImage contrast(int contrast) {
     final factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-    mapEachPixel(
+    return mapEachPixel(
       (x, y, pixel) => pixel.set(
         red: (factor * (pixel.red - 127) + 128).truncate(),
         green: (factor * (pixel.green - 127) + 128).truncate(),
@@ -93,14 +91,17 @@ class MutableImage {
     );
   }
 
-  void mapEachPixel(ui.Color Function(int x, int y, ui.Color color) mapper) {
+  MutableImage mapEachPixel(
+      ui.Color Function(int x, int y, ui.Color color) mapper) {
+    final image = Image.Image.from(_image);
     for (var y = 0; y < height; ++y) {
       for (var x = 0; x < width; ++x) {
-        final pixel = ui.Color(_image.getPixel(x, y));
+        final pixel = ui.Color(image.getPixel(x, y));
         final newPixel = mapper(x, y, pixel);
-        _image.setPixel(x, y, newPixel.value);
+        image.setPixel(x, y, newPixel.value);
       }
     }
+    return image.toMutableImage();
   }
 }
 
@@ -122,4 +123,8 @@ extension ColorMutating on ui.Color {
   int _clamp(int value) {
     return min(max(value, 0), 255);
   }
+}
+
+extension ImageConverting on Image.Image {
+  MutableImage toMutableImage() => MutableImage(this);
 }
