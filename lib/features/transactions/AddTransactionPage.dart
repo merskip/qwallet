@@ -210,7 +210,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     }
   }
 
-  void onSelectedRemoveImage(BuildContext context, File image) {
+  void onSelectedRemoveImage(BuildContext context, File image) async {
+    await image.delete();
     setState(() {
       images.remove(image);
     });
