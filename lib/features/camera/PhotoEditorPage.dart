@@ -7,6 +7,7 @@ import 'package:qwallet/features/camera/ImageColoringEditor.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import 'ImageCroppingEditor.dart';
+import 'MutableImage.dart';
 
 class PhotoEditorPage extends StatefulWidget {
   final File imageFile;
@@ -56,20 +57,21 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     CroppingState? croppingState,
     ColoringState? coloringState,
   }) async {
-    return Future.error("TODO");
-    // final mutableImage = await MutableImage.fromImage(originalImage);
-    //
-    // if (croppingState != null) {
-    //   mutableImage.crop(
-    //     croppingState.crop.left.toInt(),
-    //     croppingState.crop.top.toInt(),
-    //     croppingState.crop.width.toInt(),
-    //     croppingState.crop.height.toInt(),
-    //   );
-    //
-    //   mutableImage.rotate(croppingState.effectiveRotation);
-    // }
-    // return await mutableImage.toImage();
+    var mutableImage = await MutableImage.fromImage(originalImage);
+
+    if (croppingState != null) {
+      mutableImage = mutableImage.rotate(
+        croppingState.effectiveRotation,
+        keepSize: true,
+      );
+      mutableImage = mutableImage.crop(
+        croppingState.crop.left.toInt(),
+        croppingState.crop.top.toInt(),
+        croppingState.crop.width.toInt(),
+        croppingState.crop.height.toInt(),
+      );
+    }
+    return await mutableImage.toImage();
   }
 
   @override

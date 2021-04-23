@@ -6,9 +6,10 @@ import 'dart:ui' as ui;
 import 'package:image/image.dart' as Image;
 
 class MutableImage {
-  Image.Image _image;
+  final Image.Image _image;
 
   int get width => _image.width;
+
   int get height => _image.height;
 
   MutableImage(Image.Image image) : _image = image;
@@ -17,22 +18,29 @@ class MutableImage {
     final bytes = await file.readAsBytes();
     final image = Image.decodeImage(bytes);
     if (image != null) {
-      print("Image size: ${image.width}x${image.height}");
       return MutableImage(image);
     } else {
       return Future.error("Failed decode image");
     }
   }
 
-  Future<MutableImage> copy() async {
-    return this;
-    // return Future.microtask(() {
-    //   return MutableImage(
-    //     Uint32List.fromList(_data),
-    //     _width,
-    //     _height,
-    //   );
-    // });
+  static Future<MutableImage> fromImage(ui.Image uiImage) async {
+    final data = await uiImage.toByteData(format: ui.ImageByteFormat.rawRgba);
+    if (data == null) return Future.error("Failed convert image to byte data");
+    final image = Image.Image.fromBytes(
+      uiImage.width,
+      uiImage.height,
+      data.buffer.asUint8List(),
+    );
+    return MutableImage(image);
+  }
+
+  Future<ui.Image> toImage() async {
+    final bytes = _image.getBytes();
+    final completer = Completer<ui.Image>();
+    ui.decodeImageFromPixels(
+        bytes, width, height, ui.PixelFormat.rgba8888, completer.complete);
+    return completer.future;
   }
 
   Future<void> saveToFile(File file) async {
@@ -40,62 +48,28 @@ class MutableImage {
     await file.writeAsBytes(bytes, flush: true);
   }
 
-  void crop(int x, int y, int width, int height) {
-    // final dstData = Uint32List(width * height);
-    //
-    // for (var srcY = y, dstY = 0; dstY < height; ++srcY, ++dstY) {
-    //   for (var srcX = x, dstX = 0; dstX < width; ++srcX, ++dstX) {
-    //     final srcOffset = srcY * _width + srcX;
-    //     final dstOffset = dstY * width + dstX;
-    //     dstData[dstOffset] = _data[srcOffset];
-    //   }
-    // }
-    // _data = dstData;
-    // _width = width;
-    // _height = height;
+  MutableImage crop(int x, int y, int width, int height) {
+    final image = Image.copyCrop(_image, x, y, width, height);
+    return MutableImage(image);
   }
 
-  void rotate(double radians) {
-    // final dstData = Uint32List(_width * _height);
-    // final centerX = _width / 2, centerY = _height / 2;
-    //
-    // for (var dstY = 0; dstY < _height; ++dstY) {
-    //   for (var dstX = 0; dstX < _width; ++dstX) {
-    //     final srcX = (dstX - centerX) * cos(radians) -
-    //         (dstY - centerY) * sin(radians) +
-    //         centerX;
-    //     final srcY = (dstX - centerX) * sin(radians) +
-    //         (dstY - centerY) * cos(radians) +
-    //         centerY;
-    //
-    //     if (srcX > 0 && srcX < _width && srcY > 0 && srcY < _height) {
-    //       final srcOffset = srcY.round() * _width + srcX.round();
-    //       if (srcOffset > 0 && srcOffset < _data.length) {
-    //         final dstOffset = dstY * _width + dstX;
-    //         dstData[dstOffset] = _data[srcOffset];
-    //       }
-    //     }
-    //   }
-    // }
-    // _data = dstData;
+  MutableImage rotate(double angle, {bool keepSize = false}) {
+    var image = Image.copyRotate(_image, -angle * 180 / pi);
+    if (keepSize) {
+      image = Image.copyCrop(
+        image,
+        (image.width - _image.width) ~/ 2,
+        (image.height - _image.height) ~/ 2,
+        width,
+        height,
+      );
+    }
+    return MutableImage(image);
   }
 
-  void resize(int width, int height) {
-    // final dstData = Uint32List(width * height);
-    // final xRadio = width / _width, yRadio = height / _height;
-    //
-    // for (var dstY = 0; dstY < _height; ++dstY) {
-    //   for (var dstX = 0; dstX < _width; ++dstX) {
-    //     final srcX = (dstX * xRadio).round();
-    //     final srcY = (dstY * yRadio).round();
-    //     final dstOffset = dstY * width + dstX;
-    //     final srcOffset = srcY * _width + srcX;
-    //     dstData[dstOffset] = _data[srcOffset];
-    //   }
-    // }
-    // _data = dstData;
-
-    _image = Image.copyResize(_image, width: width, height: height);
+  MutableImage resize(int width, int height) {
+    final image = Image.copyResize(_image, width: width, height: height);
+    return MutableImage(image);
   }
 
   void brightness(int brightness) {
@@ -119,37 +93,15 @@ class MutableImage {
     );
   }
 
-  // Color getPixelUsingNearestNeighbor(double x, double y) {
-  //   return Color(_data[_getOffset(x.round(), y.round())]);
-  // }
-
-  // Color getPixelUsingBilinear(double x, double y) {}
-
   void mapEachPixel(ui.Color Function(int x, int y, ui.Color color) mapper) {
-    // for (var y = 0; y < _height; ++y) {
-    //   for (var x = 0; x < _width; ++x) {
-    //     final pixel = getPixel(x, y);
-    //     final newPixel = mapper(x, y, pixel);
-    //     setPixel(x, y, newPixel);
-    //   }
-    // }
+    for (var y = 0; y < height; ++y) {
+      for (var x = 0; x < width; ++x) {
+        final pixel = ui.Color(_image.getPixel(x, y));
+        final newPixel = mapper(x, y, pixel);
+        _image.setPixel(x, y, newPixel.value);
+      }
+    }
   }
-
-  // ui.Color getPixel(int x, int y) {
-  //   final pixel = _data[_getOffset(x, y)];
-  //   final alpha = pixel >> 24 & 0x0ff;
-  //   final blue = pixel >> 16 & 0xff;
-  //   final green = pixel >> 8 & 0xff;
-  //   final red = pixel & 0xff;
-  //   return ui.Color.fromARGB(alpha, red, green, blue);
-  // }
-  //
-  // void setPixel(int x, int y, ui.Color color) {
-  //   _data[_getOffset(x, y)] =
-  //       color.alpha << 24 | color.blue << 16 | color.green << 8 | color.red;
-  // }
-  //
-  // int _getOffset(int x, int y) => y * _width + x;
 }
 
 extension ColorMutating on ui.Color {

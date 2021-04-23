@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'MutableImage.dart';
+
 class ImageColoringPreview extends StatefulWidget {
   final ui.Image originalImage;
   final ValueNotifier<ColoringState> state;
@@ -38,15 +40,15 @@ class _ImageColoringPreviewState extends State<ImageColoringPreview> {
   void _onChangedState() async {
     if (_isProcessing) return;
     _isProcessing = true;
-    // final mutableImage = await MutableImage.fromImage(widget.originalImage);
-    // mutableImage.brightness((widget.state.value.brightness * 255).round());
-    // mutableImage.contrast((widget.state.value.contrast * 255).round());
-    //
-    // final image = await mutableImage.toImage();
-    //
-    // setState(() {
-    //   this.image = image;
-    // });
+    final mutableImage = await MutableImage.fromImage(widget.originalImage);
+    mutableImage.brightness((widget.state.value.brightness * 255).round());
+    mutableImage.contrast((widget.state.value.contrast * 255).round());
+
+    final image = await mutableImage.toImage();
+
+    setState(() {
+      this.image = image;
+    });
     _isProcessing = false;
   }
 
