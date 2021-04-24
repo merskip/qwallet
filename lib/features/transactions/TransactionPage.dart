@@ -7,7 +7,7 @@ import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/data_source/firebase/FirebaseFileStorageProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseTransaction.dart';
-import 'package:qwallet/features/transactions/ImagesCarousel.dart';
+import 'package:qwallet/features/files/FilesCarousel.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
@@ -215,8 +215,8 @@ class _TransactionPageState extends State<TransactionPage> {
             .getDownloadsUrls(firebaseTransaction.attachedFiles)
             .asStream(),
         builder: (context, List<Uri> images) {
-          return ImagesCarousel(
-            images: images,
+          return FilesCarousel(
+            files: [],
           );
         },
       ),

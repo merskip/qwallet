@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +7,9 @@ import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/data_source/firebase/FirebaseFileStorageProvider.dart';
-import 'package:qwallet/features/transactions/ImagesCarousel.dart';
+import 'package:qwallet/features/files/FilePreviewPage.dart';
+import 'package:qwallet/features/files/FilesCarousel.dart';
+import 'package:qwallet/features/files/UniversalFile.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
@@ -127,7 +127,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   final dateController = TextEditingController();
   DateTime date = DateTime.now();
 
-  final images = <File>[];
+  final attachedFiles = <UniversalFile>[];
 
   _AddTransactionFormState(this.wallet, this.type);
 
@@ -200,21 +200,21 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   void onSelectedAddImage(BuildContext context) async {
-    final imageFile = await pushPage(
+    final photoFile = await pushPage(
       context,
       builder: (context) => TakePhotoPage(),
-    ) as File?;
-    if (imageFile != null) {
+    ) as UniversalFile?;
+    if (photoFile != null) {
       setState(() {
-        images.add(imageFile);
+        attachedFiles.add(photoFile);
       });
     }
   }
 
-  void onSelectedRemoveImage(BuildContext context, File image) async {
-    await image.delete();
+  void onSelectedRemoveImage(BuildContext context, UniversalFile file) async {
+    await file.localFile?.delete();
     setState(() {
-      images.remove(image);
+      attachedFiles.remove(file);
     });
   }
 
@@ -229,9 +229,12 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         amount: amountController.value!.amount,
         date: date,
       );
-      final uploadedFilesFutures = images.map(
-        (image) => FirebaseFileStorageProvider()
-            .upload(wallet.identifier, transactionId, image),
+      final uploadedFilesFutures = attachedFiles.map(
+        (file) => FirebaseFileStorageProvider().upload(
+          wallet.identifier,
+          transactionId,
+          file.localFile!,
+        ),
       );
       final uploadedFiles = await Future.wait(uploadedFilesFutures);
       await SharedProviders.firebaseTransactionsProvider
@@ -304,11 +307,10 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   }
 
   Widget buildAttachedImages(BuildContext context) {
-    return ImagesCarousel(
-      images: images.map((i) => Uri.file(i.path)).toList(),
-      onAddImage: () => onSelectedAddImage(context),
-      onDeleteImage: (context, image) =>
-          onSelectedRemoveImage(context, File(image.path)),
+    return FilesCarousel(
+      files: attachedFiles,
+      onPressedAdd: () => onSelectedAddImage(context),
+      onPressedFile: FilePreviewPage.show,
     );
   }
 
