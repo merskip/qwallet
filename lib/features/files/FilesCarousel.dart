@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:qwallet/features/files/MimeTypeIcons.dart';
 
 import 'UniversalFile.dart';
-
 
 typedef UniversalFileCallback = void Function(
     BuildContext context, UniversalFile file);
@@ -63,15 +64,21 @@ class FilesCarousel extends StatelessWidget {
   }
 
   Widget buildFile(BuildContext context, UniversalFile file) {
-    return GestureDetector(
-      onTap: () => onPressedFile != null ? onPressedFile!(context, file) : null,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: GestureDetector(
+        onTap: () =>
+            onPressedFile != null ? onPressedFile!(context, file) : null,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          clipBehavior: Clip.hardEdge,
+          child: AspectRatio(
+            aspectRatio: 1.0,
+            child: buildFilePreview(context, file),
+          ),
         ),
-        clipBehavior: Clip.hardEdge,
-        child: AspectRatio(
-            aspectRatio: 1.0, child: buildFilePreview(context, file)),
       ),
     );
   }
@@ -84,8 +91,24 @@ class FilesCarousel extends StatelessWidget {
         fit: BoxFit.cover,
       );
     } else {
-      return Center(
-        child: Text(file.filename),
+      return Container(
+        color: Theme.of(context).primaryColor.withOpacity(0.24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Icon(
+              MimeTypeIcons.get(file.mimeType) ?? FontAwesomeIcons.file,
+              color: Theme.of(context).primaryColorDark,
+            ),
+            Text(
+              file.filename,
+              style: Theme.of(context).textTheme.caption,
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       );
     }
   }

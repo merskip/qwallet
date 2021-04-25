@@ -16,10 +16,14 @@ class UniversalFile {
   UniversalFile({
     required this.uri,
     String? mimeType,
+    int? size,
   }) : mimeType = mimeType ?? lookupMimeType(uri.path);
 
   factory UniversalFile.fromFile(File file) =>
-      UniversalFile(uri: Uri.file(file.path));
+      UniversalFile.fromFilePath(file.path);
+
+  factory UniversalFile.fromFilePath(String path) =>
+      UniversalFile(uri: Uri.file(path));
 
   factory UniversalFile.fromUrl(String url) =>
       UniversalFile(uri: Uri.parse(url));

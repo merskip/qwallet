@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -20,6 +21,7 @@ import 'package:qwallet/widget/VectorImage.dart';
 import '../../AppLocalizations.dart';
 import '../../router.dart';
 import '../../utils.dart';
+import '../../utils/IterableFinding.dart';
 import '../camera/TakePhotoPage.dart';
 
 final _formKey = GlobalKey<_AddTransactionFormState>();
@@ -199,7 +201,33 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     }
   }
 
-  void onSelectedAddImage(BuildContext context) async {
+  void onSelectedAddAttachedFile(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(
+            leading: Icon(Icons.photo_camera),
+            title: Text("#Take photo"),
+            onTap: () => onSelectedAttachedFilesTakePhoto(context),
+          ),
+          ListTile(
+            leading: Icon(Icons.photo_library),
+            title: Text("#Select from gallery"),
+          ),
+          ListTile(
+            leading: Icon(Icons.attach_file),
+            title: Text("#Attach files"),
+            onTap: () => onSelectedAttachedFileSelectFile(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void onSelectedAttachedFilesTakePhoto(BuildContext context) async {
+    Navigator.of(context).pop();
     final photoFile = await pushPage(
       context,
       builder: (context) => TakePhotoPage(),
@@ -207,6 +235,34 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     if (photoFile != null) {
       setState(() {
         attachedFiles.add(photoFile);
+      });
+    }
+  }
+
+  void onSelectedAttachedFileFromGallery(BuildContext context) async {
+    Navigator.of(context).pop();
+    final photoFile = await pushPage(
+      context,
+      builder: (context) => TakePhotoPage(),
+    ) as UniversalFile?;
+    if (photoFile != null) {
+      setState(() {
+        attachedFiles.add(photoFile);
+      });
+    }
+  }
+
+  void onSelectedAttachedFileSelectFile(BuildContext context) async {
+    Navigator.of(context).pop();
+
+    final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+    if (result != null) {
+      final files = result.paths
+          .filterNonNull()
+          .map((p) => UniversalFile.fromFilePath(p))
+          .toList();
+      setState(() {
+        attachedFiles.addAll(files);
       });
     }
   }
@@ -309,7 +365,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   Widget buildAttachedImages(BuildContext context) {
     return FilesCarousel(
       files: attachedFiles,
-      onPressedAdd: () => onSelectedAddImage(context),
+      onPressedAdd: () => onSelectedAddAttachedFile(context),
       onPressedFile: FilePreviewPage.show,
     );
   }

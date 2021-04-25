@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:qwallet/features/files/UniversalFile.dart';
+
+import 'MimeTypeIcons.dart';
 
 class FilePreviewPage extends StatelessWidget {
   final UniversalFile file;
@@ -54,7 +57,29 @@ class FilePreviewPage extends StatelessWidget {
 
   Widget buildFileMetadata(BuildContext context) {
     return Center(
-      child: Text(file.filename),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              MimeTypeIcons.getSolid(file.mimeType) ??
+                  FontAwesomeIcons.solidFile,
+              color: Theme.of(context).primaryColor,
+              size: 96,
+            ),
+            SizedBox(height: 36),
+            Text(
+              file.filename,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 21,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
