@@ -48,13 +48,9 @@ class _TakePhotoPageState extends State<TakePhotoPage> {
   }
 
   Future<File> getNewPhotoFile() async {
-    final picturesDirectories = await getExternalStorageDirectories(
-      type: StorageDirectory.pictures,
-    );
-    final directory =
-        picturesDirectories?.first ?? await getApplicationDocumentsDirectory();
-    final fileName = Uuid().v1();
-    return File(directory.path + "/$fileName.jpg");
+    final directory = await getTemporaryDirectory();
+    final fileName = Uuid().v4() + ".jpg";
+    return File("${directory.path}/$fileName");
   }
 
   @override

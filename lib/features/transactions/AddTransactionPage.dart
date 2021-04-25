@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/data_source/Category.dart';
@@ -215,6 +216,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           ListTile(
             leading: Icon(Icons.photo_library),
             title: Text("#Select from gallery"),
+            onTap: () => onSelectedAttachedFileFromGallery(context),
           ),
           ListTile(
             leading: Icon(Icons.attach_file),
@@ -241,11 +243,10 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   void onSelectedAttachedFileFromGallery(BuildContext context) async {
     Navigator.of(context).pop();
-    final photoFile = await pushPage(
-      context,
-      builder: (context) => TakePhotoPage(),
-    ) as UniversalFile?;
-    if (photoFile != null) {
+    final pickedFile =
+        await ImagePicker().getImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      final photoFile = UniversalFile.fromFilePath(pickedFile.path);
       setState(() {
         attachedFiles.add(photoFile);
       });
