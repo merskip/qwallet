@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:mime/mime.dart';
 
+typedef UniversalFileCallback = void Function(
+    BuildContext context, UniversalFile file);
+
 class UniversalFile {
   final Uri uri;
   final String? mimeType;

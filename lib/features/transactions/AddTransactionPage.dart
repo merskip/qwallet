@@ -268,7 +268,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     }
   }
 
-  void onSelectedRemoveImage(BuildContext context, UniversalFile file) async {
+  void onSelectedDeleteFile(BuildContext context, UniversalFile file) async {
     await file.localFile?.delete();
     setState(() {
       attachedFiles.remove(file);
@@ -367,7 +367,11 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     return FilesCarousel(
       files: attachedFiles,
       onPressedAdd: () => onSelectedAddAttachedFile(context),
-      onPressedFile: FilePreviewPage.show,
+      onPressedFile: (context, file) => FilePreviewPage.show(
+        context,
+        file,
+        onDelete: (context, file) => onSelectedDeleteFile(context, file),
+      ),
     );
   }
 
