@@ -287,11 +287,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         date: date,
       );
       final uploadedFilesFutures = attachedFiles.map(
-        (file) => FirebaseFileStorageProvider().upload(
-          wallet.identifier,
-          transactionId,
-          file.localFile!,
-        ),
+        (file) => FirebaseFileStorageProvider()
+            .uploadFile(wallet.identifier, transactionId, file),
       );
       final uploadedFiles = await Future.wait(uploadedFilesFutures);
       await SharedProviders.firebaseTransactionsProvider
@@ -315,8 +312,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           SizedBox(height: 8),
           buildType(context),
           SizedBox(height: 16),
-          buildAttachedImages(context),
-          SizedBox(height: 16),
           buildAmount(context),
           SizedBox(height: 16),
           if (wallet.categories.isNotEmpty)
@@ -325,6 +320,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           buildTitle(context),
           SizedBox(height: 16),
           buildDate(context),
+          SizedBox(height: 16),
+          buildAttachedImages(context),
           SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -359,18 +356,6 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         title: Text(wallet.name),
         trailing: Text(wallet.balance.formatted),
         onTap: () => onSelectedWallet(context),
-      ),
-    );
-  }
-
-  Widget buildAttachedImages(BuildContext context) {
-    return FilesCarousel(
-      files: attachedFiles,
-      onPressedAdd: () => onSelectedAddAttachedFile(context),
-      onPressedFile: (context, file) => FilePreviewPage.show(
-        context,
-        file,
-        onDelete: (context, file) => onSelectedDeleteFile(context, file),
       ),
     );
   }
@@ -449,6 +434,18 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       ),
       textInputAction: TextInputAction.next,
       readOnly: true,
+    );
+  }
+
+  Widget buildAttachedImages(BuildContext context) {
+    return FilesCarousel(
+      files: attachedFiles,
+      onPressedAdd: () => onSelectedAddAttachedFile(context),
+      onPressedFile: (context, file) => FilePreviewPage.show(
+        context,
+        file,
+        onDelete: (context, file) => onSelectedDeleteFile(context, file),
+      ),
     );
   }
 

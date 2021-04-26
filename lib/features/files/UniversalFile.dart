@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mime/mime.dart';
 
@@ -30,6 +31,24 @@ class UniversalFile {
 
   factory UniversalFile.fromUrl(String url) =>
       UniversalFile(uri: Uri.parse(url));
+
+  String getBaseName() {
+    final filename = this.filename;
+    final dotIndex = filename.lastIndexOf('.');
+    return dotIndex != -1 ? filename.substring(0, dotIndex) : filename;
+  }
+
+  String? getExtension() {
+    final filename = this.filename;
+    final dotIndex = filename.lastIndexOf('.');
+    return dotIndex != -1 ? filename.substring(dotIndex + 1) : null;
+  }
+
+  Future<String> contentSha256() async {
+    assert(localFile != null, "Only local file can calculate content sha256");
+    final bytes = await localFile!.readAsBytes();
+    return sha256.convert(bytes).toString();
+  }
 
   ImageProvider? getImageProvider() {
     if (!isImage) return null;
