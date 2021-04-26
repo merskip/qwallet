@@ -29,8 +29,9 @@ class UniversalFile {
   factory UniversalFile.fromFilePath(String path) =>
       UniversalFile(uri: Uri.file(path));
 
-  factory UniversalFile.fromUrl(String url) =>
-      UniversalFile(uri: Uri.parse(url));
+  factory UniversalFile.fromUrl(String url) {
+    return UniversalFile(uri: Uri.parse(url));
+  }
 
   String getBaseName() {
     final filename = this.filename;

@@ -8,6 +8,7 @@ import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/data_source/firebase/FirebaseFileStorageProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseTransaction.dart';
 import 'package:qwallet/features/files/FilesCarousel.dart';
+import 'package:qwallet/features/files/UniversalFile.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
@@ -180,7 +181,8 @@ class _TransactionPageState extends State<TransactionPage> {
         children: [
           buildWallet(context, widget.wallet),
           if (widget.transaction is FirebaseTransaction)
-            buildImages(context, widget.transaction as FirebaseTransaction),
+            buildAttachedFilesCarousel(
+                context, widget.transaction as FirebaseTransaction),
           buildCategory(context),
           buildType(context),
           buildTitle(context),
@@ -206,17 +208,18 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  Widget buildImages(
+  Widget buildAttachedFilesCarousel(
       BuildContext context, FirebaseTransaction firebaseTransaction) {
+    if (firebaseTransaction.attachedFiles.isEmpty) return Container();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SimpleStreamWidget(
         stream: FirebaseFileStorageProvider()
-            .getDownloadsUrls(firebaseTransaction.attachedFiles)
+            .getDownloadUniversalFiles(firebaseTransaction.attachedFiles)
             .asStream(),
-        builder: (context, List<Uri> images) {
+        builder: (context, List<UniversalFile> files) {
           return FilesCarousel(
-            files: [],
+            files: files,
           );
         },
       ),
