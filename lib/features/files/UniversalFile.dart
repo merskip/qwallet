@@ -1,37 +1,24 @@
 import 'dart:io';
 
-import 'package:crypto/crypto.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mime/mime.dart';
 
 typedef UniversalFileCallback = void Function(
     BuildContext context, UniversalFile file);
 
-class UniversalFile {
-  final Uri uri;
-  final String? mimeType;
-
-  String get filename => uri.path.split('/').last;
-
-  File? get localFile => uri.scheme == "file" ? File(uri.path) : null;
+abstract class UniversalFile {
+  Uri downloadUri;
+  String filename;
+  String? mimeType;
 
   bool get isImage => mimeType != null && mimeType!.startsWith("image/");
 
   UniversalFile({
-    required this.uri,
-    String? mimeType,
-    int? size,
-  }) : mimeType = mimeType ?? lookupMimeType(uri.path);
-
-  factory UniversalFile.fromFile(File file) =>
-      UniversalFile.fromFilePath(file.path);
-
-  factory UniversalFile.fromFilePath(String path) =>
-      UniversalFile(uri: Uri.file(path));
-
-  factory UniversalFile.fromUrl(String url) {
-    return UniversalFile(uri: Uri.parse(url));
-  }
+    required this.downloadUri,
+    required this.filename,
+    required this.mimeType,
+  });
 
   String getBaseName() {
     final filename = this.filename;
@@ -45,21 +32,50 @@ class UniversalFile {
     return dotIndex != -1 ? filename.substring(dotIndex + 1) : null;
   }
 
-  Future<String> contentSha256() async {
-    assert(localFile != null, "Only local file can calculate content sha256");
-    final bytes = await localFile!.readAsBytes();
-    return sha256.convert(bytes).toString();
-  }
-
   ImageProvider? getImageProvider() {
     if (!isImage) return null;
 
-    if (uri.scheme == "file") {
-      return FileImage(File(uri.path));
-    } else if (uri.scheme == "http" || uri.scheme == "https") {
-      return NetworkImage(uri.toString());
+    if (downloadUri.scheme == "file") {
+      return FileImage(File(downloadUri.path));
+    } else if (downloadUri.scheme == "http" || downloadUri.scheme == "https") {
+      return NetworkImage(downloadUri.toString());
     } else {
-      throw Exception("Unknown scheme: ${uri.scheme}");
+      throw Exception("Unknown scheme: ${downloadUri.scheme}");
     }
   }
+}
+
+class LocalUniversalFile extends UniversalFile {
+  final File localFile;
+
+  LocalUniversalFile(this.localFile, {String? mimeType})
+      : super(
+          downloadUri: Uri.file(localFile.path),
+          filename: localFile.path.split('/').last,
+          mimeType: mimeType ?? lookupMimeType(localFile.path),
+        );
+}
+
+class FirebaseStorageUniversalFile extends UniversalFile {
+  final Reference fileReference;
+
+  FirebaseStorageUniversalFile(
+      this.fileReference, Uri downloadUri, String? mimeType)
+      : super(
+          downloadUri: downloadUri,
+          filename: fileReference.name,
+          mimeType: mimeType,
+        );
+
+  static Future<FirebaseStorageUniversalFile> fromReference(
+      Reference fileReference) async {
+    final downloadUrl = await fileReference.getDownloadURL();
+    final mimeType = (await fileReference.getMetadata()).contentType;
+    return FirebaseStorageUniversalFile(
+        fileReference, Uri.parse(downloadUrl), mimeType);
+  }
+}
+
+extension ReferenceUri on Reference {
+  Uri get uri => Uri(scheme: "gs", host: bucket, path: fullPath);
 }

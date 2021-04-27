@@ -8,33 +8,30 @@ import '../Wallet.dart';
 class FirebaseFileStorageProvider {
   final storage = FirebaseStorage.instance;
 
-  Future<String> uploadFile(
+  Future<Reference> uploadFile(
     Identifier<Wallet> walletId,
     Identifier<Transaction> transactionId,
-    UniversalFile file,
+    LocalUniversalFile file,
   ) async {
-    assert(file.localFile != null, "Only local file can be upload");
-
     final fileReference =
         await _getUniqueNewFileReference("/wallet/$walletId", file);
 
     await fileReference.putFile(
-        file.localFile!,
+        file.localFile,
         SettableMetadata(
           cacheControl: 'max-age=365',
           contentType: file.mimeType,
           customMetadata: {
             "walletId": walletId.toString(),
             "transactionId": transactionId.toString(),
-            "contentSha256": await file.contentSha256(),
           },
         ));
-    return fileReference.fullPath;
+    return fileReference;
   }
 
   Future<Reference> _getUniqueNewFileReference(
     String prefix,
-    UniversalFile file,
+    LocalUniversalFile file,
   ) async {
     var fileReference = storage.ref("$prefix/${file.filename}");
 
@@ -54,15 +51,11 @@ class FirebaseFileStorageProvider {
     return fileReference;
   }
 
-  Future<List<UniversalFile>> getDownloadUniversalFiles(
-      List<String> paths) async {
-    final urls = await Future.wait(paths.map((path) => getDownloadUrl(path)));
-    return urls.map((url) => UniversalFile.fromUrl(url)).toList();
-  }
-
-  Future<String> getDownloadUrl(String filePath) async {
-    final fileReference = storage.ref(filePath);
-    return await fileReference.getDownloadURL();
+  Future<FirebaseStorageUniversalFile> getUniversalFile(Uri fileUri) {
+    assert(fileUri.scheme == "gs");
+    final fileReference =
+        storage.refFromURL(Uri.decodeFull(fileUri.toString()));
+    return FirebaseStorageUniversalFile.fromReference(fileReference);
   }
 }
 

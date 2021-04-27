@@ -44,7 +44,7 @@ class _TakePhotoPageState extends State<TakePhotoPage> {
         imageFile: photoFile,
       ),
     );
-    Navigator.of(context).pop(UniversalFile.fromFile(photoFile));
+    Navigator.of(context).pop(LocalUniversalFile(photoFile));
   }
 
   Future<File> getNewPhotoFile() async {

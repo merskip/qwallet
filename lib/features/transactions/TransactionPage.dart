@@ -213,10 +213,8 @@ class _TransactionPageState extends State<TransactionPage> {
     if (firebaseTransaction.attachedFiles.isEmpty) return Container();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: SimpleStreamWidget(
-        stream: FirebaseFileStorageProvider()
-            .getDownloadUniversalFiles(firebaseTransaction.attachedFiles)
-            .asStream(),
+      child: SimpleStreamWidget.fromFuture(
+        future: getAttachedFiles(firebaseTransaction),
         builder: (context, List<UniversalFile> files) {
           return FilesCarousel(
             files: files,
@@ -224,6 +222,14 @@ class _TransactionPageState extends State<TransactionPage> {
         },
       ),
     );
+  }
+
+  Future<List<UniversalFile>> getAttachedFiles(
+      FirebaseTransaction firebaseTransaction) async {
+    final provider = FirebaseFileStorageProvider();
+    return Future.wait(firebaseTransaction.attachedFiles.map((fileUri) {
+      return provider.getUniversalFile(fileUri);
+    }));
   }
 
   Widget buildCategory(BuildContext context) {

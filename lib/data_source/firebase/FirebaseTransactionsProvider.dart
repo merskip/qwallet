@@ -193,7 +193,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
   Future<void> updateTransactionAttachedFiles({
     required Identifier<Wallet> walletId,
     required Identifier<Transaction> transaction,
-    required List<String> attachedFiles,
+    required List<Uri> attachedFiles,
   }) {
     assert(walletId.domain == "firebase");
     return firestore
@@ -202,7 +202,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
         .collection("transactions")
         .doc(transaction.id)
         .update({
-      "attachedFiles": attachedFiles,
+      "attachedFiles": attachedFiles.map((uri) => uri.toString()).toList(),
     });
   }
 

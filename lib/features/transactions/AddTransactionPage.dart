@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -130,7 +132,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   final dateController = TextEditingController();
   DateTime date = DateTime.now();
 
-  final attachedFiles = <UniversalFile>[];
+  final attachedFiles = <LocalUniversalFile>[];
 
   _AddTransactionFormState(this.wallet, this.type);
 
@@ -233,7 +235,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     final photoFile = await pushPage(
       context,
       builder: (context) => TakePhotoPage(),
-    ) as UniversalFile?;
+    ) as LocalUniversalFile?;
     if (photoFile != null) {
       setState(() {
         attachedFiles.add(photoFile);
@@ -246,7 +248,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     final pickedFile =
         await ImagePicker().getImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      final photoFile = UniversalFile.fromFilePath(pickedFile.path);
+      final photoFile = LocalUniversalFile(File(pickedFile.path));
       setState(() {
         attachedFiles.add(photoFile);
       });
@@ -260,7 +262,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     if (result != null) {
       final files = result.paths
           .filterNonNull()
-          .map((p) => UniversalFile.fromFilePath(p))
+          .map((p) => LocalUniversalFile(File(p)))
           .toList();
       setState(() {
         attachedFiles.addAll(files);
@@ -268,8 +270,9 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     }
   }
 
-  void onSelectedDeleteFile(BuildContext context, UniversalFile file) async {
-    await file.localFile?.delete();
+  void onSelectedDeleteFile(
+      BuildContext context, LocalUniversalFile file) async {
+    await file.localFile.delete();
     setState(() {
       attachedFiles.remove(file);
     });
@@ -286,11 +289,13 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         amount: amountController.value!.amount,
         date: date,
       );
-      final uploadedFilesFutures = attachedFiles.map(
-        (file) => FirebaseFileStorageProvider()
-            .uploadFile(wallet.identifier, transactionId, file),
+
+      final uploadedFiles = await Future.wait(
+        attachedFiles.map((file) => FirebaseFileStorageProvider()
+            .uploadFile(wallet.identifier, transactionId, file)
+            .then((reference) => reference.uri)),
       );
-      final uploadedFiles = await Future.wait(uploadedFilesFutures);
+
       await SharedProviders.firebaseTransactionsProvider
           .updateTransactionAttachedFiles(
         walletId: wallet.identifier,
@@ -444,7 +449,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       onPressedFile: (context, file) => FilePreviewPage.show(
         context,
         file,
-        onDelete: (context, file) => onSelectedDeleteFile(context, file),
+        onDelete: (context, file) =>
+            onSelectedDeleteFile(context, file as LocalUniversalFile),
       ),
     );
   }
