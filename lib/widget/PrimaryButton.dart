@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'HandCursor.dart';
 
 class PrimaryButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Widget? child;
   final Color? textColor;
   final Color? backgroundColor;

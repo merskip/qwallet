@@ -134,6 +134,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   final attachedFiles = <LocalUniversalFile>[];
 
+  var _isSubmitting = false;
+
   _AddTransactionFormState(this.wallet, this.type);
 
   @override
@@ -280,30 +282,39 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      final transactionId =
-          await SharedProviders.transactionsProvider.addTransaction(
-        walletId: wallet.identifier,
-        type: type,
-        category: category,
-        title: titleController.text.trim().nullIfEmpty(),
-        amount: amountController.value!.amount,
-        date: date,
-      );
+      setState(() {
+        _isSubmitting = true;
+      });
+      try {
+        final transactionId =
+            await SharedProviders.transactionsProvider.addTransaction(
+          walletId: wallet.identifier,
+          type: type,
+          category: category,
+          title: titleController.text.trim().nullIfEmpty(),
+          amount: amountController.value!.amount,
+          date: date,
+        );
 
-      final uploadedFiles = await Future.wait(
-        attachedFiles.map((file) => FirebaseFileStorageProvider()
-            .uploadFile(wallet.identifier, transactionId, file)
-            .then((reference) => reference.uri)),
-      );
+        final uploadedFiles = await Future.wait(
+          attachedFiles.map((file) => FirebaseFileStorageProvider()
+              .uploadFile(wallet.identifier, transactionId, file)
+              .then((reference) => reference.uri)),
+        );
 
-      await SharedProviders.firebaseTransactionsProvider
-          .updateTransactionAttachedFiles(
-        walletId: wallet.identifier,
-        transaction: transactionId,
-        attachedFiles: uploadedFiles,
-      );
+        await SharedProviders.firebaseTransactionsProvider
+            .updateTransactionAttachedFiles(
+          walletId: wallet.identifier,
+          transaction: transactionId,
+          attachedFiles: uploadedFiles,
+        );
 
-      router.pop(context);
+        router.pop(context);
+      } finally {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 
@@ -457,8 +468,10 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
 
   Widget buildSubmitButton(BuildContext context) {
     return PrimaryButton(
-      child: Text(AppLocalizations.of(context).addTransactionSubmit),
-      onPressed: () => onSelectedSubmit(context),
+      child: _isSubmitting
+          ? CircularProgressIndicator()
+          : Text(AppLocalizations.of(context).addTransactionSubmit),
+      onPressed: !_isSubmitting ? () => onSelectedSubmit(context) : null,
     );
   }
 }
