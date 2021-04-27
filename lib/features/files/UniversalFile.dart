@@ -8,6 +8,7 @@ typedef UniversalFileCallback = void Function(
     BuildContext context, UniversalFile file);
 
 abstract class UniversalFile {
+  Uri uri;
   Uri downloadUri;
   String filename;
   String? mimeType;
@@ -15,10 +16,11 @@ abstract class UniversalFile {
   bool get isImage => mimeType != null && mimeType!.startsWith("image/");
 
   UniversalFile({
-    required this.downloadUri,
+    required this.uri,
+    Uri? downloadUri,
     required this.filename,
     required this.mimeType,
-  });
+  }) : this.downloadUri = downloadUri ?? uri;
 
   String getBaseName() {
     final filename = this.filename;
@@ -31,6 +33,8 @@ abstract class UniversalFile {
     final dotIndex = filename.lastIndexOf('.');
     return dotIndex != -1 ? filename.substring(dotIndex + 1) : null;
   }
+
+  Future<void> delete();
 
   ImageProvider? getImageProvider() {
     if (!isImage) return null;
@@ -50,18 +54,26 @@ class LocalUniversalFile extends UniversalFile {
 
   LocalUniversalFile(this.localFile, {String? mimeType})
       : super(
-          downloadUri: Uri.file(localFile.path),
+          uri: Uri.file(localFile.path),
           filename: localFile.path.split('/').last,
           mimeType: mimeType ?? lookupMimeType(localFile.path),
         );
+
+
+  Future<void> delete() {
+    return localFile.delete();
+  }
 }
 
 class FirebaseStorageUniversalFile extends UniversalFile {
   final Reference fileReference;
 
   FirebaseStorageUniversalFile(
-      this.fileReference, Uri downloadUri, String? mimeType)
-      : super(
+    this.fileReference,
+    Uri downloadUri,
+    String? mimeType,
+  ) : super(
+          uri: fileReference.uri,
           downloadUri: downloadUri,
           filename: fileReference.name,
           mimeType: mimeType,
@@ -73,6 +85,10 @@ class FirebaseStorageUniversalFile extends UniversalFile {
     final mimeType = (await fileReference.getMetadata()).contentType;
     return FirebaseStorageUniversalFile(
         fileReference, Uri.parse(downloadUrl), mimeType);
+  }
+
+  Future<void> delete() {
+    return fileReference.delete();
   }
 }
 

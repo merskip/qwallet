@@ -7,6 +7,7 @@ import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/data_source/firebase/FirebaseFileStorageProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseTransaction.dart';
+import 'package:qwallet/features/files/FilePreviewPage.dart';
 import 'package:qwallet/features/files/FilesCarousel.dart';
 import 'package:qwallet/features/files/UniversalFile.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
@@ -62,6 +63,15 @@ class _TransactionPageState extends State<TransactionPage> {
           .transactionDetailsRemoveConfirmationContent),
       isDestructive: true,
       onConfirm: () async {
+        if (widget.transaction is FirebaseTransaction) {
+          final transaction = widget.transaction as FirebaseTransaction;
+          transaction.attachedFiles.forEach((fileUri) async {
+            final file =
+                await FirebaseFileStorageProvider().getUniversalFile(fileUri);
+            file.delete();
+          });
+        }
+
         await SharedProviders.transactionsProvider.removeTransaction(
           walletId: widget.wallet.identifier,
           transaction: widget.transaction,
@@ -160,6 +170,33 @@ class _TransactionPageState extends State<TransactionPage> {
     }
   }
 
+  void onSelectedAttachedFile(BuildContext context,
+      FirebaseTransaction transaction, UniversalFile file) async {
+    FilePreviewPage.show(
+      context,
+      file,
+      onDelete: (context, file) =>
+          onSelectedDeleteAttachedFile(context, transaction, file),
+    );
+  }
+
+  void onSelectedDeleteAttachedFile(
+    BuildContext context,
+    FirebaseTransaction transaction,
+    UniversalFile file,
+  ) async {
+    final attachedFiles = List.of(transaction.attachedFiles);
+    attachedFiles.removeWhere((uri) => uri == file.uri);
+
+    SharedProviders.firebaseTransactionsProvider.updateTransactionAttachedFiles(
+      walletId: widget.wallet.identifier,
+      transaction: transaction.identifier,
+      attachedFiles: attachedFiles,
+    );
+
+    file.delete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -209,15 +246,17 @@ class _TransactionPageState extends State<TransactionPage> {
   }
 
   Widget buildAttachedFilesCarousel(
-      BuildContext context, FirebaseTransaction firebaseTransaction) {
-    if (firebaseTransaction.attachedFiles.isEmpty) return Container();
+      BuildContext context, FirebaseTransaction transaction) {
+    if (transaction.attachedFiles.isEmpty) return Container();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SimpleStreamWidget.fromFuture(
-        future: getAttachedFiles(firebaseTransaction),
+        future: getAttachedFiles(transaction),
         builder: (context, List<UniversalFile> files) {
           return FilesCarousel(
             files: files,
+            onPressedFile: (context, file) =>
+                onSelectedAttachedFile(context, transaction, file),
           );
         },
       ),
