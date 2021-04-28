@@ -8,17 +8,20 @@ import 'MimeTypeIcons.dart';
 class FilePreviewPage extends StatelessWidget {
   final UniversalFile file;
   final UniversalFileCallback? onDelete;
+  final UniversalFileCallback? onShareFile;
 
   const FilePreviewPage({
     Key? key,
     required this.file,
     this.onDelete,
+    this.onShareFile,
   }) : super(key: key);
 
   static show(
     BuildContext context,
     UniversalFile file, {
     UniversalFileCallback? onDelete,
+    UniversalFileCallback? onShareFile,
   }) {
     showDialog(
       context: context,
@@ -26,6 +29,7 @@ class FilePreviewPage extends StatelessWidget {
       builder: (context) => FilePreviewPage(
         file: file,
         onDelete: onDelete,
+        onShareFile: onShareFile,
       ),
     );
   }
@@ -39,6 +43,14 @@ class FilePreviewPage extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
+          if (onShareFile != null)
+            IconButton(
+              icon: Icon(Icons.share),
+              onPressed: () {
+                Navigator.of(context).pop();
+                onShareFile!(context, file);
+              },
+            ),
           if (onDelete != null)
             IconButton(
               icon: Icon(Icons.delete),

@@ -90,21 +90,24 @@ class FilesCarousel extends StatelessWidget {
     } else {
       return Container(
         color: Theme.of(context).primaryColor.withOpacity(0.24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Icon(
-              MimeTypeIcons.get(file.mimeType) ?? FontAwesomeIcons.file,
-              color: Theme.of(context).primaryColorDark,
-            ),
-            Text(
-              file.filename,
-              style: Theme.of(context).textTheme.caption,
-              textAlign: TextAlign.center,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Icon(
+                MimeTypeIcons.get(file.mimeType) ?? FontAwesomeIcons.file,
+                color: Theme.of(context).primaryColorDark,
+              ),
+              Text(
+                file.filename,
+                style: Theme.of(context).textTheme.caption,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       );
     }

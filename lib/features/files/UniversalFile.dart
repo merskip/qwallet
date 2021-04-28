@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
@@ -36,6 +37,8 @@ abstract class UniversalFile {
 
   Future<void> delete();
 
+  Future<Uint8List> getBytes();
+
   ImageProvider? getImageProvider() {
     if (!isImage) return null;
 
@@ -59,9 +62,13 @@ class LocalUniversalFile extends UniversalFile {
           mimeType: mimeType ?? lookupMimeType(localFile.path),
         );
 
-
   Future<void> delete() {
     return localFile.delete();
+  }
+
+  @override
+  Future<Uint8List> getBytes() {
+    return localFile.readAsBytes();
   }
 }
 
@@ -89,6 +96,11 @@ class FirebaseStorageUniversalFile extends UniversalFile {
 
   Future<void> delete() {
     return fileReference.delete();
+  }
+
+  @override
+  Future<Uint8List> getBytes() {
+    return fileReference.getData().then((data) => data ?? Uint8List(0));
   }
 }
 
