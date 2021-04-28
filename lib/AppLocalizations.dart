@@ -265,6 +265,11 @@ extension SettingsLocalizations on AppLocalizations {
         en: "Third-party licenses",
         pl: "Licencje",
       );
+
+  String get settingsBugReport => _locale(
+        en: "Bug report",
+        pl: "Zgłoś błąd",
+      );
 }
 
 extension LinkWalletGoogleSheetsLocalizations on AppLocalizations {

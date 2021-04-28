@@ -14,6 +14,7 @@ import 'package:qwallet/data_source/firebase/FirebaseCategoriesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebasePrivateLoansProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseRemoteUserPreferencesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
+import 'package:qwallet/logger.dart';
 import 'package:qwallet/router.dart';
 
 import 'data_source/common/AggregatedTransactionsProvider.dart';
@@ -49,6 +50,7 @@ void main() async {
       // );
 
       FlutterError.onError = (details) {
+        logger.error("FlutterError", details.exception, details.stack);
         FlutterError.dumpErrorToConsole(details);
         crashlytics.recordFlutterError(details);
       };
@@ -133,6 +135,7 @@ void main() async {
     (error, stackTrace) {
       print("Error: $error");
       print("Stack trace: $stackTrace");
+      logger.error("Catch error", error, stackTrace);
       crashlytics.recordError(error, stackTrace, fatal: true);
     },
   );

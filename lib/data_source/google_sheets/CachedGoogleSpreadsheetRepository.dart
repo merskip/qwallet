@@ -1,3 +1,5 @@
+import 'package:qwallet/logger.dart';
+
 import '../AccountProvider.dart';
 import 'GoogleSpreadsheetRepository.dart';
 import 'GoogleSpreadsheetWallet.dart';
@@ -18,6 +20,7 @@ class CachedGoogleSpreadsheetRepository extends GoogleSpreadsheetRepository {
       String spreadsheetId) async {
     final cachedWallet = _cachedWallets[spreadsheetId];
     if (cachedWallet != null) {
+      logger.verbose("Using cached wallet id=$spreadsheetId");
       return cachedWallet;
     } else {
       final wallet = await super.getWalletBySpreadsheetId(spreadsheetId);

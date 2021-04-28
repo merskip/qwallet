@@ -4,7 +4,6 @@ class GoogleSpreadsheetWallet {
   final String name;
   final List<double> incomes;
   final List<GoogleSpreadsheetTransaction> transfers;
-  final int? lastTransferRowIndex;
 
   final DateTime firstDate;
   final DateTime lastDate;
@@ -21,7 +20,6 @@ class GoogleSpreadsheetWallet {
     required this.name,
     required this.incomes,
     required this.transfers,
-    required this.lastTransferRowIndex,
     required this.firstDate,
     required this.lastDate,
     required this.categories,
