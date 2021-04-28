@@ -35,9 +35,9 @@ class GoogleSpreadsheetWallet {
 class GoogleSpreadsheetTransaction {
   final int row;
   final DateTime date;
-  final GoogleSpreadsheetTransactionType type;
+  final GoogleSpreadsheetTransactionType? type;
   final double amount;
-  final String categorySymbol;
+  final String? categorySymbol;
   final bool isForeignCapital;
   final String? shop;
   final String? description;

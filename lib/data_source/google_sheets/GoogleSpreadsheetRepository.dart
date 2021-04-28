@@ -78,10 +78,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       final type = row.getTransactionType(column: 1);
       final amount = row.getDouble(column: 2);
       final categorySymbol = row.getString(column: 3);
-      if (date == null ||
-          type == null ||
-          amount == null ||
-          categorySymbol == null) return null;
+      if (date == null || amount == null) return null;
 
       return GoogleSpreadsheetTransaction(
         row: index,
@@ -211,7 +208,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     required String spreadsheetId,
     required int transferRow,
     required DateTime date,
-    required GoogleSpreadsheetTransactionType type,
+    required GoogleSpreadsheetTransactionType? type,
     required double amount,
     required String categorySymbol,
     required bool isForeignCapital,
@@ -224,7 +221,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       ..values = [
         [
           format.format(date),
-          type.toText(),
+          type?.toText() ?? "",
           amount,
           categorySymbol,
           isForeignCapital ? "Kapitał obcy" : "",
