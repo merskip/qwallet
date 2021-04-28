@@ -1,5 +1,6 @@
 extension IterableFinding<E> on Iterable<E> {
   E? get firstOrNull => isNotEmpty ? first : null;
+
   E? get lastOrNull => isNotEmpty ? last : null;
 
   E? findFirstOrNull(bool test(E element)) {
@@ -16,6 +17,10 @@ extension IterableFinding<E> on Iterable<E> {
     }
     return last;
   }
+}
+
+extension IterableFlatting<E> on Iterable<Iterable<E>> {
+  Iterable<E> flatten() => expand((elements) => elements);
 }
 
 extension ListSplitting<T> on List<T> {

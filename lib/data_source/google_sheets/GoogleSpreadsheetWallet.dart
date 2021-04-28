@@ -43,6 +43,7 @@ class GoogleSpreadsheetTransaction {
   final bool isForeignCapital;
   final String? shop;
   final String? description;
+  final List<String> attachedFiles;
 
   GoogleSpreadsheetTransaction({
     required this.row,
@@ -53,6 +54,7 @@ class GoogleSpreadsheetTransaction {
     required this.isForeignCapital,
     required this.shop,
     required this.description,
+    required this.attachedFiles,
   });
 }
 

@@ -190,6 +190,42 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     });
   }
 
+  Future<void> addTransactionAttachedFile({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transaction,
+    required Uri attachedFile,
+  }) {
+    assert(walletId.domain == "firebase");
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("transactions")
+        .doc(transaction.id)
+        .update({
+      "attachedFiles": CloudFirestore.FieldValue.arrayUnion([
+        attachedFile.toString(),
+      ]),
+    });
+  }
+
+  Future<void> removeTransactionAttachedFile({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transaction,
+    required Uri attachedFile,
+  }) {
+    assert(walletId.domain == "firebase");
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("transactions")
+        .doc(transaction.id)
+        .update({
+      "attachedFiles": CloudFirestore.FieldValue.arrayRemove([
+        attachedFile.toString(),
+      ]),
+    });
+  }
+
   Stream<List<Transaction>> _getTransactionsInDateTimeRange({
     required FirebaseWallet wallet,
     required DateTimeRange dateRange,

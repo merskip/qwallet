@@ -109,6 +109,57 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     }
   }
 
+  // @override
+  // Future<void> updateTransactionAttachedFiles({
+  //   required Identifier<Wallet> walletId,
+  //   required Identifier<Transaction> transaction,
+  //   required List<Uri> attachedFiles,
+  // }) async {
+  //   assert(walletId.domain == "google_sheets");
+  //   final wallet = await repository.getWalletBySpreadsheetId(walletId.id);
+  //   for (final file in attachedFiles) {
+  //     await repository.addRowMetadata(
+  //       wallet: wallet,
+  //       rowIndex: int.parse(transaction.id),
+  //       key: "attachedFiles",
+  //       value: file.toString(),
+  //     );
+  //   }
+  //   walletsProvider.refreshWallet(walletId);
+  // }
+
+  @override
+  Future<void> addTransactionAttachedFile({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transaction,
+    required Uri attachedFile,
+  }) async {
+    assert(walletId.domain == "google_sheets");
+    final wallet = await repository.getWalletBySpreadsheetId(walletId.id);
+    await repository.addAttachedFile(
+      wallet: wallet,
+      rowIndex: int.parse(transaction.id),
+      attachedFile: attachedFile,
+    );
+    walletsProvider.refreshWallet(walletId);
+  }
+
+  @override
+  Future<void> removeTransactionAttachedFile({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transaction,
+    required Uri attachedFile,
+  }) async {
+    assert(walletId.domain == "google_sheets");
+    final wallet = await repository.getWalletBySpreadsheetId(walletId.id);
+    await repository.removeAttachedFile(
+      wallet: wallet,
+      rowIndex: int.parse(transaction.id),
+      attachedFile: attachedFile,
+    );
+    walletsProvider.refreshWallet(walletId);
+  }
+
   @override
   Future<void> removeTransaction({
     required Identifier<Wallet> walletId,
@@ -140,6 +191,9 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
       date: transfer.date,
       category: wallet.categories
           .findFirstOrNull((c) => c.symbol == transfer.categorySymbol),
+      attachedFiles: transfer.attachedFiles
+          .map((file) => Uri.tryParse(file))
+          .filterNonNull(),
       excludedFromDailyStatistics:
           transfer.type != GoogleSpreadsheetTransactionType.current,
     );
@@ -158,9 +212,13 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     final insertedRow = await repository.addTransaction(
       spreadsheetId: walletId.id,
       date: date,
-      type: GoogleSpreadsheetTransactionType.current,
+      type: type == TransactionType.expense
+          ? GoogleSpreadsheetTransactionType.current
+          : null,
       amount: type == TransactionType.expense ? -amount : amount,
-      categorySymbol: category?.symbol ?? wallet.categories.first.symbol,
+      categorySymbol: type == TransactionType.expense
+          ? (category?.symbol ?? wallet.categories.first.symbol)
+          : null,
       isForeignCapital: false,
       shop: null,
       description: title,

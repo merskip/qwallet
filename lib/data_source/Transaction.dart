@@ -12,6 +12,7 @@ abstract class Transaction implements Identifiable<Transaction> {
   final double amount;
   final DateTime date;
   final Category? category;
+  final List<Uri> attachedFiles;
   final bool excludedFromDailyStatistics;
 
   Transaction({
@@ -20,6 +21,7 @@ abstract class Transaction implements Identifiable<Transaction> {
     required this.amount,
     required this.date,
     required this.category,
+    required this.attachedFiles,
     required this.excludedFromDailyStatistics,
   });
 }

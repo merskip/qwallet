@@ -19,6 +19,13 @@ class SimpleStreamWidget<T> extends StatelessWidget {
     this.loadingBuilder,
   }) : super(key: key);
 
+  SimpleStreamWidget.fromFuture({
+    Key? key,
+    required Future<T> future,
+    required this.builder,
+    this.loadingBuilder,
+  }) : this.stream = future.asStream();
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(

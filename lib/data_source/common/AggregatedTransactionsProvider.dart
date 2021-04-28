@@ -128,6 +128,47 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
       );
 
   @override
+  Future<void> addTransactionAttachedFile({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transaction,
+    required Uri attachedFile,
+  }) =>
+      onDomain(
+        walletId,
+        ifFirebase: () => _firebaseProvider.addTransactionAttachedFile(
+          walletId: walletId,
+          transaction: transaction,
+          attachedFile: attachedFile,
+        ),
+        ifGoogleSheets: () => _spreadsheetProvider.addTransactionAttachedFile(
+          walletId: walletId,
+          transaction: transaction,
+          attachedFile: attachedFile,
+        ),
+      );
+
+  @override
+  Future<void> removeTransactionAttachedFile({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transaction,
+    required Uri attachedFile,
+  }) =>
+      onDomain(
+        walletId,
+        ifFirebase: () => _firebaseProvider.removeTransactionAttachedFile(
+          walletId: walletId,
+          transaction: transaction,
+          attachedFile: attachedFile,
+        ),
+        ifGoogleSheets: () =>
+            _spreadsheetProvider.removeTransactionAttachedFile(
+          walletId: walletId,
+          transaction: transaction,
+          attachedFile: attachedFile,
+        ),
+      );
+
+  @override
   Future<void> removeTransaction({
     required Identifier<Wallet> walletId,
     required Transaction transaction,

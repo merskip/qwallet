@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +9,10 @@ import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/data_source/firebase/FirebaseFileStorageProvider.dart';
+import 'package:qwallet/features/files/FilePreviewPage.dart';
+import 'package:qwallet/features/files/FilesCarousel.dart';
+import 'package:qwallet/features/files/UniversalFile.dart';
 import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
@@ -16,39 +23,23 @@ import 'package:qwallet/widget/VectorImage.dart';
 import '../../AppLocalizations.dart';
 import '../../router.dart';
 import '../../utils.dart';
+import '../../utils/IterableFinding.dart';
+import '../camera/TakePhotoPage.dart';
+
+final _formKey = GlobalKey<_AddTransactionFormState>();
 
 class AddTransactionPage extends StatelessWidget {
   final Wallet initialWallet;
   final double? initialAmount;
 
-  const AddTransactionPage({
-    Key? key,
-    required this.initialWallet,
-    this.initialAmount,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return _AddTransactionPageContent(
-      initialWallet: initialWallet,
-      initialAmount: initialAmount,
-    );
-  }
-}
-
-class _AddTransactionPageContent extends StatelessWidget {
-  final formKey = GlobalKey<_AddTransactionFormState>();
-  final Wallet initialWallet;
-  final double? initialAmount;
-
-  _AddTransactionPageContent({
+  AddTransactionPage({
     Key? key,
     required this.initialWallet,
     this.initialAmount,
   }) : super(key: key);
 
   void onSelectedAddSeriesTransactions(BuildContext context) {
-    final currentState = this.formKey.currentState;
+    final currentState = _formKey.currentState;
     if (currentState == null) return;
 
     final type = currentState.type;
@@ -90,7 +81,7 @@ class _AddTransactionPageContent extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(16),
           child: _AddTransactionForm(
-            key: formKey,
+            key: _formKey,
             initialWallet: initialWallet,
             initialAmount: initialAmount?.abs(),
             initialTransactionType: (initialAmount ?? 0) <= 0
@@ -140,6 +131,10 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   final dateController = TextEditingController();
   DateTime date = DateTime.now();
 
+  final attachedFiles = <LocalUniversalFile>[];
+
+  var _isSubmitting = false;
+
   _AddTransactionFormState(this.wallet, this.type);
 
   @override
@@ -167,7 +162,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         final date = await showDatePicker(
           context: context,
           initialDate: this.date,
-          firstDate: DateTime(2000),
+          firstDate: DateTime(1900),
           lastDate: DateTime(2100),
         );
         if (date != null) {
@@ -210,17 +205,101 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     }
   }
 
+  void onSelectedAddAttachedFile(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(
+            leading: Icon(Icons.photo_camera),
+            title: Text(AppLocalizations.of(context).attachedFileTakePhoto),
+            onTap: () => onSelectedAttachedFilesTakePhoto(context),
+          ),
+          ListTile(
+            leading: Icon(Icons.attach_file),
+            title: Text(AppLocalizations.of(context).attachedFileSelectFiles),
+            onTap: () => onSelectedAttachedFileSelectFile(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void onSelectedAttachedFilesTakePhoto(BuildContext context) async {
+    Navigator.of(context).pop();
+    final photoFile = await pushPage(
+      context,
+      builder: (context) => TakePhotoPage(),
+    ) as LocalUniversalFile?;
+    if (photoFile != null) {
+      setState(() {
+        attachedFiles.add(photoFile);
+      });
+    }
+  }
+
+  void onSelectedAttachedFileSelectFile(BuildContext context) async {
+    Navigator.of(context).pop();
+
+    final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+    if (result != null) {
+      final files = result.paths
+          .filterNonNull()
+          .map((p) => LocalUniversalFile(File(p)))
+          .toList();
+      setState(() {
+        attachedFiles.addAll(files);
+      });
+    }
+  }
+
+  void onSelectedDeleteFile(
+      BuildContext context, LocalUniversalFile file) async {
+    await file.localFile.delete();
+    setState(() {
+      attachedFiles.remove(file);
+    });
+  }
+
   onSelectedSubmit(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      SharedProviders.transactionsProvider.addTransaction(
-        walletId: wallet.identifier,
-        type: type,
-        category: category,
-        title: titleController.text.trim().nullIfEmpty(),
-        amount: amountController.value!.amount,
-        date: date,
-      );
-      router.pop(context);
+      setState(() {
+        _isSubmitting = true;
+      });
+      try {
+        final transactionId =
+            await SharedProviders.transactionsProvider.addTransaction(
+          walletId: wallet.identifier,
+          type: type,
+          category: category,
+          title: titleController.text.trim().nullIfEmpty(),
+          amount: amountController.value!.amount,
+          date: date,
+        );
+
+        if (attachedFiles.isNotEmpty) {
+          final uploadedFiles = await Future.wait(
+            attachedFiles.map((file) => FirebaseFileStorageProvider()
+                .uploadFile(wallet.identifier, transactionId, file)),
+          );
+
+          for (final file in uploadedFiles) {
+            await SharedProviders.transactionsProvider
+                .addTransactionAttachedFile(
+              walletId: wallet.identifier,
+              transaction: transactionId,
+              attachedFile: file.uri,
+            );
+          }
+        }
+
+        router.pop(context);
+      } finally {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 
@@ -242,6 +321,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           buildTitle(context),
           SizedBox(height: 16),
           buildDate(context),
+          SizedBox(height: 16),
+          buildAttachedImages(context),
           SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -357,10 +438,25 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     );
   }
 
+  Widget buildAttachedImages(BuildContext context) {
+    return FilesCarousel(
+      files: attachedFiles,
+      onPressedAdd: () => onSelectedAddAttachedFile(context),
+      onPressedFile: (context, file) => FilePreviewPage.show(
+        context,
+        file,
+        onDelete: (context, file) =>
+            onSelectedDeleteFile(context, file as LocalUniversalFile),
+      ),
+    );
+  }
+
   Widget buildSubmitButton(BuildContext context) {
     return PrimaryButton(
-      child: Text(AppLocalizations.of(context).addTransactionSubmit),
-      onPressed: () => onSelectedSubmit(context),
+      child: _isSubmitting
+          ? CircularProgressIndicator()
+          : Text(AppLocalizations.of(context).addTransactionSubmit),
+      onPressed: !_isSubmitting ? () => onSelectedSubmit(context) : null,
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 
 import '../../AppLocalizations.dart';
+import '../../utils/IterableFinding.dart';
 import 'FirebaseCategory.dart';
 import 'FirebaseConverting.dart';
 import 'FirebaseModel.dart';
@@ -18,6 +19,7 @@ class FirebaseTransaction extends FirebaseModel<FirebaseTransaction>
   final DateTime date;
   final FirebaseCategory? category;
   final bool excludedFromDailyStatistics;
+  final List<Uri> attachedFiles;
 
   FirebaseTransaction(
       CloudFirestore.DocumentSnapshot snapshot, FirebaseWallet wallet)
@@ -29,6 +31,10 @@ class FirebaseTransaction extends FirebaseModel<FirebaseTransaction>
         category = wallet.getCategory(snapshot.getReference("category")),
         excludedFromDailyStatistics =
             snapshot.getBool("excludedFromDailyStatistics") ?? false,
+        attachedFiles = (snapshot.getList<String>("attachedFiles") ?? [])
+            .map((uri) => Uri.tryParse(uri))
+            .filterNonNull()
+            .toList(),
         super(snapshot);
 
   String getTypeLocalizedText(BuildContext context) =>

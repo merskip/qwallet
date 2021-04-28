@@ -12,15 +12,20 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
   }) : super(accountProvider);
 
   Future<GoogleSpreadsheetWallet> getWalletBySpreadsheetId(
-    String spreadsheetId,
-  ) async {
+      String spreadsheetId,) async {
     final sheetsApi = await this.sheetsApi;
     final spreadsheet = await sheetsApi.spreadsheets.get(
       spreadsheetId,
       $fields: "spreadsheetId,"
           "spreadsheetUrl,"
           "properties(title),"
-          "sheets(properties(sheetId,title),data(rowData(values(effectiveValue))))",
+          "sheets("
+          "properties(sheetId,title),"
+          "data("
+          "rowData(values(effectiveValue)),"
+          "rowMetadata(developerMetadata(metadataKey,metadataValue))"
+          ")"
+          ")",
       includeGridData: true,
     );
 
@@ -75,6 +80,8 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
         isForeignCapital: row.getString(column: 4) == "Kapitał obcy",
         shop: row.getString(column: 5),
         description: row.getString(column: 6),
+        attachedFiles:
+        dailyBalanceSheet.getMetadataForRow(index, "attachedFile"),
       );
     });
   }
@@ -86,7 +93,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
   DateTime? _getLastDate(Sheet statisticsSheet) {
     final numbersOfRows = statisticsSheet.getNumbersOfRows();
     final reversedRows =
-        List<int>.generate(numbersOfRows, (i) => numbersOfRows - i - 1);
+    List<int>.generate(numbersOfRows, (i) => numbersOfRows - i - 1);
     for (final row in reversedRows) {
       final date = statisticsSheet.getRow(row)?.getDate(column: 8);
       if (date != null) return date;
@@ -111,7 +118,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
 
   List<String> _getShops(Sheet statisticsSheet) {
     return statisticsSheet.mapRow(
-      (index, row) => row.hasColumn(16) ? row.getString(column: 16) : null,
+          (index, row) => row.hasColumn(16) ? row.getString(column: 16) : null,
     );
   }
 
@@ -127,12 +134,12 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       balance: statisticsSheet.getRow(8)!.getDouble(column: 1)!,
       foreignCapital: statisticsSheet.getRow(9)!.getDouble(column: 1)!,
       averageBalanceFromConstantIncomes:
-          statisticsSheet.getRow(11)?.getDouble(column: 1),
+      statisticsSheet.getRow(11)?.getDouble(column: 1),
       averageBalance: statisticsSheet.getRow(12)?.getDouble(column: 1),
       predictedBalanceWithEarnedIncomes:
-          statisticsSheet.getRow(14)?.getDouble(column: 1),
+      statisticsSheet.getRow(14)?.getDouble(column: 1),
       predictedBalanceWithGainedIncomes:
-          statisticsSheet.getRow(15)?.getDouble(column: 1),
+      statisticsSheet.getRow(15)?.getDouble(column: 1),
       predictedBalance: statisticsSheet.getRow(16)?.getDouble(column: 1),
       availableDailyBudget: statisticsSheet.getRow(17)?.getDouble(column: 1),
     );
@@ -141,9 +148,9 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
   Future<int> addTransaction({
     required String spreadsheetId,
     required DateTime date,
-    required GoogleSpreadsheetTransactionType type,
+    required GoogleSpreadsheetTransactionType? type,
     required double amount,
-    required String categorySymbol,
+    required String? categorySymbol,
     required bool isForeignCapital,
     required String? shop,
     required String? description,
@@ -154,9 +161,9 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       ..values = [
         [
           format.format(date),
-          type.toText(),
+          type?.toText() ?? "",
           amount,
-          categorySymbol,
+          categorySymbol ?? "",
           isForeignCapital ? "Kapitał obcy" : "",
           shop ?? "",
           description ?? "",
@@ -213,6 +220,61 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     );
   }
 
+  Future<void> addAttachedFile({
+    required GoogleSpreadsheetWallet wallet,
+    required int rowIndex,
+    required Uri attachedFile,
+  }) async {
+    final request = BatchUpdateSpreadsheetRequest();
+    request.requests = [
+      Request()
+        ..createDeveloperMetadata = (CreateDeveloperMetadataRequest()
+          ..developerMetadata = (DeveloperMetadata()
+            ..location = (DeveloperMetadataLocation()
+              ..dimensionRange = (DimensionRange()
+                ..dimension = "ROWS"
+                ..sheetId = wallet.dailyBalanceSheet.properties!.sheetId!
+                ..startIndex = rowIndex
+                ..endIndex = rowIndex + 1))
+            ..metadataKey = "attachedFile"
+            ..metadataValue = attachedFile.toString()
+            ..visibility = "DOCUMENT")),
+    ];
+    await (await this.sheetsApi).spreadsheets.batchUpdate(
+      request,
+      wallet.spreadsheet.spreadsheetId!,
+    );
+  }
+
+  Future<void> removeAttachedFile({
+    required GoogleSpreadsheetWallet wallet,
+    required int rowIndex,
+    required Uri attachedFile,
+  }) async {
+    final request = BatchUpdateSpreadsheetRequest();
+    request.requests =
+    [
+      Request()
+        ..deleteDeveloperMetadata = (DeleteDeveloperMetadataRequest()
+          ..dataFilter = (DataFilter()
+            ..developerMetadataLookup = (DeveloperMetadataLookup()
+              ..metadataLocation = (DeveloperMetadataLocation()
+                ..dimensionRange = (DimensionRange()
+                  ..dimension = "ROWS"
+                  ..sheetId = wallet.dailyBalanceSheet.properties!.sheetId!
+                  ..startIndex = rowIndex
+                  ..endIndex = rowIndex + 1))
+              ..metadataKey = "attachedFile"
+              ..metadataValue = attachedFile.toString()
+              ..visibility = "DOCUMENT"))
+        ),
+    ];
+    await (await this.sheetsApi).spreadsheets.batchUpdate(
+      request,
+      wallet.spreadsheet.spreadsheetId!,
+    );
+  }
+
   Future<void> removeTransaction({
     required String spreadsheetId,
     required int sheetId,
@@ -240,14 +302,14 @@ extension _SpreadsheetFinding on Spreadsheet {
 }
 
 extension _SheetIterator on Sheet {
-  int getNumbersOfRows() => data?[0].rowData?.length ?? 0;
+  int getNumbersOfRows() => data ? [0].rowData?.length ?? 0;
 
   RowData? getRow(int index) {
-    return data?[0].rowData?[index];
+    return data ? [0].rowData ? [index];
   }
 
   List<T> mapRow<T>(T? Function(int index, RowData row) callback) {
-    final rows = data?[0].rowData;
+    final rows = data ? [0].rowData;
     final list = <T>[];
     var index = 0;
     rows?.forEach((cell) {
@@ -257,6 +319,16 @@ extension _SheetIterator on Sheet {
     });
     return list;
   }
+
+  List<String> getMetadataForRow(int rowIndex, String key) {
+    final metadata = data ? [0].rowMetadata ? [rowIndex].developerMetadata ??
+        [];
+    return metadata
+        .where((m) => m.metadataKey == key)
+        .map((m) => m.metadataValue)
+        .toList()
+        .filterNonNull();
+  }
 }
 
 extension _RowDataConverting on RowData {
@@ -264,18 +336,18 @@ extension _RowDataConverting on RowData {
 
   double? getDouble({required int column}) {
     if (!hasColumn(column)) return null;
-    return values?[column].effectiveValue?.numberValue;
+    return values ? [column].effectiveValue?.numberValue;
   }
 
   String? getString({required int column}) {
     if (!hasColumn(column)) return null;
-    final string = values?[column].effectiveValue?.stringValue;
+    final string = values ? [column].effectiveValue?.stringValue;
     return string != null && string.isNotEmpty ? string : null;
   }
 
   DateTime? getDate({required int column}) {
     if (!hasColumn(column)) return null;
-    final date = values?[column].effectiveValue?.numberValue;
+    final date = values ? [column].effectiveValue?.numberValue;
     if (date == null) return null;
 
     final epoch = DateTime.utc(1899, 12, 30);
@@ -284,7 +356,7 @@ extension _RowDataConverting on RowData {
 
   GoogleSpreadsheetTransactionType? getTransactionType({required int column}) {
     if (!hasColumn(column)) return null;
-    final string = values?[column].effectiveValue?.stringValue;
+    final string = values ? [column].effectiveValue?.stringValue;
     if (string == "Bieżące")
       return GoogleSpreadsheetTransactionType.current;
     else if (string == "Stałe")

@@ -39,6 +39,18 @@ abstract class TransactionsProvider {
     required DateTime date,
   });
 
+  Future<void> addTransactionAttachedFile({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transaction,
+    required Uri attachedFile,
+  });
+
+  Future<void> removeTransactionAttachedFile({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transaction,
+    required Uri attachedFile,
+  });
+
   Future<void> removeTransaction({
     required Identifier<Wallet> walletId,
     required Transaction transaction,
