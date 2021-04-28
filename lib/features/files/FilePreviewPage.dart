@@ -1,37 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:open_file/open_file.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:qwallet/features/files/UniversalFile.dart';
+import 'package:qwallet/widget/PrimaryButton.dart';
+import 'package:share/share.dart';
 
 import 'MimeTypeIcons.dart';
 
 class FilePreviewPage extends StatelessWidget {
   final UniversalFile file;
   final UniversalFileCallback? onDelete;
-  final UniversalFileCallback? onShareFile;
 
   const FilePreviewPage({
     Key? key,
     required this.file,
     this.onDelete,
-    this.onShareFile,
   }) : super(key: key);
 
-  static show(
-    BuildContext context,
-    UniversalFile file, {
-    UniversalFileCallback? onDelete,
-    UniversalFileCallback? onShareFile,
-  }) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black87,
-      builder: (context) => FilePreviewPage(
-        file: file,
-        onDelete: onDelete,
-        onShareFile: onShareFile,
-      ),
+  void onSelectedShare(BuildContext context) async {
+    final localFile = await file.getLocalFile();
+    Share.shareFiles(
+      [localFile.path],
+      subject: file.filename,
+      mimeTypes: file.mimeType != null ? [file.mimeType!] : null,
     );
+  }
+
+  void onSelectedOpen(BuildContext context) async {
+    final localFile = await file.getLocalFile();
+    OpenFile.open(localFile.path, type: file.mimeType);
   }
 
   @override
@@ -43,14 +41,10 @@ class FilePreviewPage extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          if (onShareFile != null)
-            IconButton(
-              icon: Icon(Icons.share),
-              onPressed: () {
-                Navigator.of(context).pop();
-                onShareFile!(context, file);
-              },
-            ),
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: () => onSelectedShare(context),
+          ),
           if (onDelete != null)
             IconButton(
               icon: Icon(Icons.delete),
@@ -65,6 +59,21 @@ class FilePreviewPage extends StatelessWidget {
       ),
       backgroundColor: Colors.transparent,
       body: buildBody(context),
+    );
+  }
+
+  static show(
+    BuildContext context,
+    UniversalFile file, {
+    UniversalFileCallback? onDelete,
+  }) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (context) => FilePreviewPage(
+        file: file,
+        onDelete: onDelete,
+      ),
     );
   }
 
@@ -105,6 +114,12 @@ class FilePreviewPage extends StatelessWidget {
                 color: Colors.white,
                 fontSize: 21,
               ),
+            ),
+            SizedBox(height: 36),
+            PrimaryButton(
+              child: Text("#Open file"),
+              shrinkWrap: true,
+              onPressed: () => onSelectedOpen(context),
             ),
           ],
         ),

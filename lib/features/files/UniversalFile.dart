@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mime/mime.dart';
+import 'package:path_provider/path_provider.dart';
 
 typedef UniversalFileCallback = void Function(
     BuildContext context, UniversalFile file);
@@ -33,6 +34,13 @@ abstract class UniversalFile {
     final filename = this.filename;
     final dotIndex = filename.lastIndexOf('.');
     return dotIndex != -1 ? filename.substring(dotIndex + 1) : null;
+  }
+
+  Future<File> getLocalFile() async {
+    final bytes = await getBytes();
+    final tempDir = await getTemporaryDirectory();
+    final tempFile = File("${tempDir.path}/$filename");
+    return await tempFile.writeAsBytes(bytes);
   }
 
   Future<void> delete();

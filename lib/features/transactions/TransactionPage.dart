@@ -4,7 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Transaction.dart';
@@ -24,7 +23,6 @@ import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/EnterMoneyDialog.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
-import 'package:share/share.dart';
 
 import '../../AppLocalizations.dart';
 import '../../utils.dart';
@@ -185,8 +183,6 @@ class _TransactionPageState extends State<TransactionPage> {
       file,
       onDelete: (context, file) =>
           onSelectedDeleteAttachedFile(context, transaction, file),
-      onShareFile: (context, file) =>
-          onSelectedShareAttachedFile(context, file),
     );
   }
 
@@ -282,19 +278,6 @@ class _TransactionPageState extends State<TransactionPage> {
     );
 
     file.delete();
-  }
-
-  void onSelectedShareAttachedFile(
-      BuildContext context, UniversalFile file) async {
-    final bytes = await file.getBytes();
-    final tempDir = await getTemporaryDirectory();
-    final tempFile = File("${tempDir.path}/${file.filename}");
-    await tempFile.writeAsBytes(bytes);
-    Share.shareFiles(
-      [tempFile.path],
-      subject: file.filename,
-      mimeTypes: file.mimeType != null ? [file.mimeType!] : null,
-    );
   }
 
   @override
