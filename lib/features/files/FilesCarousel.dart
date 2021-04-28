@@ -9,14 +9,12 @@ class FilesCarousel extends StatelessWidget {
 
   final VoidCallback? onPressedAdd;
   final UniversalFileCallback? onPressedFile;
-  final UniversalFileCallback? onDeleteFile;
 
   const FilesCarousel({
     Key? key,
     required this.files,
     this.onPressedAdd,
     this.onPressedFile,
-    this.onDeleteFile,
   }) : super(key: key);
 
   @override

@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/data_source/Category.dart';
@@ -7,6 +11,7 @@ import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/data_source/firebase/FirebaseFileStorageProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseTransaction.dart';
+import 'package:qwallet/features/camera/TakePhotoPage.dart';
 import 'package:qwallet/features/files/FilePreviewPage.dart';
 import 'package:qwallet/features/files/FilesCarousel.dart';
 import 'package:qwallet/features/files/UniversalFile.dart';
@@ -21,6 +26,7 @@ import 'package:qwallet/widget/TransactionTypeButton.dart';
 
 import '../../AppLocalizations.dart';
 import '../../utils.dart';
+import '../../utils/IterableFinding.dart';
 
 class TransactionPage extends StatefulWidget {
   final Wallet wallet;
@@ -180,6 +186,83 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
+  void onSelectedAddAttachedFile(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(
+            leading: Icon(Icons.photo_camera),
+            title: Text("#Take photo"),
+            onTap: () => onSelectedAttachedFilesTakePhoto(context),
+          ),
+          ListTile(
+            leading: Icon(Icons.photo_library),
+            title: Text("#Select from gallery"),
+            onTap: () => onSelectedAttachedFileFromGallery(context),
+          ),
+          ListTile(
+            leading: Icon(Icons.attach_file),
+            title: Text("#Attach files"),
+            onTap: () => onSelectedAttachedFileSelectFile(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void onSelectedAttachedFilesTakePhoto(BuildContext context) async {
+    Navigator.of(context).pop();
+    final photoFile = await pushPage(
+      context,
+      builder: (context) => TakePhotoPage(),
+    ) as LocalUniversalFile?;
+    if (photoFile != null) {
+      _addAttachFiles([photoFile]);
+    }
+  }
+
+  void onSelectedAttachedFileFromGallery(BuildContext context) async {
+    Navigator.of(context).pop();
+    final pickedFile =
+        await ImagePicker().getImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      final photoFile = LocalUniversalFile(File(pickedFile.path));
+      _addAttachFiles([photoFile]);
+    }
+  }
+
+  void onSelectedAttachedFileSelectFile(BuildContext context) async {
+    Navigator.of(context).pop();
+
+    final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+    if (result != null) {
+      final files = result.paths
+          .filterNonNull()
+          .map((p) => LocalUniversalFile(File(p)))
+          .toList();
+      _addAttachFiles(files);
+    }
+  }
+
+  void _addAttachFiles(List<LocalUniversalFile> files) async {
+    final transaction = widget.transaction as FirebaseTransaction;
+    final provider = FirebaseFileStorageProvider();
+    final uploadedFiles = await Future.wait(files.map((file) =>
+        provider.uploadFile(
+            widget.wallet.identifier, widget.transaction.identifier, file)));
+
+    final attachedFiles = List.of(transaction.attachedFiles);
+    attachedFiles.addAll(uploadedFiles.map((f) => f.uri));
+
+    SharedProviders.firebaseTransactionsProvider.updateTransactionAttachedFiles(
+      walletId: widget.wallet.identifier,
+      transaction: transaction.identifier,
+      attachedFiles: attachedFiles,
+    );
+  }
+
   void onSelectedDeleteAttachedFile(
     BuildContext context,
     FirebaseTransaction transaction,
@@ -247,7 +330,6 @@ class _TransactionPageState extends State<TransactionPage> {
 
   Widget buildAttachedFilesCarousel(
       BuildContext context, FirebaseTransaction transaction) {
-    if (transaction.attachedFiles.isEmpty) return Container();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SimpleStreamWidget.fromFuture(
@@ -257,6 +339,7 @@ class _TransactionPageState extends State<TransactionPage> {
             files: files,
             onPressedFile: (context, file) =>
                 onSelectedAttachedFile(context, transaction, file),
+            onPressedAdd: () => onSelectedAddAttachedFile(context),
           );
         },
       ),
