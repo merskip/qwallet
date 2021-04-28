@@ -69,7 +69,6 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
   }
 
   List<double> _getIncomes(Sheet generalSheet) {
-    throw Exception("Test");
     return generalSheet.mapRow((_, row) => row.getDouble(column: 1));
   }
 
