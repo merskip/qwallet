@@ -190,10 +190,10 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     });
   }
 
-  Future<void> updateTransactionAttachedFiles({
+  Future<void> addTransactionAttachedFile({
     required Identifier<Wallet> walletId,
     required Identifier<Transaction> transaction,
-    required List<Uri> attachedFiles,
+    required Uri attachedFile,
   }) {
     assert(walletId.domain == "firebase");
     return firestore
@@ -202,7 +202,27 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
         .collection("transactions")
         .doc(transaction.id)
         .update({
-      "attachedFiles": attachedFiles.map((uri) => uri.toString()).toList(),
+      "attachedFiles": CloudFirestore.FieldValue.arrayUnion([
+        attachedFile.toString(),
+      ]),
+    });
+  }
+
+  Future<void> removeTransactionAttachedFile({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transaction,
+    required Uri attachedFile,
+  }) {
+    assert(walletId.domain == "firebase");
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("transactions")
+        .doc(transaction.id)
+        .update({
+      "attachedFiles": CloudFirestore.FieldValue.arrayRemove([
+        attachedFile.toString(),
+      ]),
     });
   }
 

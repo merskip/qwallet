@@ -109,22 +109,54 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     }
   }
 
+  // @override
+  // Future<void> updateTransactionAttachedFiles({
+  //   required Identifier<Wallet> walletId,
+  //   required Identifier<Transaction> transaction,
+  //   required List<Uri> attachedFiles,
+  // }) async {
+  //   assert(walletId.domain == "google_sheets");
+  //   final wallet = await repository.getWalletBySpreadsheetId(walletId.id);
+  //   for (final file in attachedFiles) {
+  //     await repository.addRowMetadata(
+  //       wallet: wallet,
+  //       rowIndex: int.parse(transaction.id),
+  //       key: "attachedFiles",
+  //       value: file.toString(),
+  //     );
+  //   }
+  //   walletsProvider.refreshWallet(walletId);
+  // }
+
   @override
-  Future<void> updateTransactionAttachedFiles({
+  Future<void> addTransactionAttachedFile({
     required Identifier<Wallet> walletId,
     required Identifier<Transaction> transaction,
-    required List<Uri> attachedFiles,
+    required Uri attachedFile,
   }) async {
     assert(walletId.domain == "google_sheets");
     final wallet = await repository.getWalletBySpreadsheetId(walletId.id);
-    for (final file in attachedFiles) {
-      await repository.addRowMetadata(
-        wallet: wallet,
-        rowIndex: int.parse(transaction.id),
-        key: "attachedFiles",
-        value: file.toString(),
-      );
-    }
+    await repository.addAttachedFile(
+      wallet: wallet,
+      rowIndex: int.parse(transaction.id),
+      attachedFile: attachedFile,
+    );
+    walletsProvider.refreshWallet(walletId);
+  }
+
+  @override
+  Future<void> removeTransactionAttachedFile({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transaction,
+    required Uri attachedFile,
+  }) async {
+    assert(walletId.domain == "google_sheets");
+    final wallet = await repository.getWalletBySpreadsheetId(walletId.id);
+    await repository.removeAttachedFile(
+      wallet: wallet,
+      rowIndex: int.parse(transaction.id),
+      attachedFile: attachedFile,
+    );
     walletsProvider.refreshWallet(walletId);
   }
 

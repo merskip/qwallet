@@ -281,16 +281,17 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         if (attachedFiles.isNotEmpty) {
           final uploadedFiles = await Future.wait(
             attachedFiles.map((file) => FirebaseFileStorageProvider()
-                .uploadFile(wallet.identifier, transactionId, file)
-                .then((reference) => reference.uri)),
+                .uploadFile(wallet.identifier, transactionId, file)),
           );
 
-          await SharedProviders.transactionsProvider
-              .updateTransactionAttachedFiles(
-            walletId: wallet.identifier,
-            transaction: transactionId,
-            attachedFiles: uploadedFiles,
-          );
+          for (final file in uploadedFiles) {
+            await SharedProviders.transactionsProvider
+                .addTransactionAttachedFile(
+              walletId: wallet.identifier,
+              transaction: transactionId,
+              attachedFile: file.uri,
+            );
+          }
         }
 
         router.pop(context);

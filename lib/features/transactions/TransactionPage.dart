@@ -234,29 +234,24 @@ class _TransactionPageState extends State<TransactionPage> {
         provider.uploadFile(
             widget.wallet.identifier, widget.transaction.identifier, file)));
 
-    final attachedFiles = List.of(widget.transaction.attachedFiles);
-    attachedFiles.addAll(uploadedFiles.map((f) => f.uri));
-
-    SharedProviders.transactionsProvider.updateTransactionAttachedFiles(
-      walletId: widget.wallet.identifier,
-      transaction: widget.transaction.identifier,
-      attachedFiles: attachedFiles,
-    );
+    for (final file in uploadedFiles) {
+      await SharedProviders.transactionsProvider.addTransactionAttachedFile(
+        walletId: widget.wallet.identifier,
+        transaction: widget.transaction.identifier,
+        attachedFile: file.uri,
+      );
+    }
   }
 
   void onSelectedDeleteAttachedFile(
     BuildContext context,
     UniversalFile file,
   ) async {
-    final attachedFiles = List.of(widget.transaction.attachedFiles);
-    attachedFiles.removeWhere((uri) => uri == file.uri);
-
-    SharedProviders.transactionsProvider.updateTransactionAttachedFiles(
+    SharedProviders.transactionsProvider.removeTransactionAttachedFile(
       walletId: widget.wallet.identifier,
       transaction: widget.transaction.identifier,
-      attachedFiles: attachedFiles,
+      attachedFile: file.uri,
     );
-
     file.delete();
   }
 
