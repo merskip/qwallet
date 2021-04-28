@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:open_file/open_file.dart';
@@ -11,15 +13,16 @@ import 'MimeTypeIcons.dart';
 class FilePreviewPage extends StatelessWidget {
   final UniversalFile file;
   final UniversalFileCallback? onDelete;
+  final showProgressIndicator = ValueNotifier<bool>(false);
 
-  const FilePreviewPage({
+  FilePreviewPage({
     Key? key,
     required this.file,
     this.onDelete,
   }) : super(key: key);
 
   void onSelectedShare(BuildContext context) async {
-    final localFile = await file.getLocalFile();
+    final localFile = await _getLocalFile();
     Share.shareFiles(
       [localFile.path],
       subject: file.filename,
@@ -28,8 +31,15 @@ class FilePreviewPage extends StatelessWidget {
   }
 
   void onSelectedOpen(BuildContext context) async {
-    final localFile = await file.getLocalFile();
+    final localFile = await _getLocalFile();
     OpenFile.open(localFile.path, type: file.mimeType);
+  }
+
+  Future<File> _getLocalFile() async {
+    showProgressIndicator.value = true;
+    final localFile = await file.getLocalFile();
+    showProgressIndicator.value = false;
+    return localFile;
   }
 
   @override
@@ -121,6 +131,15 @@ class FilePreviewPage extends StatelessWidget {
               shrinkWrap: true,
               onPressed: () => onSelectedOpen(context),
             ),
+            SizedBox(height: 36),
+            ValueListenableBuilder(
+              valueListenable: showProgressIndicator,
+              builder: (context, bool value, child) {
+                return value
+                    ? CircularProgressIndicator()
+                    : Container(height: 36);
+              },
+            )
           ],
         ),
       ),
