@@ -175,13 +175,11 @@ class _TransactionPageState extends State<TransactionPage> {
     }
   }
 
-  void onSelectedAttachedFile(BuildContext context,
-      FirebaseTransaction transaction, UniversalFile file) async {
+  void onSelectedAttachedFile(BuildContext context, UniversalFile file) async {
     FilePreviewPage.show(
       context,
       file,
-      onDelete: (context, file) =>
-          onSelectedDeleteAttachedFile(context, transaction, file),
+      onDelete: (context, file) => onSelectedDeleteAttachedFile(context, file),
     );
   }
 
@@ -231,33 +229,31 @@ class _TransactionPageState extends State<TransactionPage> {
   }
 
   void _addAttachFiles(List<LocalUniversalFile> files) async {
-    final transaction = widget.transaction as FirebaseTransaction;
     final provider = FirebaseFileStorageProvider();
     final uploadedFiles = await Future.wait(files.map((file) =>
         provider.uploadFile(
             widget.wallet.identifier, widget.transaction.identifier, file)));
 
-    final attachedFiles = List.of(transaction.attachedFiles);
+    final attachedFiles = List.of(widget.transaction.attachedFiles);
     attachedFiles.addAll(uploadedFiles.map((f) => f.uri));
 
-    SharedProviders.firebaseTransactionsProvider.updateTransactionAttachedFiles(
+    SharedProviders.transactionsProvider.updateTransactionAttachedFiles(
       walletId: widget.wallet.identifier,
-      transaction: transaction.identifier,
+      transaction: widget.transaction.identifier,
       attachedFiles: attachedFiles,
     );
   }
 
   void onSelectedDeleteAttachedFile(
     BuildContext context,
-    FirebaseTransaction transaction,
     UniversalFile file,
   ) async {
-    final attachedFiles = List.of(transaction.attachedFiles);
+    final attachedFiles = List.of(widget.transaction.attachedFiles);
     attachedFiles.removeWhere((uri) => uri == file.uri);
 
-    SharedProviders.firebaseTransactionsProvider.updateTransactionAttachedFiles(
+    SharedProviders.transactionsProvider.updateTransactionAttachedFiles(
       walletId: widget.wallet.identifier,
-      transaction: transaction.identifier,
+      transaction: widget.transaction.identifier,
       attachedFiles: attachedFiles,
     );
 
@@ -284,9 +280,7 @@ class _TransactionPageState extends State<TransactionPage> {
       body: ListView(
         children: [
           buildWallet(context, widget.wallet),
-          if (widget.transaction is FirebaseTransaction)
-            buildAttachedFilesCarousel(
-                context, widget.transaction as FirebaseTransaction),
+          buildAttachedFilesCarousel(context),
           buildCategory(context),
           buildType(context),
           buildTitle(context),
@@ -312,17 +306,16 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  Widget buildAttachedFilesCarousel(
-      BuildContext context, FirebaseTransaction transaction) {
+  Widget buildAttachedFilesCarousel(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SimpleStreamWidget.fromFuture(
-        future: getAttachedFiles(transaction),
+        future: getAttachedFiles(),
         builder: (context, List<UniversalFile> files) {
           return FilesCarousel(
             files: files,
             onPressedFile: (context, file) =>
-                onSelectedAttachedFile(context, transaction, file),
+                onSelectedAttachedFile(context, file),
             onPressedAdd: () => onSelectedAddAttachedFile(context),
           );
         },
@@ -330,10 +323,9 @@ class _TransactionPageState extends State<TransactionPage> {
     );
   }
 
-  Future<List<UniversalFile>> getAttachedFiles(
-      FirebaseTransaction firebaseTransaction) async {
+  Future<List<UniversalFile>> getAttachedFiles() async {
     final provider = FirebaseFileStorageProvider();
-    return Future.wait(firebaseTransaction.attachedFiles.map((fileUri) {
+    return Future.wait(widget.transaction.attachedFiles.map((fileUri) {
       return provider.getUniversalFile(fileUri);
     }));
   }

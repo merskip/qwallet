@@ -20,7 +20,13 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       $fields: "spreadsheetId,"
           "spreadsheetUrl,"
           "properties(title),"
-          "sheets(properties(sheetId,title),data(rowData(values(effectiveValue))))",
+          "sheets("
+          "properties(sheetId,title),"
+          "data("
+          "rowData(values(effectiveValue)),"
+          "rowMetadata(developerMetadata(metadataKey,metadataValue))"
+          ")"
+          ")",
       includeGridData: true,
     );
 
@@ -75,6 +81,8 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
         isForeignCapital: row.getString(column: 4) == "Kapitał obcy",
         shop: row.getString(column: 5),
         description: row.getString(column: 6),
+        attachedFiles:
+            dailyBalanceSheet.getMetadataForRow(index, "attachedFiles"),
       );
     });
   }
@@ -213,6 +221,34 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     );
   }
 
+  Future<void> addRowMetadata({
+    required GoogleSpreadsheetWallet wallet,
+    required int rowIndex,
+    required String key,
+    required String value,
+  }) async {
+    final sheetsApi = await this.sheetsApi;
+    final request = BatchUpdateSpreadsheetRequest();
+    request.requests = [
+      Request()
+        ..createDeveloperMetadata = (CreateDeveloperMetadataRequest()
+          ..developerMetadata = (DeveloperMetadata()
+            ..location = (DeveloperMetadataLocation()
+              ..dimensionRange = (DimensionRange()
+                ..dimension = "ROWS"
+                ..sheetId = wallet.dailyBalanceSheet.properties!.sheetId!
+                ..startIndex = rowIndex
+                ..endIndex = rowIndex + 1))
+            ..metadataKey = key
+            ..metadataValue = value
+            ..visibility = "DOCUMENT")),
+    ];
+    await sheetsApi.spreadsheets.batchUpdate(
+      request,
+      wallet.spreadsheet.spreadsheetId!,
+    );
+  }
+
   Future<void> removeTransaction({
     required String spreadsheetId,
     required int sheetId,
@@ -256,6 +292,15 @@ extension _SheetIterator on Sheet {
       index++;
     });
     return list;
+  }
+
+  List<String> getMetadataForRow(int rowIndex, String key) {
+    final metadata = data?[0].rowMetadata?[rowIndex].developerMetadata ?? [];
+    return metadata
+        .where((m) => m.metadataKey == key)
+        .map((m) => m.metadataValue)
+        .toList()
+        .filterNonNull();
   }
 }
 

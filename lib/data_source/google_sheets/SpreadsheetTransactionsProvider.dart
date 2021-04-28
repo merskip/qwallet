@@ -110,6 +110,25 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
   }
 
   @override
+  Future<void> updateTransactionAttachedFiles({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction> transaction,
+    required List<Uri> attachedFiles,
+  }) async {
+    assert(walletId.domain == "google_sheets");
+    final wallet = await repository.getWalletBySpreadsheetId(walletId.id);
+    for (final file in attachedFiles) {
+      await repository.addRowMetadata(
+        wallet: wallet,
+        rowIndex: int.parse(transaction.id),
+        key: "attachedFiles",
+        value: file.toString(),
+      );
+    }
+    walletsProvider.refreshWallet(walletId);
+  }
+
+  @override
   Future<void> removeTransaction({
     required Identifier<Wallet> walletId,
     required Transaction transaction,
@@ -140,6 +159,9 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
       date: transfer.date,
       category: wallet.categories
           .findFirstOrNull((c) => c.symbol == transfer.categorySymbol),
+      attachedFiles: transfer.attachedFiles
+          .map((file) => Uri.tryParse(file))
+          .filterNonNull(),
       excludedFromDailyStatistics:
           transfer.type != GoogleSpreadsheetTransactionType.current,
     );

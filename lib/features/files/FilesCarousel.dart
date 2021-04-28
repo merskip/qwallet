@@ -85,6 +85,10 @@ class FilesCarousel extends StatelessWidget {
     if (imageProvider != null) {
       return Image(
         image: imageProvider,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(child: CircularProgressIndicator());
+        },
         fit: BoxFit.cover,
       );
     } else {
