@@ -1395,7 +1395,7 @@ extension DailySpendingLocalizations on AppLocalizations {
       );
 }
 
-extension ReporstLocalizations on AppLocalizations {
+extension ReportsLocalizations on AppLocalizations {
   String get reportsTitle => _locale(
         en: "Reports",
         pl: "Raporty",
@@ -1429,5 +1429,22 @@ extension ReporstLocalizations on AppLocalizations {
   String get reportsNoCategory => _locale(
         en: "Without category",
         pl: "Bez categorii",
+      );
+}
+
+extension AttachedFilesLocalizations on AppLocalizations {
+  String get attachedFileTakePhoto => _locale(
+        en: "Take photo",
+        pl: "Zrób zdjęcie",
+      );
+
+  String get attachedFileSelectFiles => _locale(
+        en: "Select files",
+        pl: "Wybierz pliki",
+      );
+
+  String get attachedFileOpenFile => _locale(
+        en: "Open file",
+        pl: "Otwórz plik",
       );
 }

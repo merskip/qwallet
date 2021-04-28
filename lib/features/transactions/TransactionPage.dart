@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/data_source/Category.dart';
@@ -194,17 +193,12 @@ class _TransactionPageState extends State<TransactionPage> {
         children: [
           ListTile(
             leading: Icon(Icons.photo_camera),
-            title: Text("#Take photo"),
+            title: Text(AppLocalizations.of(context).attachedFileTakePhoto),
             onTap: () => onSelectedAttachedFilesTakePhoto(context),
           ),
           ListTile(
-            leading: Icon(Icons.photo_library),
-            title: Text("#Select from gallery"),
-            onTap: () => onSelectedAttachedFileFromGallery(context),
-          ),
-          ListTile(
             leading: Icon(Icons.attach_file),
-            title: Text("#Attach files"),
+            title: Text(AppLocalizations.of(context).attachedFileSelectFiles),
             onTap: () => onSelectedAttachedFileSelectFile(context),
           ),
         ],
@@ -219,16 +213,6 @@ class _TransactionPageState extends State<TransactionPage> {
       builder: (context) => TakePhotoPage(),
     ) as LocalUniversalFile?;
     if (photoFile != null) {
-      _addAttachFiles([photoFile]);
-    }
-  }
-
-  void onSelectedAttachedFileFromGallery(BuildContext context) async {
-    Navigator.of(context).pop();
-    final pickedFile =
-        await ImagePicker().getImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      final photoFile = LocalUniversalFile(File(pickedFile.path));
       _addAttachFiles([photoFile]);
     }
   }

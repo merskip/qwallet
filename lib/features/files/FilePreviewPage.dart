@@ -8,6 +8,7 @@ import 'package:qwallet/features/files/UniversalFile.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:share/share.dart';
 
+import '../../AppLocalizations.dart';
 import 'MimeTypeIcons.dart';
 
 class FilePreviewPage extends StatelessWidget {
@@ -127,7 +128,7 @@ class FilePreviewPage extends StatelessWidget {
             ),
             SizedBox(height: 36),
             PrimaryButton(
-              child: Text("#Open file"),
+              child: Text(AppLocalizations.of(context).attachedFileOpenFile),
               shrinkWrap: true,
               onPressed: () => onSelectedOpen(context),
             ),
