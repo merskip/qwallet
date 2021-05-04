@@ -69,6 +69,7 @@ class FilesCarousel extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
+            color: Colors.black12,
           ),
           clipBehavior: Clip.hardEdge,
           child: AspectRatio(
@@ -87,7 +88,11 @@ class FilesCarousel extends StatelessWidget {
         image: imageProvider,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
-          return Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+            ),
+          );
         },
         fit: BoxFit.cover,
       );
