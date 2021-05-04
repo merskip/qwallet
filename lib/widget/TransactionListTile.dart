@@ -33,13 +33,21 @@ class TransactionListTile extends StatelessWidget {
     final String title = transaction.title ??
         category?.titleText ??
         getTypeLocalizedText(context);
-    final subTitle = transaction.title != null ? category?.titleText : null;
+
+    final subtitleText = transaction.title != null ? category?.titleText : null;
+    final subtitle = Row(children: [
+      if (subtitleText != null) Text(subtitleText),
+      if (subtitleText != null && transaction.attachedFiles.isNotEmpty)
+        Text(" • "),
+      if (transaction.attachedFiles.isNotEmpty)
+        Icon(Icons.attachment, size: 16, color: Colors.grey),
+    ]);
 
     return ListTile(
       key: Key(transaction.identifier.id),
       leading: CategoryIcon(category, size: 17),
       title: Text(title),
-      subtitle: subTitle != null ? Text(subTitle) : null,
+      subtitle: subtitle,
       trailing: Text(amountPrefix + amountText, style: TextStyle(color: color)),
       dense: true,
       visualDensity: visualDensity,
