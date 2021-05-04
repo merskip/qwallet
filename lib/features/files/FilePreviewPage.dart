@@ -5,7 +5,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:open_file/open_file.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:qwallet/features/files/UniversalFile.dart';
+import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:share/share.dart';
 
 import '../../AppLocalizations.dart';
@@ -14,7 +16,8 @@ import 'MimeTypeIcons.dart';
 class FilePreviewPage extends StatelessWidget {
   final UniversalFile file;
   final UniversalFileCallback? onDelete;
-  final showProgressIndicator = ValueNotifier<bool>(false);
+  final showProgressIndicator = ValueNotifier(false);
+  late final showFileInfo = ValueNotifier(!file.isImage);
 
   FilePreviewPage({
     Key? key,
@@ -29,6 +32,10 @@ class FilePreviewPage extends StatelessWidget {
       subject: file.filename,
       mimeTypes: file.mimeType != null ? [file.mimeType!] : null,
     );
+  }
+
+  void onSelectedToggleInfo(BuildContext context) {
+    showFileInfo.value = !showFileInfo.value;
   }
 
   void onSelectedOpen(BuildContext context) async {
@@ -56,6 +63,11 @@ class FilePreviewPage extends StatelessWidget {
             icon: Icon(Icons.share),
             onPressed: () => onSelectedShare(context),
           ),
+          if (file.isImage)
+            IconButton(
+              icon: Icon(Icons.info_outlined),
+              onPressed: () => onSelectedToggleInfo(context),
+            ),
           if (onDelete != null)
             IconButton(
               icon: Icon(Icons.delete),
@@ -90,11 +102,16 @@ class FilePreviewPage extends StatelessWidget {
 
   Widget buildBody(BuildContext context) {
     final imageProvider = file.getImageProvider();
-    if (imageProvider != null) {
-      return buildImageView(context, imageProvider);
-    } else {
-      return buildFileMetadata(context);
-    }
+    return ValueListenableBuilder(
+      valueListenable: showFileInfo,
+      builder: (context, value, child) {
+        if (!showFileInfo.value && imageProvider != null) {
+          return buildImageView(context, imageProvider);
+        } else {
+          return buildFileMetadata(context);
+        }
+      },
+    );
   }
 
   Widget buildImageView(BuildContext context, ImageProvider imageProvider) {
@@ -124,6 +141,28 @@ class FilePreviewPage extends StatelessWidget {
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 21,
+              ),
+            ),
+            SizedBox(height: 8),
+            SimpleStreamWidget.fromFuture(
+              future: file.getHumanReadableSize(),
+              builder: (context, String? size) => DetailsItemTile(
+                title: Text("#Size"),
+                value: Text(size ?? "-"),
+                textColor: Colors.white,
+              ),
+            ),
+            DetailsItemTile(
+              title: Text("#Media type"),
+              value: Text(file.mimeType ?? "-"),
+              textColor: Colors.white,
+            ),
+            SimpleStreamWidget.fromFuture(
+              future: file.getLastModified(),
+              builder: (context, DateTime? date) => DetailsItemTile(
+                title: Text("#Last modified"),
+                value: Text(date?.toString() ?? "-"),
+                textColor: Colors.white,
               ),
             ),
             SizedBox(height: 36),

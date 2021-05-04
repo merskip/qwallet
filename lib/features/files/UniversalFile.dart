@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
@@ -43,6 +44,19 @@ abstract class UniversalFile {
     return await tempFile.writeAsBytes(bytes);
   }
 
+  Future<String?> getHumanReadableSize() async {
+    final size = await getSize();
+    if (size == null) return null;
+    final suffixes = ["B", "KB", "MB", "GB", "TB"];
+    final factor = (log(size) / log(1024)).floor();
+    final readableSize = size / pow(1024, factor);
+    return readableSize.toStringAsFixed(2) + " " + suffixes[factor];
+  }
+
+  Future<int?> getSize();
+
+  Future<DateTime?> getLastModified();
+
   Future<void> delete();
 
   Future<Uint8List> getBytes();
@@ -70,14 +84,16 @@ class LocalUniversalFile extends UniversalFile {
           mimeType: mimeType ?? lookupMimeType(localFile.path),
         );
 
-  Future<void> delete() {
-    return localFile.delete();
-  }
+  Future<void> delete() => localFile.delete();
 
   @override
-  Future<Uint8List> getBytes() {
-    return localFile.readAsBytes();
-  }
+  Future<int?> getSize() => localFile.length();
+
+  @override
+  Future<DateTime?> getLastModified() => localFile.lastModified();
+
+  @override
+  Future<Uint8List> getBytes() => localFile.readAsBytes();
 }
 
 class FirebaseStorageUniversalFile extends UniversalFile {
@@ -102,14 +118,19 @@ class FirebaseStorageUniversalFile extends UniversalFile {
         fileReference, Uri.parse(downloadUrl), mimeType);
   }
 
-  Future<void> delete() {
-    return fileReference.delete();
-  }
+  @override
+  Future<void> delete() => fileReference.delete();
 
   @override
-  Future<Uint8List> getBytes() {
-    return fileReference.getData().then((data) => data ?? Uint8List(0));
-  }
+  Future<int?> getSize() async => (await fileReference.getMetadata()).size;
+
+  @override
+  Future<DateTime?> getLastModified() async =>
+      (await fileReference.getMetadata()).updated;
+
+  @override
+  Future<Uint8List> getBytes() =>
+      fileReference.getData().then((data) => data ?? Uint8List(0));
 }
 
 extension ReferenceUri on Reference {

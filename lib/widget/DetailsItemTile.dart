@@ -7,6 +7,7 @@ class DetailsItemTile extends StatefulWidget {
   final Widget title;
   final Widget value;
   final EdgeInsets? padding;
+  final Color? textColor;
 
   final IconData? editIcon;
   final String? editTooltip;
@@ -22,6 +23,7 @@ class DetailsItemTile extends StatefulWidget {
     required this.title,
     required this.value,
     this.padding,
+    this.textColor,
     this.editIcon,
     this.editTooltip,
     this.onEdit,
@@ -98,7 +100,9 @@ class _DetailsItemTileState extends State<DetailsItemTile> {
           SizedBox(height: 4),
           DefaultTextStyle(
             child: widget.value,
-            style: Theme.of(context).textTheme.subtitle1!,
+            style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                  color: widget.textColor,
+                ),
             overflow: TextOverflow.clip,
           ),
         ],
@@ -115,7 +119,8 @@ class _DetailsItemTileState extends State<DetailsItemTile> {
   }
 
   Widget buildTitle(BuildContext context) {
-    final color = Theme.of(context).textTheme.caption!.color;
+    final color = widget.textColor?.withOpacity(0.6) ??
+        Theme.of(context).textTheme.caption!.color;
     final textStyle =
         Theme.of(context).textTheme.bodyText2!.copyWith(color: color);
     return DefaultTextStyle(child: widget.title, style: textStyle);
