@@ -49,7 +49,7 @@ class TransactionListTile extends StatelessWidget {
       key: Key(transaction.identifier.id),
       leading: CategoryIcon(category, size: 17),
       title: Text(title),
-      subtitle: subtitle,
+      subtitle: subtitle.children.isNotEmpty ? subtitle : null,
       trailing: Text(amountPrefix + amountText, style: TextStyle(color: color)),
       dense: true,
       visualDensity: visualDensity,
