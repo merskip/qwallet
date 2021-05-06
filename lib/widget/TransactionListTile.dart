@@ -39,6 +39,8 @@ class TransactionListTile extends StatelessWidget {
       if (subtitleText != null) Text(subtitleText),
       if (subtitleText != null && transaction.attachedFiles.isNotEmpty)
         Text(" • "),
+      if (transaction.attachedFiles.length >= 2)
+        Text("${transaction.attachedFiles.length}"),
       if (transaction.attachedFiles.isNotEmpty)
         Icon(Icons.attachment, size: 16, color: Colors.grey),
     ]);
