@@ -2,6 +2,7 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 
 import '../../logger.dart';
+import '../../utils/IterableFinding.dart';
 
 class LogsPreviewPage extends StatefulWidget {
   const LogsPreviewPage({
@@ -13,7 +14,32 @@ class LogsPreviewPage extends StatefulWidget {
 }
 
 class _LogsPreviewPageState extends State<LogsPreviewPage> {
+  List<GroupedLogEvent>? logs;
   final List<LogEvent> showedStackStace = [];
+
+  @override
+  void initState() {
+    var logs = <GroupedLogEvent>[];
+    for (final logEvent in logger.logs) {
+      final lastLogEvent = logs.lastOrNull;
+      if (lastLogEvent != null &&
+          lastLogEvent.message == logEvent.message &&
+          lastLogEvent.exception == logEvent.exception &&
+          lastLogEvent.stackTrace == logEvent.stackTrace) {
+        logs.removeLast();
+        logs.add(lastLogEvent.incrementedCount(
+          time: logEvent.time,
+        ));
+      } else {
+        logs.add(GroupedLogEvent(logEvent.level, logEvent.time,
+            logEvent.message, logEvent.exception, logEvent.stackTrace));
+      }
+    }
+    setState(() {
+      this.logs = logs;
+    });
+    super.initState();
+  }
 
   void onSelectedLogEvent(BuildContext context, LogEvent logEvent) {
     setState(() {
@@ -30,21 +56,28 @@ class _LogsPreviewPageState extends State<LogsPreviewPage> {
       appBar: AppBar(
         title: Text("#Logs"),
       ),
-      body: Scrollbar(
-        child: ListView.separated(
-          padding: const EdgeInsets.all(8),
-          itemCount: logger.logs.length,
-          itemBuilder: (context, index) {
-            final logEvent = logger.logs[index];
-            return buildLogEvent(context, logEvent);
-          },
-          separatorBuilder: (context, index) => Divider(),
-        ),
+      body: logs != null
+          ? buildLogsListView(context, logs!)
+          : Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget buildLogsListView(
+      BuildContext context, List<GroupedLogEvent> groupedLogEvent) {
+    return Scrollbar(
+      child: ListView.separated(
+        padding: const EdgeInsets.all(8),
+        itemCount: groupedLogEvent.length,
+        itemBuilder: (context, index) {
+          final logEvent = groupedLogEvent[index];
+          return buildLogEvent(context, logEvent);
+        },
+        separatorBuilder: (context, index) => Divider(),
       ),
     );
   }
 
-  Widget buildLogEvent(BuildContext context, LogEvent logEvent) {
+  Widget buildLogEvent(BuildContext context, GroupedLogEvent logEvent) {
     final isExpendable = logEvent.stackTrace != null;
     final isExtended = showedStackStace.contains(logEvent);
     return InkWell(
@@ -61,6 +94,15 @@ class _LogsPreviewPageState extends State<LogsPreviewPage> {
                 style: Theme.of(context).textTheme.caption,
               ),
               Spacer(),
+              if (logEvent.count >= 2)
+                Badge(
+                  toAnimate: false,
+                  shape: BadgeShape.square,
+                  badgeColor: Colors.blueGrey,
+                  borderRadius: BorderRadius.circular(16),
+                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  badgeContent: Text(logEvent.count.toString()),
+                ),
               if (isExpendable)
                 Icon(isExtended ? Icons.arrow_drop_up : Icons.arrow_drop_down),
             ]),
@@ -98,7 +140,6 @@ class _LogsPreviewPageState extends State<LogsPreviewPage> {
 
   Widget buildLevel(BuildContext context, LogEvent logEvent) {
     final color = getLevelColor(logEvent.level);
-
     return Badge(
       toAnimate: false,
       shape: BadgeShape.square,
@@ -128,4 +169,21 @@ class _LogsPreviewPageState extends State<LogsPreviewPage> {
         return Colors.red;
     }
   }
+}
+
+class GroupedLogEvent extends LogEvent {
+  final int count;
+
+  GroupedLogEvent(
+    Level level,
+    DateTime time,
+    String message,
+    exception,
+    StackTrace? stackTrace, {
+    this.count = 0,
+  }) : super(level, time, message, exception, stackTrace);
+
+  GroupedLogEvent incrementedCount({required DateTime time}) =>
+      GroupedLogEvent(level, time, message, exception, stackTrace,
+          count: count + 1);
 }
