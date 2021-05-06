@@ -1452,4 +1452,19 @@ extension AttachedFilesLocalizations on AppLocalizations {
         en: "Open file",
         pl: "Otwórz plik",
       );
+
+  String get attachedFileSize => _locale(
+        en: "Size",
+        pl: "Rozmiar",
+      );
+
+  String get attachedFileMediaType => _locale(
+        en: "Media type",
+        pl: "Typ pliku",
+      );
+
+  String get attachedFileLastModified => _locale(
+        en: "Last modified",
+        pl: "Ostatnio zmodyfikowano",
+      );
 }

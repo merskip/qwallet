@@ -122,17 +122,20 @@ class FilePreviewPage extends StatelessWidget {
   }
 
   Widget buildFileMetadata(BuildContext context) {
-    return Center(
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              MimeTypeIcons.getSolid(file.mimeType) ??
-                  FontAwesomeIcons.solidFile,
-              color: Theme.of(context).primaryColor,
-              size: 96,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 36),
+              child: Icon(
+                MimeTypeIcons.getSolid(file.mimeType) ??
+                    FontAwesomeIcons.solidFile,
+                color: Theme.of(context).primaryColor,
+                size: 96,
+              ),
             ),
             SizedBox(height: 36),
             Text(
@@ -147,20 +150,21 @@ class FilePreviewPage extends StatelessWidget {
             SimpleStreamWidget.fromFuture(
               future: file.getHumanReadableSize(),
               builder: (context, String? size) => DetailsItemTile(
-                title: Text("#Size"),
+                title: Text(AppLocalizations.of(context).attachedFileSize),
                 value: Text(size ?? "-"),
                 textColor: Colors.white,
               ),
             ),
             DetailsItemTile(
-              title: Text("#Media type"),
+              title: Text(AppLocalizations.of(context).attachedFileMediaType),
               value: Text(file.mimeType ?? "-"),
               textColor: Colors.white,
             ),
             SimpleStreamWidget.fromFuture(
               future: file.getLastModified(),
               builder: (context, DateTime? date) => DetailsItemTile(
-                title: Text("#Last modified"),
+                title:
+                    Text(AppLocalizations.of(context).attachedFileLastModified),
                 value: Text(date?.toString() ?? "-"),
                 textColor: Colors.white,
               ),
