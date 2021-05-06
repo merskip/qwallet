@@ -1,6 +1,12 @@
+import 'dart:io';
+
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share/share.dart';
 
+import '../../AppLocalizations.dart';
 import '../../logger.dart';
 import '../../utils/IterableFinding.dart';
 
@@ -41,6 +47,29 @@ class _LogsPreviewPageState extends State<LogsPreviewPage> {
     super.initState();
   }
 
+  void onSelectedSendEmail(BuildContext context) async {
+    final tempDir = await getTemporaryDirectory();
+    final file = File(tempDir.path + "/logs.txt");
+    file.writeAsString(logger.logsAsText);
+
+    final email = Email(
+      subject: "QWallet bug report",
+      body: """
+      Please describe below the problem:
+      
+      """,
+      recipients: ["merskip@gmail.com"],
+      attachmentPaths: [file.path],
+      isHTML: false,
+    );
+
+    await FlutterEmailSender.send(email);
+  }
+
+  void onSelectedShare(BuildContext context) {
+    Share.share(logger.logsAsText);
+  }
+
   void onSelectedLogEvent(BuildContext context, LogEvent logEvent) {
     setState(() {
       if (showedStackStace.contains(logEvent))
@@ -54,7 +83,18 @@ class _LogsPreviewPageState extends State<LogsPreviewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Logs"),
+        title: Text(AppLocalizations.of(context).settingsLogs),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.bug_report_outlined),
+            onPressed: () => onSelectedSendEmail(context),
+            tooltip: AppLocalizations.of(context).settingsBugReport,
+          ),
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: () => onSelectedShare(context),
+          ),
+        ],
       ),
       body: logs != null
           ? buildLogsListView(context, logs!)
