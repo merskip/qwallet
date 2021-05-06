@@ -25,8 +25,8 @@ class LogEvent {
   );
 
   String toSimpleText() {
-    var result = "[${_getTime(time)}] "
-        "[${_getLevel(level)}] "
+    var result = "[${getFormattedTime()}] "
+        "[${getLevelAsText()}] "
         "$message";
 
     if (exception != null) result += "\n" + exception.toString();
@@ -34,13 +34,13 @@ class LogEvent {
     return result;
   }
 
-  String _getTime(DateTime time) {
+  String getFormattedTime() {
     return DateFormat("yyyy-MM-dd HH:mm:ss.SSSS").format(time) +
         " " +
         time.timeZoneName;
   }
 
-  String _getLevel(Level level) {
+  String getLevelAsText() {
     switch (level) {
       case Level.verbose:
         return "verbose";
