@@ -266,6 +266,11 @@ extension SettingsLocalizations on AppLocalizations {
         pl: "Licencje",
       );
 
+  String get settingsLogs => _locale(
+        en: "Logs",
+        pl: "Dzienniki",
+      );
+
   String get settingsBugReport => _locale(
         en: "Bug report",
         pl: "Zgłoś błąd",

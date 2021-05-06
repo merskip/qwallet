@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qwallet/AppLocalizations.dart';
@@ -9,6 +10,7 @@ import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/data_source/Account.dart';
 import 'package:qwallet/data_source/RemoteUserPreferences.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/features/settings/LogsPreviewPage.dart';
 import 'package:qwallet/features/settings/SelectGoogleSpreadsheetPage.dart';
 import 'package:qwallet/logger.dart';
 import 'package:qwallet/utils.dart';
@@ -102,11 +104,17 @@ class SettingsPage extends StatelessWidget {
     }
   }
 
+  void onSelectedLogs(BuildContext context) {
+    pushPage(
+      context,
+      builder: (context) => LogsPreviewPage(),
+    );
+  }
+
   void onSelectedBugReport(BuildContext context) async {
     final tempDir = await getTemporaryDirectory();
     final file = File(tempDir.path + "/logs.txt");
-    final logs = logger.logs.map((log) => log.toSimpleText()).join("\n");
-    file.writeAsString(logs);
+    file.writeAsString(logger.logsAsText);
 
     final email = Email(
       subject: "QWallet bug report",
@@ -147,6 +155,7 @@ class SettingsPage extends StatelessWidget {
             buildLicences(context),
             Divider(),
             buildDeveloper(context),
+            buildOpenLogs(context),
             buildBugReport(context),
           ]);
         },
@@ -348,6 +357,16 @@ class SettingsPage extends StatelessWidget {
         const url = 'http://merskip.pl';
         if (await canLaunch(url)) await launch(url);
       },
+    );
+  }
+
+  Widget buildOpenLogs(BuildContext context) {
+    return ListTile(
+      leading: Icon(FontAwesomeIcons.fileAlt),
+      title: Text(AppLocalizations.of(context).settingsLogs),
+      dense: true,
+      visualDensity: VisualDensity.compact,
+      onTap: () => onSelectedLogs(context),
     );
   }
 

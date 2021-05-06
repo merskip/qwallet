@@ -59,6 +59,9 @@ class LogEvent {
 class Logger {
   final List<LogEvent> logs = [];
 
+  String get logsAsText =>
+      logger.logs.map((log) => log.toSimpleText()).join("\n");
+
   final List<LogPrinter> printers;
 
   Logger({required this.printers});
