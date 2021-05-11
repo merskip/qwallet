@@ -1,5 +1,4 @@
 import 'package:googleapis/sheets/v4.dart';
-import 'package:intl/intl.dart';
 import 'package:qwallet/logger.dart';
 
 import '../../utils/IterableFinding.dart';
@@ -35,22 +34,23 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     final generalSheet = spreadsheet.findSheetByTitle("Ogólne")!;
     final dailyBalanceSheet = spreadsheet.findSheetByTitle("Balans dzienny")!;
     final statisticsSheet = spreadsheet.findSheetByTitle("Statystyka")!;
-    logger.verbose("Found sheets");
+    logger.verbose("Found sheets: "
+        "general=${generalSheet.properties?.sheetId}, "
+        "dailyBalance=${dailyBalanceSheet.properties?.sheetId}, "
+        "statistics=${statisticsSheet.properties?.sheetId}");
 
     final incomes = _getIncomes(generalSheet);
-    logger.verbose("Parsed incomes (${incomes.length})");
-
     final transfers = _getTransfers(dailyBalanceSheet);
-    logger.verbose("Parsed transfers (${transfers.length})");
-
     final categories = _getCategories(statisticsSheet);
-    logger.verbose("Parsed categories (${categories.length})");
-
     final shops = _getShops(statisticsSheet);
-    logger.verbose("Parsed shops (${shops.length})");
-
     final statistics = _getStatistics(statisticsSheet);
-    logger.verbose("Parsed statistics");
+
+    logger.verbose("Found: "
+        "incomes (${incomes.length}), "
+        "transfers (${transfers.length}), "
+        "categories (${categories.length}), "
+        "shops (${shops.length}), "
+        "statistics");
 
     return GoogleSpreadsheetWallet(
       name: spreadsheet.properties?.title ?? "",
@@ -166,11 +166,10 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
   }) async {
     logger.debug("Adding transaction id=$spreadsheetId");
     final sheetsApi = await this.sheetsApi;
-    final format = DateFormat("yyyy-MM-dd");
     final request = ValueRange()
       ..values = [
         [
-          format.format(date),
+          _RowDataConverting.toDate(date),
           type?.toText() ?? "",
           amount,
           categorySymbol ?? "",
@@ -184,7 +183,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       request,
       spreadsheetId,
       range,
-      valueInputOption: "USER_ENTERED",
+      valueInputOption: "RAW",
     );
     logger.verbose("Added transaction: "
         "tableRange=${response.tableRange}, "
@@ -216,11 +215,10 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     required String? description,
   }) async {
     final sheetsApi = await this.sheetsApi;
-    final format = DateFormat("yyyy-MM-dd");
     final request = ValueRange()
       ..values = [
         [
-          format.format(date),
+          _RowDataConverting.toDate(date),
           type?.toText() ?? "",
           amount,
           categorySymbol,
@@ -234,7 +232,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       request,
       spreadsheetId,
       range,
-      valueInputOption: "USER_ENTERED",
+      valueInputOption: "RAW",
     );
   }
 
@@ -367,6 +365,11 @@ extension _RowDataConverting on RowData {
 
     final epoch = DateTime.utc(1899, 12, 30);
     return epoch.add(Duration(days: date.truncate()));
+  }
+
+  static double toDate(DateTime date) {
+    final epoch = DateTime.utc(1899, 12, 30);
+    return date.difference(epoch).inDays.toDouble();
   }
 
   GoogleSpreadsheetTransactionType? getTransactionType({required int column}) {
