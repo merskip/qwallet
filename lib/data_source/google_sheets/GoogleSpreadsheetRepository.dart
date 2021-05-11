@@ -196,7 +196,8 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
         logger.debug("Added transaction: "
             "tableRange=${response.tableRange}, "
             "updatedRange=${response.updates?.updatedRange}, "
-            "rowIndex=$rowIndex");
+            "rowIndex=$rowIndex, "
+            "values=${request.values}");
         return rowIndex;
       }
     }
@@ -234,7 +235,9 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       range,
       valueInputOption: "RAW",
     );
-    logger.debug("Updated transaction at \"$range\"");
+    logger.debug("Updated transaction "
+        "range=\"$range\", "
+        "values=${request.values}");
   }
 
   Future<void> addAttachedFile({
