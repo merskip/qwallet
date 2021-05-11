@@ -14,7 +14,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
   Future<GoogleSpreadsheetWallet> getWalletBySpreadsheetId(
     String spreadsheetId,
   ) async {
-    logger.debug("getWalletBySpreadsheetId id=$spreadsheetId");
+    logger.debug("Fetching wallet spreadsheetId=$spreadsheetId");
     final sheetsApi = await this.sheetsApi;
     final spreadsheet = await sheetsApi.spreadsheets.get(
       spreadsheetId,
@@ -35,9 +35,9 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     final dailyBalanceSheet = spreadsheet.findSheetByTitle("Balans dzienny")!;
     final statisticsSheet = spreadsheet.findSheetByTitle("Statystyka")!;
     logger.verbose("Found sheets: "
-        "general=${generalSheet.properties?.sheetId}, "
-        "dailyBalance=${dailyBalanceSheet.properties?.sheetId}, "
-        "statistics=${statisticsSheet.properties?.sheetId}");
+        "generalId=${generalSheet.properties?.sheetId}, "
+        "dailyBalanceId=${dailyBalanceSheet.properties?.sheetId}, "
+        "statisticsId=${statisticsSheet.properties?.sheetId}");
 
     final incomes = _getIncomes(generalSheet);
     final transfers = _getTransfers(dailyBalanceSheet);

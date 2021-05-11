@@ -74,6 +74,7 @@ void main() async {
 
       final googleSpreadsheetRepository = CachedGoogleSpreadsheetRepository(
         accountProvider: SharedProviders.accountProvider,
+        cacheDuration: Duration(minutes: 1),
       );
 
       SharedProviders.spreadsheetWalletsProvider = SpreadsheetWalletsProvider(
