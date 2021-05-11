@@ -45,7 +45,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     final shops = _getShops(statisticsSheet);
     final statistics = _getStatistics(statisticsSheet);
 
-    logger.verbose("Found: "
+    logger.verbose("Found data: "
         "incomes (${incomes.length}), "
         "transfers (${transfers.length}), "
         "categories (${categories.length}), "
@@ -185,9 +185,6 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       range,
       valueInputOption: "RAW",
     );
-    logger.verbose("Added transaction: "
-        "tableRange=${response.tableRange}, "
-        "updatedRange=${response.updates?.updatedRange}");
 
     final updatedRange = response.updates?.updatedRange;
     final firstCell = updatedRange?.split('!')[1].split(':')[0];
@@ -196,7 +193,10 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       final row = firstMatch?.group(1);
       if (row != null) {
         final rowIndex = int.parse(row) - 1;
-        logger.verbose("   ...rowIndex=$rowIndex");
+        logger.debug("Added transaction: "
+            "tableRange=${response.tableRange}, "
+            "updatedRange=${response.updates?.updatedRange}, "
+            "rowIndex=$rowIndex");
         return rowIndex;
       }
     }
@@ -234,6 +234,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       range,
       valueInputOption: "RAW",
     );
+    logger.debug("Updated transaction at \"$range\"");
   }
 
   Future<void> addAttachedFile({

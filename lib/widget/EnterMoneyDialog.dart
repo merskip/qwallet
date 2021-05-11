@@ -2,6 +2,7 @@ import 'package:expressions/expressions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qwallet/Currency.dart';
+import 'package:qwallet/logger.dart';
 import 'package:qwallet/widget/CurrencySelectionPage.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SecondaryButton.dart';
@@ -90,6 +91,9 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
   void onSelectedApply(BuildContext context) {
     var result = calculateExpression();
     if (result == null && expression.isEmpty) result = Money(0, currency);
+    logger.verbose("Apply entered "
+        "amount=${result?.amount ?? 'null'}, "
+        "text=\"${this.expression}\"");
     Navigator.of(context).pop(result);
   }
 
