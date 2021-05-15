@@ -1,6 +1,7 @@
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 
+import 'CustomField.dart';
 import 'Transaction.dart';
 import 'Wallet.dart';
 
@@ -18,6 +19,11 @@ abstract class TransactionsProvider {
     required Identifier<Wallet> walletId,
     required int limit,
     required Transaction? afterTransaction,
+  });
+
+  Stream<List<CustomField>> getCustomFields({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction>? transactionId,
   });
 
   Future<Identifier<Transaction>> addTransaction({

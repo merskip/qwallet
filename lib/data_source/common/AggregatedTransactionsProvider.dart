@@ -5,6 +5,7 @@ import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/firebase/FirebaseTransactionsProvider.dart';
 
 import '../Category.dart';
+import '../CustomField.dart';
 import '../google_sheets/SpreadsheetTransactionsProvider.dart';
 
 class AggregatedTransactionsProvider implements TransactionsProvider {
@@ -63,6 +64,23 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
           walletId: walletId,
           limit: limit,
           afterTransaction: afterTransaction,
+        ),
+      );
+
+  @override
+  Stream<List<CustomField>> getCustomFields({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction>? transactionId,
+  }) =>
+      onDomain(
+        walletId,
+        ifFirebase: () => _firebaseProvider.getCustomFields(
+          walletId: walletId,
+          transactionId: transactionId,
+        ),
+        ifGoogleSheets: () => _spreadsheetProvider.getCustomFields(
+          walletId: walletId,
+          transactionId: transactionId,
         ),
       );
 

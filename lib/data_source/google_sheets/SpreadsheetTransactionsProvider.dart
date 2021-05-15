@@ -10,6 +10,7 @@ import 'package:qwallet/data_source/google_sheets/SpreadsheetWallet.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetWalletsProvider.dart';
 
 import '../../utils/IterableFinding.dart';
+import '../CustomField.dart';
 import '../Transaction.dart';
 import 'GoogleSpreadsheetRepository.dart';
 
@@ -72,6 +73,29 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
         return transactions.sublist(0, limit);
       else
         return transactions;
+    });
+  }
+
+  @override
+  Stream<List<CustomField>> getCustomFields({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction>? transactionId,
+  }) {
+    return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
+      final transaction = wallet.spreadsheetWallet.transfers
+          .findFirstOrNull((t) => t.row.toString() == transactionId?.id);
+
+      return [
+        CustomField.checkbox(
+          localizedTitle: "#Kapitał obcy",
+          initialValue: transaction?.isForeignCapital ?? false,
+        ),
+        CustomField.dropdownList(
+          localizedTitle: "#Sklep",
+          initialValue: transaction?.shop,
+          values: wallet.spreadsheetWallet.shops,
+        )
+      ];
     });
   }
 
