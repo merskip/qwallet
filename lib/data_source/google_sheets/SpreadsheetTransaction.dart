@@ -13,6 +13,10 @@ class SpreadsheetTransaction implements Transaction {
   final Category? category;
   final List<Uri> attachedFiles;
   final bool excludedFromDailyStatistics;
+  final Map<String, dynamic>? customFields;
+
+  bool get isForeignCapital => customFields?["isForeignCapital"] ?? false;
+  String? get shop => customFields?["shop"];
 
   SpreadsheetTransaction({
     required this.spreadsheetTransfer,
@@ -24,5 +28,6 @@ class SpreadsheetTransaction implements Transaction {
     required this.category,
     required this.attachedFiles,
     required this.excludedFromDailyStatistics,
+    required this.customFields,
   });
 }

@@ -276,6 +276,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           title: titleController.text.trim().nullIfEmpty(),
           amount: amountController.value!.amount,
           date: date,
+          customFields: null,
         );
 
         if (attachedFiles.isNotEmpty) {

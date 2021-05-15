@@ -74,6 +74,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   }) =>
       onDomain(
         walletId,
@@ -84,6 +85,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
           title: title,
           amount: amount,
           date: date,
+          customFields: customFields,
         ),
         ifGoogleSheets: () => _spreadsheetProvider.addTransaction(
           walletId: walletId,
@@ -92,6 +94,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
           title: title,
           amount: amount,
           date: date,
+          customFields: customFields,
         ),
       );
 
@@ -104,6 +107,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   }) =>
       onDomain(
         wallet.identifier,
@@ -115,6 +119,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
           title: title,
           amount: amount,
           date: date,
+          customFields: customFields,
         ),
         ifGoogleSheets: () => _spreadsheetProvider.updateTransaction(
           wallet: wallet,
@@ -124,6 +129,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
           title: title,
           amount: amount,
           date: date,
+          customFields: customFields,
         ),
       );
 

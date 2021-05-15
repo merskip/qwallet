@@ -151,6 +151,7 @@ class _AddSeriesTransactionsPageState extends State<AddSeriesTransactionsPage> {
       title: transactionTitleController.text.trim().nullIfEmpty(),
       amount: transactionAmountController.value!.amount,
       date: date,
+      customFields: null,
     );
 
     setState(() {

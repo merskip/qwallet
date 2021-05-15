@@ -94,6 +94,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   }) {
     assert(walletId.domain == "firebase");
     final addingTransaction = firestore
@@ -106,6 +107,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
       "amount": amount,
       "category": (category as FirebaseCategory?)?.reference.documentReference,
       "date": CloudFirestore.Timestamp.fromDate(date),
+      "customFields": customFields,
     });
 
     final updatingWallet =
@@ -135,6 +137,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   }) {
     assert(wallet.identifier.domain == "firebase");
     final firebaseCategory = category as FirebaseCategory?;
@@ -170,6 +173,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
         "title": title,
         "amount": amount,
         "date": CloudFirestore.Timestamp.fromDate(date),
+        "customFields": customFields,
       });
     });
   }

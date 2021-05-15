@@ -97,6 +97,7 @@ class _TransactionPageState extends State<TransactionPage> {
       title: widget.transaction.title,
       amount: widget.transaction.amount,
       date: widget.transaction.date,
+      customFields: widget.transaction.customFields,
     );
   }
 
@@ -109,6 +110,7 @@ class _TransactionPageState extends State<TransactionPage> {
       title: widget.transaction.title,
       amount: widget.transaction.amount,
       date: widget.transaction.date,
+      customFields: widget.transaction.customFields,
     );
   }
 
@@ -121,6 +123,7 @@ class _TransactionPageState extends State<TransactionPage> {
       title: titleController.text.trim().nullIfEmpty(),
       amount: widget.transaction.amount,
       date: widget.transaction.date,
+      customFields: widget.transaction.customFields,
     );
   }
 
@@ -142,6 +145,7 @@ class _TransactionPageState extends State<TransactionPage> {
         title: widget.transaction.title,
         amount: newAmount.amount,
         date: widget.transaction.date,
+        customFields: widget.transaction.customFields,
       );
     }
   }
@@ -171,6 +175,7 @@ class _TransactionPageState extends State<TransactionPage> {
         title: widget.transaction.title,
         amount: widget.transaction.amount,
         date: dateTime,
+        customFields: widget.transaction.customFields,
       );
     }
   }

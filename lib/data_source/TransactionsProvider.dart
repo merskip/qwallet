@@ -27,6 +27,7 @@ abstract class TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   });
 
   Future<void> updateTransaction({
@@ -37,6 +38,7 @@ abstract class TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   });
 
   Future<void> addTransactionAttachedFile({
