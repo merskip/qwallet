@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/CustomField.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
@@ -48,6 +49,8 @@ class _TransactionPageState extends State<TransactionPage> {
   late Category? _selectedCategory;
   late TransactionType _selectedType;
   late bool _excludedFromDailyStatistics;
+
+  final customFieldsValues = <String, dynamic>{};
 
   _TransactionPageState(Transaction transaction)
       : titleController = TextEditingController(text: transaction.title),
@@ -260,6 +263,25 @@ class _TransactionPageState extends State<TransactionPage> {
     file.delete();
   }
 
+  void onChangedCustomFieldValue(
+    BuildContext context,
+    CustomField customField,
+    dynamic value,
+  ) {
+    var customFields = widget.transaction.customFields ?? {};
+    customFields[customField.key] = value;
+    SharedProviders.transactionsProvider.updateTransaction(
+      wallet: widget.wallet,
+      transaction: widget.transaction,
+      type: widget.transaction.type,
+      category: widget.transaction.category,
+      title: widget.transaction.title,
+      amount: widget.transaction.amount,
+      date: widget.transaction.date,
+      customFields: customFields,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -289,6 +311,7 @@ class _TransactionPageState extends State<TransactionPage> {
           if (widget.transaction is FirebaseTransaction)
             buildExcludedFromDailyStatistics(
                 context, widget.transaction as FirebaseTransaction),
+          buildCustomFields(context),
         ],
       ),
     );
@@ -488,6 +511,105 @@ class _TransactionPageState extends State<TransactionPage> {
           transaction: widget.transaction,
           excludedFromDailyStatistics: _excludedFromDailyStatistics,
         );
+      },
+    );
+  }
+
+  Widget buildCustomFields(BuildContext context) {
+    return SimpleStreamWidget(
+      stream: SharedProviders.transactionsProvider.getCustomFields(
+        walletId: widget.wallet.identifier,
+        transactionId: widget.transaction.identifier,
+      ),
+      builder: (context, List<CustomField> customFields) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            ...customFields.map((customField) {
+              final value = customFieldsValues.containsKey(customField.key)
+                  ? customFieldsValues[customField.key]
+                  : customField.initialValue;
+              switch (customField.type) {
+                case CustomFieldType.checkbox:
+                  return buildCustomFieldCheckbox(context, customField, value);
+                case CustomFieldType.dropdownList:
+                  return buildCustomFieldDropdownList(
+                      context, customField, value);
+              }
+            })
+          ],
+        );
+      },
+    );
+  }
+
+  Widget buildCustomFieldCheckbox(
+    BuildContext context,
+    CustomField customField,
+    bool value,
+  ) {
+    return DetailsItemTile(
+      title: Text(customField.localizedTitle),
+      value: Icon(
+        customField.initialValue
+            ? Icons.check_box
+            : Icons.check_box_outline_blank,
+        color: customField.initialValue ? Theme.of(context).primaryColor : null,
+      ),
+      editingBegin: () {
+        setState(() {
+          customFieldsValues[customField.key] = customField.initialValue;
+        });
+      },
+      editingContent: (context) => CheckboxListTile(
+        title: Text(customField.localizedTitle),
+        value: value,
+        onChanged: (value) {
+          setState(() {
+            customFieldsValues[customField.key] = value;
+          });
+        },
+      ),
+      editingSave: () {
+        onChangedCustomFieldValue(context, customField, value);
+      },
+    );
+  }
+
+  Widget buildCustomFieldDropdownList(
+    BuildContext context,
+    CustomField customField,
+    String? value,
+  ) {
+    return DetailsItemTile(
+      title: Text(customField.localizedTitle),
+      value: Text(customField.initialValue ?? "-"),
+      editingBegin: () {
+        setState(() {
+          customFieldsValues[customField.key] = customField.initialValue;
+        });
+      },
+      editingContent: (context) => ListTile(
+        title: Text(customField.localizedTitle),
+        trailing: DropdownButton(
+          value: value,
+          items: [
+            ...customField.dropdownListValues!.map(
+              (value) => DropdownMenuItem(
+                child: Text(value),
+                value: value,
+              ),
+            )
+          ],
+          onChanged: (value) {
+            setState(() {
+              customFieldsValues[customField.key] = value;
+            });
+          },
+        ),
+      ),
+      editingSave: () {
+        onChangedCustomFieldValue(context, customField, value);
       },
     );
   }
