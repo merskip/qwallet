@@ -86,10 +86,14 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
           .findFirstOrNull((t) => t.row.toString() == transactionId?.id);
 
       return [
-        CustomField.checkbox(
-          key: "isForeignCapital",
-          localizedTitle: "#Kapitał obcy",
-          initialValue: transaction?.isForeignCapital ?? false,
+        CustomField.dropdownList(
+          key: "financingSource",
+          localizedTitle: "#Źródło finansowania",
+          initialValue: transaction?.financingSource,
+          values: [
+            "Kapitał obcy",
+            "Oszczędności",
+          ],
         ),
         CustomField.dropdownList(
           key: "shop",
@@ -122,7 +126,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
       categorySymbol: type == TransactionType.expense
           ? (category?.symbol ?? wallet.categories.first.symbol)
           : null,
-      isForeignCapital: customFields?["isForeignCapital"] ?? false,
+      financingSource: customFields?["financingSource"],
       shop: customFields?["shop"],
       description: title,
     );
@@ -155,7 +159,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
             type: spreadsheetTransaction.spreadsheetTransfer.type,
             amount: type == TransactionType.expense ? -amount : amount,
             categorySymbol: symbol,
-            isForeignCapital: customFields?["isForeignCapital"] ?? false,
+            financingSource: customFields?["financingSource"],
             shop: customFields?["shop"],
             description: title,
           )
@@ -234,7 +238,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
       excludedFromDailyStatistics:
           transfer.type != GoogleSpreadsheetTransactionType.current,
       customFields: {
-        "isForeignCapital": transfer.isForeignCapital,
+        "financingSource": transfer.financingSource,
         "shop": transfer.shop,
       },
     );
