@@ -88,7 +88,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
       return [
         CustomField.dropdownList(
           key: "financingSource",
-          localizedTitle: "#Źródło finansowania",
+          localizedTitle: "Źródło finansowania",
           initialValue: transaction?.financingSource,
           values: [
             "Kapitał obcy",
@@ -97,7 +97,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
         ),
         CustomField.dropdownList(
           key: "shop",
-          localizedTitle: "#Sklep",
+          localizedTitle: "Sklep",
           initialValue: transaction?.shop,
           values: wallet.spreadsheetWallet.shops,
         )

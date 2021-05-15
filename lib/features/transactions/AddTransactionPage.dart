@@ -511,6 +511,10 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
       trailing: DropdownButton(
         value: value,
         items: [
+          DropdownMenuItem(
+            child: Text("-"),
+            value: "<null>",
+          ),
           ...customField.dropdownListValues!.map(
             (value) => DropdownMenuItem(
               child: Text(value),
@@ -520,7 +524,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         ],
         onChanged: (value) {
           setState(() {
-            customFieldsValues[customField.key] = value;
+            customFieldsValues[customField.key] =
+                value != "<null>" ? value : null;
           });
         },
       ),
