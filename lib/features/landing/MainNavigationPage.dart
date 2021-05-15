@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/LocalPreferences.dart';
 import 'package:qwallet/features/dashboard/DashboardPage.dart';
 import 'package:qwallet/features/loans/LoansTabPage.dart';
+import 'package:qwallet/logger.dart';
 import 'package:qwallet/widget/VectorImage.dart';
 
 import '../../AppLocalizations.dart';
 import '../../router.dart';
+import '../../utils/IterableFinding.dart';
 
 class MainNavigationPage extends StatefulWidget {
   @override
@@ -16,9 +19,18 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   final dashboardKey = GlobalKey<DashboardPageState>();
 
-  void onSelectedAddTransaction(BuildContext context) {
-    final wallet = dashboardKey.currentState!.getSelectedWallet();
-    router.navigateTo(context, "/wallet/${wallet.identifier}/addTransaction");
+  void onSelectedAddTransaction(BuildContext context) async {
+    var walletId =
+        dashboardKey.currentState?.getSelectedWalletOrNull()?.identifier;
+    if (walletId == null) {
+      final wallets = await LocalPreferences.walletsOrder.first;
+      walletId = wallets.firstOrNull;
+    }
+
+    if (walletId != null)
+      router.navigateTo(context, "/wallet/${walletId}/addTransaction");
+    else
+      logger.warning("onSelectedAddTransaction: wallet is null");
   }
 
   void onSelectedAddPrivateLoan(BuildContext context) {

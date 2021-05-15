@@ -37,9 +37,9 @@ class DashboardPageState extends State<DashboardPage> {
 
   final notificationService = PushNotificationService();
 
-  Wallet getSelectedWallet() {
-    return _selectedWallet.value!;
-  }
+  Wallet getSelectedWallet() => getSelectedWalletOrNull()!;
+
+  Wallet? getSelectedWalletOrNull() => _selectedWallet.value;
 
   void onSelectedWallet(BuildContext context, Wallet wallet) {
     setState(() {
