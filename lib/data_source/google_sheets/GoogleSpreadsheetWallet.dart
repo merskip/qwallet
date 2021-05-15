@@ -38,7 +38,7 @@ class GoogleSpreadsheetTransaction {
   final GoogleSpreadsheetTransactionType? type;
   final double amount;
   final String? categorySymbol;
-  final bool isForeignCapital;
+  final String? financingSource;
   final String? shop;
   final String? description;
   final List<String> attachedFiles;
@@ -49,7 +49,7 @@ class GoogleSpreadsheetTransaction {
     required this.type,
     required this.amount,
     required this.categorySymbol,
-    required this.isForeignCapital,
+    required this.financingSource,
     required this.shop,
     required this.description,
     required this.attachedFiles,

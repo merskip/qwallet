@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
 import 'package:flutter/material.dart';
+import 'package:qwallet/data_source/CustomField.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
@@ -87,6 +88,15 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
   }
 
   @override
+  Stream<List<CustomField>> getCustomFields({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction>? transactionId,
+  }) {
+    // Custom fields aren't supported for Firebase yet
+    return Stream.value([]);
+  }
+
+  @override
   Future<Identifier<Transaction>> addTransaction({
     required Identifier<Wallet> walletId,
     required TransactionType type,
@@ -94,6 +104,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   }) {
     assert(walletId.domain == "firebase");
     final addingTransaction = firestore
@@ -106,6 +117,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
       "amount": amount,
       "category": (category as FirebaseCategory?)?.reference.documentReference,
       "date": CloudFirestore.Timestamp.fromDate(date),
+      "customFields": customFields,
     });
 
     final updatingWallet =
@@ -135,6 +147,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   }) {
     assert(wallet.identifier.domain == "firebase");
     final firebaseCategory = category as FirebaseCategory?;
@@ -170,6 +183,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
         "title": title,
         "amount": amount,
         "date": CloudFirestore.Timestamp.fromDate(date),
+        "customFields": customFields,
       });
     });
   }

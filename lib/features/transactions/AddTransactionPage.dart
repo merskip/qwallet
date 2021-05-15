@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/CustomField.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
@@ -17,6 +18,7 @@ import 'package:qwallet/widget/AmountFormField.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SelectWalletDialog.dart';
+import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 import 'package:qwallet/widget/VectorImage.dart';
 
@@ -132,6 +134,8 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   DateTime date = DateTime.now();
 
   final attachedFiles = <LocalUniversalFile>[];
+
+  final customFieldsValues = <String, dynamic>{};
 
   var _isSubmitting = false;
 
@@ -276,6 +280,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           title: titleController.text.trim().nullIfEmpty(),
           amount: amountController.value!.amount,
           date: date,
+          customFields: customFieldsValues,
         );
 
         if (attachedFiles.isNotEmpty) {
@@ -324,6 +329,7 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
           SizedBox(height: 16),
           buildAttachedImages(context),
           SizedBox(height: 16),
+          buildCustomFields(context),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: buildSubmitButton(context),
@@ -447,6 +453,81 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
         file,
         onDelete: (context, file) =>
             onSelectedDeleteFile(context, file as LocalUniversalFile),
+      ),
+    );
+  }
+
+  Widget buildCustomFields(BuildContext context) {
+    return SimpleStreamWidget(
+      stream: SharedProviders.transactionsProvider.getCustomFields(
+        walletId: wallet.identifier,
+        transactionId: null,
+      ),
+      builder: (context, List<CustomField> customFields) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            ...customFields.map((customField) {
+              final value = customFieldsValues.containsKey(customField.key)
+                  ? customFieldsValues[customField.key]
+                  : customField.initialValue;
+              switch (customField.type) {
+                case CustomFieldType.checkbox:
+                  return buildCustomFieldCheckbox(context, customField, value);
+                case CustomFieldType.dropdownList:
+                  return buildCustomFieldDropdownList(
+                      context, customField, value);
+              }
+            })
+          ],
+        );
+      },
+    );
+  }
+
+  Widget buildCustomFieldCheckbox(
+    BuildContext context,
+    CustomField customField,
+    bool value,
+  ) {
+    return CheckboxListTile(
+      title: Text(customField.localizedTitle),
+      value: value,
+      onChanged: (value) {
+        setState(() {
+          customFieldsValues[customField.key] = value;
+        });
+      },
+    );
+  }
+
+  Widget buildCustomFieldDropdownList(
+    BuildContext context,
+    CustomField customField,
+    String? value,
+  ) {
+    return ListTile(
+      title: Text(customField.localizedTitle),
+      trailing: DropdownButton(
+        value: value,
+        items: [
+          DropdownMenuItem(
+            child: Text("-"),
+            value: "<null>",
+          ),
+          ...customField.dropdownListValues!.map(
+            (value) => DropdownMenuItem(
+              child: Text(value),
+              value: value,
+            ),
+          )
+        ],
+        onChanged: (value) {
+          setState(() {
+            customFieldsValues[customField.key] =
+                value != "<null>" ? value : null;
+          });
+        },
       ),
     );
   }

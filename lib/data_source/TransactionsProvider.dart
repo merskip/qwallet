@@ -1,6 +1,7 @@
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 
+import 'CustomField.dart';
 import 'Transaction.dart';
 import 'Wallet.dart';
 
@@ -20,6 +21,11 @@ abstract class TransactionsProvider {
     required Transaction? afterTransaction,
   });
 
+  Stream<List<CustomField>> getCustomFields({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction>? transactionId,
+  });
+
   Future<Identifier<Transaction>> addTransaction({
     required Identifier<Wallet> walletId,
     required TransactionType type,
@@ -27,6 +33,7 @@ abstract class TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   });
 
   Future<void> updateTransaction({
@@ -37,6 +44,7 @@ abstract class TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   });
 
   Future<void> addTransactionAttachedFile({

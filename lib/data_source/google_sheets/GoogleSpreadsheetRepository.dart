@@ -86,7 +86,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
         type: type,
         amount: amount,
         categorySymbol: categorySymbol,
-        isForeignCapital: row.getString(column: 4) == "Kapitał obcy",
+        financingSource: row.getString(column: 4),
         shop: row.getString(column: 5),
         description: row.getString(column: 6),
         attachedFiles:
@@ -160,7 +160,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     required GoogleSpreadsheetTransactionType? type,
     required double amount,
     required String? categorySymbol,
-    required bool isForeignCapital,
+    required String? financingSource,
     required String? shop,
     required String? description,
   }) async {
@@ -173,7 +173,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
           type?.toText() ?? "",
           amount,
           categorySymbol ?? "",
-          isForeignCapital ? "Kapitał obcy" : "",
+          financingSource ?? "",
           shop ?? "",
           description ?? "",
         ]
@@ -211,7 +211,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     required GoogleSpreadsheetTransactionType? type,
     required double amount,
     required String categorySymbol,
-    required bool isForeignCapital,
+    required String? financingSource,
     required String? shop,
     required String? description,
   }) async {
@@ -223,7 +223,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
           type?.toText() ?? "",
           amount,
           categorySymbol,
-          isForeignCapital ? "Kapitał obcy" : "",
+          financingSource ?? "",
           shop ?? "",
           description ?? "",
         ]

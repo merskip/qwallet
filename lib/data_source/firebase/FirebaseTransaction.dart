@@ -20,6 +20,7 @@ class FirebaseTransaction extends FirebaseModel<FirebaseTransaction>
   final FirebaseCategory? category;
   final bool excludedFromDailyStatistics;
   final List<Uri> attachedFiles;
+  final Map<String, dynamic>? customFields;
 
   FirebaseTransaction(
       CloudFirestore.DocumentSnapshot snapshot, FirebaseWallet wallet)
@@ -35,6 +36,7 @@ class FirebaseTransaction extends FirebaseModel<FirebaseTransaction>
             .map((uri) => Uri.tryParse(uri))
             .filterNonNull()
             .toList(),
+        customFields = snapshot.getMap("customFields"),
         super(snapshot);
 
   String getTypeLocalizedText(BuildContext context) =>

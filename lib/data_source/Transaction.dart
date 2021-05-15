@@ -14,6 +14,7 @@ abstract class Transaction implements Identifiable<Transaction> {
   final Category? category;
   final List<Uri> attachedFiles;
   final bool excludedFromDailyStatistics;
+  final Map<String, dynamic>? customFields;
 
   Transaction({
     required this.type,
@@ -23,5 +24,6 @@ abstract class Transaction implements Identifiable<Transaction> {
     required this.category,
     required this.attachedFiles,
     required this.excludedFromDailyStatistics,
+    required this.customFields,
   });
 }

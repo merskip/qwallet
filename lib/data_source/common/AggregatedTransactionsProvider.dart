@@ -5,6 +5,7 @@ import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/firebase/FirebaseTransactionsProvider.dart';
 
 import '../Category.dart';
+import '../CustomField.dart';
 import '../google_sheets/SpreadsheetTransactionsProvider.dart';
 
 class AggregatedTransactionsProvider implements TransactionsProvider {
@@ -67,6 +68,23 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
       );
 
   @override
+  Stream<List<CustomField>> getCustomFields({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction>? transactionId,
+  }) =>
+      onDomain(
+        walletId,
+        ifFirebase: () => _firebaseProvider.getCustomFields(
+          walletId: walletId,
+          transactionId: transactionId,
+        ),
+        ifGoogleSheets: () => _spreadsheetProvider.getCustomFields(
+          walletId: walletId,
+          transactionId: transactionId,
+        ),
+      );
+
+  @override
   Future<Identifier<Transaction>> addTransaction({
     required Identifier<Wallet> walletId,
     required TransactionType type,
@@ -74,6 +92,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   }) =>
       onDomain(
         walletId,
@@ -84,6 +103,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
           title: title,
           amount: amount,
           date: date,
+          customFields: customFields,
         ),
         ifGoogleSheets: () => _spreadsheetProvider.addTransaction(
           walletId: walletId,
@@ -92,6 +112,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
           title: title,
           amount: amount,
           date: date,
+          customFields: customFields,
         ),
       );
 
@@ -104,6 +125,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   }) =>
       onDomain(
         wallet.identifier,
@@ -115,6 +137,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
           title: title,
           amount: amount,
           date: date,
+          customFields: customFields,
         ),
         ifGoogleSheets: () => _spreadsheetProvider.updateTransaction(
           wallet: wallet,
@@ -124,6 +147,7 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
           title: title,
           amount: amount,
           date: date,
+          customFields: customFields,
         ),
       );
 

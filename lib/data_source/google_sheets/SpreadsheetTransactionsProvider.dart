@@ -10,6 +10,7 @@ import 'package:qwallet/data_source/google_sheets/SpreadsheetWallet.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetWalletsProvider.dart';
 
 import '../../utils/IterableFinding.dart';
+import '../CustomField.dart';
 import '../Transaction.dart';
 import 'GoogleSpreadsheetRepository.dart';
 
@@ -76,6 +77,65 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
   }
 
   @override
+  Stream<List<CustomField>> getCustomFields({
+    required Identifier<Wallet> walletId,
+    required Identifier<Transaction>? transactionId,
+  }) {
+    return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
+      final transaction = wallet.spreadsheetWallet.transfers
+          .findFirstOrNull((t) => t.row.toString() == transactionId?.id);
+
+      return [
+        CustomField.dropdownList(
+          key: "financingSource",
+          localizedTitle: "Źródło finansowania",
+          initialValue: transaction?.financingSource,
+          values: [
+            "Kapitał obcy",
+            "Oszczędności",
+          ],
+        ),
+        CustomField.dropdownList(
+          key: "shop",
+          localizedTitle: "Sklep",
+          initialValue: transaction?.shop,
+          values: wallet.spreadsheetWallet.shops,
+        )
+      ];
+    });
+  }
+
+  @override
+  Future<Identifier<Transaction>> addTransaction({
+    required Identifier<Wallet> walletId,
+    required TransactionType type,
+    required Category? category,
+    required String? title,
+    required double amount,
+    required DateTime date,
+    required Map<String, dynamic>? customFields,
+  }) async {
+    final wallet = await repository.getWalletBySpreadsheetId(walletId.id);
+    final insertedRow = await repository.addTransaction(
+      spreadsheetId: walletId.id,
+      date: date,
+      type: type == TransactionType.expense
+          ? GoogleSpreadsheetTransactionType.current
+          : null,
+      amount: type == TransactionType.expense ? -amount : amount,
+      categorySymbol: type == TransactionType.expense
+          ? (category?.symbol ?? wallet.categories.first.symbol)
+          : null,
+      financingSource: customFields?["financingSource"],
+      shop: customFields?["shop"],
+      description: title,
+    );
+    walletsProvider.refreshWallet(walletId);
+    return Identifier<Transaction>(
+        domain: "google_sheets", id: insertedRow.toString());
+  }
+
+  @override
   Future<void> updateTransaction({
     required Wallet wallet,
     required Transaction transaction,
@@ -84,6 +144,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     required String? title,
     required double amount,
     required DateTime date,
+    required Map<String, dynamic>? customFields,
   }) {
     assert(wallet.identifier.domain == "google_sheets");
     final spreadsheetTransaction = transaction as SpreadsheetTransaction;
@@ -98,9 +159,8 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
             type: spreadsheetTransaction.spreadsheetTransfer.type,
             amount: type == TransactionType.expense ? -amount : amount,
             categorySymbol: symbol,
-            isForeignCapital:
-                spreadsheetTransaction.spreadsheetTransfer.isForeignCapital,
-            shop: spreadsheetTransaction.spreadsheetTransfer.shop,
+            financingSource: customFields?["financingSource"],
+            shop: customFields?["shop"],
             description: title,
           )
           .then((value) => walletsProvider.refreshWallet(wallet.identifier));
@@ -108,25 +168,6 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
       return Future.value();
     }
   }
-
-  // @override
-  // Future<void> updateTransactionAttachedFiles({
-  //   required Identifier<Wallet> walletId,
-  //   required Identifier<Transaction> transaction,
-  //   required List<Uri> attachedFiles,
-  // }) async {
-  //   assert(walletId.domain == "google_sheets");
-  //   final wallet = await repository.getWalletBySpreadsheetId(walletId.id);
-  //   for (final file in attachedFiles) {
-  //     await repository.addRowMetadata(
-  //       wallet: wallet,
-  //       rowIndex: int.parse(transaction.id),
-  //       key: "attachedFiles",
-  //       value: file.toString(),
-  //     );
-  //   }
-  //   walletsProvider.refreshWallet(walletId);
-  // }
 
   @override
   Future<void> addTransactionAttachedFile({
@@ -196,35 +237,10 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
           .filterNonNull(),
       excludedFromDailyStatistics:
           transfer.type != GoogleSpreadsheetTransactionType.current,
+      customFields: {
+        "financingSource": transfer.financingSource,
+        "shop": transfer.shop,
+      },
     );
-  }
-
-  @override
-  Future<Identifier<Transaction>> addTransaction({
-    required Identifier<Wallet> walletId,
-    required TransactionType type,
-    required Category? category,
-    required String? title,
-    required double amount,
-    required DateTime date,
-  }) async {
-    final wallet = await repository.getWalletBySpreadsheetId(walletId.id);
-    final insertedRow = await repository.addTransaction(
-      spreadsheetId: walletId.id,
-      date: date,
-      type: type == TransactionType.expense
-          ? GoogleSpreadsheetTransactionType.current
-          : null,
-      amount: type == TransactionType.expense ? -amount : amount,
-      categorySymbol: type == TransactionType.expense
-          ? (category?.symbol ?? wallet.categories.first.symbol)
-          : null,
-      isForeignCapital: false,
-      shop: null,
-      description: title,
-    );
-    walletsProvider.refreshWallet(walletId);
-    return Identifier<Transaction>(
-        domain: "google_sheets", id: insertedRow.toString());
   }
 }
