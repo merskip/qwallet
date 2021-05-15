@@ -188,15 +188,15 @@ class DashboardPageState extends State<DashboardPage> {
 
           return Column(children: [
             DailyReportSection(
-              wallet: wallet,
+              wallet: latestTransactions.wallet,
               transactions: latestTransactions.transactions,
             ),
             TransactionsCard(
-              wallet: wallet,
+              wallet: latestTransactions.wallet,
               transactions: latestTransactions.transactions,
             ),
             CategoriesChartCard(
-              wallet: wallet,
+              wallet: latestTransactions.wallet,
               transactions: latestTransactions.transactions,
             ),
           ]);

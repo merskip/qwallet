@@ -36,16 +36,6 @@ class DailyReportSection extends StatelessWidget {
     );
   }
 
-  Widget buildAvailableDailyBudget(
-    BuildContext context,
-    DailySpending dailySpending,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [],
-    );
-  }
-
   Widget buildDailySpendingText(
     BuildContext context,
     DailySpending dailySpending,

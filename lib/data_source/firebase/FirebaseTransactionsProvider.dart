@@ -28,12 +28,14 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required Identifier<Wallet> walletId,
   }) {
     assert(walletId.domain == "firebase");
-    final wallet = walletsProvider.getWalletByIdentifier(walletId);
-
-    return wallet.flatMap<LatestTransactions>((wallet) =>
-        _getTransactionsInDateTimeRange(
-                wallet: wallet, dateRange: wallet.dateTimeRange)
-            .map((transactions) => LatestTransactions(wallet, transactions)));
+    return walletsProvider
+        .getWalletByIdentifier(walletId)
+        .flatMap<LatestTransactions>((wallet) {
+      return _getTransactionsInDateTimeRange(
+        wallet: wallet,
+        dateRange: wallet.dateTimeRange,
+      ).map((transactions) => LatestTransactions(wallet, transactions));
+    });
   }
 
   @override
