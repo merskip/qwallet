@@ -87,10 +87,12 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
 
       return [
         CustomField.checkbox(
+          key: "isForeignCapital",
           localizedTitle: "#Kapitał obcy",
           initialValue: transaction?.isForeignCapital ?? false,
         ),
         CustomField.dropdownList(
+          key: "shop",
           localizedTitle: "#Sklep",
           initialValue: transaction?.shop,
           values: wallet.spreadsheetWallet.shops,

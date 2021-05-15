@@ -93,7 +93,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     required Identifier<Transaction>? transactionId,
   }) {
     // Custom fields aren't supported for Firebase yet
-    return Stream.empty();
+    return Stream.value([]);
   }
 
   @override
