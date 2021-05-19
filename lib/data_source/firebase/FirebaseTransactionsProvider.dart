@@ -64,29 +64,24 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
   }) {
     assert(walletId.domain == "firebase");
 
-    final wallet = walletsProvider.getWalletByIdentifier(walletId);
-    var query = firestore
-        .collection("wallets")
-        .doc(walletId.id)
-        .collection("transactions")
-        .orderBy("date", descending: true)
-        .limit(limit);
-    if (afterTransaction != null) {
-      final afterFirebaseTransaction =
-          (afterTransaction as FirebaseTransaction).documentSnapshot;
-      query = query.startAfterDocument(afterFirebaseTransaction);
-    }
+    return walletsProvider.getWalletByIdentifier(walletId).flatMap((wallet) {
+      var query = firestore
+          .collection("wallets")
+          .doc(walletId.id)
+          .collection("transactions")
+          .orderBy("date", descending: true)
+          .limit(limit);
+      if (afterTransaction != null) {
+        final afterFirebaseTransaction =
+            (afterTransaction as FirebaseTransaction).documentSnapshot;
+        query = query.startAfterDocument(afterFirebaseTransaction);
+      }
 
-    return Rx.combineLatest2(
-      wallet,
-      query.snapshots(),
-      (FirebaseWallet wallet,
-          CloudFirestore.QuerySnapshot transactionsSnapshot) {
-        return transactionsSnapshot.docs.map((transactionSnapshot) {
-          return FirebaseTransaction(transactionSnapshot, wallet);
-        }).toList();
-      },
-    );
+      return query.snapshots().map((transactionsSnapshot) =>
+          transactionsSnapshot.docs.map((transactionSnapshot) {
+            return FirebaseTransaction(transactionSnapshot, wallet);
+          }).toList());
+    });
   }
 
   @override

@@ -131,25 +131,17 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
 
   @override
   Widget build(BuildContext context) {
-    final transactions = CombineLatestStream(
-      transactionsPages,
-      (List<List<Transaction>> transactions) =>
-          transactions.expand((i) => i).toList(),
-    );
-
     return SimpleStreamWidget(
-      stream: transactions,
-      builder: (context, List<Transaction> transactions) {
-        // If all pages are full, it can be assumed that is there more pages.
-        // It doesn't work when the count of all items is the multiplication of page size.
-        // But the only problem will be that the last page will be empty.
-        isMorePages =
-            transactions.length == transactionsPages.length * itemsPerPage;
+      stream: CombineLatestStream.list(transactionsPages),
+      builder: (context, List<List<Transaction>> transactionsPages) {
+        isMorePages = transactionsPages.lastOrNull?.isNotEmpty ?? false;
+
+        final transactions = transactionsPages.flattened.toList();
 
         final filteredTransactions =
             getFilteredTransactions(transactions, widget.filter);
 
-        if (filteredTransactions.isEmpty) {
+        if (transactions.isEmpty) {
           return buildTransactionsEmpty(context);
         } else {
           return buildTransactionsList(
