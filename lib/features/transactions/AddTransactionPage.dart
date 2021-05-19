@@ -144,6 +144,9 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
   @override
   void initState() {
     _configureDate();
+    amountController.addListener(() => setState(() {
+          // Nothing, just needed for refresh balance after, see #62
+        }));
     super.initState();
   }
 
