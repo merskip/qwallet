@@ -26,6 +26,18 @@ class TransactionsFilter {
     this.includeWithoutCategory,
   });
 
+  factory TransactionsFilter.byCategory(Category? category) {
+    return category != null
+        ? TransactionsFilter(
+            categories: [category],
+            includeWithoutCategory: false,
+          )
+        : TransactionsFilter(
+            categories: [],
+            includeWithoutCategory: true,
+          );
+  }
+
   bool isEmpty() =>
       transactionType == null &&
       amountType == null &&

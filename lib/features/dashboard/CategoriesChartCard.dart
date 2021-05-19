@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/features/transactions/TransactionsListFilter.dart';
+import 'package:qwallet/features/transactions/TransactionsListPage.dart';
+import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 
 import '../../AppLocalizations.dart';
@@ -105,6 +108,19 @@ class _CategoriesChartWithLegendState
     super.didUpdateWidget(oldWidget);
   }
 
+  void onSelectedSummary(BuildContext context, _CategoryChartItem? item) {
+    final filter =
+        item != null ? TransactionsFilter.byCategory(item.category) : null;
+
+    pushPage(
+      context,
+      builder: (context) => TransactionsListPage(
+        wallet: widget.wallet,
+        initialFilter: filter,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -126,11 +142,7 @@ class _CategoriesChartWithLegendState
               ),
             ),
             GestureDetector(
-              onTap: () {
-                setState(() {
-                  this.selectedItem = null;
-                });
-              },
+              onTap: () => onSelectedSummary(context, selectedItem),
               child: selectedItem == null
                   ? buildSummary(context)
                   : buildCategorySummary(context, selectedItem!),

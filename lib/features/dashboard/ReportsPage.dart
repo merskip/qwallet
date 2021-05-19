@@ -85,21 +85,11 @@ class _ReportByCategoriesPage extends StatelessWidget {
   }) : super(key: key);
 
   void onSelectedCategory(BuildContext context, Category? category) {
-    final filter = category != null
-        ? TransactionsFilter(
-            categories: [category],
-            includeWithoutCategory: false,
-          )
-        : TransactionsFilter(
-            categories: [],
-            includeWithoutCategory: true,
-          );
-
     pushPage(
       context,
       builder: (context) => TransactionsListPage(
         wallet: wallet,
-        initialFilter: filter,
+        initialFilter: TransactionsFilter.byCategory(category),
       ),
     );
   }
