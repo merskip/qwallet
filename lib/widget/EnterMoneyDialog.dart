@@ -127,9 +127,12 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
 
   Money? calculateExpression() {
     if (this.expression.isEmpty) return null;
+    var expressionText = this.expression;
+    if (expressionText.endsWith("."))
+      expressionText = expressionText.substring(0, expressionText.length - 1);
 
     try {
-      Expression expression = Expression.parse(this.expression);
+      Expression expression = Expression.parse(expressionText);
       final result = evaluator.eval(expression, {});
 
       if (result is double && result.isFinite) {
@@ -203,7 +206,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
       [
         Flexible(flex: 3, child: Container()),
         buildDigitButton(context, "0"),
-        buildOperatorButton(context, "."),
+        buildOperatorButton(context, ".", flex: 3),
         buildBackspaceButton(context),
       ],
     ]);
@@ -259,13 +262,15 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
     );
   }
 
-  Widget buildOperatorButton(BuildContext context, String operator) {
+  Widget buildOperatorButton(BuildContext context, String operator,
+      {int flex = 2}) {
     return Flexible(
-      flex: 2,
+      flex: flex,
       child: Padding(
         padding: const EdgeInsets.all(3.0),
         child: Container(
           height: buttonHeight,
+          width: double.infinity,
           child: TextButton(
             onPressed: () => onSelectedOperator(context, operator),
             child: Text(
@@ -283,7 +288,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
 
   Widget buildBackspaceButton(BuildContext context) {
     return Flexible(
-      flex: 3,
+      flex: 2,
       child: Padding(
         padding: const EdgeInsets.all(3.0),
         child: Container(
