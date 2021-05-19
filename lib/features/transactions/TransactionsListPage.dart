@@ -18,10 +18,12 @@ import 'TransactionsListFilter.dart';
 
 class TransactionsListPage extends StatefulWidget {
   final Wallet wallet;
+  final TransactionsFilter? initialFilter;
 
   TransactionsListPage({
     Key? key,
     required this.wallet,
+    this.initialFilter,
   }) : super(key: key);
 
   @override
@@ -33,14 +35,15 @@ class _TransactionsListPageState extends State<TransactionsListPage> {
 
   @override
   void initState() {
-    filter = TransactionsFilter(
-      transactionType: null,
-      amountType: null,
-      amount: null,
-      amountAccuracy: null,
-      categories: null,
-      includeWithoutCategory: null,
-    );
+    filter = widget.initialFilter ??
+        TransactionsFilter(
+          transactionType: null,
+          amountType: null,
+          amount: null,
+          amountAccuracy: null,
+          categories: null,
+          includeWithoutCategory: null,
+        );
     super.initState();
   }
 

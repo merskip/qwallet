@@ -7,6 +7,8 @@ import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/features/transactions/TransactionsListFilter.dart';
+import 'package:qwallet/features/transactions/TransactionsListPage.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
@@ -82,6 +84,26 @@ class _ReportByCategoriesPage extends StatelessWidget {
     required this.transactions,
   }) : super(key: key);
 
+  void onSelectedCategory(BuildContext context, Category? category) {
+    final filter = category != null
+        ? TransactionsFilter(
+            categories: [category],
+            includeWithoutCategory: false,
+          )
+        : TransactionsFilter(
+            categories: [],
+            includeWithoutCategory: true,
+          );
+
+    pushPage(
+      context,
+      builder: (context) => TransactionsListPage(
+        wallet: wallet,
+        initialFilter: filter,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final items = getByCategoryItems();
@@ -111,25 +133,7 @@ class _ReportByCategoriesPage extends StatelessWidget {
                 context, AppLocalizations.of(context).reportsAmount),
             TableCell(child: Container()),
           ]),
-          ...items.map((item) => TableRow(children: [
-                buildContentCell(
-                  context,
-                  child: CategoryIcon(item.category, size: 16),
-                ),
-                buildContentCell(
-                  context,
-                  child: Text(item.category?.titleText ??
-                      AppLocalizations.of(context).reportsNoCategory),
-                ),
-                buildContentCell(
-                  context,
-                  child: Text(item.totalAmount.formatted),
-                ),
-                buildContentCell(
-                  context,
-                  child: Text("${item.percentage.toStringAsFixed(1)}%"),
-                ),
-              ]))
+          ...items.map((item) => buildCategoryTableRow(context, item)),
         ],
       ),
     );
@@ -147,11 +151,43 @@ class _ReportByCategoriesPage extends StatelessWidget {
     );
   }
 
-  Widget buildContentCell(BuildContext context, {required Widget child}) {
+  TableRow buildCategoryTableRow(BuildContext context, _ByCategoryItem item) {
+    return TableRow(
+      children: [
+        buildContentCell(
+          context,
+          child: CategoryIcon(item.category, size: 16),
+          onTap: () => onSelectedCategory(context, item.category),
+        ),
+        buildContentCell(
+          context,
+          child: Text(item.category?.titleText ??
+              AppLocalizations.of(context).reportsNoCategory),
+          onTap: () => onSelectedCategory(context, item.category),
+        ),
+        buildContentCell(
+          context,
+          child: Text(item.totalAmount.formatted),
+          onTap: () => onSelectedCategory(context, item.category),
+        ),
+        buildContentCell(
+          context,
+          child: Text("${item.percentage.toStringAsFixed(0)}%"),
+          onTap: () => onSelectedCategory(context, item.category),
+        ),
+      ],
+    );
+  }
+
+  Widget buildContentCell(BuildContext context,
+      {required Widget child, VoidCallback? onTap}) {
     return TableCell(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: child,
+      child: TableRowInkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: child,
+        ),
       ),
     );
   }

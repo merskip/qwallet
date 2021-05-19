@@ -910,7 +910,7 @@ extension TransactionsListLocalizations on AppLocalizations {
 
   String get transactionsListChipFilterCategory => _locale(
         en: "Category: ",
-        pl: "Kwota ",
+        pl: "Kategoria ",
       );
 
   String get transactionsListChipFilterWithoutCategory => _locale(
