@@ -201,7 +201,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
         return rowIndex;
       }
     }
-    return Future.error("Failed appending row");
+    throw ("Failed appending row");
   }
 
   Future<void> updateTransaction({

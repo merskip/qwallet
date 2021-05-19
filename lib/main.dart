@@ -50,7 +50,8 @@ void main() async {
       // );
 
       FlutterError.onError = (details) {
-        logger.error("FlutterError", details.exception, details.stack);
+        logger.error("FlutterError",
+            exception: details.exception, stackTrace: details.stack);
         FlutterError.dumpErrorToConsole(details);
         crashlytics.recordFlutterError(details);
       };
@@ -136,7 +137,7 @@ void main() async {
     (error, stackTrace) {
       print("Error: $error");
       print("Stack trace: $stackTrace");
-      logger.error("Catch error", error, stackTrace);
+      logger.error("Catch error", exception: error, stackTrace: stackTrace);
       crashlytics.recordError(error, stackTrace, fatal: true);
     },
   );

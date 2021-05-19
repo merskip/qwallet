@@ -54,8 +54,8 @@ class SpreadsheetWalletsProvider implements WalletsProvider {
           final wallet = await getWalletByIdentifier(walletId).first;
           wallets.add(wallet);
         } catch (exception, stackTrace) {
-          logger.error(
-              "Failed while get wallet id=$walletId", exception, stackTrace);
+          logger.error("Failed while get wallet id=$walletId",
+              exception: exception, stackTrace: stackTrace);
           FirebaseCrashlytics.instance.recordError(exception, stackTrace);
         }
       }

@@ -6,6 +6,7 @@ import 'package:googleapis/drive/v3.dart';
 import 'package:googleapis/sheets/v4.dart';
 import 'package:qwallet/data_source/Account.dart';
 import 'package:qwallet/data_source/AccountProvider.dart';
+import 'package:qwallet/logger.dart';
 import 'package:rxdart/rxdart.dart';
 
 class DefaultAccountProvider extends AccountProvider {
@@ -13,9 +14,12 @@ class DefaultAccountProvider extends AccountProvider {
 
   bool _isInitialized = false;
   late GoogleSignIn _googleSignIn;
-  StreamSubscription? _googleCurrentUserChangedSubscription;
+  StreamSubscription? _userChangedSubscription;
 
   late final BehaviorSubject<Account> _accountSubject;
+
+  @override
+  Account? get account => _accountSubject.value;
 
   DefaultAccountProvider() {
     _accountSubject = BehaviorSubject<Account>(
@@ -61,25 +65,28 @@ class DefaultAccountProvider extends AccountProvider {
   }
 
   Future<void> _listenGoogleAccountChange() async {
-    _googleCurrentUserChangedSubscription?.cancel();
+    logger.debug("Listen Google account change");
+    _userChangedSubscription?.cancel();
     if (_isInitialized) await _googleSignIn.currentUser?.clearAuthCache();
 
     final googleSignWithScopes = _createGoogleSignInWithScopes();
     var account = await googleSignWithScopes.signInSilently();
     if (account != null) {
-      print("Using GoogleSingIn with scopes");
+      logger.info("Sign in using additional scopes");
       this._googleSignIn = googleSignWithScopes;
     } else {
-      print("Using GoogleSingIn basic");
+      logger.info("Sign in using basic scope");
       this._googleSignIn = _createGoogleSignInBasic();
       await _googleSignIn.signInSilently();
     }
 
-    _googleCurrentUserChangedSubscription =
-        _googleSignIn.onCurrentUserChanged.listen((account) async {
-      if (account != null) await _firebaseSignIn(account);
-      _emitAccount();
-    });
+    _userChangedSubscription = _googleSignIn.onCurrentUserChanged.listen(
+      (account) async {
+        logger.info("Current user changed account.id=${account?.id ?? "null"}");
+        if (account != null) await _firebaseSignIn(account);
+        _emitAccount();
+      },
+    );
     _isInitialized = true;
     _emitAccount();
   }
@@ -105,11 +112,19 @@ class DefaultAccountProvider extends AccountProvider {
   Stream<Account> getAccount() => _accountSubject.stream;
 
   void _emitAccount() {
+    logger.verbose("Emitting account isInitialized=$_isInitialized");
     if (!_isInitialized) return;
     final account = Account(
       firebaseUser: _firebaseAuth.currentUser,
       googleAccount: _googleSignIn.currentUser,
     );
+    if (account.firebaseUser != null && account.googleAccount == null) {
+      logger.warning(
+        "firebaseUser is not null, but googleAccount is null, "
+        "scopes=${_googleSignIn.scopes}",
+        stackTrace: StackTrace.current,
+      );
+    }
     _accountSubject.add(account);
   }
 }

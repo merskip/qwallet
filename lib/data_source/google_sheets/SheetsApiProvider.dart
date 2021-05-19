@@ -16,10 +16,12 @@ class GoogleApiProvider {
   Future<DriveApi> get driveApi async => DriveApi(await client);
 
   Future<GoogleAuthClient> get client async {
-    final account = await accountProvider.getAccount().first;
+    final account = accountProvider.account;
+    if (account == null) throw ("accountProvider.account is null");
+
     final googleAccount = account.googleAccount;
-    if (googleAccount == null)
-      return Future.error("account.googleAccount is null");
+    if (googleAccount == null) throw ("account.googleAccount is null");
+
     final authHeaders = await googleAccount.authHeaders;
     return GoogleAuthClient(authHeaders);
   }

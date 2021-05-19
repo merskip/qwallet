@@ -27,7 +27,8 @@ class AccountDialog extends StatelessWidget {
 
   Widget buildAccountTile(BuildContext context, Account account) {
     final avatarUrl = account.getAvatarUrl();
-    final firebaseUser = account.firebaseUser!;
+    final firebaseUser = account.firebaseUser;
+    if (firebaseUser == null) return Container();
     return ListTile(
       leading: CircleAvatar(
         backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,

@@ -20,13 +20,13 @@ class MutableImage {
     if (image != null) {
       return MutableImage(image);
     } else {
-      return Future.error("Failed decode image");
+      throw ("Failed decode image");
     }
   }
 
   static Future<MutableImage> fromImage(ui.Image uiImage) async {
     final data = await uiImage.toByteData(format: ui.ImageByteFormat.rawRgba);
-    if (data == null) return Future.error("Failed convert image to byte data");
+    if (data == null) throw ("Failed convert image to byte data");
     return Image.Image.fromBytes(
       uiImage.width,
       uiImage.height,

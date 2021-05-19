@@ -72,10 +72,10 @@ class Logger {
 
   void info(String message) => log(Level.info, message);
 
-  void warning(String message, [dynamic? exception, StackTrace? stackTrace]) =>
+  void warning(String message, {dynamic? exception, StackTrace? stackTrace}) =>
       log(Level.warning, message, exception, stackTrace);
 
-  void error(String message, [dynamic? exception, StackTrace? stackTrace]) =>
+  void error(String message, {dynamic? exception, StackTrace? stackTrace}) =>
       log(Level.error, message, exception, stackTrace);
 
   void log(

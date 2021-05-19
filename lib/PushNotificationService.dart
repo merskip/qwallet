@@ -11,7 +11,7 @@ class PushNotificationService {
       final result = await _platform.invokeMapMethod("isPermissionGranted");
       return result?["isPermissionGranted"] as bool;
     } on PlatformException catch (error) {
-      return Future.error(error);
+      throw (error);
     }
   }
 
@@ -20,7 +20,7 @@ class PushNotificationService {
       final result = await _platform.invokeMapMethod("requestPermission");
       return result?["isPermissionGranted"] as bool;
     } on PlatformException catch (error) {
-      return Future.error(error);
+      throw (error);
     }
   }
 
@@ -39,7 +39,7 @@ class PushNotificationService {
         );
       }).toList();
     } on PlatformException catch (error) {
-      return Future.error(error);
+      throw (error);
     }
   }
 }
