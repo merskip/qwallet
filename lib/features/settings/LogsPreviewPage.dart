@@ -21,6 +21,11 @@ class _LogsPreviewPageState extends State<LogsPreviewPage> {
 
   @override
   void initState() {
+    _loadLogs();
+    super.initState();
+  }
+
+  void _loadLogs() {
     var logs = <GroupedLogEvent>[];
     for (final logEvent in logger.logs) {
       final lastLogEvent = logs.lastOrNull;
@@ -40,7 +45,11 @@ class _LogsPreviewPageState extends State<LogsPreviewPage> {
     setState(() {
       this.logs = logs;
     });
-    super.initState();
+  }
+
+  void onSelectedClear(BuildContext context) {
+    logger.clearAllLogs();
+    _loadLogs();
   }
 
   void onSelectedShare(BuildContext context) {
@@ -62,6 +71,10 @@ class _LogsPreviewPageState extends State<LogsPreviewPage> {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).settingsLogs),
         actions: [
+          IconButton(
+            icon: Icon(Icons.cleaning_services),
+            onPressed: () => onSelectedClear(context),
+          ),
           IconButton(
             icon: Icon(Icons.share),
             onPressed: () => onSelectedShare(context),

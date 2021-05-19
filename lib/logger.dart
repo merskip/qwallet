@@ -101,6 +101,10 @@ class Logger {
       printer.printLog(logEvent);
     }
   }
+
+  void clearAllLogs() {
+    logs.clear();
+  }
 }
 
 abstract class LogPrinter {
