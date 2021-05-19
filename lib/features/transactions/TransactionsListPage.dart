@@ -102,7 +102,7 @@ class _TransactionsContentPage extends StatefulWidget {
 }
 
 class _TransactionsContentPageState extends State<_TransactionsContentPage> {
-  final itemsPerPage = 20;
+  final itemsPerPage = 60;
   late bool isMorePages;
   late List<Stream<List<Transaction>>> transactionsPages;
 
