@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
@@ -31,6 +34,7 @@ import 'data_source/google_sheets/SpreadsheetWalletsProvider.dart';
 
 final firestore = FirebaseFirestore.instance;
 final crashlytics = FirebaseCrashlytics.instance;
+final analytics = FirebaseAnalytics();
 
 void main() async {
   runZonedGuarded(
@@ -132,12 +136,12 @@ void main() async {
         firestore: firestore,
       );
 
+      analytics.logAppOpen();
       runApp(MyApp());
     },
     (error, stackTrace) {
-      print("Error: $error");
-      print("Stack trace: $stackTrace");
-      logger.error("Catch error", exception: error, stackTrace: stackTrace);
+      logger.error("Uncaught exception",
+          exception: error, stackTrace: stackTrace);
       crashlytics.recordError(error, stackTrace, fatal: true);
     },
   );
@@ -200,6 +204,19 @@ class MyApp extends StatelessWidget {
             locale: userPreferences.locale,
             initialRoute: "/",
             onGenerateRoute: router.generator,
+            navigatorObservers: [
+              FirebaseAnalyticsObserver(
+                  analytics: analytics,
+                  onError: (PlatformException error) {
+                    logger.error(
+                      "Firebase Analytics error",
+                      exception: error,
+                    );
+                    crashlytics.recordError(
+                        error, StackTrace.fromString(error.stacktrace ?? ""));
+                  }),
+              LoggerNavigatorObserver(logger),
+            ],
           );
         });
   }

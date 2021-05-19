@@ -1,4 +1,5 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'utils/IterableFinding.dart';
@@ -143,6 +144,32 @@ class FirebaseCrashlyticsPrinter extends LogPrinter {
   @override
   void printLog(LogEvent logEvent) {
     FirebaseCrashlytics.instance.log(logEvent.toSimpleText());
+  }
+}
+
+class LoggerNavigatorObserver extends NavigatorObserver {
+  final Logger logger;
+
+  LoggerNavigatorObserver(this.logger);
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    logger.info("Navigation didReplace: $oldRoute -> $newRoute");
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    logger.info("Navigation didRemove: $previousRoute -> $route");
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    logger.info("Navigation didPop: $previousRoute -> $route");
+  }
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    logger.info("Navigation override: $previousRoute -> $route");
   }
 }
 
