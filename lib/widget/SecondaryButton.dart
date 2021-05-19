@@ -19,7 +19,7 @@ class SecondaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveColor = onPressed != null
-        ? (color ?? Theme.of(context).primaryColor)
+        ? (color ?? Theme.of(context).accentColor)
         : Theme.of(context).disabledColor;
     return SizedBox(
       height: 44,

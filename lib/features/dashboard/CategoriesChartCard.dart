@@ -282,7 +282,8 @@ class _CategoriesChart extends StatelessWidget {
     final percentage =
         totalAmount > 0.0 ? (item.sum.amount / totalAmount * 100).round() : 0.0;
     final titleStyle = Theme.of(context).textTheme.bodyText1!.copyWith(
-          backgroundColor: item.category?.backgroundColor ?? Colors.grey,
+          color: Colors.white,
+          backgroundColor: Colors.black54,
         );
 
     final badge =

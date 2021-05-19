@@ -277,7 +277,7 @@ class _EnterMoneyDialogState extends State<EnterMoneyDialog> {
               _operatorToText(context, operator),
               style: TextStyle(
                 fontSize: 18,
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).buttonTheme.colorScheme?.secondary,
               ),
             ),
           ),

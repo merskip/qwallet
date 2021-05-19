@@ -170,10 +170,13 @@ class MyApp extends StatelessWidget {
               brightness: Brightness.dark,
               primarySwatch: Colors.indigo,
               primaryColor: Colors.indigo,
-              accentColor: Colors.indigo.shade700,
-              toggleableActiveColor: Colors.indigo.shade700,
+              accentColor: Colors.indigoAccent,
+              cardColor: Color(0xff353535),
               inputDecorationTheme: InputDecorationTheme(
                 border: OutlineInputBorder(),
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(primary: Colors.indigo.shade300),
               ),
             ),
             themeMode: userPreferences.themeMode,

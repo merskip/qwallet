@@ -55,7 +55,7 @@ class _LoansListPageState extends State<LoansListPage> {
   Widget buildLoan(BuildContext context, PrivateLoan loan) {
     return Card(
       margin: EdgeInsets.all(16).copyWith(bottom: 0),
-      color: loan.isFullyRepaid ? Colors.grey.shade300 : null,
+      color: loan.isFullyRepaid ? Colors.black12 : null,
       child: InkWell(
         onTap: () => onSelectedLoan(context, loan),
         child: Column(
