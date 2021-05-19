@@ -44,7 +44,7 @@ class _LogsPreviewPageState extends State<LogsPreviewPage> {
   }
 
   void onSelectedShare(BuildContext context) {
-    Share.share(logger.logsAsText);
+    Share.share(logger.logsAsText, subject: "QWallet bug report");
   }
 
   void onSelectedLogEvent(BuildContext context, LogEvent logEvent) {

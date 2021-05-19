@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/firebase/FirebaseModel.dart';
+import 'package:qwallet/logger.dart';
 
 typedef WidgetWithValueBuilder<T> = Widget Function(
     BuildContext context, T value);
@@ -32,7 +33,7 @@ class SimpleStreamWidget<T> extends StatelessWidget {
       stream: stream,
       builder: (context, AsyncSnapshot<T> snapshot) {
         final debugDescription = _getDebugDescription(snapshot);
-        print(debugDescription);
+        logger.verbose(debugDescription);
 
         if (snapshot.hasError)
           return _error(context, snapshot.error!, debugDescription);
@@ -76,8 +77,8 @@ class SimpleStreamWidget<T> extends StatelessWidget {
     final state =
         snapshot.connectionState.toString().replaceFirst("ConnectionState", "");
 
-    return "\x1B[33mStream-$id\x1B[0m "
-        "type=\x1B[34m$typeName\x1B[0m "
+    return "Stream-$id "
+        "type=$typeName "
         "state=($stateIcon $state) "
         "hasData=${snapshot.hasData} "
         "hasError=${snapshot.hasError}";

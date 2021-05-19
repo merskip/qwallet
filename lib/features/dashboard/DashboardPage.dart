@@ -9,12 +9,14 @@ import 'package:qwallet/MoneyTextDetector.dart';
 import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/logger.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/EnterMoneyDialog.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:share/share.dart';
 
 import '../../Money.dart';
 import '../../PushNotificationService.dart';
@@ -137,6 +139,10 @@ class DashboardPageState extends State<DashboardPage> {
     router.navigateTo(context, "/settings");
   }
 
+  void onSelectedBugReport(BuildContext context) {
+    Share.share(logger.logsAsText, subject: "QWallet bug report");
+  }
+
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
@@ -230,38 +236,64 @@ class DashboardPageState extends State<DashboardPage> {
           tooltip: AppLocalizations.of(context).dashboardEditBalance,
           onPressed: () => onSelectedEditBalance(context, getSelectedWallet()),
         ),
-      PopupMenuButton(
-        itemBuilder: (context) => [
-          if (hasWallets)
-            PopupMenuItem(
-              child: Text(AppLocalizations.of(context).dashboardEditWallet),
-              value: "edit-wallet",
-            ),
-          if (hasWallets)
-            PopupMenuItem(
-              child: Text(AppLocalizations.of(context).dashboardReports),
-              value: "report",
-            ),
-          PopupMenuItem(
-            child: Text(AppLocalizations.of(context).dashboardSettings),
-            value: "settings",
-          ),
-        ],
-        onSelected: (id) {
-          switch (id) {
-            case "edit-wallet":
-              onSelectedEditWallet(context, getSelectedWallet());
-              break;
-            case "report":
-              onSelectedReport(context, getSelectedWallet());
-              break;
-            case "settings":
-              onSelectedSettings(context);
-              break;
-          }
-        },
-      )
+      Badge(
+        position: BadgePosition.topEnd(top: 8, end: 10),
+        showBadge: logger.hasWarningOrErrorLogs,
+        badgeColor: logger.hasWarningLogs ? Colors.orange : Colors.red,
+        child: buildMoreMenu(context, hasWallets),
+      ),
     ];
+  }
+
+  Widget buildMoreMenu(BuildContext context, bool hasWallets) {
+    return PopupMenuButton<dynamic>(
+      itemBuilder: (context) => [
+        if (hasWallets)
+          PopupMenuItem(
+            child: Text(AppLocalizations.of(context).dashboardReports),
+            value: "report",
+          ),
+        PopupMenuDivider(),
+        if (hasWallets)
+          PopupMenuItem(
+            child: Text(AppLocalizations.of(context).dashboardEditWallet),
+            value: "edit-wallet",
+          ),
+        PopupMenuItem(
+          child: Text(AppLocalizations.of(context).dashboardSettings),
+          value: "settings",
+        ),
+        PopupMenuItem(
+          child: Text(
+            AppLocalizations.of(context).dashboardBugReport,
+            style: TextStyle(
+              color: logger.hasErrorLogs
+                  ? Colors.red
+                  : logger.hasWarningLogs
+                      ? Colors.orange
+                      : null,
+            ),
+          ),
+          value: "bug-report",
+        ),
+      ],
+      onSelected: (id) {
+        switch (id) {
+          case "edit-wallet":
+            onSelectedEditWallet(context, getSelectedWallet());
+            break;
+          case "report":
+            onSelectedReport(context, getSelectedWallet());
+            break;
+          case "settings":
+            onSelectedSettings(context);
+            break;
+          case "bug-report":
+            onSelectedBugReport(context);
+            break;
+        }
+      },
+    );
   }
 
   Widget buildNoWallets(BuildContext context) {

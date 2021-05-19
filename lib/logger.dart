@@ -1,6 +1,8 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:intl/intl.dart';
 
+import 'utils/IterableFinding.dart';
+
 enum Level {
   verbose,
   debug,
@@ -63,6 +65,14 @@ class Logger {
       logger.logs.map((log) => log.toSimpleText()).join("\n");
 
   final List<LogPrinter> printers;
+
+  bool get hasWarningOrErrorLogs => hasWarningLogs || hasErrorLogs;
+
+  bool get hasWarningLogs =>
+      logs.findFirstOrNull((log) => log.level == Level.warning) != null;
+
+  bool get hasErrorLogs =>
+      logs.findFirstOrNull((log) => log.level == Level.error) != null;
 
   Logger({required this.printers});
 

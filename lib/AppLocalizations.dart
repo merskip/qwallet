@@ -136,6 +136,11 @@ extension DashbaordLocalizations on AppLocalizations {
         pl: "Ustawienia",
       );
 
+  String get dashboardBugReport => _locale(
+        en: "Bug report",
+        pl: "Zgłoś błąd",
+      );
+
   String get dashboardWalletsEmpty => _locale(
         en: "There are no wallets in your account",
         pl: "Na twoim koncie nie ma żadnych portfeli",
@@ -297,18 +302,22 @@ extension LinkWalletGoogleSheetsLocalizations on AppLocalizations {
         en: "Total income",
         pl: "Całkowity przychód",
       );
+
   String get linkWalletGoogleSheetsTotalExpenses => _locale(
         en: "Total expenses",
         pl: "Całkowite wydatki",
       );
+
   String get linkWalletGoogleSheetsDateTimeRange => _locale(
         en: "Date range",
         pl: "Zakres daty",
       );
+
   String get linkWalletGoogleSheetsCategories => _locale(
         en: "Catgegories",
         pl: "Kategorie",
       );
+
   String get linkWalletGoogleSheetsConfirm => _locale(
         en: "Confirm",
         pl: "Zatwierdź",
@@ -898,6 +907,7 @@ extension TransactionsListLocalizations on AppLocalizations {
         en: "Amount ",
         pl: "Kwota ",
       );
+
   String get transactionsListChipFilterCategory => _locale(
         en: "Category: ",
         pl: "Kwota ",

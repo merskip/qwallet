@@ -157,6 +157,7 @@ class MyApp extends StatelessWidget {
           final userPreferences = snapshot.data!;
           return MaterialApp(
             title: "QWallet",
+            debugShowCheckedModeBanner: false,
             theme: ThemeData(
               brightness: Brightness.light,
               primarySwatch: Colors.indigo,
