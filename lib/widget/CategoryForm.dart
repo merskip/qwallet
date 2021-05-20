@@ -70,7 +70,6 @@ class _CategoryFormState extends State<CategoryForm> {
   onSelectedIcon(BuildContext context) async {
     final icon = await _showIconPicker(context);
     if (icon != null) {
-      iconDataToMap(icon);
       setState(() => this.icon = icon);
     }
   }
