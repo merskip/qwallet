@@ -49,7 +49,7 @@ dependencies:
   package_info: ^2.0.0
   shared_preferences: ^2.0.4
   rxdart: ^0.26.0
-  flutter_iconpicker: ^3.0.0
+  flutter_iconpicker: ^3.0.2
   firebase_crashlytics: ^2.0.0
   firebase_performance: ^0.7.0+3
   expressions: ^0.2.0
