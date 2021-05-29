@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/model/user.dart';
+import 'package:qwallet/model/User.dart';
 
 class UsersFormField extends FormField<List<User>> {
   final UsersEditingController controller;

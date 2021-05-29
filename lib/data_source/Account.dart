@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart' as FirebaseAuth;
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:qwallet/model/user.dart';
+import 'package:qwallet/model/User.dart';
 
 class Account {
   final FirebaseAuth.User? firebaseUser;

@@ -4,7 +4,7 @@ import 'package:qwallet/Currency.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/PrivateLoansProvider.dart';
 import 'package:qwallet/data_source/UsersProvider.dart';
-import 'package:qwallet/model/user.dart';
+import 'package:qwallet/model/User.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../utils.dart';

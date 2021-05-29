@@ -3,7 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
-import 'package:qwallet/model/user.dart';
+import 'package:qwallet/model/User.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/CurrencySelectionPage.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';

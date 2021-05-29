@@ -5,7 +5,7 @@ import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/data_source/firebase/PrivateLoan.dart';
-import 'package:qwallet/model/user.dart';
+import 'package:qwallet/model/User.dart';
 import 'package:qwallet/widget/EnterMoneyDialog.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/UserAvatar.dart';

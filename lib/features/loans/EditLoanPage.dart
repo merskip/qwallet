@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/data_source/firebase/PrivateLoan.dart';
-import 'package:qwallet/model/user.dart';
+import 'package:qwallet/model/User.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 
 import '../../AppLocalizations.dart';

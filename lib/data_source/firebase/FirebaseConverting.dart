@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/IconsSerialization.dart';
-import 'package:qwallet/model/user.dart';
+import 'package:qwallet/model/User.dart';
 
 import '../../Currency.dart';
 import '../../Money.dart';

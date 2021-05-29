@@ -1,4 +1,4 @@
-import 'package:qwallet/model/user.dart';
+import 'package:qwallet/model/User.dart';
 
 abstract class UsersProvider {
   User getCurrentUser();
