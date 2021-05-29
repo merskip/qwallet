@@ -154,22 +154,38 @@ class LoggerNavigatorObserver extends NavigatorObserver {
 
   @override
   void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
-    logger.info("Navigation didReplace: $oldRoute -> $newRoute");
+    logger.info(
+        "Navigation didReplace:\n${_transitionToText(oldRoute, newRoute)}");
   }
 
   @override
   void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    logger.info("Navigation didRemove: $previousRoute -> $route");
+    logger.info(
+        "Navigation didRemove:\n${_transitionToText(previousRoute, route)}");
   }
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    logger.info("Navigation didPop: $previousRoute -> $route");
+    logger
+        .info("Navigation didPop:\n${_transitionToText(route, previousRoute)}");
   }
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    logger.info("Navigation override: $previousRoute -> $route");
+    logger.info(
+        "Navigation didPush:\n${_transitionToText(previousRoute, route)}");
+  }
+
+  String _transitionToText(Route<dynamic>? fromRoute, Route<dynamic>? toRoute) {
+    return " - from: ${_routeToText(fromRoute)}\n - to: ${_routeToText(toRoute)}";
+  }
+
+  String _routeToText(Route<dynamic>? route) {
+    if (route == null) return "null";
+    return "name=\"${route.settings.name}\", "
+        "type=${route.runtimeType}, "
+        "arguments=${route.settings.arguments}, "
+        "currentResult=${route.currentResult}";
   }
 }
 
