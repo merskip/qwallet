@@ -67,18 +67,22 @@ class DefaultAccountProvider extends AccountProvider {
   Future<void> _listenGoogleAccountChange() async {
     logger.debug("Listen Google account change");
     _userChangedSubscription?.cancel();
-    if (_isInitialized) await _googleSignIn.currentUser?.clearAuthCache();
+    if (_isInitialized) {
+      await _googleSignIn.currentUser?.clearAuthCache();
+      logger.debug("Cleared auth cache");
+    }
 
     final googleSignWithScopes = _createGoogleSignInWithScopes();
     var account = await googleSignWithScopes.signInSilently();
     if (account != null) {
       logger.info("Sign in using additional scopes");
-      this._googleSignIn = googleSignWithScopes;
+      _googleSignIn = googleSignWithScopes;
     } else {
       logger.info("Sign in using basic scope");
-      this._googleSignIn = _createGoogleSignInBasic();
-      await _googleSignIn.signInSilently();
+      _googleSignIn = _createGoogleSignInBasic();
     }
+    await _googleSignIn.signInSilently();
+    logger.info("Google isSignIn=${await _googleSignIn.isSignedIn()}");
 
     _userChangedSubscription = _googleSignIn.onCurrentUserChanged.listen(
       (account) async {
