@@ -32,7 +32,7 @@ dependencies:
   expressions: ^0.2.0
   file_picker: ^3.0.1
   firebase_analytics: ^8.1.0
-  firebase_auth: ^1.0.1
+  firebase_auth: ^1.2.0
   firebase_core: ^1.2.0
   firebase_crashlytics: ^2.0.0
   firebase_performance: ^0.7.0+3
@@ -43,8 +43,8 @@ dependencies:
   flutter_markdown: ^0.6.0
   flutter_svg: ^0.22.0
   font_awesome_flutter: ^9.0.0
-  google_sign_in: ^5.0.3
-  googleapis: ^2.0.0
+  google_sign_in: ^5.0.4
+  googleapis: ^3.0.0
   googleapis_auth: ^1.1.0
   http: ^0.13.0
   image: ^3.0.2

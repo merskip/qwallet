@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart';
 import 'package:googleapis/sheets/v4.dart';
@@ -78,8 +79,13 @@ class DefaultAccountProvider extends AccountProvider {
       logger.info("Sign in using additional scopes");
       _googleSignIn = googleSignWithScopes;
     } else {
-      logger.info("Sign in using basic scope");
-      _googleSignIn = _createGoogleSignInBasic();
+      // Change Google SignIn on web causes crash, so require using with scopes
+      if (!kIsWeb) {
+        logger.info("Sign in using basic scope");
+        _googleSignIn = _createGoogleSignInBasic();
+      } else {
+        _googleSignIn = googleSignWithScopes;
+      }
     }
     await _googleSignIn.signInSilently();
     logger.info("Google isSignIn=${await _googleSignIn.isSignedIn()}");
