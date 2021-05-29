@@ -9,6 +9,7 @@ import 'package:qwallet/MoneyTextDetector.dart';
 import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/features/settings/LogsPreviewPage.dart';
 import 'package:qwallet/logger.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/EnterMoneyDialog.dart';
@@ -21,6 +22,7 @@ import 'package:share/share.dart';
 import '../../Money.dart';
 import '../../PushNotificationService.dart';
 import '../../router.dart';
+import '../../utils.dart';
 import 'CategoriesChartCard.dart';
 import 'DailyReportSection.dart';
 import 'TransactionsCard.dart';
@@ -137,6 +139,13 @@ class DashboardPageState extends State<DashboardPage> {
 
   void onSelectedSettings(BuildContext context) {
     router.navigateTo(context, "/settings");
+  }
+
+  void onSelectedLogs(BuildContext context) {
+    pushPage(
+      context,
+      builder: (context) => LogsPreviewPage(),
+    );
   }
 
   void onSelectedBugReport(BuildContext context) {
@@ -263,19 +272,25 @@ class DashboardPageState extends State<DashboardPage> {
           child: Text(AppLocalizations.of(context).dashboardSettings),
           value: "settings",
         ),
+        PopupMenuDivider(),
         PopupMenuItem(
-          child: Text(
-            AppLocalizations.of(context).dashboardBugReport,
-            style: TextStyle(
-              color: logger.hasErrorLogs
-                  ? Colors.red
-                  : logger.hasWarningLogs
-                      ? Colors.orange
-                      : null,
-            ),
-          ),
-          value: "bug-report",
+          child: Text(AppLocalizations.of(context).dashboardLogs),
+          value: "logs",
         ),
+        if (logger.hasWarningOrErrorLogs)
+          PopupMenuItem(
+            child: Text(
+              AppLocalizations.of(context).dashboardBugReport,
+              style: TextStyle(
+                color: logger.hasErrorLogs
+                    ? Colors.red
+                    : logger.hasWarningLogs
+                        ? Colors.orange
+                        : null,
+              ),
+            ),
+            value: "bug-report",
+          ),
       ],
       onSelected: (id) {
         switch (id) {
@@ -287,6 +302,9 @@ class DashboardPageState extends State<DashboardPage> {
             break;
           case "settings":
             onSelectedSettings(context);
+            break;
+          case "logs":
+            onSelectedLogs(context);
             break;
           case "bug-report":
             onSelectedBugReport(context);

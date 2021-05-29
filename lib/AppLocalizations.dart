@@ -136,6 +136,11 @@ extension DashbaordLocalizations on AppLocalizations {
         pl: "Ustawienia",
       );
 
+  String get dashboardLogs => _locale(
+        en: "Logs",
+        pl: "Dzienniki",
+      );
+
   String get dashboardBugReport => _locale(
         en: "Bug report",
         pl: "Zgłoś błąd",
