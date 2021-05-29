@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/data_source/Identifier.dart';
@@ -8,6 +7,7 @@ import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/google_sheets/GoogleSpreadsheetWallet.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetCategory.dart';
 import 'package:qwallet/logger.dart';
+import 'package:qwallet/main.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../Money.dart';
@@ -56,7 +56,7 @@ class SpreadsheetWalletsProvider implements WalletsProvider {
         } catch (exception, stackTrace) {
           logger.error("Failed while get wallet id=$walletId",
               exception: exception, stackTrace: stackTrace);
-          FirebaseCrashlytics.instance.recordError(exception, stackTrace);
+          crashlytics?.recordError(exception, stackTrace);
         }
       }
       return wallets;

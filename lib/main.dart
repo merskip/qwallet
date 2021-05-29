@@ -33,7 +33,7 @@ import 'data_source/google_sheets/SpreadsheetTransactionsProvider.dart';
 import 'data_source/google_sheets/SpreadsheetWalletsProvider.dart';
 
 final firestore = FirebaseFirestore.instance;
-final crashlytics = FirebaseCrashlytics.instance;
+final crashlytics = kIsWeb ? null : FirebaseCrashlytics.instance;
 final analytics = FirebaseAnalytics();
 
 void main() async {
@@ -57,12 +57,12 @@ void main() async {
         logger.error("FlutterError",
             exception: details.exception, stackTrace: details.stack);
         FlutterError.dumpErrorToConsole(details);
-        crashlytics.recordFlutterError(details);
+        crashlytics?.recordFlutterError(details);
       };
 
       if (kDebugMode) {
-        crashlytics.deleteUnsentReports();
-        crashlytics.setCrashlyticsCollectionEnabled(false);
+        crashlytics?.deleteUnsentReports();
+        crashlytics?.setCrashlyticsCollectionEnabled(false);
       }
 
       SharedProviders.accountProvider = DefaultAccountProvider();
@@ -142,7 +142,7 @@ void main() async {
     (error, stackTrace) {
       logger.error("Uncaught exception",
           exception: error, stackTrace: stackTrace);
-      crashlytics.recordError(error, stackTrace, fatal: true);
+      crashlytics?.recordError(error, stackTrace, fatal: true);
     },
   );
 }
@@ -212,8 +212,10 @@ class MyApp extends StatelessWidget {
                       "Firebase Analytics error",
                       exception: error,
                     );
-                    crashlytics.recordError(
-                        error, StackTrace.fromString(error.stacktrace ?? ""));
+                    crashlytics?.recordError(
+                      error,
+                      StackTrace.fromString(error.stacktrace ?? ""),
+                    );
                   }),
               LoggerNavigatorObserver(logger),
             ],

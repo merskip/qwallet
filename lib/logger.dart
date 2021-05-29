@@ -1,6 +1,6 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:qwallet/main.dart';
 
 import 'utils/IterableFinding.dart';
 
@@ -143,7 +143,7 @@ class ConsoleLogPrinter extends LogPrinter {
 class FirebaseCrashlyticsPrinter extends LogPrinter {
   @override
   void printLog(LogEvent logEvent) {
-    FirebaseCrashlytics.instance.log(logEvent.toSimpleText());
+    crashlytics?.log(logEvent.toSimpleText());
   }
 }
 

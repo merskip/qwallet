@@ -1,9 +1,9 @@
 import 'dart:collection';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/firebase/FirebaseModel.dart';
 import 'package:qwallet/logger.dart';
+import 'package:qwallet/main.dart';
 
 typedef WidgetWithValueBuilder<T> = Widget Function(
     BuildContext context, T value);
@@ -50,11 +50,11 @@ class SimpleStreamWidget<T> extends StatelessWidget {
 
   Widget _error(BuildContext context, Object error, String debugDescription) {
     if (error is Error) {
-      FirebaseCrashlytics.instance
-          .recordError(error, error.stackTrace, reason: debugDescription);
+      crashlytics?.recordError(error, error.stackTrace,
+          reason: debugDescription);
       return buildError(context, error.toString(), error.stackTrace);
     } else {
-      FirebaseCrashlytics.instance.recordError(error, null);
+      crashlytics?.recordError(error, null);
       return buildError(context, error.toString(), null);
     }
   }
