@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -10,6 +11,7 @@ class EnterAmountSheet extends StatefulWidget {
     showModalBottomSheet(
       context: context,
       enableDrag: false,
+      isScrollControlled: true,
       builder: (context) => EnterAmountSheet(),
     );
   }
@@ -68,23 +70,47 @@ class _EnterAmountSheetState extends State<EnterAmountSheet> {
       onPointerMove: _onPointerMove,
       onPointerUp: _onPointerUp,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(mainAxisSize: MainAxisSize.min, children: [
-            _KeyboardButton(displayText: "1", value: 1),
-            _KeyboardButton(displayText: "2", value: 2),
-            _KeyboardButton(displayText: "3", value: 3),
+            _KeyboardButton(
+                child: Text("PLN"), value: "PLN", color: Colors.blueGrey),
+            _KeyboardButton(child: Text("("), value: "(", color: Colors.green),
+            _KeyboardButton(child: Text(")"), value: ")", color: Colors.green),
+            _KeyboardButton(
+                child: Text("×"), value: "*", color: Colors.orangeAccent),
           ]),
           Row(mainAxisSize: MainAxisSize.min, children: [
-            _KeyboardButton(displayText: "4", value: 4),
-            _KeyboardButton(displayText: "5", value: 5),
-            _KeyboardButton(displayText: "6", value: 6),
+            _KeyboardButton(child: Text("1"), value: 1),
+            _KeyboardButton(child: Text("2"), value: 2),
+            _KeyboardButton(child: Text("3"), value: 3),
+            _KeyboardButton(
+                child: Text("÷"), value: "/", color: Colors.orangeAccent),
           ]),
           Row(mainAxisSize: MainAxisSize.min, children: [
-            _KeyboardButton(displayText: "7", value: 7),
-            _KeyboardButton(displayText: "8", value: 8),
-            _KeyboardButton(displayText: "9", value: 9),
+            _KeyboardButton(child: Text("4"), value: 4),
+            _KeyboardButton(child: Text("5"), value: 5),
+            _KeyboardButton(child: Text("6"), value: 6),
+            _KeyboardButton(child: Text("+"), value: "+", color: Colors.blue),
           ]),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            _KeyboardButton(child: Text("7"), value: 7),
+            _KeyboardButton(child: Text("8"), value: 8),
+            _KeyboardButton(child: Text("9"), value: 9),
+            _KeyboardButton(child: Text("−"), value: "-", color: Colors.blue),
+          ]),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _KeyboardButton(child: Text("0"), value: 0, flex: 2),
+              _KeyboardButton(child: Text(","), value: "."),
+              _KeyboardButton(
+                child: Icon(Icons.backspace_outlined, color: Colors.white),
+                value: "",
+                color: Colors.red.shade400,
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -92,12 +118,16 @@ class _EnterAmountSheetState extends State<EnterAmountSheet> {
 }
 
 class _KeyboardButton extends StatefulWidget {
-  final String displayText;
+  final Widget child;
+  final Color? color;
+  final int flex;
   final dynamic value;
 
   const _KeyboardButton({
     Key? key,
-    required this.displayText,
+    required this.child,
+    this.color,
+    this.flex = 1,
     this.value,
   }) : super(key: key);
 
@@ -114,18 +144,42 @@ class _KeyboardButtonState extends State<_KeyboardButton> {
   Widget build(BuildContext context) {
     return MetaData(
       metaData: this,
-      behavior: HitTestBehavior.opaque,
       child: Padding(
         padding: EdgeInsets.all(8),
-        child: Container(
-          width: 96,
-          height: 96,
+        child: AnimatedContainer(
+          width: 64.0 * widget.flex + 8.0 * (widget.flex - 1),
+          height: 64,
           decoration: BoxDecoration(
-            border: Border.all(),
-            borderRadius: BorderRadius.circular(96 / 2),
-            color: isFocused ? Colors.green : null,
+            borderRadius: BorderRadius.circular(80 / 2),
+            boxShadow: [
+              if (isFocused)
+                BoxShadow(
+                  color: (widget.color?.withOpacity(0.8) ?? Colors.black26),
+                  offset: Offset(0, 6),
+                  blurRadius: 8,
+                ),
+              if (!isFocused)
+                BoxShadow(
+                  color: widget.color?.withOpacity(0.5) ?? Colors.black12,
+                  offset: Offset(0, 4),
+                  blurRadius: 6,
+                ),
+            ],
+            color: isFocused
+                ? (widget.color?.withOpacity(0.7) ?? Colors.grey.shade100)
+                : (widget.color ?? Colors.white),
           ),
-          child: Center(child: Text(widget.displayText)),
+          duration: Duration(milliseconds: isFocused ? 0 : 200),
+          child: Center(
+            child: DefaultTextStyle(
+              child: widget.child,
+              style: TextStyle(
+                color: (widget.color != null ? Colors.white : Colors.black),
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ),
       ),
     );
