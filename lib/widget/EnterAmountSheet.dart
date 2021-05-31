@@ -35,6 +35,16 @@ class _EnterAmountSheetState extends State<EnterAmountSheet> {
 
   final evaluator = const ExpressionEvaluator();
 
+  @override
+  void initState() {
+    if (widget.initialMoney.amount > 0) {
+      enteredText = widget.initialMoney.amount
+          .toStringAsFixed(widget.initialMoney.currency.decimalDigits);
+      _refreshResult();
+    }
+    super.initState();
+  }
+
   void _onPointerDown(PointerDownEvent event) {
     _handlePointerEvent(event);
   }

@@ -20,7 +20,7 @@ import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
-import 'package:qwallet/widget/EnterMoneyDialog.dart';
+import 'package:qwallet/widget/EnterAmountSheet.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/TransactionTypeButton.dart';
 
@@ -132,13 +132,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
   void onSelectedEditAmount(BuildContext context) async {
     final amount = Money(widget.transaction.amount, widget.wallet.currency);
-    final newAmount = await showDialog(
-      context: context,
-      builder: (context) => EnterMoneyDialog(
-        initialMoney: amount,
-        currency: amount.currency,
-      ),
-    );
+    final newAmount = await EnterAmountSheet.show(context, amount);
     if (newAmount != null) {
       SharedProviders.transactionsProvider.updateTransaction(
         wallet: widget.wallet,
