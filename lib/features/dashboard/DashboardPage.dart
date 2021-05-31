@@ -12,7 +12,7 @@ import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/features/settings/LogsPreviewPage.dart';
 import 'package:qwallet/logger.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
-import 'package:qwallet/widget/EnterMoneyDialog.dart';
+import 'package:qwallet/widget/EnterAmountSheet.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/WalletsSwipeWidget.dart';
@@ -52,10 +52,7 @@ class DashboardPageState extends State<DashboardPage> {
   }
 
   void onSelectedEditBalance(BuildContext context, Wallet wallet) async {
-    final newBalance = await showDialog(
-      context: context,
-      builder: (context) => EnterMoneyDialog(currency: wallet.currency),
-    ) as Money?;
+    final newBalance = await EnterAmountSheet.show(context, wallet.balance);
     if (newBalance != null) {
       // Fixes #44 bug
       final freshWallet = await SharedProviders.walletsProvider

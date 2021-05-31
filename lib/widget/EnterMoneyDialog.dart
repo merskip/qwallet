@@ -13,6 +13,7 @@ import '../utils.dart';
 
 const buttonHeight = 56.0;
 
+@Deprecated("Use EnterAmountSheet")
 class EnterMoneyDialog extends StatefulWidget {
   final Money? initialMoney;
   final Currency currency;

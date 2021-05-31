@@ -1,18 +1,26 @@
+import 'package:expressions/expressions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:qwallet/logger.dart';
+
+import '../AppLocalizations.dart';
+import '../Money.dart';
 
 class EnterAmountSheet extends StatefulWidget {
-  const EnterAmountSheet({Key? key}) : super(key: key);
+  final Money initialMoney;
 
-  static show(BuildContext context) {
-    showModalBottomSheet(
+  const EnterAmountSheet({
+    Key? key,
+    required this.initialMoney,
+  }) : super(key: key);
+
+  static Future<Money?> show(BuildContext context, Money initialMoney) {
+    return showModalBottomSheet(
       context: context,
       enableDrag: false,
       isScrollControlled: true,
-      builder: (context) => EnterAmountSheet(),
+      builder: (context) => EnterAmountSheet(initialMoney: initialMoney),
     );
   }
 
@@ -22,6 +30,10 @@ class EnterAmountSheet extends StatefulWidget {
 
 class _EnterAmountSheetState extends State<EnterAmountSheet> {
   _KeyboardButtonState? _focusedButton;
+  String enteredText = "";
+  String? resultText;
+
+  final evaluator = const ExpressionEvaluator();
 
   void _onPointerDown(PointerDownEvent event) {
     _handlePointerEvent(event);
@@ -34,7 +46,7 @@ class _EnterAmountSheetState extends State<EnterAmountSheet> {
   void _onPointerUp(PointerUpEvent event) {
     final button = _handlePointerEvent(event);
     if (button != null) {
-      logger.info("Selected button: value=${button.value}");
+      button.widget.onPressed();
     }
     setFocusToButton(null);
   }
@@ -63,6 +75,56 @@ class _EnterAmountSheetState extends State<EnterAmountSheet> {
     _focusedButton = button;
   }
 
+  void onSelectedEnterCharacter(BuildContext context, String character) {
+    enteredText += character;
+    _refreshResult();
+  }
+
+  void onSelectedCancel(BuildContext context) {
+    Navigator.of(context).pop(null);
+  }
+
+  void onSelectedApply(BuildContext context) {
+    final result = calculateExpression();
+    if (result != null) {
+      Navigator.of(context).pop(result);
+    }
+  }
+
+  void onSelectedBackspace(BuildContext context) {
+    enteredText = enteredText.isNotEmpty
+        ? enteredText.substring(0, enteredText.length - 1)
+        : "";
+    _refreshResult();
+  }
+
+  void _refreshResult() {
+    final result = calculateExpression();
+
+    setState(() {
+      resultText = result?.formatted ?? "?";
+    });
+  }
+
+  Money? calculateExpression() {
+    if (this.enteredText.isEmpty) return null;
+    var expressionText = this.enteredText;
+    if (expressionText.endsWith("."))
+      expressionText = expressionText.substring(0, expressionText.length - 1);
+
+    try {
+      Expression expression = Expression.parse(expressionText);
+      final result = evaluator.eval(expression, {});
+
+      if (result is double && result.isFinite) {
+        return Money(result, widget.initialMoney.currency);
+      } else if (result is int) {
+        return Money(result.toDouble(), widget.initialMoney.currency);
+      }
+    } catch (e) {}
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Listener(
@@ -72,45 +134,133 @@ class _EnterAmountSheetState extends State<EnterAmountSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            _KeyboardButton(
-                child: Text("PLN"), value: "PLN", color: Colors.blueGrey),
-            _KeyboardButton(child: Text("("), value: "(", color: Colors.green),
-            _KeyboardButton(child: Text(")"), value: ")", color: Colors.green),
-            _KeyboardButton(
-                child: Text("×"), value: "*", color: Colors.orangeAccent),
-          ]),
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            _KeyboardButton(child: Text("1"), value: 1),
-            _KeyboardButton(child: Text("2"), value: 2),
-            _KeyboardButton(child: Text("3"), value: 3),
-            _KeyboardButton(
-                child: Text("÷"), value: "/", color: Colors.orangeAccent),
-          ]),
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            _KeyboardButton(child: Text("4"), value: 4),
-            _KeyboardButton(child: Text("5"), value: 5),
-            _KeyboardButton(child: Text("6"), value: 6),
-            _KeyboardButton(child: Text("+"), value: "+", color: Colors.blue),
-          ]),
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            _KeyboardButton(child: Text("7"), value: 7),
-            _KeyboardButton(child: Text("8"), value: 8),
-            _KeyboardButton(child: Text("9"), value: 9),
-            _KeyboardButton(child: Text("−"), value: "-", color: Colors.blue),
-          ]),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _KeyboardButton(child: Text("0"), value: 0, flex: 2),
-              _KeyboardButton(child: Text(","), value: "."),
-              _KeyboardButton(
-                child: Icon(Icons.backspace_outlined, color: Colors.white),
-                value: "",
-                color: Colors.red.shade400,
-              ),
-            ],
+          SizedBox(height: 8),
+          SizedBox(
+            width: 64 * 4 + 8 * 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  enteredText.isNotEmpty ? enteredText : "_",
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+                Text(
+                  "= " + (resultText ?? "?"),
+                  style: Theme.of(context).textTheme.headline5,
+                  textAlign: TextAlign.end,
+                ),
+              ],
+            ),
           ),
+          Divider(),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            SizedBox(width: 64 + 8),
+            _KeyboardButton(
+              child: Text("("),
+              color: Colors.blueGrey,
+              onPressed: () => onSelectedEnterCharacter(context, "("),
+            ),
+            _KeyboardButton(
+              child: Text(")"),
+              color: Colors.blueGrey,
+              onPressed: () => onSelectedEnterCharacter(context, ")"),
+            ),
+            _KeyboardButton(
+              child: Text("×"),
+              color: Colors.orangeAccent,
+              onPressed: () => onSelectedEnterCharacter(context, "*"),
+            ),
+          ]),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            _KeyboardButton(
+              child: Text("7"),
+              onPressed: () => onSelectedEnterCharacter(context, "7"),
+            ),
+            _KeyboardButton(
+              child: Text("8"),
+              onPressed: () => onSelectedEnterCharacter(context, "8"),
+            ),
+            _KeyboardButton(
+              child: Text("9"),
+              onPressed: () => onSelectedEnterCharacter(context, "9"),
+            ),
+            _KeyboardButton(
+              child: Text("÷"),
+              color: Colors.orangeAccent,
+              onPressed: () => onSelectedEnterCharacter(context, "/"),
+            ),
+          ]),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            _KeyboardButton(
+              child: Text("4"),
+              onPressed: () => onSelectedEnterCharacter(context, "4"),
+            ),
+            _KeyboardButton(
+              child: Text("5"),
+              onPressed: () => onSelectedEnterCharacter(context, "5"),
+            ),
+            _KeyboardButton(
+              child: Text("6"),
+              onPressed: () => onSelectedEnterCharacter(context, "6"),
+            ),
+            _KeyboardButton(
+              child: Text("+"),
+              color: Colors.blue,
+              onPressed: () => onSelectedEnterCharacter(context, "+"),
+            ),
+          ]),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            _KeyboardButton(
+              child: Text("1"),
+              onPressed: () => onSelectedEnterCharacter(context, "1"),
+            ),
+            _KeyboardButton(
+              child: Text("2"),
+              onPressed: () => onSelectedEnterCharacter(context, "2"),
+            ),
+            _KeyboardButton(
+              child: Text("3"),
+              onPressed: () => onSelectedEnterCharacter(context, "3"),
+            ),
+            _KeyboardButton(
+              child: Text("−"),
+              color: Colors.blue,
+              onPressed: () => onSelectedEnterCharacter(context, "-"),
+            ),
+          ]),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            _KeyboardButton(
+              child: Text("0"),
+              flex: 2,
+              onPressed: () => onSelectedEnterCharacter(context, "0"),
+            ),
+            _KeyboardButton(
+              child: Text(","),
+              onPressed: () => onSelectedEnterCharacter(context, "."),
+            ),
+            _KeyboardButton(
+              child: Icon(Icons.backspace_outlined, color: Colors.white),
+              color: Colors.red.shade400,
+              onPressed: () => onSelectedBackspace(context),
+            ),
+          ]),
+          Divider(),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            _KeyboardButton(
+              child: Icon(Icons.close, color: Colors.white),
+              flex: 1,
+              color: Colors.grey,
+              onPressed: () => onSelectedCancel(context),
+            ),
+            _KeyboardButton(
+              child: Text(AppLocalizations.of(context).enterAmountApply),
+              flex: 3,
+              color: Colors.green,
+              compact: true,
+              onPressed: () => onSelectedApply(context),
+            ),
+          ]),
+          SizedBox(height: 8),
         ],
       ),
     );
@@ -121,14 +271,16 @@ class _KeyboardButton extends StatefulWidget {
   final Widget child;
   final Color? color;
   final int flex;
-  final dynamic value;
+  final bool compact;
+  final VoidCallback onPressed;
 
   const _KeyboardButton({
     Key? key,
     required this.child,
+    required this.onPressed,
     this.color,
     this.flex = 1,
-    this.value,
+    this.compact = false,
   }) : super(key: key);
 
   @override
@@ -138,17 +290,16 @@ class _KeyboardButton extends StatefulWidget {
 class _KeyboardButtonState extends State<_KeyboardButton> {
   bool isFocused = false;
 
-  dynamic get value => widget.value;
-
   @override
   Widget build(BuildContext context) {
     return MetaData(
       metaData: this,
+      behavior: HitTestBehavior.translucent,
       child: Padding(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.all(6),
         child: AnimatedContainer(
           width: 64.0 * widget.flex + 8.0 * (widget.flex - 1),
-          height: 64,
+          height: 48.0,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(80 / 2),
             boxShadow: [
@@ -175,7 +326,7 @@ class _KeyboardButtonState extends State<_KeyboardButton> {
               child: widget.child,
               style: TextStyle(
                 color: (widget.color != null ? Colors.white : Colors.black),
-                fontSize: 18,
+                fontSize: widget.compact ? 15 : 18,
                 fontWeight: FontWeight.w500,
               ),
             ),
