@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:qwallet/Currency.dart';
 
 import '../Money.dart';
-import 'EnterMoneyDialog.dart';
+import 'EnterAmountSheet.dart';
 
 class AmountFormField extends FormField<Money> {
   final AmountEditingController controller;
@@ -88,14 +88,8 @@ class AmountFormFieldState extends FormFieldState<Money> {
     final focusNode = effectiveFocusNode;
     if (focusNode.hasFocus) {
       focusNode.unfocus();
-      final money = await showDialog(
-        context: context,
-        builder: (context) => EnterMoneyDialog(
-          initialMoney: value,
-          currency: value?.currency ?? widget.currency,
-          isCurrencySelectable: widget.isCurrencySelectable,
-        ),
-      ) as Money?;
+      final money = await EnterAmountSheet.show(
+          context, value ?? Money(0, widget.currency));
       if (money != null) {
         didChange(money);
       }
