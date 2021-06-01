@@ -81,13 +81,16 @@ class _CategoryPickerState extends State<CategoryPicker> {
         final runSpacing = 12.0;
         final rowSize = getButtonsInRows(
             constraints.maxWidth, CategoryButton.size.width, spacing);
-        final columns = 2;
-        final pageSize = rowSize * columns;
+        final maxRows = 2;
+        final pageSize = rowSize * maxRows;
         final categoriesPages = widget.categories.split(pageSize);
+        final rows = widget.categories.length >= pageSize
+            ? maxRows
+            : (widget.categories.length / rowSize).ceil();
 
         return Column(children: [
           SizedBox(
-            height: CategoryButton.size.height * columns + runSpacing,
+            height: CategoryButton.size.height * rows + runSpacing,
             width: constraints.maxWidth,
             child: PageView(
               controller: _pageController,
