@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -865,6 +866,23 @@ extension TransactionsCardLocalizations on AppLocalizations {
         en: "Income",
         pl: "Przychód",
       );
+
+  String Function(int number) get transactionsCardFutureTransactions =>
+      (number) => _locale(
+            en: Intl.plural(
+              number,
+              one: "$number transaction in the future",
+              other: "$number transactions in the future",
+              locale: locale.toString(),
+            ),
+            pl: Intl.plural(
+              number,
+              one: "$number transakcja w przyszłości",
+              few: "$number transakcje w przyszłości",
+              other: "$number transakcji w przyszłości",
+              locale: locale.toString(),
+            ),
+          );
 
   String get transactionsCardTodayHint => _locale(
         en: "today",

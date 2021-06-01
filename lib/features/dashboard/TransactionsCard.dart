@@ -11,6 +11,7 @@ import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
 
 import '../../AppLocalizations.dart';
+import '../../utils/IterableFinding.dart';
 
 class TransactionsCard extends StatefulWidget {
   final Wallet wallet;
@@ -90,10 +91,24 @@ class _TransactionsCardState extends State<TransactionsCard> {
     Wallet wallet,
     List<Transaction> transactions,
   ) {
-    final effectiveDates = dates.sublist(0, min(2, dates.length));
+    final today = DateTime.now().beginningOfDay;
+    final futureDates = dates.where((date) => date.isAfter(today));
+    final pastDates = dates.where((date) => !futureDates.contains(date));
+
+    final presentingDates =
+        pastDates.toList().sublist(0, min(2, pastDates.length));
 
     final result = <Widget>[];
-    for (final date in effectiveDates) {
+
+    if (futureDates.isNotEmpty) {
+      final futureTransactions = futureDates
+          .map((e) => transactionsByDate[e] ?? [])
+          .flatten()
+          .toList();
+      result.add(buildFutureTransactions(context, futureTransactions));
+    }
+
+    for (final date in presentingDates) {
       result.add(buildSectionHeader(context, date));
 
       final transactions = transactionsByDate[date]!;
@@ -104,6 +119,25 @@ class _TransactionsCardState extends State<TransactionsCard> {
     }
 
     return result;
+  }
+
+  Widget buildFutureTransactions(
+      BuildContext context, List<Transaction> transactions) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: Row(
+        children: [
+          SizedBox(width: 20),
+          Icon(Icons.schedule, color: Colors.grey),
+          SizedBox(width: 24),
+          Text(
+            AppLocalizations.of(context)
+                .transactionsCardFutureTransactions(transactions.length),
+            style: Theme.of(context).textTheme.caption,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget buildSectionHeader(BuildContext context, DateTime date) {
