@@ -166,7 +166,8 @@ class _KeyboardState extends State<_Keyboard> {
     }
   }
 
-  void setFocusToButton(_KeyboardButtonState? button) {
+  void setFocusToButton(_KeyboardButtonState? button) async {
+    if (_focusedButton == button) return;
     setState(() {
       _focusedButton?.isFocused = false;
       button?.isFocused = true;
@@ -205,16 +206,32 @@ class _KeyboardState extends State<_Keyboard> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          widget.inputText.isNotEmpty ? widget.inputText : "_",
+          _getInputText(),
           style: Theme.of(context).textTheme.headline4,
         ),
         Text(
-          "= " + (widget.result?.formatted ?? "?"),
+          _getResultText(),
           style: Theme.of(context).textTheme.headline5,
           textAlign: TextAlign.end,
         ),
       ],
     );
+  }
+
+  String _getInputText() {
+    if (widget.inputText.isEmpty) return "_";
+    return widget.inputText
+        .replaceAllMapped(
+            RegExp("([^0-9\.])"), (m) => "\u2009${m.group(1)}\u2009")
+        .replaceAll("*", "×")
+        .replaceAll("/", "÷")
+        .replaceAll("-", "\u2212");
+  }
+
+  String _getResultText() {
+    final result = widget.result;
+    if (result == null) return "";
+    return "= ${result.formatted}";
   }
 
   List<Widget> buildButtons(BuildContext context) {
@@ -289,7 +306,7 @@ class _KeyboardState extends State<_Keyboard> {
           onPressed: () => widget.onInputCharacter("3"),
         ),
         _KeyboardButton(
-          child: Text("−"),
+          child: Text("\u2212"),
           color: Colors.blue,
           onPressed: () => widget.onInputCharacter("-"),
         ),
