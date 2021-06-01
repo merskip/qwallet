@@ -7,10 +7,10 @@ import 'package:flutter/rendering.dart';
 import '../AppLocalizations.dart';
 import '../Money.dart';
 
-class EnterAmountSheet extends StatefulWidget {
+class InputMoneySheet extends StatefulWidget {
   final Money initialMoney;
 
-  const EnterAmountSheet({
+  const InputMoneySheet({
     Key? key,
     required this.initialMoney,
   }) : super(key: key);
@@ -20,16 +20,15 @@ class EnterAmountSheet extends StatefulWidget {
       context: context,
       enableDrag: false,
       isScrollControlled: true,
-      builder: (context) => EnterAmountSheet(initialMoney: initialMoney),
+      builder: (context) => InputMoneySheet(initialMoney: initialMoney),
     );
   }
 
   @override
-  _EnterAmountSheetState createState() => _EnterAmountSheetState();
+  _InputMoneySheetState createState() => _InputMoneySheetState();
 }
 
-class _EnterAmountSheetState extends State<EnterAmountSheet> {
-  _KeyboardButtonState? _focusedButton;
+class _InputMoneySheetState extends State<InputMoneySheet> {
   String enteredText = "";
   String? resultText;
 
@@ -43,46 +42,6 @@ class _EnterAmountSheetState extends State<EnterAmountSheet> {
       _refreshResult();
     }
     super.initState();
-  }
-
-  void _onPointerDown(PointerDownEvent event) {
-    _handlePointerEvent(event);
-  }
-
-  void _onPointerMove(PointerMoveEvent event) {
-    _handlePointerEvent(event);
-  }
-
-  void _onPointerUp(PointerUpEvent event) {
-    final button = _handlePointerEvent(event);
-    if (button != null) {
-      button.widget.onPressed();
-    }
-    setFocusToButton(null);
-  }
-
-  _KeyboardButtonState? _handlePointerEvent(PointerEvent event) {
-    final HitTestResult result = HitTestResult();
-    WidgetsBinding.instance!.hitTest(result, event.position);
-    final focusedButton = _getFocusedButton(result.path);
-    setFocusToButton(focusedButton);
-    return focusedButton;
-  }
-
-  _KeyboardButtonState? _getFocusedButton(Iterable<HitTestEntry> path) {
-    for (final HitTestEntry entry in path) {
-      final target = entry.target;
-      if (target is RenderMetaData && target.metaData is _KeyboardButtonState)
-        return target.metaData;
-    }
-  }
-
-  void setFocusToButton(_KeyboardButtonState? button) {
-    setState(() {
-      _focusedButton?.isFocused = false;
-      button?.isFocused = true;
-    });
-    _focusedButton = button;
   }
 
   void onSelectedEnterCharacter(BuildContext context, String character) {
@@ -137,164 +96,226 @@ class _EnterAmountSheetState extends State<EnterAmountSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: _onPointerDown,
-      onPointerMove: _onPointerMove,
-      onPointerUp: _onPointerUp,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(height: 8),
-          SizedBox(
-            width: 64 * 4 + 8 * 3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  enteredText.isNotEmpty ? enteredText : "_",
-                  style: Theme.of(context).textTheme.headline4,
-                ),
-                Text(
-                  "= " + (resultText ?? "?"),
-                  style: Theme.of(context).textTheme.headline5,
-                  textAlign: TextAlign.end,
-                ),
-              ],
-            ),
-          ),
-          Divider(),
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            SizedBox(width: 64 + 8),
-            _KeyboardButton(
-              child: Text("("),
-              color: Colors.blueGrey,
-              onPressed: () => onSelectedEnterCharacter(context, "("),
-            ),
-            _KeyboardButton(
-              child: Text(")"),
-              color: Colors.blueGrey,
-              onPressed: () => onSelectedEnterCharacter(context, ")"),
-            ),
-            _KeyboardButton(
-              child: Text("×"),
-              color: Colors.orangeAccent,
-              onPressed: () => onSelectedEnterCharacter(context, "*"),
-            ),
-          ]),
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            _KeyboardButton(
-              child: Text("7"),
-              onPressed: () => onSelectedEnterCharacter(context, "7"),
-            ),
-            _KeyboardButton(
-              child: Text("8"),
-              onPressed: () => onSelectedEnterCharacter(context, "8"),
-            ),
-            _KeyboardButton(
-              child: Text("9"),
-              onPressed: () => onSelectedEnterCharacter(context, "9"),
-            ),
-            _KeyboardButton(
-              child: Text("÷"),
-              color: Colors.orangeAccent,
-              onPressed: () => onSelectedEnterCharacter(context, "/"),
-            ),
-          ]),
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            _KeyboardButton(
-              child: Text("4"),
-              onPressed: () => onSelectedEnterCharacter(context, "4"),
-            ),
-            _KeyboardButton(
-              child: Text("5"),
-              onPressed: () => onSelectedEnterCharacter(context, "5"),
-            ),
-            _KeyboardButton(
-              child: Text("6"),
-              onPressed: () => onSelectedEnterCharacter(context, "6"),
-            ),
-            _KeyboardButton(
-              child: Text("+"),
-              color: Colors.blue,
-              onPressed: () => onSelectedEnterCharacter(context, "+"),
-            ),
-          ]),
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            _KeyboardButton(
-              child: Text("1"),
-              onPressed: () => onSelectedEnterCharacter(context, "1"),
-            ),
-            _KeyboardButton(
-              child: Text("2"),
-              onPressed: () => onSelectedEnterCharacter(context, "2"),
-            ),
-            _KeyboardButton(
-              child: Text("3"),
-              onPressed: () => onSelectedEnterCharacter(context, "3"),
-            ),
-            _KeyboardButton(
-              child: Text("−"),
-              color: Colors.blue,
-              onPressed: () => onSelectedEnterCharacter(context, "-"),
-            ),
-          ]),
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            _KeyboardButton(
-              child: Text("0"),
-              flex: 2,
-              onPressed: () => onSelectedEnterCharacter(context, "0"),
-            ),
-            _KeyboardButton(
-              child: Text(","),
-              onPressed: () => onSelectedEnterCharacter(context, "."),
-            ),
-            _KeyboardButton(
-              child: Icon(Icons.backspace_outlined, color: Colors.white),
-              color: Colors.red.shade400,
-              onPressed: () => onSelectedBackspace(context),
-            ),
-          ]),
-          Divider(),
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            _KeyboardButton(
-              child: Icon(Icons.close, color: Colors.white),
-              flex: 1,
-              color: Colors.grey,
-              onPressed: () => onSelectedCancel(context),
-            ),
-            _KeyboardButton(
-              child: Text(AppLocalizations.of(context).enterAmountApply),
-              flex: 3,
-              color: Colors.green,
-              compact: true,
-              onPressed: () => onSelectedApply(context),
-            ),
-          ]),
-          SizedBox(height: 8),
-        ],
-      ),
+    return _Keyboard(
+      inputText: enteredText,
+      resultText: resultText,
+      onInputCharacter: (character) =>
+          onSelectedEnterCharacter(context, character),
+      onInputBackspace: () => onSelectedBackspace(context),
+      onApply: () => onSelectedApply(context),
+      onCancel: () => onSelectedCancel(context),
     );
   }
 }
 
-class _KeyboardButton extends StatefulWidget {
-  final Widget child;
-  final Color? color;
-  final int flex;
-  final bool compact;
-  final VoidCallback onPressed;
+class _Keyboard extends StatefulWidget {
+  final String inputText;
+  final String? resultText;
 
-  const _KeyboardButton({
+  final void Function(String character) onInputCharacter;
+  final VoidCallback onInputBackspace;
+  final VoidCallback onCancel;
+  final VoidCallback onApply;
+
+  const _Keyboard({
     Key? key,
-    required this.child,
-    required this.onPressed,
-    this.color,
-    this.flex = 1,
-    this.compact = false,
+    required this.inputText,
+    required this.resultText,
+    required this.onInputCharacter,
+    required this.onInputBackspace,
+    required this.onCancel,
+    required this.onApply,
   }) : super(key: key);
 
   @override
-  _KeyboardButtonState createState() => _KeyboardButtonState();
+  _KeyboardState createState() => _KeyboardState();
+}
+
+class _KeyboardState extends State<_Keyboard> {
+  _KeyboardButtonState? _focusedButton;
+
+  void _onPointerDown(PointerDownEvent event) {
+    _handlePointerEvent(event);
+  }
+
+  void _onPointerMove(PointerMoveEvent event) {
+    _handlePointerEvent(event);
+  }
+
+  void _onPointerUp(PointerUpEvent event) {
+    final button = _handlePointerEvent(event);
+    if (button != null) {
+      button.widget.onPressed();
+    }
+    setFocusToButton(null);
+  }
+
+  _KeyboardButtonState? _handlePointerEvent(PointerEvent event) {
+    final HitTestResult result = HitTestResult();
+    WidgetsBinding.instance!.hitTest(result, event.position);
+    final focusedButton = _getFocusedButton(result.path);
+    setFocusToButton(focusedButton);
+    return focusedButton;
+  }
+
+  _KeyboardButtonState? _getFocusedButton(Iterable<HitTestEntry> path) {
+    for (final HitTestEntry entry in path) {
+      final target = entry.target;
+      if (target is RenderMetaData && target.metaData is _KeyboardButtonState)
+        return target.metaData;
+    }
+  }
+
+  void setFocusToButton(_KeyboardButtonState? button) {
+    setState(() {
+      _focusedButton?.isFocused = false;
+      button?.isFocused = true;
+    });
+    _focusedButton = button;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerDown: _onPointerDown,
+      onPointerMove: _onPointerMove,
+      onPointerUp: _onPointerUp,
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 8),
+            SizedBox(
+              width: 64 * 4 + 8 * 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    widget.inputText.isNotEmpty ? widget.inputText : "_",
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                  Text(
+                    "= " + (widget.resultText ?? "?"),
+                    style: Theme.of(context).textTheme.headline5,
+                    textAlign: TextAlign.end,
+                  ),
+                ],
+              ),
+            ),
+            Divider(),
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              SizedBox(width: 64 + 8),
+              _KeyboardButton(
+                child: Text("("),
+                color: Colors.blueGrey,
+                onPressed: () => widget.onInputCharacter("("),
+              ),
+              _KeyboardButton(
+                child: Text(")"),
+                color: Colors.blueGrey,
+                onPressed: () => widget.onInputCharacter(")"),
+              ),
+              _KeyboardButton(
+                child: Text("×"),
+                color: Colors.orangeAccent,
+                onPressed: () => widget.onInputCharacter("*"),
+              ),
+            ]),
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              _KeyboardButton(
+                child: Text("7"),
+                onPressed: () => widget.onInputCharacter("7"),
+              ),
+              _KeyboardButton(
+                child: Text("8"),
+                onPressed: () => widget.onInputCharacter("8"),
+              ),
+              _KeyboardButton(
+                child: Text("9"),
+                onPressed: () => widget.onInputCharacter("9"),
+              ),
+              _KeyboardButton(
+                child: Text("÷"),
+                color: Colors.orangeAccent,
+                onPressed: () => widget.onInputCharacter("/"),
+              ),
+            ]),
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              _KeyboardButton(
+                child: Text("4"),
+                onPressed: () => widget.onInputCharacter("4"),
+              ),
+              _KeyboardButton(
+                child: Text("5"),
+                onPressed: () => widget.onInputCharacter("5"),
+              ),
+              _KeyboardButton(
+                child: Text("6"),
+                onPressed: () => widget.onInputCharacter("6"),
+              ),
+              _KeyboardButton(
+                child: Text("+"),
+                color: Colors.blue,
+                onPressed: () => widget.onInputCharacter("+"),
+              ),
+            ]),
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              _KeyboardButton(
+                child: Text("1"),
+                onPressed: () => widget.onInputCharacter("1"),
+              ),
+              _KeyboardButton(
+                child: Text("2"),
+                onPressed: () => widget.onInputCharacter("2"),
+              ),
+              _KeyboardButton(
+                child: Text("3"),
+                onPressed: () => widget.onInputCharacter("3"),
+              ),
+              _KeyboardButton(
+                child: Text("−"),
+                color: Colors.blue,
+                onPressed: () => widget.onInputCharacter("-"),
+              ),
+            ]),
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              _KeyboardButton(
+                child: Text("0"),
+                flex: 2,
+                onPressed: () => widget.onInputCharacter("0"),
+              ),
+              _KeyboardButton(
+                child: Text(","),
+                onPressed: () => widget.onInputCharacter("."),
+              ),
+              _KeyboardButton(
+                child: Icon(Icons.backspace_outlined, color: Colors.white),
+                color: Colors.red.shade400,
+                onPressed: () => widget.onInputBackspace(),
+              ),
+            ]),
+            Divider(),
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              _KeyboardButton(
+                child: Icon(Icons.close, color: Colors.white),
+                flex: 1,
+                color: Colors.grey,
+                onPressed: () => widget.onCancel(),
+              ),
+              _KeyboardButton(
+                child: Text(AppLocalizations.of(context).enterAmountApply),
+                flex: 3,
+                color: Colors.green,
+                compact: true,
+                onPressed: () => widget.onApply(),
+              ),
+            ]),
+            SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _KeyboardButtonState extends State<_KeyboardButton> {
@@ -345,4 +366,24 @@ class _KeyboardButtonState extends State<_KeyboardButton> {
       ),
     );
   }
+}
+
+class _KeyboardButton extends StatefulWidget {
+  final Widget child;
+  final Color? color;
+  final int flex;
+  final bool compact;
+  final VoidCallback onPressed;
+
+  const _KeyboardButton({
+    Key? key,
+    required this.child,
+    required this.onPressed,
+    this.color,
+    this.flex = 1,
+    this.compact = false,
+  }) : super(key: key);
+
+  @override
+  _KeyboardButtonState createState() => _KeyboardButtonState();
 }

@@ -52,7 +52,7 @@ class DashboardPageState extends State<DashboardPage> {
   }
 
   void onSelectedEditBalance(BuildContext context, Wallet wallet) async {
-    final newBalance = await EnterAmountSheet.show(context, wallet.balance);
+    final newBalance = await InputMoneySheet.show(context, wallet.balance);
     if (newBalance != null) {
       // Fixes #44 bug
       final freshWallet = await SharedProviders.walletsProvider

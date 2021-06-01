@@ -88,7 +88,7 @@ class AmountFormFieldState extends FormFieldState<Money> {
     final focusNode = effectiveFocusNode;
     if (focusNode.hasFocus) {
       focusNode.unfocus();
-      final money = await EnterAmountSheet.show(
+      final money = await InputMoneySheet.show(
           context, value ?? Money(0, widget.currency));
       if (money != null) {
         didChange(money);

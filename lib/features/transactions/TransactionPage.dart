@@ -132,7 +132,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
   void onSelectedEditAmount(BuildContext context) async {
     final amount = Money(widget.transaction.amount, widget.wallet.currency);
-    final newAmount = await EnterAmountSheet.show(context, amount);
+    final newAmount = await InputMoneySheet.show(context, amount);
     if (newAmount != null) {
       SharedProviders.transactionsProvider.updateTransaction(
         wallet: widget.wallet,

@@ -147,7 +147,7 @@ class LoanFormState extends State<LoanForm> {
       if (focusNode.hasFocus) {
         focusNode.unfocus();
         final initialMoney = getValue();
-        final money = await EnterAmountSheet.show(context, initialMoney!);
+        final money = await InputMoneySheet.show(context, initialMoney!);
         if (money != null) {
           controller.text = money.formattedOnlyAmount;
           onEnter(money);
