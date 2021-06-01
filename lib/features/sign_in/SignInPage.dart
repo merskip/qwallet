@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/logger.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/VectorImage.dart';
@@ -123,9 +125,17 @@ class _SignInPageState extends State<SignInPage> {
   _singInWithGoogle(BuildContext context) async {
     setState(() => isLoginInProgress = true);
     try {
-      SharedProviders.accountProvider.signInWithGoogle();
-    } catch (e) {
-      _handleError(context, e);
+      await SharedProviders.accountProvider.signInWithGoogle();
+    } catch (e, stackTrace) {
+      if (e is PlatformException && e.code == "popup_closed_by_user") {
+      } else {
+        logger.error(
+          "Failed while sign in with Google",
+          exception: e,
+          stackTrace: stackTrace,
+        );
+        _handleError(context, e);
+      }
     } finally {
       if (mounted) {
         setState(() => isLoginInProgress = false);
@@ -142,7 +152,7 @@ class _SignInPageState extends State<SignInPage> {
         content: Text(
           "$error",
           style: TextStyle(
-            fontFamily: Platform.isIOS ? "Courier" : "monospace",
+            fontFamily: (!kIsWeb && Platform.isIOS) ? "Courier" : "monospace",
             color: Colors.red.shade500,
           ),
         ),
