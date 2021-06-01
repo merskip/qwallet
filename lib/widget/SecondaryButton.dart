@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'HandCursor.dart';
-
 class SecondaryButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Widget child;
@@ -24,28 +22,26 @@ class SecondaryButton extends StatelessWidget {
     return SizedBox(
       height: 44,
       width: shrinkWrap ? null : double.infinity,
-      child: HandCursor(
-        child: MaterialButton(
-          splashColor: effectiveColor.withAlpha(64),
-          highlightColor: effectiveColor.withAlpha(32),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-            child: DefaultTextStyle(
-              child: child,
-              style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.w500,
-                color: effectiveColor,
-              ),
+      child: MaterialButton(
+        splashColor: effectiveColor.withAlpha(64),
+        highlightColor: effectiveColor.withAlpha(32),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: DefaultTextStyle(
+            child: child,
+            style: TextStyle(
+              fontSize: 15.0,
+              fontWeight: FontWeight.w500,
+              color: effectiveColor,
             ),
           ),
-          onPressed: onPressed,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(60.0),
-            side: BorderSide(
-              color: effectiveColor,
-              width: 2,
-            ),
+        ),
+        onPressed: onPressed,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(60.0),
+          side: BorderSide(
+            color: effectiveColor,
+            width: 2,
           ),
         ),
       ),

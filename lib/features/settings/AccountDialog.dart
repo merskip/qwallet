@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/data_source/Account.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
-import 'package:qwallet/widget/HandCursor.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 class AccountDialog extends StatelessWidget {
@@ -46,12 +45,10 @@ class AccountDialog extends StatelessWidget {
   }
 
   Widget buildSignOut(BuildContext context) {
-    return HandCursor(
-      child: ListTile(
-        leading: Icon(Icons.exit_to_app),
-        title: Text(AppLocalizations.of(context).userLogout),
-        onTap: () => onSelectedSignOut(context),
-      ),
+    return ListTile(
+      leading: Icon(Icons.exit_to_app),
+      title: Text(AppLocalizations.of(context).userLogout),
+      onTap: () => onSelectedSignOut(context),
     );
   }
 }

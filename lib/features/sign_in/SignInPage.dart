@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
-import 'package:qwallet/widget/HandCursor.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/VectorImage.dart';
@@ -111,14 +110,12 @@ class _SignInPageState extends State<SignInPage> {
     return SizedBox(
       height: 44,
       width: 256,
-      child: HandCursor(
-        child: PrimaryButton.icon(
-          icon: icon,
-          label: Text(text),
-          onPressed: onPressed,
-          foregroundColor: Theme.of(context).primaryColor,
-          backgroundColor: Colors.white,
-        ),
+      child: PrimaryButton.icon(
+        icon: icon,
+        label: Text(text),
+        onPressed: onPressed,
+        foregroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Colors.white,
       ),
     );
   }

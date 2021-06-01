@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'HandCursor.dart';
-
 class PrimaryButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Widget? child;
@@ -51,9 +49,7 @@ class PrimaryButton extends StatelessWidget {
     return SizedBox(
       height: 44,
       width: shrinkWrap ? null : double.infinity,
-      child: HandCursor(
-        child: buildButton(context),
-      ),
+      child: buildButton(context),
     );
   }
 
