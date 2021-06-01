@@ -30,7 +30,7 @@ class InputMoneySheet extends StatefulWidget {
 
 class _InputMoneySheetState extends State<InputMoneySheet> {
   String enteredText = "";
-  String? resultText;
+  Money? result;
 
   final evaluator = const ExpressionEvaluator();
 
@@ -71,7 +71,7 @@ class _InputMoneySheetState extends State<InputMoneySheet> {
     final result = calculateExpression();
 
     setState(() {
-      resultText = result?.formatted ?? "?";
+      this.result = result;
     });
   }
 
@@ -98,7 +98,7 @@ class _InputMoneySheetState extends State<InputMoneySheet> {
   Widget build(BuildContext context) {
     return _Keyboard(
       inputText: enteredText,
-      resultText: resultText,
+      result: result,
       onInputCharacter: (character) =>
           onSelectedEnterCharacter(context, character),
       onInputBackspace: () => onSelectedBackspace(context),
@@ -110,7 +110,7 @@ class _InputMoneySheetState extends State<InputMoneySheet> {
 
 class _Keyboard extends StatefulWidget {
   final String inputText;
-  final String? resultText;
+  final Money? result;
 
   final void Function(String character) onInputCharacter;
   final VoidCallback onInputBackspace;
@@ -120,7 +120,7 @@ class _Keyboard extends StatefulWidget {
   const _Keyboard({
     Key? key,
     required this.inputText,
-    required this.resultText,
+    required this.result,
     required this.onInputCharacter,
     required this.onInputBackspace,
     required this.onCancel,
@@ -187,134 +187,148 @@ class _KeyboardState extends State<_Keyboard> {
             SizedBox(height: 8),
             SizedBox(
               width: 64 * 4 + 8 * 3,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    widget.inputText.isNotEmpty ? widget.inputText : "_",
-                    style: Theme.of(context).textTheme.headline4,
-                  ),
-                  Text(
-                    "= " + (widget.resultText ?? "?"),
-                    style: Theme.of(context).textTheme.headline5,
-                    textAlign: TextAlign.end,
-                  ),
-                ],
-              ),
+              child: buildHeader(context),
             ),
             Divider(),
-            Row(mainAxisSize: MainAxisSize.min, children: [
-              SizedBox(width: 64 + 8),
-              _KeyboardButton(
-                child: Text("("),
-                color: Colors.blueGrey,
-                onPressed: () => widget.onInputCharacter("("),
-              ),
-              _KeyboardButton(
-                child: Text(")"),
-                color: Colors.blueGrey,
-                onPressed: () => widget.onInputCharacter(")"),
-              ),
-              _KeyboardButton(
-                child: Text("×"),
-                color: Colors.orangeAccent,
-                onPressed: () => widget.onInputCharacter("*"),
-              ),
-            ]),
-            Row(mainAxisSize: MainAxisSize.min, children: [
-              _KeyboardButton(
-                child: Text("7"),
-                onPressed: () => widget.onInputCharacter("7"),
-              ),
-              _KeyboardButton(
-                child: Text("8"),
-                onPressed: () => widget.onInputCharacter("8"),
-              ),
-              _KeyboardButton(
-                child: Text("9"),
-                onPressed: () => widget.onInputCharacter("9"),
-              ),
-              _KeyboardButton(
-                child: Text("÷"),
-                color: Colors.orangeAccent,
-                onPressed: () => widget.onInputCharacter("/"),
-              ),
-            ]),
-            Row(mainAxisSize: MainAxisSize.min, children: [
-              _KeyboardButton(
-                child: Text("4"),
-                onPressed: () => widget.onInputCharacter("4"),
-              ),
-              _KeyboardButton(
-                child: Text("5"),
-                onPressed: () => widget.onInputCharacter("5"),
-              ),
-              _KeyboardButton(
-                child: Text("6"),
-                onPressed: () => widget.onInputCharacter("6"),
-              ),
-              _KeyboardButton(
-                child: Text("+"),
-                color: Colors.blue,
-                onPressed: () => widget.onInputCharacter("+"),
-              ),
-            ]),
-            Row(mainAxisSize: MainAxisSize.min, children: [
-              _KeyboardButton(
-                child: Text("1"),
-                onPressed: () => widget.onInputCharacter("1"),
-              ),
-              _KeyboardButton(
-                child: Text("2"),
-                onPressed: () => widget.onInputCharacter("2"),
-              ),
-              _KeyboardButton(
-                child: Text("3"),
-                onPressed: () => widget.onInputCharacter("3"),
-              ),
-              _KeyboardButton(
-                child: Text("−"),
-                color: Colors.blue,
-                onPressed: () => widget.onInputCharacter("-"),
-              ),
-            ]),
-            Row(mainAxisSize: MainAxisSize.min, children: [
-              _KeyboardButton(
-                child: Text("0"),
-                flex: 2,
-                onPressed: () => widget.onInputCharacter("0"),
-              ),
-              _KeyboardButton(
-                child: Text(","),
-                onPressed: () => widget.onInputCharacter("."),
-              ),
-              _KeyboardButton(
-                child: Icon(Icons.backspace_outlined, color: Colors.white),
-                color: Colors.red.shade400,
-                onPressed: () => widget.onInputBackspace(),
-              ),
-            ]),
+            ...buildButtons(context),
             Divider(),
-            Row(mainAxisSize: MainAxisSize.min, children: [
-              _KeyboardButton(
-                child: Icon(Icons.close, color: Colors.white),
-                flex: 1,
-                color: Colors.grey,
-                onPressed: () => widget.onCancel(),
-              ),
-              _KeyboardButton(
-                child: Text(AppLocalizations.of(context).enterAmountApply),
-                flex: 3,
-                color: Colors.green,
-                compact: true,
-                onPressed: () => widget.onApply(),
-              ),
-            ]),
+            buildFooter(context),
             SizedBox(height: 8),
           ],
         ),
       ),
     );
+  }
+
+  Widget buildHeader(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          widget.inputText.isNotEmpty ? widget.inputText : "_",
+          style: Theme.of(context).textTheme.headline4,
+        ),
+        Text(
+          "= " + (widget.result?.formatted ?? "?"),
+          style: Theme.of(context).textTheme.headline5,
+          textAlign: TextAlign.end,
+        ),
+      ],
+    );
+  }
+
+  List<Widget> buildButtons(BuildContext context) {
+    return <Widget>[
+      Row(mainAxisSize: MainAxisSize.min, children: [
+        SizedBox(width: 64 + 8),
+        _KeyboardButton(
+          child: Text("("),
+          color: Colors.blueGrey,
+          onPressed: () => widget.onInputCharacter("("),
+        ),
+        _KeyboardButton(
+          child: Text(")"),
+          color: Colors.blueGrey,
+          onPressed: () => widget.onInputCharacter(")"),
+        ),
+        _KeyboardButton(
+          child: Text("×"),
+          color: Colors.orangeAccent,
+          onPressed: () => widget.onInputCharacter("*"),
+        ),
+      ]),
+      Row(mainAxisSize: MainAxisSize.min, children: [
+        _KeyboardButton(
+          child: Text("7"),
+          onPressed: () => widget.onInputCharacter("7"),
+        ),
+        _KeyboardButton(
+          child: Text("8"),
+          onPressed: () => widget.onInputCharacter("8"),
+        ),
+        _KeyboardButton(
+          child: Text("9"),
+          onPressed: () => widget.onInputCharacter("9"),
+        ),
+        _KeyboardButton(
+          child: Text("÷"),
+          color: Colors.orangeAccent,
+          onPressed: () => widget.onInputCharacter("/"),
+        ),
+      ]),
+      Row(mainAxisSize: MainAxisSize.min, children: [
+        _KeyboardButton(
+          child: Text("4"),
+          onPressed: () => widget.onInputCharacter("4"),
+        ),
+        _KeyboardButton(
+          child: Text("5"),
+          onPressed: () => widget.onInputCharacter("5"),
+        ),
+        _KeyboardButton(
+          child: Text("6"),
+          onPressed: () => widget.onInputCharacter("6"),
+        ),
+        _KeyboardButton(
+          child: Text("+"),
+          color: Colors.blue,
+          onPressed: () => widget.onInputCharacter("+"),
+        ),
+      ]),
+      Row(mainAxisSize: MainAxisSize.min, children: [
+        _KeyboardButton(
+          child: Text("1"),
+          onPressed: () => widget.onInputCharacter("1"),
+        ),
+        _KeyboardButton(
+          child: Text("2"),
+          onPressed: () => widget.onInputCharacter("2"),
+        ),
+        _KeyboardButton(
+          child: Text("3"),
+          onPressed: () => widget.onInputCharacter("3"),
+        ),
+        _KeyboardButton(
+          child: Text("−"),
+          color: Colors.blue,
+          onPressed: () => widget.onInputCharacter("-"),
+        ),
+      ]),
+      Row(mainAxisSize: MainAxisSize.min, children: [
+        _KeyboardButton(
+          child: Text("0"),
+          flex: 2,
+          onPressed: () => widget.onInputCharacter("0"),
+        ),
+        _KeyboardButton(
+          child: Text(","),
+          onPressed: () => widget.onInputCharacter("."),
+        ),
+        _KeyboardButton(
+          child: Icon(Icons.backspace_outlined, color: Colors.white),
+          color: Colors.red.shade400,
+          onPressed: () => widget.onInputBackspace(),
+        ),
+      ]),
+    ];
+  }
+
+  Widget buildFooter(BuildContext context) {
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      _KeyboardButton(
+        child: Icon(Icons.close, color: Colors.white),
+        flex: 1,
+        color: Colors.grey,
+        onPressed: () => widget.onCancel(),
+      ),
+      _KeyboardButton(
+        child: Text(AppLocalizations.of(context).enterAmountApply),
+        flex: 3,
+        color: Colors.green,
+        compact: true,
+        onPressed: () => widget.onApply(),
+      ),
+    ]);
   }
 }
 
