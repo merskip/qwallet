@@ -76,8 +76,8 @@ class DefaultAccountProvider extends AccountProvider {
     final googleSignWithScopes = _createGoogleSignInWithScopes();
     var account = await googleSignWithScopes.signInSilently();
     if (account != null) {
-      logger.info("Sign in using additional scopes");
       _googleSignIn = googleSignWithScopes;
+      logger.info("Sign in using additional scopes");
     } else {
       // Change Google SignIn on web causes crash, so require using with scopes
       if (!kIsWeb) {
@@ -88,7 +88,14 @@ class DefaultAccountProvider extends AccountProvider {
       }
     }
     await _googleSignIn.signInSilently();
-    logger.info("Google isSignIn=${await _googleSignIn.isSignedIn()}");
+    logger.info("Google isSignIn=${await _googleSignIn.isSignedIn()}, "
+        "currentUser=${_googleSignIn.currentUser != null ? "<exists>" : "null"}");
+
+    if (FirebaseAuth.instance.currentUser != null &&
+        _googleSignIn.currentUser == null) {
+      logger.warning(
+          "Firebase current user is non-null, and Google current user is null while initialization!");
+    }
 
     _userChangedSubscription = _googleSignIn.onCurrentUserChanged.listen(
       (account) async {
