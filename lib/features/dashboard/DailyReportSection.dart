@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/features/dashboard/DailySpendingDetailsPage.dart';
+import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/SpendingGauge.dart';
 
 import '../../AppLocalizations.dart';
@@ -18,21 +20,34 @@ class DailyReportSection extends StatelessWidget {
     required this.transactions,
   }) : super(key: key);
 
+  void onSelectedSection(BuildContext context) {
+    pushPage(
+      context,
+      builder: (context) => DailySpendingDetailsPage(
+        wallet: wallet,
+        transactions: transactions,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final dailySpending = _computeDailySpending();
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Positioned(
-          right: 112,
-          child: buildDailySpendingText(context, dailySpending),
-        ),
-        Align(
-          alignment: AlignmentDirectional.centerEnd,
-          child: buildSpendingGauge(context, dailySpending),
-        ),
-      ],
+    return InkWell(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            right: 112,
+            child: buildDailySpendingText(context, dailySpending),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: buildSpendingGauge(context, dailySpending),
+          ),
+        ],
+      ),
+      onTap: () => onSelectedSection(context),
     );
   }
 
