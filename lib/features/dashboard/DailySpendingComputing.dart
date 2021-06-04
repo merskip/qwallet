@@ -49,17 +49,18 @@ class DailySpendingComputing {
     final constantExpensesPerDay = totalConstantsExpenses / days.length;
 
     final dailySpendingDay = days.map((date) {
-      final dailyExpenses = transactions
+      final dailyTransactions = transactions
           .where((t) => t.type == TransactionType.expense)
           .where((t) => t.date.isSameDate(date))
-          .where((t) => !t.excludedFromDailyStatistics)
-          .sum();
+          .where((t) => !t.excludedFromDailyStatistics);
+      final dailyExpenses = dailyTransactions.sum();
 
       final dayResult = DailySpendingDay(
         date,
         constantExpensesPerDay,
         dailyExpenses,
         max(0.0, availableDayBudget),
+        dailyTransactions.toList(),
       );
 
       final isBeforeToday = date.isBefore(DateTime.now());
@@ -113,6 +114,7 @@ class DailySpendingDay {
   final double constantExpenses;
   final double dailyExpenses;
   final double availableBudget;
+  final List<Transaction> transactions;
 
   double get totalExpenses => constantExpenses + dailyExpenses;
 
@@ -121,6 +123,7 @@ class DailySpendingDay {
     this.constantExpenses,
     this.dailyExpenses,
     this.availableBudget,
+    this.transactions,
   );
 
   @override

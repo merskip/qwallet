@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/features/dashboard/DailySpendingComputing.dart';
+import 'package:qwallet/widget/EmptyStateWidget.dart';
+import 'package:qwallet/widget/TransactionListTile.dart';
 
 import '../../utils.dart';
 
-class DailySpendingDetailsPage extends StatelessWidget {
+class DailySpendingDetailsPage extends StatefulWidget {
   final Wallet wallet;
   final DateTimeRange dateRange;
   final List<Transaction> transactions;
@@ -16,6 +19,20 @@ class DailySpendingDetailsPage extends StatelessWidget {
     required this.dateRange,
     required this.transactions,
   }) : super(key: key);
+
+  @override
+  _DailySpendingDetailsPageState createState() =>
+      _DailySpendingDetailsPageState();
+}
+
+class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
+  DailySpendingDay? selectedDay;
+
+  void onSelectedDay(BuildContext context, DailySpendingDay day) {
+    setState(() {
+      this.selectedDay = selectedDay?.date != day.date ? day : null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,39 +46,40 @@ class DailySpendingDetailsPage extends StatelessWidget {
 
   Widget buildBody(BuildContext context) {
     final result = DailySpendingComputing().computeByDays(
-      dateRange: dateRange,
-      transactions: transactions,
-      currency: wallet.currency,
+      dateRange: widget.dateRange,
+      transactions: widget.transactions,
+      currency: widget.wallet.currency,
     );
 
     return LayoutBuilder(builder: (context, constraints) {
       final chartHeight = constraints.maxHeight * 2 / 3;
-      return SizedBox(
-        height: chartHeight + 4,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: _DailySpendingChart(
-            scale: chartHeight / result.maxValue,
-            result: result,
-          ),
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: chartHeight + 4,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: buildDailySpendingChart(
+                  context,
+                  result,
+                  chartHeight / result.maxValue,
+                ),
+              ),
+            ),
+            if (selectedDay != null) buildSelectedDay(context, selectedDay!),
+          ],
         ),
       );
     });
   }
-}
 
-class _DailySpendingChart extends StatelessWidget {
-  final double scale;
-  final DailySpendingDaysResult result;
-
-  const _DailySpendingChart({
-    Key? key,
-    required this.scale,
-    required this.result,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+  Widget buildDailySpendingChart(
+    BuildContext context,
+    DailySpendingDaysResult result,
+    double scale,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Row(children: [
@@ -71,10 +89,37 @@ class _DailySpendingChart extends StatelessWidget {
             child: DailySpendingDatBar(
               dailySpendingDay: dailySpendingDay,
               scale: scale,
+              isSelected: dailySpendingDay.date == selectedDay?.date,
+              onTap: () => onSelectedDay(context, dailySpendingDay),
             ),
           ),
         ),
       ]),
+    );
+  }
+
+  Widget buildSelectedDay(BuildContext context, DailySpendingDay day) {
+    final dateFormat = DateFormat("d MMMM yyyy");
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            dateFormat.format(day.date),
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+          ...day.transactions.map((t) => TransactionListTile(
+                wallet: widget.wallet,
+                transaction: t,
+              )),
+          if (day.transactions.isEmpty)
+            EmptyStateWidget(
+              text: "#No transactions",
+              iconAsset: "assets/ic-wallet.svg",
+            ),
+        ],
+      ),
     );
   }
 }
@@ -82,6 +127,8 @@ class _DailySpendingChart extends StatelessWidget {
 class DailySpendingDatBar extends StatelessWidget {
   final DailySpendingDay dailySpendingDay;
   final double scale;
+  final bool isSelected;
+  final VoidCallback? onTap;
 
   bool get isToday => dailySpendingDay.date.isSameDate(DateTime.now());
 
@@ -89,14 +136,20 @@ class DailySpendingDatBar extends StatelessWidget {
     Key? key,
     required this.dailySpendingDay,
     required this.scale,
+    required this.isSelected,
+    this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => print(dailySpendingDay),
+      onTap: onTap,
       child: Container(
         width: 16,
+        decoration: BoxDecoration(
+          color: isSelected ? Theme.of(context).primaryColorLight : null,
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.bottomCenter,
@@ -113,10 +166,11 @@ class DailySpendingDatBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.black12,
-        border: isToday
+        border: isSelected || isToday
             ? Border.all(
                 width: 1.5,
-                color: Colors.grey,
+                color:
+                    isSelected ? Theme.of(context).primaryColor : Colors.grey,
               )
             : null,
         borderRadius: BorderRadius.circular(8),
