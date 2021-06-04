@@ -101,22 +101,10 @@ class DailyReportSection extends StatelessWidget {
   }
 
   DailySpending _computeDailySpending() {
-    final totalDays = wallet.dateTimeRange.duration.inDays;
-    final currentDay = DateTime.now().day;
-
     return DailySpendingComputing().compute(
-      totalIncome: wallet.totalIncome.amount,
-      totalExpenses: wallet.totalExpense.amount,
-      excludedExpenses: _getTotalExpensesExcludedFromDailyBalance(),
-      totalDays: totalDays,
-      currentDay: currentDay,
+      dateRange: wallet.dateTimeRange,
+      transactions: transactions,
       currency: wallet.currency,
     );
-  }
-
-  double _getTotalExpensesExcludedFromDailyBalance() {
-    return transactions.where((t) {
-      return t.type == TransactionType.expense && t.excludedFromDailyStatistics;
-    }).fold(0.0, (a, t) => a + t.amount);
   }
 }

@@ -6,28 +6,27 @@ import 'package:qwallet/data_source/Transaction.dart';
 import '../../Currency.dart';
 import '../../Money.dart';
 import '../../utils.dart';
+import '../../utils/IterableFinding.dart';
 
 class DailySpendingComputing {
   DailySpending compute({
-    required double totalIncome,
-    required double totalExpenses,
-    required double excludedExpenses,
-    required int totalDays,
-    required int currentDay,
+    required DateTimeRange dateRange,
+    required List<Transaction> transactions,
     required Currency currency,
   }) {
-    assert(totalExpenses >= excludedExpenses);
-    final availableDailyBudget = totalIncome - excludedExpenses;
-    final availableDailySpending = availableDailyBudget / totalDays.toDouble();
-    final currentDailySpending =
-        (totalExpenses - excludedExpenses) / currentDay.toDouble();
-    final todayAvailableIncome = availableDailySpending * currentDay;
-    final availableTodayBudget =
-        todayAvailableIncome - (totalExpenses - excludedExpenses);
+    final result = computeByDays(
+      dateRange: dateRange,
+      transactions: transactions,
+      currency: currency,
+    );
+    final todaySpending =
+        result.days.findFirstOrNull((d) => d.date.isSameDate(DateTime.now()));
     return DailySpending(
-      Money(availableDailySpending, currency),
-      Money(currentDailySpending, currency),
-      Money(availableTodayBudget, currency),
+      availableDailySpending:
+          Money(todaySpending?.availableBudget ?? 0.0, currency),
+      currentDailySpending:
+          Money(todaySpending?.totalExpenses ?? 0.0, currency),
+      baseAvailableDayBudget: Money(result.baseAvailableBudgetPerDay, currency),
     );
   }
 
@@ -90,11 +89,11 @@ class DailySpending {
   final Money currentDailySpending;
   final Money baseAvailableDayBudget;
 
-  DailySpending(
-    this.availableDailySpending,
-    this.currentDailySpending,
-    this.baseAvailableDayBudget,
-  );
+  DailySpending({
+    required this.availableDailySpending,
+    required this.currentDailySpending,
+    required this.baseAvailableDayBudget,
+  });
 }
 
 class DailySpendingDaysResult {
