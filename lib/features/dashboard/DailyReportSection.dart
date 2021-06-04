@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/features/dashboard/DailySpendingDetailsPage.dart';
+import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/SpendingGauge.dart';
 
 import '../../AppLocalizations.dart';
@@ -18,21 +21,39 @@ class DailyReportSection extends StatelessWidget {
     required this.transactions,
   }) : super(key: key);
 
+  void onSelectedSection(BuildContext context) async {
+    final transactions = await SharedProviders.transactionsProvider
+        .getLatestTransactions(walletId: wallet.identifier, index: 0)
+        .first;
+
+    pushPage(
+      context,
+      builder: (context) => DailySpendingDetailsPage(
+        wallet: wallet,
+        dateRange: transactions.dateTimeRange,
+        transactions: transactions.transactions,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final dailySpending = _computeDailySpending();
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Positioned(
-          right: 112,
-          child: buildDailySpendingText(context, dailySpending),
-        ),
-        Align(
-          alignment: AlignmentDirectional.centerEnd,
-          child: buildSpendingGauge(context, dailySpending),
-        ),
-      ],
+    return InkWell(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            right: 112,
+            child: buildDailySpendingText(context, dailySpending),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: buildSpendingGauge(context, dailySpending),
+          ),
+        ],
+      ),
+      onTap: () => onSelectedSection(context),
     );
   }
 
@@ -57,7 +78,7 @@ class DailyReportSection extends StatelessWidget {
           style: Theme.of(context).textTheme.caption,
         ),
         Text(
-          dailySpending.availableTodayBudget.formatted,
+          dailySpending.baseAvailableDayBudget.formatted,
           style: Theme.of(context).textTheme.bodyText1,
         ),
       ],
@@ -80,22 +101,10 @@ class DailyReportSection extends StatelessWidget {
   }
 
   DailySpending _computeDailySpending() {
-    final totalDays = wallet.dateTimeRange.duration.inDays;
-    final currentDay = DateTime.now().day;
-
     return DailySpendingComputing().compute(
-      totalIncome: wallet.totalIncome.amount,
-      totalExpenses: wallet.totalExpense.amount,
-      excludedExpenses: _getTotalExpensesExcludedFromDailyBalance(),
-      totalDays: totalDays,
-      currentDay: currentDay,
+      dateRange: wallet.dateTimeRange,
+      transactions: transactions,
       currency: wallet.currency,
     );
-  }
-
-  double _getTotalExpensesExcludedFromDailyBalance() {
-    return transactions.where((t) {
-      return t.type == TransactionType.expense && t.excludedFromDailyStatistics;
-    }).fold(0.0, (a, t) => a + t.amount);
   }
 }

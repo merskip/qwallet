@@ -15,19 +15,20 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
   AggregatedTransactionsProvider({
     required FirebaseTransactionsProvider firebaseProvider,
     required SpreadsheetTransactionsProvider spreadsheetProvider,
-  })   : _firebaseProvider = firebaseProvider,
+  })  : _firebaseProvider = firebaseProvider,
         _spreadsheetProvider = spreadsheetProvider;
 
   @override
   Stream<LatestTransactions> getLatestTransactions({
     required Identifier<Wallet> walletId,
+    int index = 0,
   }) =>
       onDomain(
         walletId,
-        ifFirebase: () =>
-            _firebaseProvider.getLatestTransactions(walletId: walletId),
-        ifGoogleSheets: () =>
-            _spreadsheetProvider.getLatestTransactions(walletId: walletId),
+        ifFirebase: () => _firebaseProvider.getLatestTransactions(
+            walletId: walletId, index: index),
+        ifGoogleSheets: () => _spreadsheetProvider.getLatestTransactions(
+            walletId: walletId, index: index),
       );
 
   @override

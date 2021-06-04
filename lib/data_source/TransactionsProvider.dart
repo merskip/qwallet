@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 
@@ -8,6 +9,7 @@ import 'Wallet.dart';
 abstract class TransactionsProvider {
   Stream<LatestTransactions> getLatestTransactions({
     required Identifier<Wallet> walletId,
+    int index = 0,
   });
 
   Stream<Transaction?> getTransactionById({
@@ -67,7 +69,8 @@ abstract class TransactionsProvider {
 
 class LatestTransactions {
   final Wallet wallet;
+  final DateTimeRange dateTimeRange;
   final List<Transaction> transactions;
 
-  LatestTransactions(this.wallet, this.transactions);
+  LatestTransactions(this.wallet, this.dateTimeRange, this.transactions);
 }

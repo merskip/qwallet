@@ -26,15 +26,18 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
   @override
   Stream<LatestTransactions> getLatestTransactions({
     required Identifier<Wallet> walletId,
+    int index = 0,
   }) {
     assert(walletId.domain == "firebase");
     return walletsProvider
         .getWalletByIdentifier(walletId)
         .flatMap<LatestTransactions>((wallet) {
+      final dateTimeRange = wallet.dateRange.getDateTimeRange(index: index);
       return _getTransactionsInDateTimeRange(
         wallet: wallet,
-        dateRange: wallet.dateTimeRange,
-      ).map((transactions) => LatestTransactions(wallet, transactions));
+        dateRange: dateTimeRange,
+      ).map((transactions) =>
+          LatestTransactions(wallet, dateTimeRange, transactions));
     });
   }
 
