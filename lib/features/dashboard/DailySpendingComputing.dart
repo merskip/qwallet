@@ -63,7 +63,7 @@ class DailySpendingComputing {
       );
 
       final isBeforeToday = date.isBefore(DateTime.now());
-      if (isBeforeToday) {
+      if (isBeforeToday || date.isSameDate(DateTime.now())) {
         final daysLeft = days.length - days.indexOf(date);
         availableDayBudget +=
             (availableDayBudget - (dailyExpenses + constantExpensesPerDay)) /

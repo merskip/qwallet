@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:qwallet/Money.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/features/dashboard/DailySpendingComputing.dart';
@@ -51,28 +52,31 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
       currency: widget.wallet.currency,
     );
 
-    return LayoutBuilder(builder: (context, constraints) {
-      final chartHeight = constraints.maxHeight * 2 / 3;
-      return SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: chartHeight + 4,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: buildDailySpendingChart(
-                  context,
-                  result,
-                  chartHeight / result.maxValue,
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: LayoutBuilder(builder: (context, constraints) {
+        final chartHeight = constraints.maxHeight * 2 / 3;
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: chartHeight + 4,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: buildDailySpendingChart(
+                    context,
+                    result,
+                    chartHeight / result.maxValue,
+                  ),
                 ),
               ),
-            ),
-            if (selectedDay != null) buildSelectedDay(context, selectedDay!),
-          ],
-        ),
-      );
-    });
+              if (selectedDay != null) buildSelectedDay(context, selectedDay!),
+            ],
+          ),
+        );
+      }),
+    );
   }
 
   Widget buildDailySpendingChart(
@@ -100,8 +104,9 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
 
   Widget buildSelectedDay(BuildContext context, DailySpendingDay day) {
     final dateFormat = DateFormat("d MMMM yyyy");
+    final currency = widget.wallet.currency;
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -109,6 +114,16 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
             dateFormat.format(day.date),
             style: Theme.of(context).textTheme.subtitle1,
           ),
+          SizedBox(height: 12),
+          Text(
+              "#Available daily budget: ${Money(day.availableBudget, currency).formatted}"),
+          Text(
+              "#Constant expenses: ${Money(day.constantExpenses, currency).formatted}"),
+          Text(
+              "#Daily expenses: ${Money(day.dailyExpenses, currency).formatted}"),
+          Text(
+              "#Total expenses: ${Money(day.totalExpenses, currency).formatted}"),
+          Divider(height: 24),
           ...day.transactions.map((t) => TransactionListTile(
                 wallet: widget.wallet,
                 transaction: t,
