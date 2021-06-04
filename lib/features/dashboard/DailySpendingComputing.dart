@@ -45,7 +45,8 @@ class DailySpendingComputing {
     final days = dateRange.getDays();
     final availableBudgetPerDay = totalIncomes / days.length;
     final constantExpensesPerDay = totalConstantsExpenses / days.length;
-    var maxTotalExpensesByDay = 0.0;
+
+    var availableBudget = 0.0;
 
     final dailySpendingDay = days.map((date) {
       final dateTotalExpenses = transactions
@@ -54,38 +55,41 @@ class DailySpendingComputing {
           .where((t) => !t.excludedFromDailyStatistics)
           .fold<double>(0.0, (p, t) => p + t.amount);
 
-      if (dateTotalExpenses > maxTotalExpensesByDay)
-        maxTotalExpensesByDay = dateTotalExpenses;
+      availableBudget += availableBudgetPerDay - constantExpensesPerDay;
+      availableBudget -= dateTotalExpenses;
 
       return DailySpendingDay(
         date,
         Money(constantExpensesPerDay, currency),
         Money(dateTotalExpenses, currency),
-        Money(availableBudgetPerDay, currency),
+        Money(availableBudget + dateTotalExpenses, currency),
       );
     }).toList();
 
-    return DailySpendingDaysResult(dailySpendingDay, maxTotalExpensesByDay);
+    return DailySpendingDaysResult(
+      dailySpendingDay,
+      Money(availableBudgetPerDay, currency),
+    );
   }
 }
 
 class DailySpending {
   final Money availableDailySpending;
   final Money currentDailySpending;
-  final Money availableTodayBudget;
+  final Money baseAvailableDayBudget;
 
   DailySpending(
     this.availableDailySpending,
     this.currentDailySpending,
-    this.availableTodayBudget,
+    this.baseAvailableDayBudget,
   );
 }
 
 class DailySpendingDaysResult {
   final List<DailySpendingDay> days;
-  final double maxTotalExpensesByDay;
+  final Money availableBudgetPerDay;
 
-  DailySpendingDaysResult(this.days, this.maxTotalExpensesByDay);
+  DailySpendingDaysResult(this.days, this.availableBudgetPerDay);
 }
 
 class DailySpendingDay {
@@ -100,9 +104,4 @@ class DailySpendingDay {
     this.totalExpenses,
     this.availableBudget,
   );
-
-  @override
-  String toString() {
-    return 'DailySpendingDay{date: $date, constantExpenses: $constantExpenses, totalExpenses: $totalExpenses, availableBudget: $availableBudget}';
-  }
 }

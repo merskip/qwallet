@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/features/dashboard/DailySpendingDetailsPage.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/SpendingGauge.dart';
@@ -20,12 +21,17 @@ class DailyReportSection extends StatelessWidget {
     required this.transactions,
   }) : super(key: key);
 
-  void onSelectedSection(BuildContext context) {
+  void onSelectedSection(BuildContext context) async {
+    final transactions = await SharedProviders.transactionsProvider
+        .getLatestTransactions(walletId: wallet.identifier, index: 0)
+        .first;
+
     pushPage(
       context,
       builder: (context) => DailySpendingDetailsPage(
         wallet: wallet,
-        transactions: transactions,
+        dateRange: transactions.dateTimeRange,
+        transactions: transactions.transactions,
       ),
     );
   }
@@ -72,7 +78,7 @@ class DailyReportSection extends StatelessWidget {
           style: Theme.of(context).textTheme.caption,
         ),
         Text(
-          dailySpending.availableTodayBudget.formatted,
+          dailySpending.baseAvailableDayBudget.formatted,
           style: Theme.of(context).textTheme.bodyText1,
         ),
       ],

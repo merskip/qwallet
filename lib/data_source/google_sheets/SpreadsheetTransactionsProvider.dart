@@ -26,11 +26,13 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
   @override
   Stream<LatestTransactions> getLatestTransactions({
     required Identifier<Wallet> walletId,
+    int index = 0,
   }) {
     assert(walletId.domain == "google_sheets");
     return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
       return LatestTransactions(
         wallet,
+        wallet.dateTimeRange,
         wallet.spreadsheetWallet.transfers
             .map((t) => _toTransaction(wallet, t))
             .toList(),
