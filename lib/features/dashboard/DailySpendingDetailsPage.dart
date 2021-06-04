@@ -1,7 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/features/dashboard/DailySpendingComputing.dart';
+
+import '../../utils.dart';
 
 class DailySpendingDetailsPage extends StatelessWidget {
   final Wallet wallet;
@@ -32,68 +36,108 @@ class DailySpendingDetailsPage extends StatelessWidget {
       currency: wallet.currency,
     );
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: SingleChildScrollView(
+    return LayoutBuilder(builder: (context, constraints) {
+      return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0).copyWith(left: 4),
-          child: Stack(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  ...result.days.map((dailySpendingDay) =>
-                      buildDailySpendingDay(context, dailySpendingDay)),
-                ],
-              ),
-              Positioned(
-                bottom: result.availableBudgetPerDay.amount / 2,
-                left: 0,
-                right: 0,
-                child: Container(
-                  height: 1,
-                  color: Colors.green,
-                ),
-              ),
-            ],
+        child: _DailySpendingChart(
+          scale: 1,
+          result: result,
+        ),
+      );
+    });
+  }
+}
+
+class _DailySpendingChart extends StatelessWidget {
+  final double scale;
+  final DailySpendingDaysResult result;
+
+  const _DailySpendingChart({
+    Key? key,
+    required this.scale,
+    required this.result,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0).copyWith(left: 4),
+      child: Row(children: [
+        ...result.days.map(
+          (dailySpendingDay) => Padding(
+            padding: const EdgeInsets.all(1.0),
+            child: buildDailySpendingDay(context, dailySpendingDay),
           ),
         ),
-      ),
+      ]),
     );
   }
 
   Widget buildDailySpendingDay(
       BuildContext context, DailySpendingDay dailySpendingDay) {
+    return InkWell(
+      onTap: () {},
+      child: Container(
+        width: 12,
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            buildAvailableBudget(context, dailySpendingDay),
+            buildExpenses(context, dailySpendingDay),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildAvailableBudget(
+      BuildContext context, DailySpendingDay dailySpendingDay) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black12,
+        border: Border.all(
+          color: dailySpendingDay.date.isSameDate(DateTime.now())
+              ? Colors.purple
+              : Colors.grey.shade800,
+        ),
+      ),
+      height: dailySpendingDay.availableBudget * scale,
+    );
+  }
+
+  Widget buildExpenses(
+      BuildContext context, DailySpendingDay dailySpendingDay) {
+    final overExpenses =
+        dailySpendingDay.totalExpenses > dailySpendingDay.availableBudget
+            ? dailySpendingDay.totalExpenses - dailySpendingDay.availableBudget
+            : null;
+    final inBudgetExpenses = dailySpendingDay.totalExpenses >
+            dailySpendingDay.availableBudget
+        ? dailySpendingDay.availableBudget - dailySpendingDay.constantExpenses
+        : dailySpendingDay.dailyExpenses;
     return Padding(
-      padding: const EdgeInsets.only(left: 4),
-      child: Stack(
-        clipBehavior: Clip.none,
+      padding: const EdgeInsets.symmetric(horizontal: 1),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Container(
-            width: 8,
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Container(
-                height: dailySpendingDay.totalExpenses.amount / 2,
-                color: Colors.blue,
+          if (overExpenses != null)
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.red,
               ),
-              Container(
-                height: dailySpendingDay.constantExpenses.amount / 2,
-                color: Colors.pink,
-              ),
-            ]),
-          ),
-          Positioned(
-            bottom: (dailySpendingDay.availableBudget.amount / 2 +
-                    dailySpendingDay.constantExpenses.amount / 2) -
-                1,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 3,
-              width: 8,
-              color: Colors.brown,
+              height: overExpenses * scale,
             ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.green,
+            ),
+            height: inBudgetExpenses * scale,
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.blueGrey,
+            ),
+            height: max(0, dailySpendingDay.constantExpenses) * scale,
           ),
         ],
       ),

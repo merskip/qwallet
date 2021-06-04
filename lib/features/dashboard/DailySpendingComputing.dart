@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 
@@ -37,38 +39,44 @@ class DailySpendingComputing {
     final totalConstantsExpenses = transactions
         .where((t) => t.type == TransactionType.expense)
         .where((t) => t.excludedFromDailyStatistics)
-        .fold<double>(0.0, (p, t) => p + t.amount);
-    final totalIncomes = transactions
-        .where((t) => t.type == TransactionType.income)
-        .fold<double>(0.0, (p, t) => p + t.amount);
+        .sum();
+
+    final totalIncomes =
+        transactions.where((t) => t.type == TransactionType.income).sum();
 
     final days = dateRange.getDays();
-    final availableBudgetPerDay = totalIncomes / days.length;
+    var availableDayBudget = totalIncomes / days.length;
     final constantExpensesPerDay = totalConstantsExpenses / days.length;
 
-    var availableBudget = 0.0;
-
     final dailySpendingDay = days.map((date) {
-      final dateTotalExpenses = transactions
+      final dailyExpenses = transactions
           .where((t) => t.type == TransactionType.expense)
           .where((t) => t.date.isSameDate(date))
           .where((t) => !t.excludedFromDailyStatistics)
-          .fold<double>(0.0, (p, t) => p + t.amount);
+          .sum();
 
-      availableBudget += availableBudgetPerDay - constantExpensesPerDay;
-      availableBudget -= dateTotalExpenses;
-
-      return DailySpendingDay(
+      final dayResult = DailySpendingDay(
         date,
-        Money(constantExpensesPerDay, currency),
-        Money(dateTotalExpenses, currency),
-        Money(availableBudget + dateTotalExpenses, currency),
+        constantExpensesPerDay,
+        dailyExpenses,
+        max(0.0, availableDayBudget),
       );
+
+      final isBeforeToday = date.isBefore(DateTime.now());
+      if (isBeforeToday) {
+        final daysLeft = days.length - days.indexOf(date);
+        availableDayBudget +=
+            (availableDayBudget - (dailyExpenses + constantExpensesPerDay)) /
+                daysLeft;
+      }
+
+      return dayResult;
     }).toList();
 
     return DailySpendingDaysResult(
       dailySpendingDay,
-      Money(availableBudgetPerDay, currency),
+      availableDayBudget,
+      dailySpendingDay.map((e) => e.totalExpenses).reduce(max),
     );
   }
 }
@@ -87,21 +95,28 @@ class DailySpending {
 
 class DailySpendingDaysResult {
   final List<DailySpendingDay> days;
-  final Money availableBudgetPerDay;
+  final double baseAvailableBudgetPerDay;
+  final double maxTotalExpenses;
 
-  DailySpendingDaysResult(this.days, this.availableBudgetPerDay);
+  DailySpendingDaysResult(
+    this.days,
+    this.baseAvailableBudgetPerDay,
+    this.maxTotalExpenses,
+  );
 }
 
 class DailySpendingDay {
   final DateTime date;
-  final Money constantExpenses;
-  final Money totalExpenses;
-  final Money availableBudget;
+  final double constantExpenses;
+  final double dailyExpenses;
+  final double availableBudget;
+
+  double get totalExpenses => constantExpenses + dailyExpenses;
 
   DailySpendingDay(
     this.date,
     this.constantExpenses,
-    this.totalExpenses,
+    this.dailyExpenses,
     this.availableBudget,
   );
 }

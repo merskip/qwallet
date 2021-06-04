@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:qwallet/data_source/Transaction.dart';
 
 Future<T> pushPage<T>(BuildContext context,
     {required WidgetBuilder builder}) async {
@@ -248,4 +249,10 @@ CloudFirestore.FieldPath toFieldPath(dynamic field) {
     return field;
   else
     throw ("Unsupported field type");
+}
+
+extension TransactionsSum on Iterable<Transaction> {
+  double sum() {
+    return fold<double>(0.0, (p, t) => p + t.amount);
+  }
 }
