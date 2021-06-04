@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
@@ -37,11 +35,15 @@ class DailySpendingDetailsPage extends StatelessWidget {
     );
 
     return LayoutBuilder(builder: (context, constraints) {
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: _DailySpendingChart(
-          scale: 1,
-          result: result,
+      final chartHeight = constraints.maxHeight * 2 / 3;
+      return SizedBox(
+        height: chartHeight + 4,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: _DailySpendingChart(
+            scale: chartHeight / result.maxValue,
+            result: result,
+          ),
         ),
       );
     });
@@ -61,86 +63,113 @@ class _DailySpendingChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0).copyWith(left: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Row(children: [
         ...result.days.map(
           (dailySpendingDay) => Padding(
-            padding: const EdgeInsets.all(1.0),
-            child: buildDailySpendingDay(context, dailySpendingDay),
+            padding: const EdgeInsets.symmetric(horizontal: 2.0),
+            child: DailySpendingDatBar(
+              dailySpendingDay: dailySpendingDay,
+              scale: scale,
+            ),
           ),
         ),
       ]),
     );
   }
+}
 
-  Widget buildDailySpendingDay(
-      BuildContext context, DailySpendingDay dailySpendingDay) {
+class DailySpendingDatBar extends StatelessWidget {
+  final DailySpendingDay dailySpendingDay;
+  final double scale;
+
+  bool get isToday => dailySpendingDay.date.isSameDate(DateTime.now());
+
+  const DailySpendingDatBar({
+    Key? key,
+    required this.dailySpendingDay,
+    required this.scale,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () => print(dailySpendingDay),
       child: Container(
-        width: 12,
+        width: 16,
         child: Stack(
+          clipBehavior: Clip.none,
           alignment: Alignment.bottomCenter,
           children: [
-            buildAvailableBudget(context, dailySpendingDay),
-            buildExpenses(context, dailySpendingDay),
+            buildAvailableBudget(context),
+            buildExpenses(context),
           ],
         ),
       ),
     );
   }
 
-  Widget buildAvailableBudget(
-      BuildContext context, DailySpendingDay dailySpendingDay) {
+  Widget buildAvailableBudget(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.black12,
-        border: Border.all(
-          color: dailySpendingDay.date.isSameDate(DateTime.now())
-              ? Colors.purple
-              : Colors.grey.shade800,
-        ),
+        border: isToday
+            ? Border.all(
+                width: 1.5,
+                color: Colors.grey,
+              )
+            : null,
+        borderRadius: BorderRadius.circular(8),
       ),
-      height: dailySpendingDay.availableBudget * scale,
+      height: dailySpendingDay.availableBudget * scale + 4,
     );
   }
 
-  Widget buildExpenses(
-      BuildContext context, DailySpendingDay dailySpendingDay) {
-    final overExpenses =
-        dailySpendingDay.totalExpenses > dailySpendingDay.availableBudget
-            ? dailySpendingDay.totalExpenses - dailySpendingDay.availableBudget
-            : null;
-    final inBudgetExpenses = dailySpendingDay.totalExpenses >
-            dailySpendingDay.availableBudget
-        ? dailySpendingDay.availableBudget - dailySpendingDay.constantExpenses
-        : dailySpendingDay.dailyExpenses;
+  Widget buildExpenses(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 1),
+      padding: const EdgeInsets.all(2),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          if (overExpenses != null)
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.red,
-              ),
-              height: overExpenses * scale,
-            ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.green,
-            ),
-            height: inBudgetExpenses * scale,
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.blueGrey,
-            ),
-            height: max(0, dailySpendingDay.constantExpenses) * scale,
-          ),
+          buildDailyExpensesBar(context),
+          buildConstantExpenses(context),
         ],
       ),
+    );
+  }
+
+  Widget buildDailyExpensesBar(BuildContext context) {
+    final extendsAvailableBudget =
+        dailySpendingDay.totalExpenses > dailySpendingDay.availableBudget;
+    final hasConstantExpenses = dailySpendingDay.constantExpenses > 0;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: extendsAvailableBudget ? Colors.red : Colors.green,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(8),
+          bottom: hasConstantExpenses ? Radius.zero : Radius.circular(8),
+        ),
+      ),
+      height: dailySpendingDay.dailyExpenses * scale,
+    );
+  }
+
+  Widget buildConstantExpenses(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color:
+            dailySpendingDay.constantExpenses > dailySpendingDay.availableBudget
+                ? Colors.red
+                : Colors.blueGrey.shade300,
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(8),
+          top: dailySpendingDay.dailyExpenses == 0.0
+              ? Radius.circular(8)
+              : Radius.zero,
+        ),
+      ),
+      height: dailySpendingDay.constantExpenses * scale,
     );
   }
 }

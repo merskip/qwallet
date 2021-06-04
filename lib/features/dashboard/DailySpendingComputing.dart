@@ -76,7 +76,10 @@ class DailySpendingComputing {
     return DailySpendingDaysResult(
       dailySpendingDay,
       availableDayBudget,
-      dailySpendingDay.map((e) => e.totalExpenses).reduce(max),
+      max(
+        dailySpendingDay.map((e) => e.totalExpenses).reduce(max),
+        availableDayBudget,
+      ),
     );
   }
 }
@@ -96,12 +99,12 @@ class DailySpending {
 class DailySpendingDaysResult {
   final List<DailySpendingDay> days;
   final double baseAvailableBudgetPerDay;
-  final double maxTotalExpenses;
+  final double maxValue;
 
   DailySpendingDaysResult(
     this.days,
     this.baseAvailableBudgetPerDay,
-    this.maxTotalExpenses,
+    this.maxValue,
   );
 }
 
@@ -119,4 +122,9 @@ class DailySpendingDay {
     this.dailyExpenses,
     this.availableBudget,
   );
+
+  @override
+  String toString() {
+    return 'DailySpendingDay{date: $date, constantExpenses: $constantExpenses, dailyExpenses: $dailyExpenses, availableBudget: $availableBudget}';
+  }
 }
