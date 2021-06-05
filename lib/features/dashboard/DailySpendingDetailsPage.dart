@@ -32,6 +32,9 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
   late DailySpendingDaysResult result;
   DailySpendingDay? selectedDay;
 
+  final _selectedDayKey = GlobalKey();
+  final _scrollController = ScrollController();
+
   @override
   void initState() {
     result = DailySpendingComputing().computeByDays(
@@ -55,12 +58,22 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
     setState(() {
       this.selectedDay = result.days[result.days.indexOf(selectedDay!) - 1];
     });
+    _scrollWithOffset(-22);
   }
 
   void onSelectedNextDay(BuildContext context) {
     setState(() {
       this.selectedDay = result.days[result.days.indexOf(selectedDay!) + 1];
     });
+    _scrollWithOffset(22);
+  }
+
+  void _scrollWithOffset(double offset) {
+    _scrollController.position.animateTo(
+      _scrollController.position.pixels + offset,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
   }
 
   @override
@@ -85,6 +98,7 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
               height: chartHeight + 4,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
+                controller: _scrollController,
                 child: buildDailySpendingChart(
                   context,
                   result,
@@ -111,7 +125,10 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
         ...result.days.map(
           (dailySpendingDay) => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 3.0),
-            child: DailySpendingDatBar(
+            child: DailySpendingDayBar(
+              key: dailySpendingDay.date == selectedDay?.date
+                  ? _selectedDayKey
+                  : null,
               dailySpendingDay: dailySpendingDay,
               scale: scale,
               isSelected: dailySpendingDay.date == selectedDay?.date,
@@ -170,7 +187,7 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
             value: Text(Money(day.availableBudget, currency).formatted),
           ),
           TitleValueTile(
-            title: Text("#Constant expenses"),
+            title: Text("#Regular expenses"),
             value: Text(Money(day.constantExpenses, currency).formatted),
           ),
           TitleValueTile(
@@ -202,13 +219,13 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
   }
 }
 
-class DailySpendingDatBar extends StatelessWidget {
+class DailySpendingDayBar extends StatelessWidget {
   final DailySpendingDay dailySpendingDay;
   final double scale;
   final bool isSelected;
   final VoidCallback? onTap;
 
-  const DailySpendingDatBar({
+  const DailySpendingDayBar({
     Key? key,
     required this.dailySpendingDay,
     required this.scale,
