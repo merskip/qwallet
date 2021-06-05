@@ -40,8 +40,7 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
       currency: widget.wallet.currency,
     );
 
-    selectedDay =
-        result.days.findFirstOrNull((d) => d.date.isSameDate(DateTime.now()));
+    selectedDay = result.days.findFirstOrNull((d) => d.date.isToday);
 
     super.initState();
   }
@@ -49,6 +48,18 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
   void onSelectedDay(BuildContext context, DailySpendingDay day) {
     setState(() {
       this.selectedDay = selectedDay?.date != day.date ? day : null;
+    });
+  }
+
+  void onSelectedPreviousDay(BuildContext context) {
+    setState(() {
+      this.selectedDay = result.days[result.days.indexOf(selectedDay!) - 1];
+    });
+  }
+
+  void onSelectedNextDay(BuildContext context) {
+    setState(() {
+      this.selectedDay = result.days[result.days.indexOf(selectedDay!) + 1];
     });
   }
 
@@ -64,7 +75,7 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
 
   Widget buildBody(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      final chartHeight = constraints.maxHeight * 2 / 3;
+      final chartHeight = constraints.maxHeight / 2;
       return SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,11 +143,28 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            dateFormat.format(day.date),
-            style: Theme.of(context).textTheme.headline6,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                dateFormat.format(day.date),
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              Spacer(),
+              IconButton(
+                icon: Icon(Icons.chevron_left),
+                onPressed: result.days.indexOf(day) > 0
+                    ? () => onSelectedPreviousDay(context)
+                    : null,
+              ),
+              IconButton(
+                icon: Icon(Icons.chevron_right),
+                onPressed: result.days.indexOf(day) < result.days.length - 1
+                    ? () => onSelectedNextDay(context)
+                    : null,
+              ),
+            ],
           ),
-          SizedBox(height: 12),
           TitleValueTile(
             title: Text("#Available daily budget"),
             value: Text(Money(day.availableBudget, currency).formatted),
@@ -180,8 +208,6 @@ class DailySpendingDatBar extends StatelessWidget {
   final bool isSelected;
   final VoidCallback? onTap;
 
-  bool get isToday => dailySpendingDay.date.isSameDate(DateTime.now());
-
   const DailySpendingDatBar({
     Key? key,
     required this.dailySpendingDay,
@@ -217,7 +243,7 @@ class DailySpendingDatBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.black12,
-        border: isSelected || isToday
+        border: isSelected || dailySpendingDay.date.isToday
             ? Border.all(
                 width: isSelected ? 1.5 : 2,
                 color: isSelected

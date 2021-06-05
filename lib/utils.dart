@@ -19,6 +19,8 @@ DateTime getDateWithoutTime(DateTime dateTime) =>
     DateTime(dateTime.year, dateTime.month, dateTime.day);
 
 extension DateTimeUtils on DateTime {
+  bool get isToday => isSameDate(DateTime.now());
+
   /// Returns the first moment of the day
   /// For 2021-02-24T13:51:23.514324 returns 2021-02-24T00:00.000000
   DateTime get beginningOfDay => DateTime(year, month, day);

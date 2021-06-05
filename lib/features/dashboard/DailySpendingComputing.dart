@@ -19,8 +19,7 @@ class DailySpendingComputing {
       transactions: transactions,
       currency: currency,
     );
-    final todaySpending =
-        result.days.findFirstOrNull((d) => d.date.isSameDate(DateTime.now()));
+    final todaySpending = result.days.findFirstOrNull((d) => d.date.isToday);
     return DailySpending(
       availableDailySpending:
           Money(todaySpending?.availableBudget ?? 0.0, currency),
@@ -63,7 +62,7 @@ class DailySpendingComputing {
       );
 
       final isBeforeToday = date.isBefore(DateTime.now());
-      if (isBeforeToday || date.isSameDate(DateTime.now())) {
+      if (isBeforeToday || date.isToday) {
         final daysLeft = days.length - days.indexOf(date);
         availableDayBudget +=
             (availableDayBudget - (dailyExpenses + constantExpensesPerDay)) /
