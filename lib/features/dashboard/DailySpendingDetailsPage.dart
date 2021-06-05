@@ -5,9 +5,11 @@ import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/features/dashboard/DailySpendingComputing.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
+import 'package:qwallet/widget/TitleValueTile.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
 
 import '../../utils.dart';
+import '../../utils/IterableFinding.dart';
 
 class DailySpendingDetailsPage extends StatefulWidget {
   final Wallet wallet;
@@ -27,7 +29,22 @@ class DailySpendingDetailsPage extends StatefulWidget {
 }
 
 class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
+  late DailySpendingDaysResult result;
   DailySpendingDay? selectedDay;
+
+  @override
+  void initState() {
+    result = DailySpendingComputing().computeByDays(
+      dateRange: widget.dateRange,
+      transactions: widget.transactions,
+      currency: widget.wallet.currency,
+    );
+
+    selectedDay =
+        result.days.findFirstOrNull((d) => d.date.isSameDate(DateTime.now()));
+
+    super.initState();
+  }
 
   void onSelectedDay(BuildContext context, DailySpendingDay day) {
     setState(() {
@@ -46,37 +63,30 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
   }
 
   Widget buildBody(BuildContext context) {
-    final result = DailySpendingComputing().computeByDays(
-      dateRange: widget.dateRange,
-      transactions: widget.transactions,
-      currency: widget.wallet.currency,
-    );
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: LayoutBuilder(builder: (context, constraints) {
-        final chartHeight = constraints.maxHeight * 2 / 3;
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: chartHeight + 4,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: buildDailySpendingChart(
-                    context,
-                    result,
-                    chartHeight / result.maxValue,
-                  ),
+    return LayoutBuilder(builder: (context, constraints) {
+      final chartHeight = constraints.maxHeight * 2 / 3;
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 16),
+            SizedBox(
+              height: chartHeight + 4,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: buildDailySpendingChart(
+                  context,
+                  result,
+                  chartHeight / result.maxValue,
                 ),
               ),
-              if (selectedDay != null) buildSelectedDay(context, selectedDay!),
-            ],
-          ),
-        );
-      }),
-    );
+            ),
+            if (selectedDay == null) buildSelectDayHint(context),
+            if (selectedDay != null) buildSelectedDay(context, selectedDay!),
+          ],
+        ),
+      );
+    });
   }
 
   Widget buildDailySpendingChart(
@@ -85,11 +95,11 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
     double scale,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(children: [
         ...result.days.map(
           (dailySpendingDay) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2.0),
+            padding: const EdgeInsets.symmetric(horizontal: 3.0),
             child: DailySpendingDatBar(
               dailySpendingDay: dailySpendingDay,
               scale: scale,
@@ -102,28 +112,53 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
     );
   }
 
+  Widget buildSelectDayHint(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(36.0),
+      child: Center(
+        child: Text(
+          "#Select a day to see more details",
+          style: Theme.of(context).textTheme.caption,
+        ),
+      ),
+    );
+  }
+
   Widget buildSelectedDay(BuildContext context, DailySpendingDay day) {
     final dateFormat = DateFormat("d MMMM yyyy");
     final currency = widget.wallet.currency;
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0).copyWith(top: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             dateFormat.format(day.date),
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.headline6,
           ),
           SizedBox(height: 12),
-          Text(
-              "#Available daily budget: ${Money(day.availableBudget, currency).formatted}"),
-          Text(
-              "#Constant expenses: ${Money(day.constantExpenses, currency).formatted}"),
-          Text(
-              "#Daily expenses: ${Money(day.dailyExpenses, currency).formatted}"),
-          Text(
-              "#Total expenses: ${Money(day.totalExpenses, currency).formatted}"),
+          TitleValueTile(
+            title: Text("#Available daily budget"),
+            value: Text(Money(day.availableBudget, currency).formatted),
+          ),
+          TitleValueTile(
+            title: Text("#Constant expenses"),
+            value: Text(Money(day.constantExpenses, currency).formatted),
+          ),
+          TitleValueTile(
+            title: Text("#Daily expenses"),
+            value: Text(Money(day.dailyExpenses, currency).formatted),
+          ),
+          TitleValueTile(
+            title: Text("#Total expenses"),
+            value: Text(Money(day.totalExpenses, currency).formatted),
+          ),
           Divider(height: 24),
+          Text(
+            "#Transactions",
+            style: Theme.of(context).textTheme.subtitle2,
+          ),
+          SizedBox(height: 8),
           ...day.transactions.map((t) => TransactionListTile(
                 wallet: widget.wallet,
                 transaction: t,
@@ -159,6 +194,7 @@ class DailySpendingDatBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
       child: Container(
         width: 16,
         decoration: BoxDecoration(
@@ -183,9 +219,10 @@ class DailySpendingDatBar extends StatelessWidget {
         color: Colors.black12,
         border: isSelected || isToday
             ? Border.all(
-                width: 1.5,
-                color:
-                    isSelected ? Theme.of(context).primaryColor : Colors.grey,
+                width: isSelected ? 1.5 : 2,
+                color: isSelected
+                    ? Theme.of(context).primaryColor
+                    : Theme.of(context).accentColor,
               )
             : null,
         borderRadius: BorderRadius.circular(8),
