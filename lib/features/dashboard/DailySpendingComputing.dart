@@ -19,14 +19,12 @@ class DailySpendingComputing {
       transactions: transactions,
       currency: currency,
     );
-    final todaySpending =
-        result.days.findFirstOrNull((d) => d.date.isSameDate(DateTime.now()));
+    final todaySpending = result.days.findFirstOrNull((d) => d.date.isToday);
     return DailySpending(
-      availableDailySpending:
-          Money(todaySpending?.availableBudget ?? 0.0, currency),
+      availableDailyBudget:
+          Money(todaySpending?.dailyAvailableBudget ?? 0.0, currency),
       currentDailySpending:
-          Money(todaySpending?.totalExpenses ?? 0.0, currency),
-      baseAvailableDayBudget: Money(result.baseAvailableBudgetPerDay, currency),
+          Money(todaySpending?.dailyExpenses ?? 0.0, currency),
     );
   }
 
@@ -45,7 +43,7 @@ class DailySpendingComputing {
 
     final days = dateRange.getDays();
     var availableDayBudget = totalIncomes / days.length;
-    final constantExpensesPerDay = totalConstantsExpenses / days.length;
+    final regularExpensesPerDay = totalConstantsExpenses / days.length;
 
     final dailySpendingDay = days.map((date) {
       final dailyTransactions = transactions
@@ -56,17 +54,18 @@ class DailySpendingComputing {
 
       final dayResult = DailySpendingDay(
         date,
-        constantExpensesPerDay,
+        regularExpensesPerDay,
         dailyExpenses,
         max(0.0, availableDayBudget),
+        max(0.0, availableDayBudget - regularExpensesPerDay),
         dailyTransactions.toList(),
       );
 
       final isBeforeToday = date.isBefore(DateTime.now());
-      if (isBeforeToday || date.isSameDate(DateTime.now())) {
+      if (isBeforeToday || date.isToday) {
         final daysLeft = days.length - days.indexOf(date);
         availableDayBudget +=
-            (availableDayBudget - (dailyExpenses + constantExpensesPerDay)) /
+            (availableDayBudget - (dailyExpenses + regularExpensesPerDay)) /
                 daysLeft;
       }
 
@@ -85,14 +84,12 @@ class DailySpendingComputing {
 }
 
 class DailySpending {
-  final Money availableDailySpending;
+  final Money availableDailyBudget;
   final Money currentDailySpending;
-  final Money baseAvailableDayBudget;
 
   DailySpending({
-    required this.availableDailySpending,
+    required this.availableDailyBudget,
     required this.currentDailySpending,
-    required this.baseAvailableDayBudget,
   });
 }
 
@@ -110,23 +107,25 @@ class DailySpendingDaysResult {
 
 class DailySpendingDay {
   final DateTime date;
-  final double constantExpenses;
+  final double regularExpenses;
   final double dailyExpenses;
   final double availableBudget;
+  final double dailyAvailableBudget;
   final List<Transaction> transactions;
 
-  double get totalExpenses => constantExpenses + dailyExpenses;
+  double get totalExpenses => regularExpenses + dailyExpenses;
 
   DailySpendingDay(
     this.date,
-    this.constantExpenses,
+    this.regularExpenses,
     this.dailyExpenses,
     this.availableBudget,
+    this.dailyAvailableBudget,
     this.transactions,
   );
 
   @override
   String toString() {
-    return 'DailySpendingDay{date: $date, constantExpenses: $constantExpenses, dailyExpenses: $dailyExpenses, availableBudget: $availableBudget}';
+    return 'DailySpendingDay{date: $date, constantExpenses: $regularExpenses, dailyExpenses: $dailyExpenses, availableBudget: $availableBudget}';
   }
 }

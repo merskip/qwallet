@@ -19,12 +19,16 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
 }
 
 class AppLocalizations {
-  AppLocalizations(this.locale);
+  final Locale locale;
+
+  late final DailySpendingDetailsAppLocalizationsGroup dailySpendingDetails;
+
+  AppLocalizations(this.locale) {
+    dailySpendingDetails = DailySpendingDetailsAppLocalizationsGroup(this);
+  }
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       const AppLocalizationsDelegate();
-
-  final Locale locale;
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
@@ -40,6 +44,15 @@ class AppLocalizations {
         return en;
     }
   }
+}
+
+class AppLocalizationsGroup {
+  final AppLocalizations appLocalizations;
+
+  AppLocalizationsGroup(this.appLocalizations);
+
+  String _locale({required String en, required String pl}) =>
+      appLocalizations._locale(en: en, pl: pl);
 }
 
 extension SingInLocalizations on AppLocalizations {
@@ -1505,4 +1518,54 @@ extension AttachedFilesLocalizations on AppLocalizations {
         en: "Last modified",
         pl: "Ostatnio zmodyfikowano",
       );
+}
+
+class DailySpendingDetailsAppLocalizationsGroup extends AppLocalizationsGroup {
+  String get title => _locale(
+        en: "Daily spending details",
+        pl: "Szczegóły dziennych wydatków",
+      );
+
+  String get selectDayHint => _locale(
+        en: "Select a day to see more details",
+        pl: "Wybierz dzień, aby zobaczyć więcej szczegółów",
+      );
+
+  String get availableBudget => _locale(
+        en: "Total available budget for this day",
+        pl: "Całkowity dostępny budżet na ten dzień",
+      );
+
+  String get regularExpenses => _locale(
+        en: "Regular expenses",
+        pl: "Regularne wydatki",
+      );
+
+  String get dailyAvailableBudget => _locale(
+        en: "Available budget for daily expenses",
+        pl: "Dostępny budżet na codzienne wydatki",
+      );
+
+  String get dailyExpenses => _locale(
+        en: "Daily expenses",
+        pl: "Dzienne wydatki",
+      );
+
+  String get totalExpenses => _locale(
+        en: "Total expenses",
+        pl: "Całkowite wydatki",
+      );
+
+  String get transactions => _locale(
+        en: "Transactions",
+        pl: "Transakcje",
+      );
+
+  String get noTransactions => _locale(
+        en: "No transactions",
+        pl: "Brak transakcji",
+      );
+
+  DailySpendingDetailsAppLocalizationsGroup(AppLocalizations appLocalizations)
+      : super(appLocalizations);
 }

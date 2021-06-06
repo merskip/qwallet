@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Wallet.dart';
-import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
 
 import '../utils.dart';
 
@@ -134,21 +133,19 @@ class _WalletSinglePage extends StatelessWidget {
               wallet.balance.formatted,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 4),
-            if (wallet is FirebaseWallet)
-              buildFirebaseDateRange(context, wallet as FirebaseWallet),
+            SizedBox(height: 3),
+            buildDateRange(context, wallet),
           ],
         ),
       ),
     );
   }
 
-  Widget buildFirebaseDateRange(
-      BuildContext context, FirebaseWallet firebaseWallet) {
+  Widget buildDateRange(BuildContext context, Wallet wallet) {
     return Text(
-      firebaseWallet.dateRange.getDateTimeRange().formatted(),
+      wallet.dateTimeRange.formatted(),
       style: TextStyle(
-        fontSize: 12.0,
+        fontSize: 11.0,
         color: Colors.white.withAlpha(223),
         fontWeight: FontWeight.w300,
       ),

@@ -65,20 +65,20 @@ class DailyReportSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
+          AppLocalizations.of(context).dailySpendingAvailableTodayBudget,
+          style: Theme.of(context).textTheme.caption,
+        ),
+        Text(
+          dailySpending.availableDailyBudget.formatted,
+          style: Theme.of(context).textTheme.bodyText1,
+        ),
+        SizedBox(height: 8),
+        Text(
           AppLocalizations.of(context).dailySpendingCurrentDailySpending,
           style: Theme.of(context).textTheme.caption,
         ),
         Text(
           dailySpending.currentDailySpending.formatted,
-          style: Theme.of(context).textTheme.bodyText1,
-        ),
-        SizedBox(height: 8),
-        Text(
-          AppLocalizations.of(context).dailySpendingAvailableTodayBudget,
-          style: Theme.of(context).textTheme.caption,
-        ),
-        Text(
-          dailySpending.baseAvailableDayBudget.formatted,
           style: Theme.of(context).textTheme.bodyText1,
         ),
       ],
@@ -93,9 +93,9 @@ class DailyReportSection extends StatelessWidget {
       size: Size.square(144),
       child: SpendingGauge(
         current: dailySpending.currentDailySpending,
-        midLow: dailySpending.availableDailySpending * 0.8,
-        midHigh: dailySpending.availableDailySpending * 1.0,
-        max: dailySpending.availableDailySpending * 1.5,
+        midLow: dailySpending.availableDailyBudget * 0.8,
+        midHigh: dailySpending.availableDailyBudget * 1.0,
+        max: dailySpending.availableDailyBudget * 2,
       ),
     );
   }
