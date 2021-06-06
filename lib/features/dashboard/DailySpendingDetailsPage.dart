@@ -8,6 +8,7 @@ import 'package:qwallet/widget/EmptyStateWidget.dart';
 import 'package:qwallet/widget/TitleValueTile.dart';
 import 'package:qwallet/widget/TransactionListTile.dart';
 
+import '../../AppLocalizations.dart';
 import '../../utils.dart';
 import '../../utils/IterableFinding.dart';
 
@@ -80,7 +81,7 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Daily spending analytic"),
+        title: Text(AppLocalizations.of(context).dailySpendingDetails.title),
       ),
       body: buildBody(context),
     );
@@ -145,7 +146,7 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
       padding: const EdgeInsets.all(36.0),
       child: Center(
         child: Text(
-          "#Select a day to see more details",
+          AppLocalizations.of(context).dailySpendingDetails.selectDayHint,
           style: Theme.of(context).textTheme.caption,
         ),
       ),
@@ -153,7 +154,8 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
   }
 
   Widget buildSelectedDay(BuildContext context, DailySpendingDay day) {
-    final dateFormat = DateFormat("d MMMM yyyy");
+    final locale = AppLocalizations.of(context).locale.toString();
+    final dateFormat = DateFormat("d MMMM yyyy", locale);
     final currency = widget.wallet.currency;
     return Padding(
       padding: const EdgeInsets.all(16.0).copyWith(top: 24),
@@ -183,28 +185,38 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
             ],
           ),
           TitleValueTile(
-            title: Text("#Total available budget for this day"),
+            title: Text(AppLocalizations.of(context)
+                .dailySpendingDetails
+                .availableBudget),
             value: Text(Money(day.availableBudget, currency).formatted),
           ),
           TitleValueTile(
-            title: Text("#Regular expenses"),
+            title: Text(AppLocalizations.of(context)
+                .dailySpendingDetails
+                .regularExpenses),
             value: Text(Money(day.regularExpenses, currency).formatted),
           ),
           TitleValueTile(
-            title: Text("#Available budget for daily expenses"),
+            title: Text(AppLocalizations.of(context)
+                .dailySpendingDetails
+                .dailyAvailableBudget),
             value: Text(Money(day.dailyAvailableBudget, currency).formatted),
           ),
           TitleValueTile(
-            title: Text("#Daily expenses"),
+            title: Text(AppLocalizations.of(context)
+                .dailySpendingDetails
+                .dailyExpenses),
             value: Text(Money(day.dailyExpenses, currency).formatted),
           ),
           TitleValueTile(
-            title: Text("#Total expenses"),
+            title: Text(AppLocalizations.of(context)
+                .dailySpendingDetails
+                .totalExpenses),
             value: Text(Money(day.totalExpenses, currency).formatted),
           ),
           Divider(height: 24),
           Text(
-            "#Transactions",
+            AppLocalizations.of(context).dailySpendingDetails.transactions,
             style: Theme.of(context).textTheme.subtitle2,
           ),
           SizedBox(height: 8),
@@ -214,7 +226,9 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
               )),
           if (day.transactions.isEmpty)
             EmptyStateWidget(
-              text: "#No transactions",
+              text: AppLocalizations.of(context)
+                  .dailySpendingDetails
+                  .noTransactions,
               iconAsset: "assets/ic-wallet.svg",
             ),
         ],
