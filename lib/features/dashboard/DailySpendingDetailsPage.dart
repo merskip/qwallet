@@ -80,7 +80,7 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("#Daily spending details"),
+        title: Text("#Daily spending analytic"),
       ),
       body: buildBody(context),
     );
@@ -183,12 +183,16 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
             ],
           ),
           TitleValueTile(
-            title: Text("#Available daily budget"),
+            title: Text("#Total available budget for this day"),
             value: Text(Money(day.availableBudget, currency).formatted),
           ),
           TitleValueTile(
             title: Text("#Regular expenses"),
-            value: Text(Money(day.constantExpenses, currency).formatted),
+            value: Text(Money(day.regularExpenses, currency).formatted),
+          ),
+          TitleValueTile(
+            title: Text("#Available budget for daily expenses"),
+            value: Text(Money(day.dailyAvailableBudget, currency).formatted),
           ),
           TitleValueTile(
             title: Text("#Daily expenses"),
@@ -290,7 +294,7 @@ class DailySpendingDayBar extends StatelessWidget {
   Widget buildDailyExpensesBar(BuildContext context) {
     final extendsAvailableBudget =
         dailySpendingDay.totalExpenses > dailySpendingDay.availableBudget;
-    final hasConstantExpenses = dailySpendingDay.constantExpenses > 0;
+    final hasConstantExpenses = dailySpendingDay.regularExpenses > 0;
 
     return Container(
       decoration: BoxDecoration(
@@ -308,7 +312,7 @@ class DailySpendingDayBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color:
-            dailySpendingDay.constantExpenses > dailySpendingDay.availableBudget
+            dailySpendingDay.regularExpenses > dailySpendingDay.availableBudget
                 ? Colors.red
                 : Colors.blueGrey.shade300,
         borderRadius: BorderRadius.vertical(
@@ -318,7 +322,7 @@ class DailySpendingDayBar extends StatelessWidget {
               : Radius.zero,
         ),
       ),
-      height: dailySpendingDay.constantExpenses * scale,
+      height: dailySpendingDay.regularExpenses * scale,
     );
   }
 }

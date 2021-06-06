@@ -14,7 +14,7 @@ void main() {
       currency: Currency.fromCode("USD"),
     );
 
-    expect(result.availableDailySpending.amount, 100.0);
+    expect(result.availableDailyBudget.amount, 100.0);
     expect(result.currentDailySpending.amount, 0.0);
     expect(result.baseAvailableDayBudget.amount, 100.0);
   });
@@ -29,7 +29,7 @@ void main() {
       currency: Currency.fromCode("USD"),
     );
 
-    expect(result.availableDailySpending.amount, 100.0);
+    expect(result.availableDailyBudget.amount, 100.0);
     expect(result.currentDailySpending.amount, 0.0);
     expect(result.baseAvailableDayBudget.amount, 100.0);
   });
@@ -44,7 +44,7 @@ void main() {
       currency: Currency.fromCode("USD"),
     );
 
-    expect(result.availableDailySpending.amount, 100.0);
+    expect(result.availableDailyBudget.amount, 100.0);
     expect(result.currentDailySpending.amount, 25.0);
     expect(result.baseAvailableDayBudget.amount, 150.0);
   });
@@ -59,7 +59,7 @@ void main() {
       currency: Currency.fromCode("USD"),
     );
 
-    expect(result.availableDailySpending.amount, 100.0);
+    expect(result.availableDailyBudget.amount, 100.0);
     expect(result.currentDailySpending.amount, 125.0);
     expect(result.baseAvailableDayBudget.amount, -50.0);
   });
