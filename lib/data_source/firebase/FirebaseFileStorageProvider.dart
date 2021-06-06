@@ -51,6 +51,17 @@ class FirebaseFileStorageProvider {
     return fileReference;
   }
 
+  Future<List<FirebaseStorageUniversalFile>> getFiles(
+    Identifier<Wallet> walletId,
+  ) async {
+    final walletDirectory = storage.ref("/wallet/$walletId");
+    final files = (await walletDirectory.listAll()).items.map(
+          (fileReference) =>
+              FirebaseStorageUniversalFile.fromReference(fileReference),
+        );
+    return Future.wait(files);
+  }
+
   Future<FirebaseStorageUniversalFile> getUniversalFile(Uri fileUri) {
     assert(fileUri.scheme == "gs");
     final fileReference =
