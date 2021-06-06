@@ -134,6 +134,10 @@ class DashboardPageState extends State<DashboardPage> {
     router.navigateTo(context, "/wallet/${wallet.identifier}/report");
   }
 
+  void onSelectedBrowseAttachedFiles(BuildContext context, Wallet wallet) {
+    router.navigateTo(context, "/wallet/${wallet.identifier}/attachedFiles");
+  }
+
   void onSelectedSettings(BuildContext context) {
     router.navigateTo(context, "/settings");
   }
@@ -259,6 +263,12 @@ class DashboardPageState extends State<DashboardPage> {
             child: Text(AppLocalizations.of(context).dashboardReports),
             value: "report",
           ),
+        if (hasWallets)
+          PopupMenuItem(
+            child:
+                Text(AppLocalizations.of(context).dashboardBrowseAttachedFiles),
+            value: "browse-attached-files",
+          ),
         PopupMenuDivider(),
         if (hasWallets)
           PopupMenuItem(
@@ -296,6 +306,9 @@ class DashboardPageState extends State<DashboardPage> {
             break;
           case "report":
             onSelectedReport(context, getSelectedWallet());
+            break;
+          case "browse-attached-files":
+            onSelectedBrowseAttachedFiles(context, getSelectedWallet());
             break;
           case "settings":
             onSelectedSettings(context);

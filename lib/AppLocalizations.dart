@@ -150,6 +150,11 @@ extension DashbaordLocalizations on AppLocalizations {
         pl: "Ustawienia",
       );
 
+  String get dashboardBrowseAttachedFiles => _locale(
+        en: "Browse files",
+        pl: "Przeglądaj pliki",
+      );
+
   String get dashboardLogs => _locale(
         en: "Logs",
         pl: "Dzienniki",
