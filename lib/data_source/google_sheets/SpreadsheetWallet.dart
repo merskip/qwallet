@@ -13,7 +13,7 @@ class SpreadsheetWallet implements Wallet {
   final Money totalExpense;
   final Money totalIncome;
   final List<Category> categories;
-  DateTimeRange dateTimeRange;
+  final DateTimeRange dateTimeRange;
 
   final GoogleSpreadsheetWallet spreadsheetWallet;
 

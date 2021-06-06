@@ -209,8 +209,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           buildTotalExpense(context),
           buildTotalIncome(context),
           buildBalance(context),
-          if (wallet is FirebaseWallet)
-            buildCurrentDateRange(context, wallet as FirebaseWallet),
+          buildCurrentDateRange(context, wallet),
           Divider(),
           buildCategories(context),
           if (wallet is SpreadsheetWallet) buildSpreadsheetLink(context),
@@ -316,16 +315,19 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     );
   }
 
-  Widget buildCurrentDateRange(BuildContext context, FirebaseWallet wallet) {
+  Widget buildCurrentDateRange(BuildContext context, Wallet wallet) {
     return DetailsItemTile(
       title: Text(AppLocalizations.of(context).walletCurrentDateRange),
       value: Text(
-        _getWalletDateRangeTypeText(wallet.dateRange.type) +
-            "\n" +
-            wallet.dateRange.getDateTimeRange().formatted(),
+        (wallet is FirebaseWallet
+                ? (_getWalletDateRangeTypeText(wallet.dateRange.type) + "\n")
+                : "") +
+            wallet.dateTimeRange.formatted(),
       ),
       editIcon: Icons.edit,
-      onEdit: (context) => onSelectedEditDateRange(context, wallet),
+      onEdit: wallet is FirebaseWallet
+          ? (context) => onSelectedEditDateRange(context, wallet)
+          : null,
     );
   }
 
