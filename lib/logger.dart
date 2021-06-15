@@ -77,22 +77,45 @@ class Logger {
 
   Logger({required this.printers});
 
-  void verbose(String message) => log(Level.verbose, message);
+  void verbose(
+    String message, {
+    dynamic exception,
+    StackTrace? stackTrace,
+  }) =>
+      log(Level.verbose, message);
 
-  void debug(String message) => log(Level.debug, message);
+  void debug(
+    String message, {
+    dynamic exception,
+    StackTrace? stackTrace,
+  }) =>
+      log(Level.debug, message);
 
-  void info(String message) => log(Level.info, message);
+  void info(
+    String message, {
+    dynamic exception,
+    StackTrace? stackTrace,
+  }) =>
+      log(Level.info, message);
 
-  void warning(String message, {dynamic? exception, StackTrace? stackTrace}) =>
+  void warning(
+    String message, {
+    dynamic exception,
+    StackTrace? stackTrace,
+  }) =>
       log(Level.warning, message, exception, stackTrace);
 
-  void error(String message, {dynamic? exception, StackTrace? stackTrace}) =>
+  void error(
+    String message, {
+    dynamic exception,
+    StackTrace? stackTrace,
+  }) =>
       log(Level.error, message, exception, stackTrace);
 
   void log(
     Level level,
     String message, [
-    dynamic? exception,
+    dynamic exception,
     StackTrace? stackTrace,
   ]) {
     final logEvent =

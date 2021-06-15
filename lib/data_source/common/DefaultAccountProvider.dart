@@ -73,21 +73,52 @@ class DefaultAccountProvider extends AccountProvider {
       logger.debug("Cleared auth cache");
     }
 
+    GoogleSignInAccount? account;
     final googleSignWithScopes = _createGoogleSignInWithScopes();
-    var account = await googleSignWithScopes.signInSilently();
+    googleSignWithScopes.onCurrentUserChanged.listen((user) {
+      logger.verbose("googleSignWithScopes.onCurrentUserChanged: "
+          "${user != null ? "<exists>" : "null"}");
+    });
+
+    try {
+      account =
+          await googleSignWithScopes.signInSilently(suppressErrors: false);
+    } catch (exception, stackTrace) {
+      logger.verbose(
+        "An exception while trying sign in silently with scopes",
+        exception: exception,
+        stackTrace: stackTrace,
+      );
+    }
     if (account != null) {
       _googleSignIn = googleSignWithScopes;
       logger.info("Sign in using additional scopes");
     } else {
+      logger.verbose(
+          "Failed sign in with scopes, isSignIn=${await _googleSignIn.isSignedIn()}, "
+          "currentUser=${_googleSignIn.currentUser != null ? "<exists>" : "null"}");
+
       // Change Google SignIn on web causes crash, so require using with scopes
       if (!kIsWeb) {
         logger.info("Sign in using basic scope");
         _googleSignIn = _createGoogleSignInBasic();
+        _googleSignIn.onCurrentUserChanged.listen((user) {
+          logger.verbose("googleSignBasic.onCurrentUserChanged: "
+              "${user != null ? "<exists>" : "null"}");
+        });
       } else {
         _googleSignIn = googleSignWithScopes;
       }
     }
-    await _googleSignIn.signInSilently();
+    try {
+      await _googleSignIn.signInSilently(suppressErrors: false);
+    } catch (exception, stackTrace) {
+      logger.verbose(
+        "An exception while trying sign in silently after resolving scopes",
+        exception: exception,
+        stackTrace: stackTrace,
+      );
+    }
     logger.info("Google isSignIn=${await _googleSignIn.isSignedIn()}, "
         "currentUser=${_googleSignIn.currentUser != null ? "<exists>" : "null"}");
 
