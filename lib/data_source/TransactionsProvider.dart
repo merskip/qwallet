@@ -3,13 +3,14 @@ import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 
 import 'CustomField.dart';
+import 'DateRange.dart';
 import 'Transaction.dart';
 import 'Wallet.dart';
 
 abstract class TransactionsProvider {
   Stream<LatestTransactions> getLatestTransactions({
     required Identifier<Wallet> walletId,
-    int index = 0,
+    DateRange? dateRange,
   });
 
   Stream<Transaction?> getTransactionById({

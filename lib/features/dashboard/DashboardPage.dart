@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/CurrencyList.dart';
 import 'package:qwallet/MoneyTextDetector.dart';
+import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
@@ -25,6 +26,7 @@ import '../../router.dart';
 import '../../utils.dart';
 import 'CategoriesChartCard.dart';
 import 'DailyReportSection.dart';
+import 'SelectDateRangeSection.dart';
 import 'TransactionsCard.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -38,6 +40,7 @@ class DashboardPage extends StatefulWidget {
 
 class DashboardPageState extends State<DashboardPage> {
   final _selectedWallet = BehaviorSubject<Wallet>();
+  final _selectedDateRange = BehaviorSubject<DateRange>();
 
   final notificationService = PushNotificationService();
 
@@ -48,6 +51,7 @@ class DashboardPageState extends State<DashboardPage> {
   void onSelectedWallet(BuildContext context, Wallet wallet) {
     setState(() {
       _selectedWallet.add(wallet);
+      _selectedDateRange.add(wallet.defaultDateRange);
     });
   }
 
@@ -204,6 +208,11 @@ class DashboardPageState extends State<DashboardPage> {
           assert(wallet.identifier == latestTransactions.wallet.identifier);
 
           return Column(children: [
+            SelectDateRangeSection(
+              wallet: latestTransactions.wallet,
+              currentDateRange: _selectedDateRange.value!,
+            ),
+            Divider(),
             DailyReportSection(
               wallet: latestTransactions.wallet,
               transactions: latestTransactions.transactions,

@@ -98,7 +98,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
         name: wallet.name,
         currency: wallet.currency,
         ownersUid: owners.map((user) => user.uid).toList(),
-        dateRange: wallet.dateRange,
+        dateRangeDescription: wallet.dateRangeDescription,
       );
     }
   }
@@ -115,7 +115,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
         name: wallet.name,
         currency: currency,
         ownersUid: wallet.ownersUid,
-        dateRange: wallet.dateRange,
+        dateRangeDescription: wallet.dateRangeDescription,
       );
     }
   }
@@ -163,7 +163,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
         name: wallet.name,
         currency: wallet.currency,
         ownersUid: wallet.ownersUid,
-        dateRange: dateRange,
+        dateRangeDescription: dateRange,
       );
     }
   }
@@ -244,7 +244,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
             name: name,
             currency: wallet.currency,
             ownersUid: wallet.ownersUid,
-            dateRange: wallet.dateRange,
+            dateRangeDescription: wallet.dateRangeDescription,
           );
         }
       },
@@ -320,9 +320,11 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       title: Text(AppLocalizations.of(context).walletCurrentDateRange),
       value: Text(
         (wallet is FirebaseWallet
-                ? (_getWalletDateRangeTypeText(wallet.dateRange.type) + "\n")
+                ? (_getWalletDateRangeTypeText(
+                        wallet.dateRangeDescription.type) +
+                    "\n")
                 : "") +
-            wallet.dateTimeRange.formatted(),
+            wallet.defaultDateRange.dateTimeRange.formatted(),
       ),
       editIcon: Icons.edit,
       onEdit: wallet is FirebaseWallet

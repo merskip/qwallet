@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/CustomField.dart';
+import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
@@ -26,13 +27,14 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
   @override
   Stream<LatestTransactions> getLatestTransactions({
     required Identifier<Wallet> walletId,
-    int index = 0,
+    DateRange? dateRange,
   }) {
     assert(walletId.domain == "firebase");
     return walletsProvider
         .getWalletByIdentifier(walletId)
         .flatMap<LatestTransactions>((wallet) {
-      final dateTimeRange = wallet.dateRange.getDateTimeRange(index: index);
+      final dateTimeRange =
+          (dateRange ?? wallet.defaultDateRange).dateTimeRange;
       return _getTransactionsInDateTimeRange(
         wallet: wallet,
         dateRange: dateTimeRange,

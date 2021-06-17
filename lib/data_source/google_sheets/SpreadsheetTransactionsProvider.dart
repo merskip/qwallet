@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
@@ -26,7 +27,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
   @override
   Stream<LatestTransactions> getLatestTransactions({
     required Identifier<Wallet> walletId,
-    int index = 0,
+    DateRange? dateRange,
   }) {
     assert(walletId.domain == "google_sheets");
     return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {

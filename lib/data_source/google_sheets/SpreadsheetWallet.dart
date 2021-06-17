@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/Money.dart';
 import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/google_sheets/GoogleSpreadsheetWallet.dart';
@@ -29,4 +30,12 @@ class SpreadsheetWallet implements Wallet {
   });
 
   Money get balance => totalIncome - totalExpense.amount;
+
+  @override
+  DateRange get defaultDateRange => DateRange(
+        index: 0,
+        dateTimeRange: dateTimeRange,
+        getPreviousRange: () => null,
+        getNextRange: () => null,
+      );
 }

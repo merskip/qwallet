@@ -23,7 +23,7 @@ class DailyReportSection extends StatelessWidget {
 
   void onSelectedSection(BuildContext context) async {
     final transactions = await SharedProviders.transactionsProvider
-        .getLatestTransactions(walletId: wallet.identifier, index: 0)
+        .getLatestTransactions(walletId: wallet.identifier)
         .first;
 
     pushPage(
@@ -102,7 +102,7 @@ class DailyReportSection extends StatelessWidget {
 
   DailySpending _computeDailySpending() {
     return DailySpendingComputing().compute(
-      dateRange: wallet.dateTimeRange,
+      dateRange: wallet.defaultDateRange.dateTimeRange,
       transactions: transactions,
       currency: wallet.currency,
     );

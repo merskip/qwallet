@@ -5,7 +5,7 @@ import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
 import 'package:qwallet/utils.dart';
 
 class WalletDateRangeCalculator {
-  final FirebaseWalletDateRange dateRange;
+  final FirebaseDateRangeDescription dateRange;
 
   WalletDateRangeCalculator(this.dateRange);
 

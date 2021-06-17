@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Category.dart';
+import 'package:qwallet/data_source/DateRange.dart';
 
 import '../Currency.dart';
 import '../Money.dart';
@@ -11,7 +11,7 @@ abstract class Wallet implements Identifiable<Wallet> {
   final Money totalExpense;
   final Money totalIncome;
   final List<Category> categories;
-  final DateTimeRange dateTimeRange;
+  final DateRange defaultDateRange;
 
   Money get balance => totalIncome - totalExpense.amount;
 
@@ -21,6 +21,6 @@ abstract class Wallet implements Identifiable<Wallet> {
     required this.totalExpense,
     required this.totalIncome,
     required this.categories,
-    required this.dateTimeRange,
+    required this.defaultDateRange,
   });
 }
