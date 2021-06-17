@@ -33,13 +33,15 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
     return walletsProvider
         .getWalletByIdentifier(walletId)
         .flatMap<LatestTransactions>((wallet) {
-      final dateTimeRange =
-          (dateRange ?? wallet.defaultDateRange).dateTimeRange;
+      final dateTime = dateRange ?? wallet.defaultDateRange;
       return _getTransactionsInDateTimeRange(
         wallet: wallet,
-        dateRange: dateTimeRange,
-      ).map((transactions) =>
-          LatestTransactions(wallet, dateTimeRange, transactions));
+        dateRange: dateTime.dateTimeRange,
+      ).map((transactions) => LatestTransactions(
+            wallet,
+            dateTime,
+            transactions,
+          ));
     });
   }
 

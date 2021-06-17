@@ -32,19 +32,17 @@ class SelectDateRangeSection extends StatelessWidget {
               onPressed: () => onChangeDateRange(previousRange),
             ),
           ),
-        Center(
-          child: Column(
-            children: [
-              Text(
-                currentDateRange.getTitle(context),
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
-              Text(
-                currentDateRange.dateTimeRange.formatted(),
-                style: Theme.of(context).textTheme.caption,
-              ),
-            ],
-          ),
+        Align(
+          alignment: Alignment.center,
+          child: Column(children: [
+            SizedBox(height: 4),
+            Text(currentDateRange.getTitle(context),
+                style: Theme.of(context).textTheme.subtitle1),
+            Text(
+              currentDateRange.dateTimeRange.formatted(),
+              style: Theme.of(context).textTheme.caption,
+            ),
+          ]),
         ),
         if (nextRange != null)
           Align(

@@ -36,7 +36,7 @@ class DailyReportSection extends StatelessWidget {
       context,
       builder: (context) => DailySpendingDetailsPage(
         wallet: wallet,
-        dateRange: transactions.dateTimeRange,
+        dateRange: transactions.dateRange,
         transactions: transactions.transactions,
       ),
     );
@@ -107,8 +107,11 @@ class DailyReportSection extends StatelessWidget {
   }
 
   DailySpending _computeDailySpending() {
+    var now = DateTime.now();
+    if (!dateRange.dateTimeRange.contains(now))
+      now = dateRange.dateTimeRange.end;
     return DailySpendingComputing().computeForSpecificDay(
-      day: DateTime.now(),
+      today: now,
       dateRange: dateRange.dateTimeRange,
       transactions: transactions,
       currency: wallet.currency,

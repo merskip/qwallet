@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 
@@ -70,8 +69,8 @@ abstract class TransactionsProvider {
 
 class LatestTransactions {
   final Wallet wallet;
-  final DateTimeRange dateTimeRange;
+  final DateRange dateRange;
   final List<Transaction> transactions;
 
-  LatestTransactions(this.wallet, this.dateTimeRange, this.transactions);
+  LatestTransactions(this.wallet, this.dateRange, this.transactions);
 }

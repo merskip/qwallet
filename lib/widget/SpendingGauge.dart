@@ -32,7 +32,7 @@ class _SpendingGaugeState extends State<SpendingGauge> {
 
     final normalizedMidLow = widget.midLow.amount / widget.max.amount;
     final normalizedMidHigh = widget.midHigh.amount / widget.max.amount;
-    final normalizedCurrent = widget.current.amount/ widget.max.amount;
+    final normalizedCurrent = widget.current.amount / widget.max.amount;
 
     return CustomPaint(
       painter: _GaugePainter(
@@ -66,7 +66,11 @@ class _SpendingGaugeState extends State<SpendingGauge> {
     return CustomPaint(
       painter: _GaugePainter(
         segments: [
-          _GaugeSegment(Colors.green, 0.0, 1.0),
+          _GaugeSegment(
+            widget.current.amount == 0 ? Colors.green : Colors.red,
+            0.0,
+            1.0,
+          ),
         ],
         labels: [],
         markerPosition: null,

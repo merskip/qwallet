@@ -28,9 +28,9 @@ class DateRange {
           dateTimeRange.start.lastDayOfMonth.day - dateTimeRange.start.day;
       final daysInEndMonth = dateTimeRange.end.day;
       if (daysInStartMonth > daysInEndMonth)
-        return monthFormat.format(dateTimeRange.start);
+        return monthFormat.format(dateTimeRange.start).firstUppercase();
       else
-        return monthFormat.format(dateTimeRange.end);
+        return monthFormat.format(dateTimeRange.end).firstUppercase();
     } else {
       return fullFormat.format(dateTimeRange.start) +
           " - " +

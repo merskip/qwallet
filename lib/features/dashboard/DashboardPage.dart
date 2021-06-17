@@ -214,29 +214,30 @@ class DashboardPageState extends State<DashboardPage> {
         ),
         builder: (context, LatestTransactions latestTransactions) {
           assert(wallet.identifier == latestTransactions.wallet.identifier);
-          final dateRange = _selectedDateRange.value ?? wallet.defaultDateRange;
 
           return Column(children: [
             SelectDateRangeSection(
               wallet: latestTransactions.wallet,
-              currentDateRange: dateRange,
+              currentDateRange: latestTransactions.dateRange,
               onChangeDateRange: (dateRange) =>
                   onSelectedDateRange(context, dateRange),
             ),
             Divider(),
-            DailyReportSection(
-              wallet: latestTransactions.wallet,
-              dateRange: dateRange,
-              transactions: latestTransactions.transactions,
-            ),
+            if (latestTransactions.transactions.isNotEmpty)
+              DailyReportSection(
+                wallet: latestTransactions.wallet,
+                dateRange: latestTransactions.dateRange,
+                transactions: latestTransactions.transactions,
+              ),
             TransactionsCard(
               wallet: latestTransactions.wallet,
               transactions: latestTransactions.transactions,
             ),
-            CategoriesChartCard(
-              wallet: latestTransactions.wallet,
-              transactions: latestTransactions.transactions,
-            ),
+            if (latestTransactions.transactions.isNotEmpty)
+              CategoriesChartCard(
+                wallet: latestTransactions.wallet,
+                transactions: latestTransactions.transactions,
+              ),
           ]);
         },
       ),

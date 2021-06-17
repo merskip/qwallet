@@ -33,7 +33,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
       return LatestTransactions(
         wallet,
-        wallet.dateTimeRange,
+        dateRange ?? wallet.defaultDateRange,
         wallet.spreadsheetWallet.transfers
             .map((t) => _toTransaction(wallet, t))
             .toList(),
