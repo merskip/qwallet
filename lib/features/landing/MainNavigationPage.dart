@@ -23,12 +23,14 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     var walletId =
         dashboardKey.currentState?.getSelectedWalletOrNull()?.identifier;
     if (walletId == null) {
+      logger.debug("No selected wallet in dashboard");
       final wallets = await LocalPreferences.walletsOrder.first;
       walletId = wallets.firstOrNull;
+      logger.debug("First wallet in local preferences: ${wallets.firstOrNull}");
     }
 
     if (walletId != null)
-      router.navigateTo(context, "/wallet/${walletId}/addTransaction");
+      router.navigateTo(context, "/wallet/$walletId/addTransaction");
     else
       logger.warning("onSelectedAddTransaction: wallet is null");
   }
