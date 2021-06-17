@@ -69,17 +69,17 @@ class FirebaseWalletsProvider implements WalletsProvider {
     required String name,
     required Currency currency,
     required List<String> ownersUid,
-    required FirebaseWalletDateRange dateRange,
+    required FirebaseDateRangeDescription dateRangeDescription,
   }) {
     return firestore.collection("wallets").doc(walletId.id).update({
       "name": name,
       "currency": currency.code,
       "ownersUid": ownersUid,
       'dateRange': {
-        'type': dateRange.type.rawValue,
-        'monthStartDay': dateRange.monthStartDay,
-        'weekdayStart': dateRange.weekdayStart,
-        'numberOfLastDays': dateRange.numberOfLastDays,
+        'type': dateRangeDescription.type.rawValue,
+        'monthStartDay': dateRangeDescription.monthStartDay,
+        'weekdayStart': dateRangeDescription.weekdayStart,
+        'numberOfLastDays': dateRangeDescription.numberOfLastDays,
       }
     });
   }

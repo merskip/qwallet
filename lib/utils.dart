@@ -105,7 +105,8 @@ extension DateTimeRangeUtils on DateTimeRange {
   }
 
   List<DateTime> getDays() {
-    return List.generate(duration.inDays, (index) => start.adding(day: index));
+    return List.generate(
+        duration.inDays + 1, (index) => start.adding(day: index));
   }
 
   DateTimeRange adding({

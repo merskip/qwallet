@@ -143,7 +143,7 @@ class _WalletSinglePage extends StatelessWidget {
 
   Widget buildDateRange(BuildContext context, Wallet wallet) {
     return Text(
-      wallet.dateTimeRange.formatted(),
+      wallet.defaultDateRange.dateTimeRange.formatted(),
       style: TextStyle(
         fontSize: 11.0,
         color: Colors.white.withAlpha(223),

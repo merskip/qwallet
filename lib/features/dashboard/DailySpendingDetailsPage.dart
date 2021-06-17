@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:qwallet/Money.dart';
+import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/features/dashboard/DailySpendingComputing.dart';
@@ -14,7 +15,7 @@ import '../../utils/IterableFinding.dart';
 
 class DailySpendingDetailsPage extends StatefulWidget {
   final Wallet wallet;
-  final DateTimeRange dateRange;
+  final DateRange dateRange;
   final List<Transaction> transactions;
 
   const DailySpendingDetailsPage({
@@ -39,7 +40,8 @@ class _DailySpendingDetailsPageState extends State<DailySpendingDetailsPage> {
   @override
   void initState() {
     result = DailySpendingComputing().computeByDays(
-      dateRange: widget.dateRange,
+      today: DateTime.now(),
+      dateRange: widget.dateRange.dateTimeRange,
       transactions: widget.transactions,
       currency: widget.wallet.currency,
     );

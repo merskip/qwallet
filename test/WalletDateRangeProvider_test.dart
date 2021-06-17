@@ -37,7 +37,7 @@ void main() {
 
   test("Test current month", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
           type: FirebaseWalletDateRangeType.currentMonth),
       now: DateTime(2021, 2, 24),
     );
@@ -48,7 +48,7 @@ void main() {
 
   test("Test previous month", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
           type: FirebaseWalletDateRangeType.currentMonth),
       now: DateTime(2021, 2, 24),
       index: -1,
@@ -60,7 +60,7 @@ void main() {
 
   test("Test next month", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
           type: FirebaseWalletDateRangeType.currentMonth),
       now: DateTime(2021, 2, 24),
       index: 1,
@@ -72,7 +72,7 @@ void main() {
 
   test("Test current month when start from 10th", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
         type: FirebaseWalletDateRangeType.currentMonth,
         monthStartDay: 10,
       ),
@@ -85,7 +85,7 @@ void main() {
 
   test("Test current month when start from 31th and this is February", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
         type: FirebaseWalletDateRangeType.currentMonth,
         monthStartDay: 31,
       ),
@@ -98,7 +98,7 @@ void main() {
 
   test("Test next month when start from 31th and this is February", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
         type: FirebaseWalletDateRangeType.currentMonth,
         monthStartDay: 31,
       ),
@@ -112,7 +112,7 @@ void main() {
 
   test("Test next next month when start from 31th", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
         type: FirebaseWalletDateRangeType.currentMonth,
         monthStartDay: 31,
       ),
@@ -126,7 +126,7 @@ void main() {
 
   test("Test current week", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
           type: FirebaseWalletDateRangeType.currentWeek),
       now: DateTime(2021, 2, 24),
     );
@@ -137,7 +137,7 @@ void main() {
 
   test("Test previous week", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
           type: FirebaseWalletDateRangeType.currentWeek),
       now: DateTime(2021, 2, 24),
       index: -1,
@@ -149,7 +149,7 @@ void main() {
 
   test("Test next week", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
           type: FirebaseWalletDateRangeType.currentWeek),
       now: DateTime(2021, 2, 24),
       index: 1,
@@ -161,7 +161,7 @@ void main() {
 
   test("Test current week when week start with sunday", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
         type: FirebaseWalletDateRangeType.currentWeek,
         weekdayStart: DateTime.sunday,
       ),
@@ -174,7 +174,7 @@ void main() {
 
   test("Test previous week when week start with sunday", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
         type: FirebaseWalletDateRangeType.currentWeek,
         weekdayStart: DateTime.sunday,
       ),
@@ -188,7 +188,7 @@ void main() {
 
   test("Test next week when week start with sunday", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange: FirebaseWalletDateRange(
+      dateRange: FirebaseDateRangeDescription(
         type: FirebaseWalletDateRangeType.currentWeek,
         weekdayStart: DateTime.sunday,
       ),
@@ -222,7 +222,7 @@ void main() {
     for (final now in dates) {
       for (final weekdayStart in weekdays) {
         final dateTimeRange = _getDateTimeRange(
-          dateRange: FirebaseWalletDateRange(
+          dateRange: FirebaseDateRangeDescription(
             type: FirebaseWalletDateRangeType.currentWeek,
             weekdayStart: weekdayStart,
           ),
@@ -241,8 +241,8 @@ void main() {
 
   test("Test last 30 days", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange:
-          FirebaseWalletDateRange(type: FirebaseWalletDateRangeType.lastDays),
+      dateRange: FirebaseDateRangeDescription(
+          type: FirebaseWalletDateRangeType.lastDays),
       now: DateTime(2021, 2, 24),
     );
     expect(dateTimeRange.start, DateTime(2021, 1, 25).beginningOfDay);
@@ -252,8 +252,8 @@ void main() {
 
   test("Test yesterday last 30 days", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange:
-          FirebaseWalletDateRange(type: FirebaseWalletDateRangeType.lastDays),
+      dateRange: FirebaseDateRangeDescription(
+          type: FirebaseWalletDateRangeType.lastDays),
       now: DateTime(2021, 2, 24),
       index: -1,
     );
@@ -264,8 +264,8 @@ void main() {
 
   test("Test tomorrow last 30 days", () {
     final dateTimeRange = _getDateTimeRange(
-      dateRange:
-          FirebaseWalletDateRange(type: FirebaseWalletDateRangeType.lastDays),
+      dateRange: FirebaseDateRangeDescription(
+          type: FirebaseWalletDateRangeType.lastDays),
       now: DateTime(2021, 2, 24),
       index: 1,
     );
@@ -276,7 +276,7 @@ void main() {
 }
 
 DateTimeRange _getDateTimeRange({
-  required FirebaseWalletDateRange dateRange,
+  required FirebaseDateRangeDescription dateRange,
   required DateTime now,
   int index = 0,
 }) {

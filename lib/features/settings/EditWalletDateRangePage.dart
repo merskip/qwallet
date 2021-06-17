@@ -52,10 +52,10 @@ class _EditWalletDateRangePageContentState
 
   @override
   void initState() {
-    this.type = widget.wallet.dateRange.type;
-    this.monthStartDay = widget.wallet.dateRange.monthStartDay;
-    this.weekdayStart = widget.wallet.dateRange.weekdayStart;
-    this.numberOfLastDays = widget.wallet.dateRange.numberOfLastDays;
+    this.type = widget.wallet.dateRangeDescription.type;
+    this.monthStartDay = widget.wallet.dateRangeDescription.monthStartDay;
+    this.weekdayStart = widget.wallet.dateRangeDescription.weekdayStart;
+    this.numberOfLastDays = widget.wallet.dateRangeDescription.numberOfLastDays;
     super.initState();
   }
 
@@ -65,7 +65,7 @@ class _EditWalletDateRangePageContentState
       name: widget.wallet.name,
       currency: widget.wallet.currency,
       ownersUid: widget.wallet.ownersUid,
-      dateRange: _getWalletDateRange(),
+      dateRangeDescription: _getWalletDateRange(),
     );
     router.pop(context);
   }
@@ -334,8 +334,8 @@ class _EditWalletDateRangePageContentState
     );
   }
 
-  FirebaseWalletDateRange _getWalletDateRange() {
-    return FirebaseWalletDateRange(
+  FirebaseDateRangeDescription _getWalletDateRange() {
+    return FirebaseDateRangeDescription(
       type: type,
       weekdayStart: weekdayStart,
       monthStartDay: monthStartDay,

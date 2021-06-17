@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
@@ -13,24 +14,29 @@ import 'DailySpendingComputing.dart';
 
 class DailyReportSection extends StatelessWidget {
   final Wallet wallet;
+  final DateRange dateRange;
   final List<Transaction> transactions;
 
   DailyReportSection({
     Key? key,
     required this.wallet,
+    required this.dateRange,
     required this.transactions,
   }) : super(key: key);
 
   void onSelectedSection(BuildContext context) async {
     final transactions = await SharedProviders.transactionsProvider
-        .getLatestTransactions(walletId: wallet.identifier, index: 0)
+        .getLatestTransactions(
+          walletId: wallet.identifier,
+          dateRange: dateRange,
+        )
         .first;
 
     pushPage(
       context,
       builder: (context) => DailySpendingDetailsPage(
         wallet: wallet,
-        dateRange: transactions.dateTimeRange,
+        dateRange: transactions.dateRange,
         transactions: transactions.transactions,
       ),
     );
@@ -101,8 +107,12 @@ class DailyReportSection extends StatelessWidget {
   }
 
   DailySpending _computeDailySpending() {
-    return DailySpendingComputing().compute(
-      dateRange: wallet.dateTimeRange,
+    var now = DateTime.now();
+    if (!dateRange.dateTimeRange.contains(now))
+      now = dateRange.dateTimeRange.end;
+    return DailySpendingComputing().computeForSpecificDay(
+      today: now,
+      dateRange: dateRange.dateTimeRange,
       transactions: transactions,
       currency: wallet.currency,
     );

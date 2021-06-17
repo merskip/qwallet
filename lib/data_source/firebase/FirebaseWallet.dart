@@ -8,6 +8,7 @@ import 'package:qwallet/utils.dart';
 import '../../Currency.dart';
 import '../../Money.dart';
 import '../../utils/IterableFinding.dart';
+import '../DateRange.dart';
 import 'FirebaseCategory.dart';
 import 'FirebaseConverting.dart';
 import 'FirebaseModel.dart';
@@ -19,11 +20,11 @@ class FirebaseWallet extends FirebaseModel<FirebaseWallet> implements Wallet {
   final Currency currency;
   final Money totalExpense;
   final Money totalIncome;
-  final FirebaseWalletDateRange dateRange;
+  final FirebaseDateRangeDescription dateRangeDescription;
   final List<FirebaseCategory> categories;
 
   @override
-  DateTimeRange get dateTimeRange => dateRange.getDateTimeRange();
+  DateRange get defaultDateRange => getDateRange(0);
 
   FirebaseWallet(DocumentSnapshot snapshot, List<FirebaseCategory> categories)
       : this.identifier = Identifier(domain: "firebase", id: snapshot.id),
@@ -34,7 +35,8 @@ class FirebaseWallet extends FirebaseModel<FirebaseWallet> implements Wallet {
             Money(0, snapshot.getCurrency("currency")!),
         this.totalIncome = snapshot.getMoney("totalIncome", "currency") ??
             Money(0, snapshot.getCurrency("currency")!),
-        this.dateRange = snapshot.getWalletTimeRange("dateRange"),
+        this.dateRangeDescription =
+            snapshot.getDateRangeDescription("dateRange"),
         this.categories = categories,
         super(snapshot);
 
@@ -45,19 +47,28 @@ class FirebaseWallet extends FirebaseModel<FirebaseWallet> implements Wallet {
     return categories.findFirstOrNull((c) => c.identifier.id == category.id);
   }
 
+  DateRange getDateRange(int index) {
+    return DateRange(
+      index: index,
+      dateTimeRange: dateRangeDescription.getDateTimeRange(index: index),
+      getPreviousRange: () => getDateRange(index - 1),
+      getNextRange: () => getDateRange(index + 1),
+    );
+  }
+
   @override
   String toString() {
     return 'FirebaseWallet{identifier: $identifier, name: $name}';
   }
 }
 
-class FirebaseWalletDateRange {
+class FirebaseDateRangeDescription {
   final FirebaseWalletDateRangeType type;
   final int monthStartDay;
   final int weekdayStart;
   final int numberOfLastDays;
 
-  FirebaseWalletDateRange({
+  FirebaseDateRangeDescription({
     required this.type,
     this.monthStartDay = 1,
     this.weekdayStart = 1,
@@ -92,14 +103,14 @@ extension WalletDateRangeTypeConverting on FirebaseWalletDateRangeType {
 }
 
 extension DocumentSnapshotWalletTimeRangeConverting on DocumentSnapshot {
-  FirebaseWalletDateRange getWalletTimeRange(dynamic field) {
+  FirebaseDateRangeDescription getDateRangeDescription(dynamic field) {
     final fieldPath = toFieldPath(field);
     final type =
         getOneOf(fieldPath.adding("type"), FirebaseWalletDateRangeType.values);
     final monthStartDay = getInt(fieldPath.adding("monthStartDay"));
     final weekdayStart = getInt(fieldPath.adding("weekdayStart"));
     final numberOfLastDays = getInt(fieldPath.adding("numberOfLastDays"));
-    return FirebaseWalletDateRange(
+    return FirebaseDateRangeDescription(
       type: type ?? FirebaseWalletDateRangeType.currentMonth,
       monthStartDay: monthStartDay ?? 1,
       weekdayStart: weekdayStart ?? 1,

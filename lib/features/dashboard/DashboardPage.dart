@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/CurrencyList.dart';
 import 'package:qwallet/MoneyTextDetector.dart';
+import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
@@ -25,6 +26,7 @@ import '../../router.dart';
 import '../../utils.dart';
 import 'CategoriesChartCard.dart';
 import 'DailyReportSection.dart';
+import 'SelectDateRangeSection.dart';
 import 'TransactionsCard.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -38,6 +40,7 @@ class DashboardPage extends StatefulWidget {
 
 class DashboardPageState extends State<DashboardPage> {
   final _selectedWallet = BehaviorSubject<Wallet>();
+  final _selectedDateRange = BehaviorSubject<DateRange>();
 
   final notificationService = PushNotificationService();
 
@@ -48,6 +51,13 @@ class DashboardPageState extends State<DashboardPage> {
   void onSelectedWallet(BuildContext context, Wallet wallet) {
     setState(() {
       _selectedWallet.add(wallet);
+      _selectedDateRange.add(wallet.defaultDateRange);
+    });
+  }
+
+  void onSelectedDateRange(BuildContext context, DateRange dateRange) {
+    setState(() {
+      _selectedDateRange.add(dateRange);
     });
   }
 
@@ -198,24 +208,36 @@ class DashboardPageState extends State<DashboardPage> {
     return SliverToBoxAdapter(
       child: SimpleStreamWidget(
         key: Key("wallet-cards-${wallet.identifier}"),
-        stream: SharedProviders.transactionsProvider
-            .getLatestTransactions(walletId: wallet.identifier),
+        stream: SharedProviders.transactionsProvider.getLatestTransactions(
+          walletId: wallet.identifier,
+          dateRange: _selectedDateRange.value,
+        ),
         builder: (context, LatestTransactions latestTransactions) {
           assert(wallet.identifier == latestTransactions.wallet.identifier);
 
           return Column(children: [
-            DailyReportSection(
+            SelectDateRangeSection(
               wallet: latestTransactions.wallet,
-              transactions: latestTransactions.transactions,
+              currentDateRange: latestTransactions.dateRange,
+              onChangeDateRange: (dateRange) =>
+                  onSelectedDateRange(context, dateRange),
             ),
+            Divider(),
+            if (latestTransactions.transactions.isNotEmpty)
+              DailyReportSection(
+                wallet: latestTransactions.wallet,
+                dateRange: latestTransactions.dateRange,
+                transactions: latestTransactions.transactions,
+              ),
             TransactionsCard(
               wallet: latestTransactions.wallet,
               transactions: latestTransactions.transactions,
             ),
-            CategoriesChartCard(
-              wallet: latestTransactions.wallet,
-              transactions: latestTransactions.transactions,
-            ),
+            if (latestTransactions.transactions.isNotEmpty)
+              CategoriesChartCard(
+                wallet: latestTransactions.wallet,
+                transactions: latestTransactions.transactions,
+              ),
           ]);
         },
       ),

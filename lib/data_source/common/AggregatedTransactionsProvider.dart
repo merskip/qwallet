@@ -6,6 +6,7 @@ import 'package:qwallet/data_source/firebase/FirebaseTransactionsProvider.dart';
 
 import '../Category.dart';
 import '../CustomField.dart';
+import '../DateRange.dart';
 import '../google_sheets/SpreadsheetTransactionsProvider.dart';
 
 class AggregatedTransactionsProvider implements TransactionsProvider {
@@ -21,14 +22,14 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
   @override
   Stream<LatestTransactions> getLatestTransactions({
     required Identifier<Wallet> walletId,
-    int index = 0,
+    DateRange? dateRange,
   }) =>
       onDomain(
         walletId,
         ifFirebase: () => _firebaseProvider.getLatestTransactions(
-            walletId: walletId, index: index),
+            walletId: walletId, dateRange: dateRange),
         ifGoogleSheets: () => _spreadsheetProvider.getLatestTransactions(
-            walletId: walletId, index: index),
+            walletId: walletId, dateRange: dateRange),
       );
 
   @override
