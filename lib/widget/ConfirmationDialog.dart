@@ -31,14 +31,15 @@ class ConfirmationDialog extends StatelessWidget {
     return SafeArea(
       child: Container(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               buildTitle(context),
-              SizedBox(height: 12),
+              SizedBox(height: 16),
               buildContent(context),
+              SizedBox(height: 16),
               buildActions(context),
             ],
           ),
@@ -71,10 +72,11 @@ class ConfirmationDialog extends StatelessWidget {
             if (onCancel != null) onCancel!();
           },
         ),
-        TextButton(
+        SizedBox(width: 8),
+        ElevatedButton(
           child: Text(AppLocalizations.of(context).confirmationConfirm),
           style: TextButton.styleFrom(
-            primary: isDestructive ? Colors.red : null,
+            backgroundColor: isDestructive ? Colors.red : null,
           ),
           onPressed: () {
             Navigator.of(context).pop();
