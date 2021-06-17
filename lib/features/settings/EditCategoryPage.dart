@@ -3,6 +3,7 @@ import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/widget/CategoryForm.dart';
+import 'package:qwallet/widget/CategoryPicker.dart';
 import 'package:qwallet/widget/ConfirmationDialog.dart';
 
 import '../../AppLocalizations.dart';
@@ -18,11 +19,30 @@ class EditCategoryPage extends StatelessWidget {
   }) : super(key: key);
 
   onSelectedRemove(BuildContext context, Category category) {
+    final newCategory = ValueNotifier<Category?>(null);
     ConfirmationDialog(
       title: Text(AppLocalizations.of(context)
           .categoryRemoveConfirmation(category.titleText)),
-      content: Text(AppLocalizations.of(context)
-          .categoryRemoveConfirmationContent(category.titleText)),
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)
+              .categoryRemoveConfirmationContent(category.titleText)),
+          SizedBox(height: 16),
+          Text(AppLocalizations.of(context).categoryRemoveMoveTransactions),
+          SizedBox(height: 8),
+          ValueListenableBuilder<Category?>(
+            valueListenable: newCategory,
+            builder: (context, value, child) => CategoryPicker(
+              categories:
+                  wallet.categories.where((c) => c != category).toList(),
+              selectedCategory: value,
+              onChangeCategory: (category) => newCategory.value =
+                  category == newCategory.value ? null : category,
+            ),
+          ),
+        ],
+      ),
       isDestructive: true,
       onConfirm: () {
         SharedProviders.firebaseCategoriesProvider.removeCategory(

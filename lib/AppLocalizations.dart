@@ -1189,6 +1189,11 @@ extension CategoriesLocalizations on AppLocalizations {
             pl: "Czy jesteś pewny, że chcesz usunąć kategorię \"$category\"? Tej operacji nie można cofnąć.",
           );
 
+  String get categoryRemoveMoveTransactions => _locale(
+        en: "Move transactions to:",
+        pl: "Przenieś transakcje do:",
+      );
+
   String get categoryEditSubmit => _locale(
         en: "Save changes",
         pl: "Zapisz zmiany",

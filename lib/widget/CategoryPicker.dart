@@ -2,6 +2,7 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/data_source/Category.dart';
 
 import '../utils/IterableFinding.dart';
@@ -47,6 +48,14 @@ class _CategoryPickerState extends State<CategoryPicker> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.categories.isEmpty)
+      return Center(
+        child: Text(
+          AppLocalizations.of(context).categoriesEmpty,
+          style: Theme.of(context).textTheme.caption,
+        ),
+      );
+
     return SizedBox(
       width: double.infinity,
       child: Column(
