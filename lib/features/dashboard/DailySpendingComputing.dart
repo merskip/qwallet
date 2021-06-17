@@ -9,7 +9,8 @@ import '../../utils.dart';
 import '../../utils/IterableFinding.dart';
 
 class DailySpendingComputing {
-  DailySpending compute({
+  DailySpending computeForSpecificDay({
+    required DateTime day,
     required DateTimeRange dateRange,
     required List<Transaction> transactions,
     required Currency currency,
@@ -19,7 +20,8 @@ class DailySpendingComputing {
       transactions: transactions,
       currency: currency,
     );
-    final todaySpending = result.days.findFirstOrNull((d) => d.date.isToday);
+    final todaySpending =
+        result.days.findFirstOrNull((d) => d.date.isSameDate(day));
     return DailySpending(
       availableDailyBudget:
           Money(todaySpending?.dailyAvailableBudget ?? 0.0, currency),

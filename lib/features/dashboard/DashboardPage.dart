@@ -55,6 +55,12 @@ class DashboardPageState extends State<DashboardPage> {
     });
   }
 
+  void onSelectedDateRange(BuildContext context, DateRange dateRange) {
+    setState(() {
+      _selectedDateRange.add(dateRange);
+    });
+  }
+
   void onSelectedEditBalance(BuildContext context, Wallet wallet) async {
     final newBalance =
         await InputMoneySheet.show(context, Money(0, wallet.currency));
@@ -202,19 +208,25 @@ class DashboardPageState extends State<DashboardPage> {
     return SliverToBoxAdapter(
       child: SimpleStreamWidget(
         key: Key("wallet-cards-${wallet.identifier}"),
-        stream: SharedProviders.transactionsProvider
-            .getLatestTransactions(walletId: wallet.identifier),
+        stream: SharedProviders.transactionsProvider.getLatestTransactions(
+          walletId: wallet.identifier,
+          dateRange: _selectedDateRange.value,
+        ),
         builder: (context, LatestTransactions latestTransactions) {
           assert(wallet.identifier == latestTransactions.wallet.identifier);
+          final dateRange = _selectedDateRange.value ?? wallet.defaultDateRange;
 
           return Column(children: [
             SelectDateRangeSection(
               wallet: latestTransactions.wallet,
-              currentDateRange: _selectedDateRange.value!,
+              currentDateRange: dateRange,
+              onChangeDateRange: (dateRange) =>
+                  onSelectedDateRange(context, dateRange),
             ),
             Divider(),
             DailyReportSection(
               wallet: latestTransactions.wallet,
+              dateRange: dateRange,
               transactions: latestTransactions.transactions,
             ),
             TransactionsCard(

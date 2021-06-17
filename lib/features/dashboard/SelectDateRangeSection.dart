@@ -7,45 +7,55 @@ import '../../utils.dart';
 class SelectDateRangeSection extends StatelessWidget {
   final Wallet wallet;
   final DateRange currentDateRange;
+  final void Function(DateRange) onChangeDateRange;
 
   const SelectDateRangeSection({
     Key? key,
     required this.wallet,
     required this.currentDateRange,
+    required this.onChangeDateRange,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final previousRange = currentDateRange.getPreviousRange();
     final nextRange = currentDateRange.getNextRange();
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Stack(children: [
         if (previousRange != null)
-          buildIconButton(
-            label: Text(previousRange.getTitle(context)),
-            leadingIcon: Icon(Icons.chevron_left),
-            onPressed: () {},
+          Align(
+            alignment: Alignment.centerLeft,
+            child: buildIconButton(
+              label: Text(previousRange.getTitle(context)),
+              leadingIcon: Icon(Icons.chevron_left),
+              onPressed: () => onChangeDateRange(previousRange),
+            ),
           ),
-        Column(
-          children: [
-            Text(
-              currentDateRange.getTitle(context),
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-            Text(
-              currentDateRange.dateTimeRange.formatted(),
-              style: Theme.of(context).textTheme.caption,
-            ),
-          ],
+        Center(
+          child: Column(
+            children: [
+              Text(
+                currentDateRange.getTitle(context),
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+              Text(
+                currentDateRange.dateTimeRange.formatted(),
+                style: Theme.of(context).textTheme.caption,
+              ),
+            ],
+          ),
         ),
         if (nextRange != null)
-          buildIconButton(
-            label: Text(nextRange.getTitle(context)),
-            trailingIcon: Icon(Icons.chevron_right),
-            onPressed: () {},
+          Align(
+            alignment: Alignment.centerRight,
+            child: buildIconButton(
+              label: Text(nextRange.getTitle(context)),
+              trailingIcon: Icon(Icons.chevron_right),
+              onPressed: () => onChangeDateRange(nextRange),
+            ),
           ),
-      ],
+      ]),
     );
   }
 
@@ -55,13 +65,15 @@ class SelectDateRangeSection extends StatelessWidget {
     Widget? trailingIcon,
     VoidCallback? onPressed,
   }) {
-    return TextButton(
-      onPressed: onPressed,
-      child: Row(children: [
-        if (leadingIcon != null) leadingIcon,
-        label,
-        if (trailingIcon != null) trailingIcon,
-      ]),
+    return FittedBox(
+      child: TextButton(
+        onPressed: onPressed,
+        child: Row(children: [
+          if (leadingIcon != null) leadingIcon,
+          label,
+          if (trailingIcon != null) trailingIcon,
+        ]),
+      ),
     );
   }
 }
