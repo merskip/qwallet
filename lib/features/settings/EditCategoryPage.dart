@@ -44,8 +44,13 @@ class EditCategoryPage extends StatelessWidget {
         ],
       ),
       isDestructive: true,
-      onConfirm: () {
-        SharedProviders.firebaseCategoriesProvider.removeCategory(
+      onConfirm: () async {
+        await SharedProviders.transactionsProvider.moveTransactionsToCategory(
+          walletId: wallet.identifier,
+          fromCategory: category,
+          toCategory: newCategory.value,
+        );
+        await SharedProviders.firebaseCategoriesProvider.removeCategory(
           walletId: wallet.identifier,
           categoryId: category.identifier,
         );

@@ -61,6 +61,12 @@ abstract class TransactionsProvider {
     required Uri attachedFile,
   });
 
+  Future<void> moveTransactionsToCategory({
+    required Identifier<Wallet> walletId,
+    required Category fromCategory,
+    required Category? toCategory,
+  });
+
   Future<void> removeTransaction({
     required Identifier<Wallet> walletId,
     required Transaction transaction,

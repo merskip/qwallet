@@ -263,6 +263,34 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
             .toList());
   }
 
+  Future<void> moveTransactionsToCategory({
+    required Identifier<Wallet> walletId,
+    required Category fromCategory,
+    required Category? toCategory,
+  }) async {
+    assert(walletId.domain == "firebase");
+    final fromFirebaseCategory = fromCategory as FirebaseCategory;
+    final toFirebaseCategory = toCategory as FirebaseCategory;
+
+    final transactionsSnapshot = await firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("transactions")
+        .where(
+          "category",
+          isEqualTo: fromFirebaseCategory.documentSnapshot.reference,
+        )
+        .get();
+
+    return firestore.runTransaction((firebaseTransaction) async {
+      for (final transactionSnapshot in transactionsSnapshot.docs) {
+        firebaseTransaction.update(transactionSnapshot.reference, {
+          "category": toFirebaseCategory.documentSnapshot.reference,
+        });
+      }
+    });
+  }
+
   @override
   Future<void> removeTransaction({
     required Identifier<Wallet> walletId,

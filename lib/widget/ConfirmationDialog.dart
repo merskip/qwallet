@@ -21,6 +21,7 @@ class ConfirmationDialog extends StatelessWidget {
 
   show(BuildContext context) {
     showModalBottomSheet(
+      isScrollControlled: true,
       context: context,
       builder: (context) => build(context),
     );

@@ -246,4 +246,13 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
       },
     );
   }
+
+  @override
+  Future<void> moveTransactionsToCategory({
+    required Identifier<Wallet> walletId,
+    required Category fromCategory,
+    required Category? toCategory,
+  }) {
+    throw UnsupportedError("Google Spreadsheet doesn't support this operation");
+  }
 }

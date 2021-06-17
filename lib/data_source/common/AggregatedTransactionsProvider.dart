@@ -195,6 +195,26 @@ class AggregatedTransactionsProvider implements TransactionsProvider {
       );
 
   @override
+  Future<void> moveTransactionsToCategory({
+    required Identifier<Wallet> walletId,
+    required Category fromCategory,
+    required Category? toCategory,
+  }) =>
+      onDomain(
+        walletId,
+        ifFirebase: () => _firebaseProvider.moveTransactionsToCategory(
+          walletId: walletId,
+          fromCategory: fromCategory,
+          toCategory: toCategory,
+        ),
+        ifGoogleSheets: () => _spreadsheetProvider.moveTransactionsToCategory(
+          walletId: walletId,
+          fromCategory: fromCategory,
+          toCategory: toCategory,
+        ),
+      );
+
+  @override
   Future<void> removeTransaction({
     required Identifier<Wallet> walletId,
     required Transaction transaction,
