@@ -46,18 +46,21 @@ class DailyReportSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final dailySpending = _computeDailySpending();
     return InkWell(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned(
-            right: 112,
-            child: buildDailySpendingText(context, dailySpending),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: buildSpendingGauge(context, dailySpending),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              right: 112,
+              child: buildDailySpendingText(context, dailySpending),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: buildSpendingGauge(context, dailySpending),
+            ),
+          ],
+        ),
       ),
       onTap: () => onSelectedSection(context),
     );
