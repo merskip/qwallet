@@ -4,8 +4,6 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 
-import '../utils.dart';
-
 class WalletsSwipeWidget extends StatefulWidget {
   final List<Wallet> wallets;
   final void Function(Wallet wallet) onSelectedWallet;
@@ -128,26 +126,13 @@ class _WalletSinglePage extends StatelessWidget {
               wallet.name,
               style: Theme.of(context).primaryTextTheme.subtitle2,
             ),
-            SizedBox(height: 4),
+            SizedBox(height: 8),
             Text(
               wallet.balance.formatted,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 3),
-            buildDateRange(context, wallet),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget buildDateRange(BuildContext context, Wallet wallet) {
-    return Text(
-      wallet.defaultDateRange.dateTimeRange.formatted(),
-      style: TextStyle(
-        fontSize: 11.0,
-        color: Colors.white.withAlpha(223),
-        fontWeight: FontWeight.w300,
       ),
     );
   }
