@@ -24,12 +24,3 @@ abstract class Wallet implements Identifiable<Wallet> {
     required this.defaultDateRange,
   });
 }
-
-extension WalletDateRangeUtils on Wallet {
-  DateRange? lookupDateRange({
-    required DateTime start,
-    required DateTime end,
-  }) {
-    return null;
-  }
-}

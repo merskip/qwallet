@@ -5,8 +5,8 @@ import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/firebase/FirebaseModel.dart';
 
 import '../Identifier.dart';
-import '../Wallet.dart';
 import 'FirebaseConverting.dart';
+import 'FirebaseWallet.dart';
 
 class FirebaseBudget extends FirebaseModel<FirebaseBudget> implements Budget {
   final Identifier<Budget> identifier;
@@ -16,7 +16,7 @@ class FirebaseBudget extends FirebaseModel<FirebaseBudget> implements Budget {
 
   FirebaseBudget(
     DocumentSnapshot snapshot,
-    Wallet wallet,
+    FirebaseWallet wallet,
     List<BudgetItem>? items,
   )   : identifier = Identifier(domain: "firebase", id: snapshot.id),
         dateTimeRange = DateTimeRange(

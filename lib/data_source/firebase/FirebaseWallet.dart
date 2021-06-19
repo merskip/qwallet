@@ -56,6 +56,23 @@ class FirebaseWallet extends FirebaseModel<FirebaseWallet> implements Wallet {
     );
   }
 
+  DateRange? lookupDateRange({
+    required DateTime start,
+    required DateTime end,
+  }) {
+    if (dateRangeDescription.type == FirebaseWalletDateRangeType.currentMonth) {
+      final currentDateTimeRange = defaultDateRange.dateTimeRange;
+      final years = start.year - currentDateTimeRange.start.year;
+      final months = start.month - currentDateTimeRange.start.month;
+      final dateRange = getDateRange(months - years * 12);
+      if (dateRange.dateTimeRange.start.isSameDate(start) &&
+          dateRange.dateTimeRange.end.isSameDate(end)) {
+        return dateRange;
+      }
+    }
+    return null;
+  }
+
   @override
   String toString() {
     return 'FirebaseWallet{identifier: $identifier, name: $name}';

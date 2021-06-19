@@ -7,6 +7,7 @@ import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/WalletsProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseBudget.dart';
+import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
 import 'package:rxdart/rxdart.dart';
 
 class FirebaseBudgetProvider implements BudgetProvider {
@@ -30,7 +31,7 @@ class FirebaseBudgetProvider implements BudgetProvider {
           .snapshots()
           .map((snapshot) {
         return snapshot.docs
-            .map((s) => FirebaseBudget(s, wallet, null))
+            .map((s) => FirebaseBudget(s, wallet as FirebaseWallet, null))
             .toList();
       });
     });
