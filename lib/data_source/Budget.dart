@@ -1,8 +1,7 @@
-import 'package:qwallet/data_source/Category.dart';
-import 'package:qwallet/data_source/DateRange.dart';
-import 'package:qwallet/data_source/Identifiable.dart';
-
-import '../Money.dart';
+import 'Category.dart';
+import 'DateRange.dart';
+import 'Identifiable.dart';
+import 'Identifier.dart';
 
 abstract class Budget implements Identifiable<Budget> {
   final DateRange dateRange;
@@ -14,16 +13,17 @@ abstract class Budget implements Identifiable<Budget> {
   });
 }
 
-class BudgetItem {
+class BudgetItem extends Identifiable<BudgetItem> {
   final List<Category> categories;
-  final Money currentAmount;
-  final Money maxAmount;
+  final double currentAmount;
+  final double plannedAmount;
 
   BudgetItem({
+    required Identifier<BudgetItem> identifier,
     required this.categories,
     required this.currentAmount,
-    required this.maxAmount,
-  });
+    required this.plannedAmount,
+  }) : super(identifier);
 
-  Money get remainingAmount => maxAmount - currentAmount;
+  double get remainingAmount => plannedAmount - currentAmount;
 }
