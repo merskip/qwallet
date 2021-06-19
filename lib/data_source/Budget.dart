@@ -5,7 +5,7 @@ import 'Identifier.dart';
 
 abstract class Budget implements Identifiable<Budget> {
   final DateRange dateRange;
-  final List<BudgetItem> items;
+  final List<BudgetItem>? items;
 
   Budget({
     required this.dateRange,

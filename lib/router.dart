@@ -2,8 +2,10 @@ import 'package:fluro/fluro.dart' as fluro;
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/Transaction.dart';
+import 'package:qwallet/features/budgets/BudgetsListPage.dart';
 import 'package:qwallet/features/files/BrowseAttachedFilesPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:rxdart/rxdart.dart';
@@ -252,6 +254,26 @@ void initRoutes(FluroRouter router) {
             .getWalletByIdentifier(walletId),
         builder: (context, FirebaseWallet wallet) => EditWalletDateRangePage(
           wallet: wallet,
+        ),
+      );
+    }),
+  );
+
+  router.define(
+    "/wallet/:walletId/budgets",
+    transitionType: fluro.TransitionType.nativeModal,
+    handler: fluro.Handler(
+        handlerFunc: (BuildContext? context, Map<String, dynamic> params) {
+      final walletId = Identifier.parse<Wallet>(params["walletId"][0]);
+
+      return SimpleStreamWidget(
+        stream: Rx.combineLatestList([
+          SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
+          SharedProviders.budgetProvider.getBudgets(wallet: walletId),
+        ]),
+        builder: (context, List values) => BudgetsListPage(
+          wallet: values[0] as Wallet,
+          budgets: values[1] as List<Budget>,
         ),
       );
     }),

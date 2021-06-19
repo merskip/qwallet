@@ -23,10 +23,12 @@ class AppLocalizations {
 
   late final DailySpendingDetailsAppLocalizationsGroup dailySpendingDetails;
   late final BrowseAttachedFilesAppLocalizationsGroup browseAttachedFiles;
+  late final BudgetsAppLocalizationsGroup budgets;
 
   AppLocalizations(this.locale) {
     dailySpendingDetails = DailySpendingDetailsAppLocalizationsGroup(this);
     browseAttachedFiles = BrowseAttachedFilesAppLocalizationsGroup(this);
+    budgets = BudgetsAppLocalizationsGroup(this);
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
@@ -1589,5 +1591,15 @@ class BrowseAttachedFilesAppLocalizationsGroup extends AppLocalizationsGroup {
       );
 
   BrowseAttachedFilesAppLocalizationsGroup(AppLocalizations appLocalizations)
+      : super(appLocalizations);
+}
+
+class BudgetsAppLocalizationsGroup extends AppLocalizationsGroup {
+  String get title => _locale(
+        en: "Budgets",
+        pl: "Budżety",
+      );
+
+  BudgetsAppLocalizationsGroup(AppLocalizations appLocalizations)
       : super(appLocalizations);
 }
