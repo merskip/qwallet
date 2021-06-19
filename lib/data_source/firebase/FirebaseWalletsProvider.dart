@@ -39,7 +39,7 @@ class FirebaseWalletsProvider implements WalletsProvider {
   }
 
   @override
-  Stream<FirebaseWallet> getWalletByIdentifier(Identifier<Wallet> walletId) {
+  Stream<Wallet> getWalletByIdentifier(Identifier<Wallet> walletId) {
     return firestore
         .collection("wallets")
         .doc(walletId.id)

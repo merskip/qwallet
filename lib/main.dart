@@ -123,7 +123,10 @@ void main() async {
       );
 
       SharedProviders.budgetProvider = AggregatedBudgetProvider(
-        firebaseProvider: FirebaseBudgetProvider(firestore: firestore),
+        firebaseProvider: FirebaseBudgetProvider(
+          firestore: firestore,
+          walletsProvider: SharedProviders.walletsProvider,
+        ),
       );
 
       SharedProviders.usersProvider = FirebaseUsersProvider(

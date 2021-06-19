@@ -1,13 +1,17 @@
+import 'package:flutter/material.dart';
+
 import 'Category.dart';
 import 'DateRange.dart';
 import 'Identifiable.dart';
 import 'Identifier.dart';
 
 abstract class Budget implements Identifiable<Budget> {
-  final DateRange dateRange;
+  final DateTimeRange dateTimeRange;
+  final DateRange? dateRange;
   final List<BudgetItem>? items;
 
   Budget({
+    required this.dateTimeRange,
     required this.dateRange,
     required this.items,
   });

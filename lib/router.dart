@@ -252,8 +252,8 @@ void initRoutes(FluroRouter router) {
       return SimpleStreamWidget(
         stream: SharedProviders.firebaseWalletsProvider
             .getWalletByIdentifier(walletId),
-        builder: (context, FirebaseWallet wallet) => EditWalletDateRangePage(
-          wallet: wallet,
+        builder: (context, Wallet wallet) => EditWalletDateRangePage(
+          wallet: wallet as FirebaseWallet,
         ),
       );
     }),
@@ -269,7 +269,7 @@ void initRoutes(FluroRouter router) {
       return SimpleStreamWidget(
         stream: Rx.combineLatestList([
           SharedProviders.walletsProvider.getWalletByIdentifier(walletId),
-          SharedProviders.budgetProvider.getBudgets(wallet: walletId),
+          SharedProviders.budgetProvider.getBudgets(walletId: walletId),
         ]),
         builder: (context, List values) => BudgetsListPage(
           wallet: values[0] as Wallet,

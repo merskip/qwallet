@@ -7,38 +7,31 @@ import 'Category.dart';
 
 abstract class BudgetProvider {
   Stream<List<Budget>> getBudgets({
-    required Identifier<Wallet> wallet,
+    required Identifier<Wallet> walletId,
   });
 
   Stream<Budget?> getBudget({
-    required Identifier<Wallet> wallet,
+    required Identifier<Wallet> walletId,
     required DateRange dateRange,
   });
 
   Future<void> addBudget({
-    required Identifier<Wallet> wallet,
+    required Identifier<Wallet> walletId,
     required DateRange dateRange,
   });
 
   Future<void> addBudgetItem({
-    required Identifier<Wallet> wallet,
-    required Identifier<Budget> budget,
+    required Identifier<Wallet> walletId,
+    required Identifier<Budget> budgetId,
     required List<Category> categories,
     required double plannedAmount,
   });
 
   Future<void> updateBudgetItem({
-    required Identifier<Wallet> wallet,
-    required Identifier<Budget> budget,
+    required Identifier<Wallet> walletId,
+    required Identifier<Budget> budgetId,
     required Identifier<BudgetItem> item,
     required List<Category> categories,
     required double plannedAmount,
-  });
-
-  Future<void> updateCurrentAmountForBudgetItem({
-    required Identifier<Wallet> wallet,
-    required Identifier<Budget> budget,
-    required Identifier<BudgetItem> item,
-    required double currentAmount,
   });
 }

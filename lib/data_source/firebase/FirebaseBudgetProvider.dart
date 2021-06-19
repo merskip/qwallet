@@ -5,25 +5,40 @@ import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/WalletsProvider.dart';
+import 'package:qwallet/data_source/firebase/FirebaseBudget.dart';
+import 'package:rxdart/rxdart.dart';
 
 class FirebaseBudgetProvider implements BudgetProvider {
   final FirebaseFirestore firestore;
+  final WalletsProvider walletsProvider;
 
   FirebaseBudgetProvider({
     required this.firestore,
+    required this.walletsProvider,
   });
 
   @override
   Stream<List<Budget>> getBudgets({
-    required Identifier<Wallet> wallet,
+    required Identifier<Wallet> walletId,
   }) {
-    // TODO: implement getBudget
-    throw UnimplementedError();
+    return walletsProvider.getWalletByIdentifier(walletId).switchMap((wallet) {
+      return firestore
+          .collection("wallets")
+          .doc(walletId.id)
+          .collection("budgets")
+          .snapshots()
+          .map((snapshot) {
+        return snapshot.docs
+            .map((s) => FirebaseBudget(s, wallet, null))
+            .toList();
+      });
+    });
   }
 
   @override
   Stream<Budget?> getBudget({
-    required Identifier<Wallet> wallet,
+    required Identifier<Wallet> walletId,
     required DateRange dateRange,
   }) {
     // TODO: implement getBudget
@@ -32,7 +47,7 @@ class FirebaseBudgetProvider implements BudgetProvider {
 
   @override
   Future<void> addBudget({
-    required Identifier<Wallet> wallet,
+    required Identifier<Wallet> walletId,
     required DateRange dateRange,
   }) {
     // TODO: implement addBudget
@@ -41,8 +56,8 @@ class FirebaseBudgetProvider implements BudgetProvider {
 
   @override
   Future<void> addBudgetItem({
-    required Identifier<Wallet> wallet,
-    required Identifier<Budget> budget,
+    required Identifier<Wallet> walletId,
+    required Identifier<Budget> budgetId,
     required List<Category> categories,
     required double plannedAmount,
   }) {
@@ -52,24 +67,13 @@ class FirebaseBudgetProvider implements BudgetProvider {
 
   @override
   Future<void> updateBudgetItem({
-    required Identifier<Wallet> wallet,
-    required Identifier<Budget> budget,
+    required Identifier<Wallet> walletId,
+    required Identifier<Budget> budgetId,
     required Identifier<BudgetItem> item,
     required List<Category> categories,
     required double plannedAmount,
   }) {
     // TODO: implement updateBudgetItem
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> updateCurrentAmountForBudgetItem({
-    required Identifier<Wallet> wallet,
-    required Identifier<Budget> budget,
-    required Identifier<BudgetItem> item,
-    required double currentAmount,
-  }) {
-    // TODO: implement updateCurrentAmountForBudgetItem
     throw UnimplementedError();
   }
 }

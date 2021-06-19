@@ -16,31 +16,31 @@ class AggregatedBudgetProvider implements BudgetProvider {
 
   @override
   Stream<List<Budget>> getBudgets({
-    required Identifier<Wallet> wallet,
+    required Identifier<Wallet> walletId,
   }) {
     return _onDomain(
-      wallet,
-      ifFirebase: () => _firebaseProvider.getBudgets(wallet: wallet),
+      walletId,
+      ifFirebase: () => _firebaseProvider.getBudgets(walletId: walletId),
       ifGoogleSheets: () => throw UnimplementedError(),
     );
   }
 
   @override
   Stream<Budget?> getBudget({
-    required Identifier<Wallet> wallet,
+    required Identifier<Wallet> walletId,
     required DateRange dateRange,
   }) {
     return _onDomain(
-      wallet,
+      walletId,
       ifFirebase: () =>
-          _firebaseProvider.getBudget(wallet: wallet, dateRange: dateRange),
+          _firebaseProvider.getBudget(walletId: walletId, dateRange: dateRange),
       ifGoogleSheets: () => throw UnimplementedError(),
     );
   }
 
   @override
   Future<void> addBudget({
-    required Identifier<Wallet> wallet,
+    required Identifier<Wallet> walletId,
     required DateRange dateRange,
   }) {
     // TODO: implement addBudget
@@ -49,8 +49,8 @@ class AggregatedBudgetProvider implements BudgetProvider {
 
   @override
   Future<void> addBudgetItem({
-    required Identifier<Wallet> wallet,
-    required Identifier<Budget> budget,
+    required Identifier<Wallet> walletId,
+    required Identifier<Budget> budgetId,
     required List<Category> categories,
     required double plannedAmount,
   }) {
@@ -60,24 +60,13 @@ class AggregatedBudgetProvider implements BudgetProvider {
 
   @override
   Future<void> updateBudgetItem({
-    required Identifier<Wallet> wallet,
-    required Identifier<Budget> budget,
+    required Identifier<Wallet> walletId,
+    required Identifier<Budget> budgetId,
     required Identifier<BudgetItem> item,
     required List<Category> categories,
     required double plannedAmount,
   }) {
     // TODO: implement updateBudgetItem
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> updateCurrentAmountForBudgetItem({
-    required Identifier<Wallet> wallet,
-    required Identifier<Budget> budget,
-    required Identifier<BudgetItem> item,
-    required double currentAmount,
-  }) {
-    // TODO: implement updateCurrentAmountForBudgetItem
     throw UnimplementedError();
   }
 
