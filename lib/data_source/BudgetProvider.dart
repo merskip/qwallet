@@ -1,44 +1,44 @@
 import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/DateRange.dart';
-import 'package:qwallet/data_source/Identifiable.dart';
+import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 
 import 'Category.dart';
 
 abstract class BudgetProvider {
   Stream<List<Budget>> getBudgets({
-    required Identifiable<Wallet> wallet,
+    required Identifier<Wallet> wallet,
   });
 
   Stream<Budget?> getBudget({
-    required Identifiable<Wallet> wallet,
+    required Identifier<Wallet> wallet,
     required DateRange dateRange,
   });
 
   Future<void> addBudget({
-    required Identifiable<Wallet> wallet,
+    required Identifier<Wallet> wallet,
     required DateRange dateRange,
   });
 
   Future<void> addBudgetItem({
-    required Identifiable<Wallet> wallet,
-    required Identifiable<Budget> budget,
+    required Identifier<Wallet> wallet,
+    required Identifier<Budget> budget,
     required List<Category> categories,
     required double plannedAmount,
   });
 
   Future<void> updateBudgetItem({
-    required Identifiable<Wallet> wallet,
-    required Identifiable<Budget> budget,
-    required Identifiable<BudgetItem> item,
+    required Identifier<Wallet> wallet,
+    required Identifier<Budget> budget,
+    required Identifier<BudgetItem> item,
     required List<Category> categories,
     required double plannedAmount,
   });
 
   Future<void> updateCurrentAmountForBudgetItem({
-    required Identifiable<Wallet> wallet,
-    required Identifiable<Budget> budget,
-    required Identifiable<BudgetItem> item,
+    required Identifier<Wallet> wallet,
+    required Identifier<Budget> budget,
+    required Identifier<BudgetItem> item,
     required double currentAmount,
   });
 }

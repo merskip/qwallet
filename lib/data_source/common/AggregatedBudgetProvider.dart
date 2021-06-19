@@ -2,7 +2,6 @@ import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/BudgetProvider.dart';
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/DateRange.dart';
-import 'package:qwallet/data_source/Identifiable.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/firebase/FirebaseBudgetProvider.dart';
 
@@ -17,10 +16,10 @@ class AggregatedBudgetProvider implements BudgetProvider {
 
   @override
   Stream<List<Budget>> getBudgets({
-    required Identifiable<Wallet> wallet,
+    required Identifier<Wallet> wallet,
   }) {
     return _onDomain(
-      wallet.identifier,
+      wallet,
       ifFirebase: () => _firebaseProvider.getBudgets(wallet: wallet),
       ifGoogleSheets: () => throw UnimplementedError(),
     );
@@ -28,11 +27,11 @@ class AggregatedBudgetProvider implements BudgetProvider {
 
   @override
   Stream<Budget?> getBudget({
-    required Identifiable<Wallet> wallet,
+    required Identifier<Wallet> wallet,
     required DateRange dateRange,
   }) {
     return _onDomain(
-      wallet.identifier,
+      wallet,
       ifFirebase: () =>
           _firebaseProvider.getBudget(wallet: wallet, dateRange: dateRange),
       ifGoogleSheets: () => throw UnimplementedError(),
@@ -41,7 +40,7 @@ class AggregatedBudgetProvider implements BudgetProvider {
 
   @override
   Future<void> addBudget({
-    required Identifiable<Wallet> wallet,
+    required Identifier<Wallet> wallet,
     required DateRange dateRange,
   }) {
     // TODO: implement addBudget
@@ -50,8 +49,8 @@ class AggregatedBudgetProvider implements BudgetProvider {
 
   @override
   Future<void> addBudgetItem({
-    required Identifiable<Wallet> wallet,
-    required Identifiable<Budget> budget,
+    required Identifier<Wallet> wallet,
+    required Identifier<Budget> budget,
     required List<Category> categories,
     required double plannedAmount,
   }) {
@@ -61,9 +60,9 @@ class AggregatedBudgetProvider implements BudgetProvider {
 
   @override
   Future<void> updateBudgetItem({
-    required Identifiable<Wallet> wallet,
-    required Identifiable<Budget> budget,
-    required Identifiable<BudgetItem> item,
+    required Identifier<Wallet> wallet,
+    required Identifier<Budget> budget,
+    required Identifier<BudgetItem> item,
     required List<Category> categories,
     required double plannedAmount,
   }) {
@@ -73,9 +72,9 @@ class AggregatedBudgetProvider implements BudgetProvider {
 
   @override
   Future<void> updateCurrentAmountForBudgetItem({
-    required Identifiable<Wallet> wallet,
-    required Identifiable<Budget> budget,
-    required Identifiable<BudgetItem> item,
+    required Identifier<Wallet> wallet,
+    required Identifier<Budget> budget,
+    required Identifier<BudgetItem> item,
     required double currentAmount,
   }) {
     // TODO: implement updateCurrentAmountForBudgetItem
