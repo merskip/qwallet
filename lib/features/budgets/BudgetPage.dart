@@ -7,6 +7,7 @@ import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/features/transactions/TransactionsCategoryMultiplePicker.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
+import 'package:qwallet/widget/EnterAmountSheet.dart';
 
 import '../../Money.dart';
 import '../../utils.dart';
@@ -96,9 +97,14 @@ class BudgetPage extends StatelessWidget {
 
   Widget buildBudgetItemPlannedAmount(
       BuildContext context, BudgetItem budgetItem) {
+    final plannedMoney = Money(budgetItem.plannedAmount, wallet.currency);
     return DetailsItemTile(
       title: Text("#Planned amount"),
-      value: Text(Money(budgetItem.plannedAmount, wallet.currency).formatted),
+      value: Text(plannedMoney.formatted),
+      onEdit: (context) async {
+        final newMoney = await InputMoneySheet.show(context, plannedMoney);
+        print(newMoney);
+      },
     );
   }
 }
