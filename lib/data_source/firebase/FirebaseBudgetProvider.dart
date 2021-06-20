@@ -28,6 +28,7 @@ class FirebaseBudgetProvider implements BudgetProvider {
           .collection("wallets")
           .doc(walletId.id)
           .collection("budgets")
+          .orderBy("dateRangeStart", descending: true)
           .snapshots()
           .map((snapshot) {
         return snapshot.docs
@@ -50,9 +51,17 @@ class FirebaseBudgetProvider implements BudgetProvider {
   Future<Identifier<Budget>> addBudget({
     required Identifier<Wallet> walletId,
     required DateRange dateRange,
-  }) {
-    // TODO: implement addBudget
-    throw UnimplementedError();
+  }) async {
+    final reference = await firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("budgets")
+        .add({
+      "dateRangeStart": dateRange.dateTimeRange.start,
+      "dateRangeEnd": dateRange.dateTimeRange.end,
+    });
+
+    return Identifier(domain: "firebase", id: reference.id);
   }
 
   @override

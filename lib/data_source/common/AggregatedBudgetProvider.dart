@@ -43,8 +43,12 @@ class AggregatedBudgetProvider implements BudgetProvider {
     required Identifier<Wallet> walletId,
     required DateRange dateRange,
   }) {
-    // TODO: implement addBudget
-    throw UnimplementedError();
+    return _onDomain(
+      walletId,
+      ifFirebase: () =>
+          _firebaseProvider.addBudget(walletId: walletId, dateRange: dateRange),
+      ifGoogleSheets: () => throw UnimplementedError(),
+    );
   }
 
   @override
