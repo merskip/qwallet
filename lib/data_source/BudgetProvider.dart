@@ -25,6 +25,12 @@ abstract class BudgetProvider {
     required Identifier<Budget> budgetId,
   });
 
+  Future<void> removeBudgetItem({
+    required Identifier<Wallet> walletId,
+    required Identifier<Budget> budgetId,
+    required Identifier<BudgetItem> budgetItemId,
+  });
+
   Future<void> updateBudgetItem({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,

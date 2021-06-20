@@ -67,6 +67,20 @@ class AggregatedBudgetProvider implements BudgetProvider {
   }
 
   @override
+  Future<void> removeBudgetItem({
+    required Identifier<Wallet> walletId,
+    required Identifier<Budget> budgetId,
+    required Identifier<BudgetItem> budgetItemId,
+  }) {
+    return _onDomain(
+      walletId,
+      ifFirebase: () => _firebaseProvider.removeBudgetItem(
+          walletId: walletId, budgetId: budgetId, budgetItemId: budgetItemId),
+      ifGoogleSheets: () => throw UnimplementedError(),
+    );
+  }
+
+  @override
   Future<void> updateBudgetItem({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,

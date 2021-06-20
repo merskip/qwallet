@@ -103,6 +103,22 @@ class FirebaseBudgetProvider implements BudgetProvider {
   }
 
   @override
+  Future<void> removeBudgetItem({
+    required Identifier<Wallet> walletId,
+    required Identifier<Budget> budgetId,
+    required Identifier<BudgetItem> budgetItemId,
+  }) {
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("budgets")
+        .doc(budgetId.id)
+        .collection("items")
+        .doc(budgetItemId.id)
+        .delete();
+  }
+
+  @override
   Future<void> updateBudgetItem({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,

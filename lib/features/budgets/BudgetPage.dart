@@ -23,6 +23,14 @@ class BudgetPage extends StatelessWidget {
     required this.budget,
   }) : super(key: key);
 
+  void onSelectedBudgetItemRemove(BuildContext context, BudgetItem budgetItem) {
+    SharedProviders.budgetProvider.removeBudgetItem(
+      walletId: wallet.identifier,
+      budgetId: budget.identifier,
+      budgetItemId: budgetItem.identifier,
+    );
+  }
+
   void onSelectedAddBudgetItem(BuildContext context) {
     SharedProviders.budgetProvider.addBudgetItem(
       walletId: wallet.identifier,
@@ -67,6 +75,7 @@ class BudgetPage extends StatelessWidget {
       Divider(),
       buildBudgetItemCategories(context, budgetItem),
       buildBudgetItemPlannedAmount(context, budgetItem),
+      buildBudgetItemRemove(context, budgetItem),
     ];
   }
 
@@ -105,6 +114,21 @@ class BudgetPage extends StatelessWidget {
         final newMoney = await InputMoneySheet.show(context, plannedMoney);
         print(newMoney);
       },
+    );
+  }
+
+  Widget buildBudgetItemRemove(BuildContext context, BudgetItem budgetItem) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: TextButton.icon(
+        icon: Icon(Icons.delete),
+        label: Text("#Remove"),
+        style: ButtonStyle(
+          foregroundColor: MaterialStateProperty.all(Colors.red),
+          overlayColor: MaterialStateProperty.all(Colors.red.shade100),
+        ),
+        onPressed: () => onSelectedBudgetItemRemove(context, budgetItem),
+      ),
     );
   }
 }
