@@ -21,6 +21,7 @@ class BudgetsListPage extends StatelessWidget {
       context: context,
       builder: (context) => AddBudgetSheet(
         wallet: wallet,
+        budgets: budgets,
       ),
     );
   }

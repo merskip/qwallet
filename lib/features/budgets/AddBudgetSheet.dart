@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/widget/DirectionalIconButton.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../../utils.dart';
+import '../../utils/IterableFinding.dart';
 
 class AddBudgetSheet extends StatefulWidget {
   final Wallet wallet;
+  final List<Budget> budgets;
 
   const AddBudgetSheet({
     Key? key,
     required this.wallet,
+    required this.budgets,
   }) : super(key: key);
 
   @override
@@ -20,6 +24,7 @@ class AddBudgetSheet extends StatefulWidget {
 
 class _AddBudgetSheetState extends State<AddBudgetSheet> {
   late DateRange _selectedDateRange;
+  late bool _isAvailableDateRange;
   DateRange? _previousDateRange;
   DateRange? _nextDateRange;
 
@@ -35,8 +40,12 @@ class _AddBudgetSheetState extends State<AddBudgetSheet> {
     });
   }
 
+  void onSelectedSubmit(BuildContext context) {}
+
   void _setDateRange(DateRange dateRange) {
     _selectedDateRange = dateRange;
+    _isAvailableDateRange =
+        widget.budgets.findFirstOrNull((b) => b.dateRange == dateRange) == null;
     _previousDateRange = dateRange.getPreviousRange();
     _nextDateRange = dateRange.getNextRange();
   }
@@ -110,7 +119,8 @@ class _AddBudgetSheetState extends State<AddBudgetSheet> {
       padding: const EdgeInsets.only(top: 24.0),
       child: PrimaryButton(
         child: Text("#Add budget"),
-        onPressed: null,
+        onPressed:
+            _isAvailableDateRange ? () => onSelectedSubmit(context) : null,
       ),
     );
   }
