@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/widget/DirectionalIconButton.dart';
 
 import '../../utils.dart';
 
@@ -26,7 +27,7 @@ class SelectDateRangeSection extends StatelessWidget {
         if (previousRange != null)
           Align(
             alignment: Alignment.centerLeft,
-            child: buildIconButton(
+            child: DirectionalIconButton(
               label: Text(previousRange.getTitle(context)),
               leadingIcon: Icon(Icons.chevron_left),
               onPressed: () => onChangeDateRange(previousRange),
@@ -47,31 +48,13 @@ class SelectDateRangeSection extends StatelessWidget {
         if (nextRange != null)
           Align(
             alignment: Alignment.centerRight,
-            child: buildIconButton(
+            child: DirectionalIconButton(
               label: Text(nextRange.getTitle(context)),
               trailingIcon: Icon(Icons.chevron_right),
               onPressed: () => onChangeDateRange(nextRange),
             ),
           ),
       ]),
-    );
-  }
-
-  Widget buildIconButton({
-    required Widget label,
-    Widget? leadingIcon,
-    Widget? trailingIcon,
-    VoidCallback? onPressed,
-  }) {
-    return FittedBox(
-      child: TextButton(
-        onPressed: onPressed,
-        child: Row(children: [
-          if (leadingIcon != null) leadingIcon,
-          label,
-          if (trailingIcon != null) trailingIcon,
-        ]),
-      ),
     );
   }
 }

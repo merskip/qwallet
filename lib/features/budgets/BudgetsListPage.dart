@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/Wallet.dart';
-import 'package:qwallet/features/budgets/AddBudgetPage.dart';
+import 'package:qwallet/features/budgets/AddBudgetSheet.dart';
 
 import '../../utils.dart';
 
@@ -17,9 +17,11 @@ class BudgetsListPage extends StatelessWidget {
   }) : super(key: key);
 
   void onSelectedAdd(BuildContext context) {
-    pushPage(
-      context,
-      builder: (context) => AddBudgetPage(),
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => AddBudgetSheet(
+        wallet: wallet,
+      ),
     );
   }
 

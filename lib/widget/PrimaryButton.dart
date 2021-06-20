@@ -68,6 +68,7 @@ class PrimaryButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       onPressed: isLoading ? null : onPressed,
       color: backgroundColor ?? Theme.of(context).primaryColor,
+      disabledColor: Colors.grey.shade400,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(60.0),
       ),
