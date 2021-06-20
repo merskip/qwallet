@@ -1,6 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Budget.dart';
+import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/widget/CategoryIcon.dart';
+import 'package:qwallet/widget/DetailsItemTile.dart';
+
+import '../../Money.dart';
+import '../../utils.dart';
+import '../../utils/IterableFinding.dart';
 
 class BudgetPage extends StatelessWidget {
   final Wallet wallet;
@@ -14,6 +22,61 @@ class BudgetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(budget.dateRange?.getTitle(context) ??
+            budget.dateTimeRange.formatted()),
+      ),
+      body: buildBody(context),
+    );
+  }
+
+  Widget buildBody(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DetailsItemTile(
+          title: Text("#Date range"),
+          value: Text(budget.dateTimeRange.formatted()),
+        ),
+        ...budget.items!
+            .map((budgetItem) => buildBudgetItem(context, budgetItem))
+            .flatten(),
+      ],
+    );
+  }
+
+  List<Widget> buildBudgetItem(BuildContext context, BudgetItem budgetItem) {
+    return [
+      Divider(),
+      buildBudgetItemCategories(context, budgetItem),
+      buildBudgetItemPlannedAmount(context, budgetItem),
+    ];
+  }
+
+  Widget buildBudgetItemCategories(
+      BuildContext context, BudgetItem budgetItem) {
+    return DetailsItemTile(
+      title: Text("#Categories"),
+      value: Column(children: [
+        ...budgetItem.categories.map((c) => buildCategoryTile(context, c)),
+      ]),
+    );
+  }
+
+  Widget buildCategoryTile(BuildContext context, Category category) {
+    return ListTile(
+      leading: CategoryIcon(category),
+      title: Text(category.titleText),
+      visualDensity: VisualDensity.compact,
+    );
+  }
+
+  Widget buildBudgetItemPlannedAmount(
+      BuildContext context, BudgetItem budgetItem) {
+    return DetailsItemTile(
+      title: Text("#Planned amount"),
+      value: Text(Money(budgetItem.plannedAmount, wallet.currency).formatted),
+    );
   }
 }
