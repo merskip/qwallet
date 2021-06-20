@@ -54,21 +54,23 @@ class AggregatedBudgetProvider implements BudgetProvider {
   }
 
   @override
-  Future<void> addBudgetItem({
+  Future<Identifier<BudgetItem>> addBudgetItem({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,
-    required List<Category> categories,
-    required double plannedAmount,
   }) {
-    // TODO: implement addBudgetItem
-    throw UnimplementedError();
+    return _onDomain(
+      walletId,
+      ifFirebase: () => _firebaseProvider.addBudgetItem(
+          walletId: walletId, budgetId: budgetId),
+      ifGoogleSheets: () => throw UnimplementedError(),
+    );
   }
 
   @override
   Future<void> updateBudgetItem({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,
-    required Identifier<BudgetItem> item,
+    required Identifier<BudgetItem> budgetItemId,
     required List<Category> categories,
     required double plannedAmount,
   }) {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/features/transactions/TransactionsCategoryMultiplePicker.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
@@ -21,6 +22,13 @@ class BudgetPage extends StatelessWidget {
     required this.budget,
   }) : super(key: key);
 
+  void onSelectedAddBudgetItem(BuildContext context) {
+    SharedProviders.budgetProvider.addBudgetItem(
+      walletId: wallet.identifier,
+      budgetId: budget.identifier,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,21 +37,27 @@ class BudgetPage extends StatelessWidget {
             budget.dateTimeRange.formatted()),
       ),
       body: buildBody(context),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => onSelectedAddBudgetItem(context),
+      ),
     );
   }
 
   Widget buildBody(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        DetailsItemTile(
-          title: Text("#Date range"),
-          value: Text(budget.dateTimeRange.formatted()),
-        ),
-        ...budget.items!
-            .map((budgetItem) => buildBudgetItem(context, budgetItem))
-            .flatten(),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DetailsItemTile(
+            title: Text("#Date range"),
+            value: Text(budget.dateTimeRange.formatted()),
+          ),
+          ...budget.items!
+              .map((budgetItem) => buildBudgetItem(context, budgetItem))
+              .flatten(),
+        ],
+      ),
     );
   }
 
@@ -60,6 +74,7 @@ class BudgetPage extends StatelessWidget {
     return DetailsItemTile(
       title: Text("#Categories"),
       value: Column(children: [
+        if (budgetItem.categories.isEmpty) Text("#No selected categories"),
         ...budgetItem.categories.map((c) => buildCategoryTile(context, c)),
       ]),
       // TODO: Make TransactionsCategoryMultiplePicker generic

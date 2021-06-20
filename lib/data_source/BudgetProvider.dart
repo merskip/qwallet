@@ -20,17 +20,15 @@ abstract class BudgetProvider {
     required DateRange dateRange,
   });
 
-  Future<void> addBudgetItem({
+  Future<Identifier<BudgetItem>> addBudgetItem({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,
-    required List<Category> categories,
-    required double plannedAmount,
   });
 
   Future<void> updateBudgetItem({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,
-    required Identifier<BudgetItem> item,
+    required Identifier<BudgetItem> budgetItemId,
     required List<Category> categories,
     required double plannedAmount,
   });

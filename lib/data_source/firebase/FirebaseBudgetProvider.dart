@@ -84,21 +84,29 @@ class FirebaseBudgetProvider implements BudgetProvider {
   }
 
   @override
-  Future<void> addBudgetItem({
+  Future<Identifier<BudgetItem>> addBudgetItem({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,
-    required List<Category> categories,
-    required double plannedAmount,
-  }) {
-    // TODO: implement addBudgetItem
-    throw UnimplementedError();
+  }) async {
+    final reference = await firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("budgets")
+        .doc(budgetId.id)
+        .collection("items")
+        .add({
+      "categories": [],
+      "plannedAmount": 0,
+    });
+
+    return Identifier(domain: "firebase", id: reference.id);
   }
 
   @override
   Future<void> updateBudgetItem({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,
-    required Identifier<BudgetItem> item,
+    required Identifier<BudgetItem> budgetItemId,
     required List<Category> categories,
     required double plannedAmount,
   }) {
