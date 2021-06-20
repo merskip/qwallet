@@ -16,6 +16,10 @@ service cloud.firestore {
 
             match /budgets/{budget} {
                 allow create, read, write: if true;
+
+                match /items/{budgetItem} {
+                    allow create, read, write: if true;
+                }
             }
         }
 

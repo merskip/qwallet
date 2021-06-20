@@ -43,8 +43,27 @@ class FirebaseBudgetProvider implements BudgetProvider {
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,
   }) {
-    // TODO: implement getBudget
-    throw UnimplementedError();
+    return walletsProvider.getWalletByIdentifier(walletId).switchMap((wallet) {
+      return firestore
+          .collection("wallets")
+          .doc(walletId.id)
+          .collection("budgets")
+          .doc(budgetId.id)
+          .snapshots()
+          .switchMap((budgetSnapshot) {
+        return budgetSnapshot.reference
+            .collection("items")
+            .snapshots()
+            .map((itemsSnapshot) {
+          return itemsSnapshot.docs
+              .map((itemSnapshot) => FirebaseBudgetItem(itemSnapshot, wallet))
+              .toList();
+        }).map(
+          (budgetItems) => FirebaseBudget(
+              budgetSnapshot, wallet as FirebaseWallet, budgetItems),
+        );
+      });
+    });
   }
 
   @override

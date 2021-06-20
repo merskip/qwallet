@@ -19,15 +19,11 @@ abstract class Budget implements Identifiable<Budget> {
 
 class BudgetItem extends Identifiable<BudgetItem> {
   final List<Category> categories;
-  final double currentAmount;
   final double plannedAmount;
 
   BudgetItem({
     required Identifier<BudgetItem> identifier,
     required this.categories,
-    required this.currentAmount,
     required this.plannedAmount,
   }) : super(identifier);
-
-  double get remainingAmount => plannedAmount - currentAmount;
 }
