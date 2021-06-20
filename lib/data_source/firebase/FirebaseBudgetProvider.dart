@@ -47,7 +47,7 @@ class FirebaseBudgetProvider implements BudgetProvider {
   }
 
   @override
-  Future<void> addBudget({
+  Future<Identifier<Budget>> addBudget({
     required Identifier<Wallet> walletId,
     required DateRange dateRange,
   }) {

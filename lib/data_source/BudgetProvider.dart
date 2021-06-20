@@ -15,7 +15,7 @@ abstract class BudgetProvider {
     required DateRange dateRange,
   });
 
-  Future<void> addBudget({
+  Future<Identifier<Budget>> addBudget({
     required Identifier<Wallet> walletId,
     required DateRange dateRange,
   });

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/data_source/Budget.dart';
+import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/features/budgets/AddBudgetSheet.dart';
 
 import '../../utils.dart';
@@ -16,14 +18,21 @@ class BudgetsListPage extends StatelessWidget {
     required this.budgets,
   }) : super(key: key);
 
-  void onSelectedAdd(BuildContext context) {
-    showModalBottomSheet(
+  void onSelectedAdd(BuildContext context) async {
+    final dateRange = await showModalBottomSheet<DateRange>(
       context: context,
       builder: (context) => AddBudgetSheet(
         wallet: wallet,
         budgets: budgets,
       ),
     );
+    if (dateRange != null) {
+      final budgetId = await SharedProviders.budgetProvider.addBudget(
+        walletId: wallet.identifier,
+        dateRange: dateRange,
+      );
+      print(budgetId);
+    }
   }
 
   @override

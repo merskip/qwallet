@@ -40,7 +40,9 @@ class _AddBudgetSheetState extends State<AddBudgetSheet> {
     });
   }
 
-  void onSelectedSubmit(BuildContext context) {}
+  void onSelectedSubmit(BuildContext context) {
+    Navigator.of(context).pop(_selectedDateRange);
+  }
 
   void _setDateRange(DateRange dateRange) {
     _selectedDateRange = dateRange;
