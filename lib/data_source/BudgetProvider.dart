@@ -10,9 +10,9 @@ abstract class BudgetProvider {
     required Identifier<Wallet> walletId,
   });
 
-  Stream<Budget?> getBudget({
+  Stream<Budget> getBudget({
     required Identifier<Wallet> walletId,
-    required DateRange dateRange,
+    required Identifier<Budget> budgetId,
   });
 
   Future<Identifier<Budget>> addBudget({

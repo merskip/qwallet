@@ -26,14 +26,16 @@ class AggregatedBudgetProvider implements BudgetProvider {
   }
 
   @override
-  Stream<Budget?> getBudget({
+  Stream<Budget> getBudget({
     required Identifier<Wallet> walletId,
-    required DateRange dateRange,
+    required Identifier<Budget> budgetId,
   }) {
     return _onDomain(
       walletId,
-      ifFirebase: () =>
-          _firebaseProvider.getBudget(walletId: walletId, dateRange: dateRange),
+      ifFirebase: () => _firebaseProvider.getBudget(
+        walletId: walletId,
+        budgetId: budgetId,
+      ),
       ifGoogleSheets: () => throw UnimplementedError(),
     );
   }

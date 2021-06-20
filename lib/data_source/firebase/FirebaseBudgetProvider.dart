@@ -39,9 +39,9 @@ class FirebaseBudgetProvider implements BudgetProvider {
   }
 
   @override
-  Stream<Budget?> getBudget({
+  Stream<Budget> getBudget({
     required Identifier<Wallet> walletId,
-    required DateRange dateRange,
+    required Identifier<Budget> budgetId,
   }) {
     // TODO: implement getBudget
     throw UnimplementedError();

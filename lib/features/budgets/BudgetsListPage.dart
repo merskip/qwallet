@@ -5,6 +5,7 @@ import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/features/budgets/AddBudgetSheet.dart';
+import 'package:qwallet/router.dart';
 
 import '../../utils.dart';
 
@@ -33,6 +34,11 @@ class BudgetsListPage extends StatelessWidget {
       );
       print(budgetId);
     }
+  }
+
+  void onSelectedBudget(BuildContext context, Budget budget) {
+    router.navigateTo(
+        context, "/wallet/${wallet.identifier}/budget/${budget.identifier}");
   }
 
   @override
@@ -70,6 +76,7 @@ class BudgetsListPage extends StatelessWidget {
               color: Colors.orange,
             )
           : null,
+      onTap: () => onSelectedBudget(context, budget),
     );
   }
 }
