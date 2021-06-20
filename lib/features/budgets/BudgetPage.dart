@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/features/transactions/TransactionsCategoryMultiplePicker.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
 
@@ -61,6 +62,12 @@ class BudgetPage extends StatelessWidget {
       value: Column(children: [
         ...budgetItem.categories.map((c) => buildCategoryTile(context, c)),
       ]),
+      // TODO: Make TransactionsCategoryMultiplePicker generic
+      editingContent: (context) => TransactionsCategoryMultiplePicker(
+        categories: wallet.categories,
+        selectedCategories: budgetItem.categories,
+        includeWithoutCategory: false,
+      ),
     );
   }
 
