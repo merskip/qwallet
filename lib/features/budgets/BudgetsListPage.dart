@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/Wallet.dart';
+import 'package:qwallet/features/budgets/AddBudgetPage.dart';
 
 import '../../utils.dart';
 
@@ -15,6 +16,13 @@ class BudgetsListPage extends StatelessWidget {
     required this.budgets,
   }) : super(key: key);
 
+  void onSelectedAdd(BuildContext context) {
+    pushPage(
+      context,
+      builder: (context) => AddBudgetPage(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,6 +30,10 @@ class BudgetsListPage extends StatelessWidget {
         title: Text(AppLocalizations.of(context).budgets.title),
       ),
       body: buildList(context),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => onSelectedAdd(context),
+      ),
     );
   }
 
