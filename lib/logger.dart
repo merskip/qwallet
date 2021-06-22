@@ -82,21 +82,21 @@ class Logger {
     dynamic exception,
     StackTrace? stackTrace,
   }) =>
-      log(Level.verbose, message);
+      log(Level.verbose, message, exception, stackTrace);
 
   void debug(
     String message, {
     dynamic exception,
     StackTrace? stackTrace,
   }) =>
-      log(Level.debug, message);
+      log(Level.debug, message, exception, stackTrace);
 
   void info(
     String message, {
     dynamic exception,
     StackTrace? stackTrace,
   }) =>
-      log(Level.info, message);
+      log(Level.info, message, exception, stackTrace);
 
   void warning(
     String message, {

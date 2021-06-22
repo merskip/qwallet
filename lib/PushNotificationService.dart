@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
@@ -7,6 +8,8 @@ class PushNotificationService {
       const MethodChannel('pl.merskip.qwallet/push_notification_service');
 
   Future<bool> isPermissionGranted() async {
+    if (!Platform.isAndroid)
+      return false;
     try {
       final result = await _platform.invokeMapMethod("isPermissionGranted");
       return result?["isPermissionGranted"] as bool;

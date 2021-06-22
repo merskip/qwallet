@@ -95,8 +95,8 @@ class DefaultAccountProvider extends AccountProvider {
       logger.info("Sign in using additional scopes");
     } else {
       logger.verbose(
-          "Failed sign in with scopes, isSignIn=${await _googleSignIn.isSignedIn()}, "
-          "currentUser=${_googleSignIn.currentUser != null ? "<exists>" : "null"}");
+          "Failed sign in with scopes, isSignIn=${await googleSignWithScopes.isSignedIn()}, "
+          "currentUser=${googleSignWithScopes.currentUser != null ? "<exists>" : "null"}");
 
       // Change Google SignIn on web causes crash, so require using with scopes
       if (!kIsWeb) {
