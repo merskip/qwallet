@@ -8,6 +8,7 @@ import 'package:qwallet/data_source/firebase/FirebaseModel.dart';
 
 import '../../utils/IterableFinding.dart';
 import '../Identifier.dart';
+import '../TransactionsProvider.dart';
 import '../Wallet.dart';
 import 'FirebaseConverting.dart';
 import 'FirebaseWallet.dart';
@@ -41,16 +42,24 @@ class FirebaseBudgetItem extends FirebaseModel<FirebaseBudgetItem>
   final Identifier<BudgetItem> identifier;
   final List<Category> categories;
   final double plannedAmount;
+  late final double? currentAmount;
 
-  FirebaseBudgetItem(DocumentSnapshot snapshot, Wallet wallet)
-      : identifier = Identifier(domain: "firebase", id: snapshot.id),
+  FirebaseBudgetItem(
+    DocumentSnapshot snapshot,
+    Wallet wallet,
+    LatestTransactions? transactions,
+  )   : identifier = Identifier(domain: "firebase", id: snapshot.id),
         categories = snapshot
             .getList("categories")!
             .map((item) => _findCategory(wallet, item))
             .filterNonNull()
             .toList(),
         plannedAmount = snapshot.getDouble("plannedAmount")!,
-        super(snapshot);
+        super(snapshot) {
+    currentAmount = transactions?.transactions
+        .where((t) => categories.contains(t.category))
+        .fold<double>(0, (p, t) => p + t.amount);
+  }
 
   static Category? _findCategory(Wallet wallet, dynamic item) =>
       wallet.categories.findFirstOrNull(

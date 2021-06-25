@@ -2,6 +2,7 @@ import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/BudgetProvider.dart';
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/DateRange.dart';
+import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/firebase/FirebaseBudgetProvider.dart';
 
@@ -29,12 +30,14 @@ class AggregatedBudgetProvider implements BudgetProvider {
   Stream<Budget> getBudget({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,
+    LatestTransactions? transactions,
   }) {
     return _onDomain(
       walletId,
       ifFirebase: () => _firebaseProvider.getBudget(
         walletId: walletId,
         budgetId: budgetId,
+        transactions: transactions,
       ),
       ifGoogleSheets: () => throw UnimplementedError(),
     );

@@ -1,6 +1,7 @@
 import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/Identifier.dart';
+import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 
 import 'Category.dart';
@@ -13,6 +14,7 @@ abstract class BudgetProvider {
   Stream<Budget> getBudget({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,
+    LatestTransactions? transactions,
   });
 
   Future<Identifier<Budget>> addBudget({

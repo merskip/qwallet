@@ -11,6 +11,8 @@ import 'package:qwallet/data_source/firebase/FirebaseCategory.dart';
 import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../TransactionsProvider.dart';
+
 class FirebaseBudgetProvider implements BudgetProvider {
   final FirebaseFirestore firestore;
   final WalletsProvider walletsProvider;
@@ -43,6 +45,7 @@ class FirebaseBudgetProvider implements BudgetProvider {
   Stream<Budget> getBudget({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,
+    LatestTransactions? transactions,
   }) {
     return walletsProvider.getWalletByIdentifier(walletId).switchMap((wallet) {
       return firestore
@@ -57,7 +60,8 @@ class FirebaseBudgetProvider implements BudgetProvider {
             .snapshots()
             .map((itemsSnapshot) {
           return itemsSnapshot.docs
-              .map((itemSnapshot) => FirebaseBudgetItem(itemSnapshot, wallet))
+              .map((itemSnapshot) =>
+                  FirebaseBudgetItem(itemSnapshot, wallet, transactions))
               .toList();
         }).map(
           (budgetItems) => FirebaseBudget(
