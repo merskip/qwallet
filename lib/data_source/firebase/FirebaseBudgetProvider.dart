@@ -7,6 +7,7 @@ import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/WalletsProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseBudget.dart';
+import 'package:qwallet/data_source/firebase/FirebaseCategory.dart';
 import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -126,7 +127,18 @@ class FirebaseBudgetProvider implements BudgetProvider {
     required List<Category> categories,
     required double plannedAmount,
   }) {
-    // TODO: implement updateBudgetItem
-    throw UnimplementedError();
+    return firestore
+        .collection("wallets")
+        .doc(walletId.id)
+        .collection("budgets")
+        .doc(budgetId.id)
+        .collection("items")
+        .doc(budgetItemId.id)
+        .update({
+      "categories": categories
+          .map((c) => (c as FirebaseCategory).reference.documentReference)
+          .toList(),
+      "plannedAmount": plannedAmount,
+    });
   }
 }

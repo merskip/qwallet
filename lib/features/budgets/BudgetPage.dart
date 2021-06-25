@@ -13,7 +13,7 @@ import '../../Money.dart';
 import '../../utils.dart';
 import '../../utils/IterableFinding.dart';
 
-class BudgetPage extends StatelessWidget {
+class BudgetPage extends StatefulWidget {
   final Wallet wallet;
   final Budget budget;
 
@@ -23,18 +23,37 @@ class BudgetPage extends StatelessWidget {
     required this.budget,
   }) : super(key: key);
 
+  @override
+  _BudgetPageState createState() => _BudgetPageState();
+}
+
+class _BudgetPageState extends State<BudgetPage> {
   void onSelectedBudgetItemRemove(BuildContext context, BudgetItem budgetItem) {
     SharedProviders.budgetProvider.removeBudgetItem(
-      walletId: wallet.identifier,
-      budgetId: budget.identifier,
+      walletId: widget.wallet.identifier,
+      budgetId: widget.budget.identifier,
       budgetItemId: budgetItem.identifier,
     );
   }
 
   void onSelectedAddBudgetItem(BuildContext context) {
     SharedProviders.budgetProvider.addBudgetItem(
-      walletId: wallet.identifier,
-      budgetId: budget.identifier,
+      walletId: widget.wallet.identifier,
+      budgetId: widget.budget.identifier,
+    );
+  }
+
+  void onSelectedEditCategoriesSave(
+    BuildContext context,
+    BudgetItem budgetItem,
+    List<Category> categories,
+  ) async {
+    await SharedProviders.budgetProvider.updateBudgetItem(
+      walletId: widget.wallet.identifier,
+      budgetId: widget.budget.identifier,
+      budgetItemId: budgetItem.identifier,
+      categories: categories,
+      plannedAmount: budgetItem.plannedAmount,
     );
   }
 
@@ -42,8 +61,8 @@ class BudgetPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(budget.dateRange?.getTitle(context) ??
-            budget.dateTimeRange.formatted()),
+        title: Text(widget.budget.dateRange?.getTitle(context) ??
+            widget.budget.dateTimeRange.formatted()),
       ),
       body: buildBody(context),
       floatingActionButton: FloatingActionButton(
@@ -60,9 +79,9 @@ class BudgetPage extends StatelessWidget {
         children: [
           DetailsItemTile(
             title: Text("#Date range"),
-            value: Text(budget.dateTimeRange.formatted()),
+            value: Text(widget.budget.dateTimeRange.formatted()),
           ),
-          ...budget.items!
+          ...widget.budget.items!
               .map((budgetItem) => buildBudgetItem(context, budgetItem))
               .flatten(),
         ],
@@ -81,17 +100,21 @@ class BudgetPage extends StatelessWidget {
 
   Widget buildBudgetItemCategories(
       BuildContext context, BudgetItem budgetItem) {
+    List<Category> selectedCategories = budgetItem.categories;
     return DetailsItemTile(
       title: Text("#Categories"),
       value: Column(children: [
         if (budgetItem.categories.isEmpty) Text("#No selected categories"),
         ...budgetItem.categories.map((c) => buildCategoryTile(context, c)),
       ]),
-      // TODO: Make TransactionsCategoryMultiplePicker generic
       editingContent: (context) => CategoryMultiplePicker(
-        categories: wallet.categories,
+        categories: widget.wallet.categories,
         selectedCategories: budgetItem.categories,
+        onChangeSelectedCategories: (categories) =>
+            selectedCategories = categories,
       ),
+      editingSave: () =>
+          onSelectedEditCategoriesSave(context, budgetItem, selectedCategories),
     );
   }
 
@@ -105,7 +128,8 @@ class BudgetPage extends StatelessWidget {
 
   Widget buildBudgetItemPlannedAmount(
       BuildContext context, BudgetItem budgetItem) {
-    final plannedMoney = Money(budgetItem.plannedAmount, wallet.currency);
+    final plannedMoney =
+        Money(budgetItem.plannedAmount, widget.wallet.currency);
     return DetailsItemTile(
       title: Text("#Planned amount"),
       value: Text(plannedMoney.formatted),

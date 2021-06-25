@@ -11,6 +11,7 @@ class CategoryMultiplePicker extends StatefulWidget {
   final List<Category> selectedCategories;
   final bool isNoCategorySelectable;
   final bool selectedNoCategory;
+  final void Function(List<Category> categories)? onChangeSelectedCategories;
 
   const CategoryMultiplePicker({
     Key? key,
@@ -18,6 +19,7 @@ class CategoryMultiplePicker extends StatefulWidget {
     required this.selectedCategories,
     this.isNoCategorySelectable = false,
     this.selectedNoCategory = false,
+    this.onChangeSelectedCategories,
   }) : super(key: key);
 
   @override
@@ -52,6 +54,8 @@ class CategoryMultiplePickerState extends State<CategoryMultiplePicker> {
     setState(() {
       selectedCategories = newCategories;
     });
+    if (widget.onChangeSelectedCategories != null)
+      widget.onChangeSelectedCategories!(newCategories);
   }
 
   void onSelectedWithoutCategory(BuildContext context) {

@@ -88,8 +88,16 @@ class AggregatedBudgetProvider implements BudgetProvider {
     required List<Category> categories,
     required double plannedAmount,
   }) {
-    // TODO: implement updateBudgetItem
-    throw UnimplementedError();
+    return _onDomain(
+      walletId,
+      ifFirebase: () => _firebaseProvider.updateBudgetItem(
+          walletId: walletId,
+          budgetId: budgetId,
+          budgetItemId: budgetItemId,
+          categories: categories,
+          plannedAmount: plannedAmount),
+      ifGoogleSheets: () => throw UnimplementedError(),
+    );
   }
 
   T _onDomain<T>(
