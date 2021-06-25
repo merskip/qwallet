@@ -7,7 +7,7 @@ import 'package:qwallet/widget/PrimaryButton.dart';
 
 import '../../AppLocalizations.dart';
 import '../../utils.dart';
-import 'TransactionsCategoryMultiplePicker.dart';
+import '../../widget/CategoryMultiplePicker.dart';
 
 class TransactionsFilter {
   final TransactionType? transactionType;
@@ -108,8 +108,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
 
   bool _isCategoriesSelect = false;
 
-  final categoriesPickerKey =
-      GlobalKey<TransactionsCategoryMultiplePickerState>();
+  final categoriesPickerKey = GlobalKey<CategoryMultiplePickerState>();
 
   @override
   void initState() {
@@ -388,7 +387,7 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
               selectedCategories =
                   categoriesPickerKey.currentState!.selectedCategories;
               includeWithoutCategory =
-                  categoriesPickerKey.currentState!.includeWithoutCategory;
+                  categoriesPickerKey.currentState!.selectedNoCategory;
               _isCategoriesSelect = false;
             }),
           ),
@@ -414,11 +413,12 @@ class _TransactionsListFilterState extends State<TransactionsListFilter> {
         ),
         Padding(
           padding: const EdgeInsets.all(12.0),
-          child: TransactionsCategoryMultiplePicker(
+          child: CategoryMultiplePicker(
             key: categoriesPickerKey,
             categories: widget.wallet.categories,
             selectedCategories: selectedCategories,
-            includeWithoutCategory: includeWithoutCategory,
+            isNoCategorySelectable: true,
+            selectedNoCategory: includeWithoutCategory,
           ),
         ),
       ],

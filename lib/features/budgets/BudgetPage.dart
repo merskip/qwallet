@@ -4,8 +4,8 @@ import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
-import 'package:qwallet/features/transactions/TransactionsCategoryMultiplePicker.dart';
 import 'package:qwallet/widget/CategoryIcon.dart';
+import 'package:qwallet/widget/CategoryMultiplePicker.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/EnterAmountSheet.dart';
 
@@ -88,10 +88,9 @@ class BudgetPage extends StatelessWidget {
         ...budgetItem.categories.map((c) => buildCategoryTile(context, c)),
       ]),
       // TODO: Make TransactionsCategoryMultiplePicker generic
-      editingContent: (context) => TransactionsCategoryMultiplePicker(
+      editingContent: (context) => CategoryMultiplePicker(
         categories: wallet.categories,
         selectedCategories: budgetItem.categories,
-        includeWithoutCategory: false,
       ),
     );
   }

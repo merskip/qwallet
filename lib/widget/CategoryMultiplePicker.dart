@@ -3,42 +3,42 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/utils.dart';
 
-import '../../AppLocalizations.dart';
-import '../../widget/CategoryButton.dart';
+import '../AppLocalizations.dart';
+import 'CategoryButton.dart';
 
-class TransactionsCategoryMultiplePicker extends StatefulWidget {
+class CategoryMultiplePicker extends StatefulWidget {
   final List<Category> categories;
   final List<Category> selectedCategories;
-  final bool includeWithoutCategory;
+  final bool isNoCategorySelectable;
+  final bool selectedNoCategory;
 
-  const TransactionsCategoryMultiplePicker({
+  const CategoryMultiplePicker({
     Key? key,
     required this.categories,
     required this.selectedCategories,
-    required this.includeWithoutCategory,
+    this.isNoCategorySelectable = false,
+    this.selectedNoCategory = false,
   }) : super(key: key);
 
   @override
-  TransactionsCategoryMultiplePickerState createState() =>
-      TransactionsCategoryMultiplePickerState();
+  CategoryMultiplePickerState createState() => CategoryMultiplePickerState();
 }
 
-class TransactionsCategoryMultiplePickerState
-    extends State<TransactionsCategoryMultiplePicker> {
+class CategoryMultiplePickerState extends State<CategoryMultiplePicker> {
   late List<Category> selectedCategories;
-  late bool includeWithoutCategory;
+  late bool selectedNoCategory;
 
   @override
   void initState() {
     this.selectedCategories = widget.selectedCategories;
-    this.includeWithoutCategory = widget.includeWithoutCategory;
+    this.selectedNoCategory = widget.selectedNoCategory;
     super.initState();
   }
 
   @override
-  void didUpdateWidget(covariant TransactionsCategoryMultiplePicker oldWidget) {
+  void didUpdateWidget(covariant CategoryMultiplePicker oldWidget) {
     this.selectedCategories = widget.selectedCategories;
-    this.includeWithoutCategory = widget.includeWithoutCategory;
+    this.selectedNoCategory = widget.selectedNoCategory;
     super.didUpdateWidget(oldWidget);
   }
 
@@ -56,7 +56,7 @@ class TransactionsCategoryMultiplePickerState
 
   void onSelectedWithoutCategory(BuildContext context) {
     setState(() {
-      includeWithoutCategory = !includeWithoutCategory;
+      selectedNoCategory = !selectedNoCategory;
     });
   }
 
@@ -79,7 +79,7 @@ class TransactionsCategoryMultiplePickerState
       children: [
         ...widget.categories
             .map((category) => buildCategoryButton(context, category)),
-        buildWithoutCategoryButton(context),
+        if (widget.isNoCategorySelectable) buildNoCategoryButton(context),
       ],
     );
   }
@@ -93,14 +93,14 @@ class TransactionsCategoryMultiplePickerState
     );
   }
 
-  Widget buildWithoutCategoryButton(BuildContext context) {
+  Widget buildNoCategoryButton(BuildContext context) {
     return RawCategoryButton(
       title: AppLocalizations.of(context)
           .transactionsListFilterSelectCategoriesWithoutCategory,
       icon: Icon(Icons.category),
       primaryColor: colorFromHex("#838383"),
       backgroundColor: colorFromHex("#dcdcdc"),
-      isSelected: includeWithoutCategory,
+      isSelected: selectedNoCategory,
       onPressed: () => onSelectedWithoutCategory(context),
     );
   }
