@@ -10,6 +10,7 @@ import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/features/dashboard/BudgetSection.dart';
 import 'package:qwallet/features/settings/LogsPreviewPage.dart';
 import 'package:qwallet/logger.dart';
 import 'package:qwallet/widget/EmptyStateWidget.dart';
@@ -238,6 +239,11 @@ class DashboardPageState extends State<DashboardPage> {
                 wallet: latestTransactions.wallet,
                 transactions: latestTransactions.transactions,
               ),
+            BudgetSection(
+              wallet: latestTransactions.wallet,
+              currentDateRange: latestTransactions.dateRange,
+              transactions: latestTransactions,
+            ),
           ]);
         },
       ),

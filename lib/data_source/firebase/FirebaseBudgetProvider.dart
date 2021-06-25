@@ -42,11 +42,18 @@ class FirebaseBudgetProvider implements BudgetProvider {
   }
 
   @override
-  Stream<Budget> getBudget({
+  Stream<Budget?> findBudget({
     required Identifier<Wallet> walletId,
-    required Identifier<Budget> budgetId,
-    LatestTransactions? transactions,
+    required DateRange dateRange,
+    required LatestTransactions transactions,
   }) {
+    throw UnsupportedError("Not implemented yet");
+  }
+
+  @override
+  Stream<Budget> getBudget(
+      {required Identifier<Wallet> walletId,
+      required Identifier<Budget> budgetId}) {
     return walletsProvider.getWalletByIdentifier(walletId).switchMap((wallet) {
       return firestore
           .collection("wallets")
@@ -61,7 +68,7 @@ class FirebaseBudgetProvider implements BudgetProvider {
             .map((itemsSnapshot) {
           return itemsSnapshot.docs
               .map((itemSnapshot) =>
-                  FirebaseBudgetItem(itemSnapshot, wallet, transactions))
+                  FirebaseBudgetItem(itemSnapshot, wallet, null))
               .toList();
         }).map(
           (budgetItems) => FirebaseBudget(
