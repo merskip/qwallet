@@ -47,13 +47,27 @@ class _BudgetPageState extends State<BudgetPage> {
     BuildContext context,
     BudgetItem budgetItem,
     List<Category> categories,
-  ) async {
-    await SharedProviders.budgetProvider.updateBudgetItem(
+  ) {
+    SharedProviders.budgetProvider.updateBudgetItem(
       walletId: widget.wallet.identifier,
       budgetId: widget.budget.identifier,
       budgetItemId: budgetItem.identifier,
       categories: categories,
       plannedAmount: budgetItem.plannedAmount,
+    );
+  }
+
+  void onSelectedEditPlannedAmountSave(
+    BuildContext context,
+    BudgetItem budgetItem,
+    double plannedAmount,
+  ) {
+    SharedProviders.budgetProvider.updateBudgetItem(
+      walletId: widget.wallet.identifier,
+      budgetId: widget.budget.identifier,
+      budgetItemId: budgetItem.identifier,
+      categories: budgetItem.categories,
+      plannedAmount: plannedAmount,
     );
   }
 
@@ -135,7 +149,9 @@ class _BudgetPageState extends State<BudgetPage> {
       value: Text(plannedMoney.formatted),
       onEdit: (context) async {
         final newMoney = await InputMoneySheet.show(context, plannedMoney);
-        print(newMoney);
+        if (newMoney != null) {
+          onSelectedEditPlannedAmountSave(context, budgetItem, newMoney.amount);
+        }
       },
     );
   }
