@@ -65,6 +65,9 @@ class BudgetsListPage extends StatelessWidget {
 
   Widget buildBudget(BuildContext context, Budget budget) {
     return ListTile(
+      leading: budget.dateRange == wallet.defaultDateRange
+          ? Icon(Icons.check, color: Colors.green)
+          : null,
       title: Text(budget.dateRange?.getTitle(context) ??
           budget.dateTimeRange.formatted()),
       subtitle: budget.dateRange != null
