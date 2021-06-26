@@ -242,7 +242,7 @@ class _CategoriesReorderableListState
   Widget buildReorderableCategory(BuildContext context, Category category) {
     return ListTile(
       key: Key(category.identifier.toString()),
-      leading: CategoryIcon(category, size: 18),
+      leading: CategoryIcon(category, iconSize: 18),
       title: Text(category.titleText),
       trailing: Icon(Icons.drag_handle),
     );

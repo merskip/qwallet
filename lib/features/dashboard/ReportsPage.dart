@@ -146,7 +146,7 @@ class _ReportByCategoriesPage extends StatelessWidget {
       children: [
         buildContentCell(
           context,
-          child: CategoryIcon(item.category, size: 16),
+          child: CategoryIcon(item.category, iconSize: 16),
           onTap: () => onSelectedCategory(context, item.category),
         ),
         buildContentCell(

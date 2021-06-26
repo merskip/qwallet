@@ -35,7 +35,7 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
         .flatMap<LatestTransactions>((wallet) {
       final dateTime = dateRange ?? wallet.defaultDateRange;
       return _getTransactionsInDateTimeRange(
-        wallet: wallet,
+        wallet: wallet as FirebaseWallet,
         dateRange: dateTime.dateTimeRange,
       ).map((transactions) => LatestTransactions(
             wallet,
@@ -58,8 +58,9 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
           .collection("transactions")
           .doc(transactionId.id)
           .snapshots()
-          .map((snapshot) =>
-              snapshot.exists ? FirebaseTransaction(snapshot, wallet) : null);
+          .map((snapshot) => snapshot.exists
+              ? FirebaseTransaction(snapshot, wallet as FirebaseWallet)
+              : null);
     });
   }
 
@@ -86,7 +87,8 @@ class FirebaseTransactionsProvider implements TransactionsProvider {
 
       return query.snapshots().map((transactionsSnapshot) =>
           transactionsSnapshot.docs.map((transactionSnapshot) {
-            return FirebaseTransaction(transactionSnapshot, wallet);
+            return FirebaseTransaction(
+                transactionSnapshot, wallet as FirebaseWallet);
           }).toList());
     });
   }

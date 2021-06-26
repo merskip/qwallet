@@ -3,32 +3,36 @@ import 'package:googleapis/sheets/v4.dart';
 class GoogleSpreadsheetWallet {
   final String name;
   final List<double> incomes;
-  final List<GoogleSpreadsheetTransaction> transfers;
+  final List<GoogleSpreadsheetTransaction> transactions;
 
   final DateTime firstDate;
   final DateTime lastDate;
   final List<GoogleSpreadsheetCategory> categories;
   final List<String> shops;
   final GoogleSpreadsheetStatistics statistics;
+  final List<GoogleSpreadsheetBudgetItem> budgetItems;
 
   final Spreadsheet spreadsheet;
   final Sheet generalSheet;
   final Sheet dailyBalanceSheet;
   final Sheet statisticsSheet;
+  final Sheet budgetSheet;
 
   GoogleSpreadsheetWallet({
     required this.name,
     required this.incomes,
-    required this.transfers,
+    required this.transactions,
     required this.firstDate,
     required this.lastDate,
     required this.categories,
     required this.shops,
     required this.statistics,
+    required this.budgetItems,
     required this.spreadsheet,
     required this.generalSheet,
     required this.dailyBalanceSheet,
     required this.statisticsSheet,
+    required this.budgetSheet,
   });
 }
 
@@ -89,6 +93,22 @@ class GoogleSpreadsheetStatistics {
     required this.predictedBalanceWithGainedIncomes,
     required this.predictedBalance,
     required this.availableDailyBudget,
+  });
+}
+
+class GoogleSpreadsheetBudgetItem {
+  final String categorySymbol;
+  final double plannedAmount;
+  final double usedAmount;
+  final double remainingAmount;
+  final double balance;
+
+  GoogleSpreadsheetBudgetItem({
+    required this.categorySymbol,
+    required this.plannedAmount,
+    required this.usedAmount,
+    required this.remainingAmount,
+    required this.balance,
   });
 }
 

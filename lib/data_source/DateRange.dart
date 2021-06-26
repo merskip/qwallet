@@ -37,4 +37,14 @@ class DateRange {
           fullFormat.format(dateTimeRange.end);
     }
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DateRange &&
+          runtimeType == other.runtimeType &&
+          dateTimeRange == other.dateTimeRange;
+
+  @override
+  int get hashCode => dateTimeRange.hashCode;
 }

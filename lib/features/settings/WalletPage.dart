@@ -172,6 +172,10 @@ class _WalletPageContentState extends State<_WalletPageContent> {
     router.navigateTo(context, "/wallet/${wallet.identifier}/categories");
   }
 
+  void onSelectedBudgets(BuildContext context) {
+    router.navigateTo(context, "/wallet/${wallet.identifier}/budgets");
+  }
+
   void onSelectedOpenSpreadsheet(BuildContext context) async {
     final spreadsheetWallet = wallet as SpreadsheetWallet;
     final url = spreadsheetWallet.spreadsheetWallet.spreadsheet.spreadsheetUrl;
@@ -212,6 +216,7 @@ class _WalletPageContentState extends State<_WalletPageContent> {
           buildCurrentDateRange(context, wallet),
           Divider(),
           buildCategories(context),
+          buildBudgets(context),
           if (wallet is SpreadsheetWallet) buildSpreadsheetLink(context),
         ],
       ),
@@ -351,6 +356,15 @@ class _WalletPageContentState extends State<_WalletPageContent> {
       title: Text(AppLocalizations.of(context).categories),
       trailing: Icon(Icons.chevron_right),
       onTap: () => onSelectedCategories(context),
+    );
+  }
+
+  Widget buildBudgets(BuildContext context) {
+    return ListTile(
+      leading: Icon(Icons.savings),
+      title: Text(AppLocalizations.of(context).budgets.title),
+      trailing: Icon(Icons.chevron_right),
+      onTap: () => onSelectedBudgets(context),
     );
   }
 

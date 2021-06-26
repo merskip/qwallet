@@ -10,16 +10,19 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:qwallet/AppLocalizations.dart';
-import 'package:qwallet/LocalPreferences.dart';
+import 'package:qwallet/data_source/common/AggregatedBudgetProvider.dart';
 import 'package:qwallet/data_source/common/AggregatedCategoriesProvider.dart';
+import 'package:qwallet/data_source/firebase/FirebaseBudgetProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseCategoriesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebasePrivateLoansProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseRemoteUserPreferencesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
+import 'package:qwallet/data_source/google_sheets/SpreadsheetBudgetProvider.dart';
 import 'package:qwallet/logger.dart';
 import 'package:qwallet/router.dart';
 
+import 'AppLocalizations.dart';
+import 'LocalPreferences.dart';
 import 'data_source/common/AggregatedTransactionsProvider.dart';
 import 'data_source/common/AggregatedWalletsProvider.dart';
 import 'data_source/common/DefaultAccountProvider.dart';
@@ -118,6 +121,16 @@ void main() async {
       SharedProviders.transactionsProvider = AggregatedTransactionsProvider(
         firebaseProvider: SharedProviders.firebaseTransactionsProvider,
         spreadsheetProvider: SharedProviders.spreadsheetTransactionsProvider,
+      );
+
+      SharedProviders.budgetProvider = AggregatedBudgetProvider(
+        firebaseProvider: FirebaseBudgetProvider(
+          firestore: firestore,
+          walletsProvider: SharedProviders.walletsProvider,
+        ),
+        spreadsheetProvider: SpreadsheetBudgetProvider(
+          walletsProvider: SharedProviders.spreadsheetWalletsProvider,
+        ),
       );
 
       SharedProviders.usersProvider = FirebaseUsersProvider(

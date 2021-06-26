@@ -174,7 +174,7 @@ class _CategoriesChartWithLegendState
 
   Widget buildCategorySummary(BuildContext context, _CategoryChartItem item) {
     return Column(children: [
-      CategoryIcon(item.category, size: 16),
+      CategoryIcon(item.category, iconSize: 16),
       SizedBox(height: 8),
       Text(
         item.sum.formatted,
@@ -233,7 +233,7 @@ class _CategoriesChart extends StatelessWidget {
     required this.showAllTitles,
     this.selectedItem,
     required this.onSelectedItem,
-  })   : totalAmount = items.fold(0.0, (acc, i) => acc + i.sum.amount),
+  })  : totalAmount = items.fold(0.0, (acc, i) => acc + i.sum.amount),
         super(key: key);
 
   @override

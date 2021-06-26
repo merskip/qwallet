@@ -34,6 +34,7 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     final generalSheet = spreadsheet.findSheetByTitle("Ogólne")!;
     final dailyBalanceSheet = spreadsheet.findSheetByTitle("Balans dzienny")!;
     final statisticsSheet = spreadsheet.findSheetByTitle("Statystyka")!;
+    final budgetSheet = spreadsheet.findSheetByTitle("Budżet")!;
     logger.verbose("Found sheets: "
         "generalId=${generalSheet.properties?.sheetId}, "
         "dailyBalanceId=${dailyBalanceSheet.properties?.sheetId}, "
@@ -44,27 +45,29 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
     final categories = _getCategories(statisticsSheet);
     final shops = _getShops(statisticsSheet);
     final statistics = _getStatistics(statisticsSheet);
+    final budgetItems = _getBudgetItems(budgetSheet);
 
     logger.verbose("Found data: "
         "incomes (${incomes.length}), "
         "transfers (${transfers.length}), "
         "categories (${categories.length}), "
-        "shops (${shops.length}), "
-        "statistics");
+        "shops (${shops.length})");
 
     return GoogleSpreadsheetWallet(
       name: spreadsheet.properties?.title ?? "",
       incomes: incomes,
-      transfers: transfers,
+      transactions: transfers,
       firstDate: _getFirstDate(statisticsSheet)!,
       lastDate: _getLastDate(statisticsSheet)!,
       categories: categories,
       shops: shops,
       statistics: statistics,
+      budgetItems: budgetItems,
       spreadsheet: spreadsheet,
       generalSheet: generalSheet,
       dailyBalanceSheet: dailyBalanceSheet,
       statisticsSheet: statisticsSheet,
+      budgetSheet: budgetSheet,
     );
   }
 
@@ -152,6 +155,19 @@ class GoogleSpreadsheetRepository extends GoogleApiProvider {
       predictedBalance: statisticsSheet.getRow(16)?.getDouble(column: 1),
       availableDailyBudget: statisticsSheet.getRow(17)?.getDouble(column: 1),
     );
+  }
+
+  List<GoogleSpreadsheetBudgetItem> _getBudgetItems(Sheet budgetSheet) {
+    return budgetSheet.mapRow((index, row) {
+      if (index <= 1) return null;
+      return GoogleSpreadsheetBudgetItem(
+        categorySymbol: row.getString(column: 0)!,
+        plannedAmount: row.getDouble(column: 1)!,
+        usedAmount: row.getDouble(column: 2)!,
+        remainingAmount: row.getDouble(column: 3)!,
+        balance: row.getDouble(column: 4)!,
+      );
+    });
   }
 
   Future<int> addTransaction({
