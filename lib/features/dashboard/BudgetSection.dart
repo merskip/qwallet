@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/Money.dart';
 import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/TransactionsProvider.dart';
@@ -51,9 +52,17 @@ class BudgetSection extends StatelessWidget {
   }
 
   Widget buildBudgetItem(BuildContext context, BudgetItem budgetItem) {
+    final currentMoney = Money(budgetItem.currentAmount ?? 0, wallet.currency);
+    final plannedMoney = Money(budgetItem.plannedAmount, wallet.currency);
+    final remainingMoney = plannedMoney - currentMoney;
     return ListTile(
       title: Text(budgetItem.title),
-      subtitle: Text("${budgetItem.currentAmount}/${budgetItem.plannedAmount}"),
+      trailing: Text(remainingMoney.formatted),
+      subtitle: LinearProgressIndicator(
+        value: currentMoney.amount / plannedMoney.amount,
+        minHeight: 12,
+        color: remainingMoney.amount < 0 ? Colors.red : null,
+      ),
     );
   }
 }
