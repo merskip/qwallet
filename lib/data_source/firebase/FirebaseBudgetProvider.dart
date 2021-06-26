@@ -11,6 +11,7 @@ import 'package:qwallet/data_source/firebase/FirebaseCategory.dart';
 import 'package:qwallet/data_source/firebase/FirebaseWallet.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../utils/IterableFinding.dart';
 import '../TransactionsProvider.dart';
 
 class FirebaseBudgetProvider implements BudgetProvider {
@@ -47,13 +48,42 @@ class FirebaseBudgetProvider implements BudgetProvider {
     required DateRange dateRange,
     required LatestTransactions transactions,
   }) {
-    throw UnsupportedError("Not implemented yet");
+    return walletsProvider.getWalletByIdentifier(walletId).switchMap((wallet) {
+      return firestore
+          .collection("wallets")
+          .doc(walletId.id)
+          .collection("budgets")
+          .where("dateRangeStart", isEqualTo: dateRange.dateTimeRange.start)
+          .where("dateRangeEnd", isEqualTo: dateRange.dateTimeRange.end)
+          .limit(1)
+          .snapshots()
+          .switchMap((budgetSnapshot) {
+        final firstBudget = budgetSnapshot.docs.firstOrNull;
+        if (firstBudget == null) return Stream.value(null);
+        return firstBudget.reference
+            .collection("items")
+            .snapshots()
+            .map((itemsSnapshot) {
+          return itemsSnapshot.docs
+              .map((itemSnapshot) =>
+                  FirebaseBudgetItem(itemSnapshot, wallet, transactions))
+              .toList();
+        }).map(
+          (budgetItems) => FirebaseBudget(
+            firstBudget,
+            wallet as FirebaseWallet,
+            budgetItems,
+          ),
+        );
+      });
+    });
   }
 
   @override
-  Stream<Budget> getBudget(
-      {required Identifier<Wallet> walletId,
-      required Identifier<Budget> budgetId}) {
+  Stream<Budget> getBudget({
+    required Identifier<Wallet> walletId,
+    required Identifier<Budget> budgetId,
+  }) {
     return walletsProvider.getWalletByIdentifier(walletId).switchMap((wallet) {
       return firestore
           .collection("wallets")

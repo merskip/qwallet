@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qwallet/data_source/Transaction.dart';
 
 import 'Category.dart';
 import 'DateRange.dart';
@@ -20,12 +21,17 @@ abstract class Budget implements Identifiable<Budget> {
 class BudgetItem extends Identifiable<BudgetItem> {
   final List<Category> categories;
   final double plannedAmount;
-  final double? currentAmount;
+  final List<Transaction>? transactions;
 
   BudgetItem({
     required Identifier<BudgetItem> identifier,
     required this.categories,
     required this.plannedAmount,
-    this.currentAmount,
+    this.transactions,
   }) : super(identifier);
+}
+
+extension BudgetItemExtra on BudgetItem {
+  double? get currentAmount =>
+      transactions?.fold<double>(0, (p, t) => p + t.amount);
 }

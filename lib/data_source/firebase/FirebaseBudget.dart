@@ -1,8 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' as Cloud;
 import 'package:flutter/material.dart';
 import 'package:qwallet/data_source/Budget.dart';
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/DateRange.dart';
+import 'package:qwallet/data_source/Transaction.dart';
 import 'package:qwallet/data_source/firebase/FirebaseCategory.dart';
 import 'package:qwallet/data_source/firebase/FirebaseModel.dart';
 
@@ -20,7 +21,7 @@ class FirebaseBudget extends FirebaseModel<FirebaseBudget> implements Budget {
   final List<BudgetItem>? items;
 
   FirebaseBudget(
-    DocumentSnapshot snapshot,
+    Cloud.DocumentSnapshot snapshot,
     FirebaseWallet wallet,
     List<BudgetItem>? items,
   )   : identifier = Identifier(domain: "firebase", id: snapshot.id),
@@ -42,10 +43,10 @@ class FirebaseBudgetItem extends FirebaseModel<FirebaseBudgetItem>
   final Identifier<BudgetItem> identifier;
   final List<Category> categories;
   final double plannedAmount;
-  late final double? currentAmount;
+  late final List<Transaction>? transactions;
 
   FirebaseBudgetItem(
-    DocumentSnapshot snapshot,
+    Cloud.DocumentSnapshot snapshot,
     Wallet wallet,
     LatestTransactions? transactions,
   )   : identifier = Identifier(domain: "firebase", id: snapshot.id),
@@ -56,9 +57,9 @@ class FirebaseBudgetItem extends FirebaseModel<FirebaseBudgetItem>
             .toList(),
         plannedAmount = snapshot.getDouble("plannedAmount")!,
         super(snapshot) {
-    currentAmount = transactions?.transactions
+    this.transactions = transactions?.transactions
         .where((t) => categories.contains(t.category))
-        .fold<double>(0, (p, t) => p + t.amount);
+        .toList();
   }
 
   static Category? _findCategory(Wallet wallet, dynamic item) =>
