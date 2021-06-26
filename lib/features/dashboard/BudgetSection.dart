@@ -8,6 +8,7 @@ import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/features/transactions/TransactionsListFilter.dart';
 import 'package:qwallet/features/transactions/TransactionsListPage.dart';
 import 'package:qwallet/utils.dart';
+import 'package:qwallet/widget/CategoryIcon.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 class BudgetSection extends StatelessWidget {
@@ -69,7 +70,7 @@ class BudgetSection extends StatelessWidget {
     final plannedMoney = Money(budgetItem.plannedAmount, wallet.currency);
     final remainingMoney = plannedMoney - currentMoney;
     return ListTile(
-      title: Text(budgetItem.title),
+      title: buildBudgetItemTitle(context, budgetItem),
       trailing: Text(remainingMoney.formatted),
       subtitle: LinearProgressIndicator(
         value: currentMoney.amount / plannedMoney.amount,
@@ -77,6 +78,25 @@ class BudgetSection extends StatelessWidget {
         color: remainingMoney.amount < 0 ? Colors.red : null,
       ),
       onTap: () => onSelectedBudgetItem(context, budgetItem),
+    );
+  }
+
+  Widget buildBudgetItemTitle(BuildContext context, BudgetItem budgetItem) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Wrap(
+        spacing: 8.0,
+        runSpacing: 8.0,
+        children: [
+          ...budgetItem.categories.map((c) {
+            return Row(mainAxisSize: MainAxisSize.min, children: [
+              CategoryIcon(c, iconSize: 16, radius: 14),
+              SizedBox(width: 2),
+              Text(c.titleText),
+            ]);
+          }),
+        ],
+      ),
     );
   }
 }

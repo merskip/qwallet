@@ -3,15 +3,17 @@ import 'package:qwallet/data_source/Category.dart';
 
 class CategoryIcon extends StatelessWidget {
   final Category? category;
-  final double? size;
+  final double? iconSize;
+  final double? radius;
 
-  const CategoryIcon(this.category, {Key? key, this.size}) : super(key: key);
+  const CategoryIcon(this.category, {Key? key, this.iconSize, this.radius})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
       backgroundColor: category?.backgroundColor ?? Colors.black12,
-      radius: size,
+      radius: radius ?? iconSize,
       child: buildIcon(context),
     );
   }
@@ -22,7 +24,7 @@ class CategoryIcon extends StatelessWidget {
       return Icon(
         category.icon,
         color: category.primaryColor ?? Colors.black26,
-        size: size,
+        size: iconSize,
       );
     } else if (category != null && category.symbol != null) {
       final symbols = category.symbol!;
@@ -33,7 +35,7 @@ class CategoryIcon extends StatelessWidget {
       return Icon(
         Icons.category,
         color: Colors.black26,
-        size: size,
+        size: iconSize,
       );
     }
   }

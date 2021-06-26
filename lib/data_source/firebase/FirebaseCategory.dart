@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qwallet/data_source/Category.dart';
 import 'package:qwallet/data_source/Identifier.dart';
@@ -21,7 +22,7 @@ class FirebaseCategory extends FirebaseModel<FirebaseCategory>
   FirebaseCategory(DocumentSnapshot snapshot)
       : identifier = Identifier(domain: "firebase", id: snapshot.id),
         title = snapshot.getString("title")!,
-        icon = snapshot.getIconData("icon")!,
+        icon = snapshot.getIconData("icon") ?? Icons.category,
         primaryColor = snapshot.getColorHex("primaryColor")!,
         backgroundColor = snapshot.getColorHex("backgroundColor")!,
         order = snapshot.getInt("order") ?? 0,

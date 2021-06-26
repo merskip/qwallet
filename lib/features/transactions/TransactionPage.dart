@@ -352,14 +352,14 @@ class _TransactionPageState extends State<TransactionPage> {
     if (category != null) {
       return buildCategoryDetailsItem(
         context,
-        leading: CategoryIcon(category, size: 20),
+        leading: CategoryIcon(category, iconSize: 20),
         value: Text(category.titleText),
         category: category,
       );
     } else {
       return buildCategoryDetailsItem(
         context,
-        leading: CategoryIcon(null, size: 20),
+        leading: CategoryIcon(null, iconSize: 20),
         value: Text(
           AppLocalizations.of(context).transactionDetailsCategoryEmpty,
           style: TextStyle(fontStyle: FontStyle.italic),

@@ -47,7 +47,7 @@ class TransactionListTile extends StatelessWidget {
 
     return ListTile(
       key: Key(transaction.identifier.id),
-      leading: CategoryIcon(category, size: 17),
+      leading: CategoryIcon(category, iconSize: 17),
       title: Text(title),
       subtitle: subtitle.children.isNotEmpty ? subtitle : null,
       trailing: Text(amountPrefix + amountText, style: TextStyle(color: color)),
