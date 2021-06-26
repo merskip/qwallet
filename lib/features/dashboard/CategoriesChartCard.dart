@@ -233,7 +233,7 @@ class _CategoriesChart extends StatelessWidget {
     required this.showAllTitles,
     this.selectedItem,
     required this.onSelectedItem,
-  })   : totalAmount = items.fold(0.0, (acc, i) => acc + i.sum.amount),
+  })  : totalAmount = items.fold(0.0, (acc, i) => acc + i.sum.amount),
         super(key: key);
 
   @override

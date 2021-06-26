@@ -26,6 +26,13 @@ class TransactionsFilter {
     this.includeWithoutCategory,
   });
 
+  factory TransactionsFilter.byCategories(List<Category> categories) {
+    return TransactionsFilter(
+      categories: categories,
+      includeWithoutCategory: false,
+    );
+  }
+
   factory TransactionsFilter.byCategory(Category? category) {
     return category != null
         ? TransactionsFilter(

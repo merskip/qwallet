@@ -5,6 +5,9 @@ import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/features/transactions/TransactionsListFilter.dart';
+import 'package:qwallet/features/transactions/TransactionsListPage.dart';
+import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 class BudgetSection extends StatelessWidget {
@@ -18,6 +21,16 @@ class BudgetSection extends StatelessWidget {
     required this.currentDateRange,
     required this.transactions,
   }) : super(key: key);
+
+  void onSelectedBudgetItem(BuildContext context, BudgetItem budgetItem) {
+    pushPage(
+      context,
+      builder: (context) => TransactionsListPage(
+        wallet: wallet,
+        initialFilter: TransactionsFilter.byCategories(budgetItem.categories),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +76,7 @@ class BudgetSection extends StatelessWidget {
         minHeight: 12,
         color: remainingMoney.amount < 0 ? Colors.red : null,
       ),
+      onTap: () => onSelectedBudgetItem(context, budgetItem),
     );
   }
 }
