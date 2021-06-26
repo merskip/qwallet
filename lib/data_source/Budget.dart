@@ -34,4 +34,6 @@ class BudgetItem extends Identifiable<BudgetItem> {
 extension BudgetItemExtra on BudgetItem {
   double? get currentAmount =>
       transactions?.fold<double>(0, (p, t) => p + t.amount);
+
+  String get title => categories.map((c) => c.titleText).join(", ");
 }

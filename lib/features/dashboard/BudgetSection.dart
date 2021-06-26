@@ -31,6 +31,29 @@ class BudgetSection extends StatelessWidget {
   }
 
   Widget buildBody(BuildContext context, Budget? budget) {
-    return Container();
+    if (budget == null) return Container();
+    return Card(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0).copyWith(bottom: 0.0),
+            child: Text(
+              "#Budget",
+              style: Theme.of(context).textTheme.headline6,
+            ),
+          ),
+          ...budget.items!.map((i) => buildBudgetItem(context, i)),
+        ],
+      ),
+    );
+  }
+
+  Widget buildBudgetItem(BuildContext context, BudgetItem budgetItem) {
+    return ListTile(
+      title: Text(budgetItem.title),
+      subtitle: Text("${budgetItem.currentAmount}/${budgetItem.plannedAmount}"),
+    );
   }
 }
