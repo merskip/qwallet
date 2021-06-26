@@ -17,6 +17,7 @@ import 'package:qwallet/data_source/firebase/FirebaseCategoriesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebasePrivateLoansProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseRemoteUserPreferencesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
+import 'package:qwallet/data_source/google_sheets/SpreadsheetBudgetProvider.dart';
 import 'package:qwallet/logger.dart';
 import 'package:qwallet/router.dart';
 
@@ -126,6 +127,9 @@ void main() async {
         firebaseProvider: FirebaseBudgetProvider(
           firestore: firestore,
           walletsProvider: SharedProviders.walletsProvider,
+        ),
+        spreadsheetProvider: SpreadsheetBudgetProvider(
+          walletsProvider: SharedProviders.spreadsheetWalletsProvider,
         ),
       );
 

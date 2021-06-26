@@ -73,7 +73,9 @@ class BudgetSection extends StatelessWidget {
       title: buildBudgetItemTitle(context, budgetItem),
       trailing: Text(remainingMoney.formatted),
       subtitle: LinearProgressIndicator(
-        value: currentMoney.amount / plannedMoney.amount,
+        value: plannedMoney.amount > 0
+            ? currentMoney.amount / plannedMoney.amount
+            : 0,
         minHeight: 12,
         color: remainingMoney.amount < 0 ? Colors.red : null,
       ),
@@ -92,7 +94,9 @@ class BudgetSection extends StatelessWidget {
             return Row(mainAxisSize: MainAxisSize.min, children: [
               CategoryIcon(c, iconSize: 16, radius: 14),
               SizedBox(width: 2),
-              Text(c.titleText),
+              Flexible(
+                child: Text(c.titleText),
+              ),
             ]);
           }),
         ],

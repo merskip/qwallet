@@ -27,7 +27,7 @@ class BudgetItem extends Identifiable<BudgetItem> {
     required Identifier<BudgetItem> identifier,
     required this.categories,
     required this.plannedAmount,
-    this.transactions,
+    required this.transactions,
   }) : super(identifier);
 }
 

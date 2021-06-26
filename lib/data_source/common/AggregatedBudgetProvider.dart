@@ -5,15 +5,19 @@ import 'package:qwallet/data_source/DateRange.dart';
 import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/firebase/FirebaseBudgetProvider.dart';
+import 'package:qwallet/data_source/google_sheets/SpreadsheetBudgetProvider.dart';
 
 import '../Identifier.dart';
 
 class AggregatedBudgetProvider implements BudgetProvider {
   final FirebaseBudgetProvider _firebaseProvider;
+  final SpreadsheetBudgetProvider _spreadsheetProvider;
 
   AggregatedBudgetProvider({
     required FirebaseBudgetProvider firebaseProvider,
-  }) : _firebaseProvider = firebaseProvider;
+    required SpreadsheetBudgetProvider spreadsheetProvider,
+  })  : _firebaseProvider = firebaseProvider,
+        _spreadsheetProvider = spreadsheetProvider;
 
   @override
   Stream<List<Budget>> getBudgets({
@@ -39,7 +43,11 @@ class AggregatedBudgetProvider implements BudgetProvider {
         dateRange: dateRange,
         transactions: transactions,
       ),
-      ifGoogleSheets: () => throw UnimplementedError(),
+      ifGoogleSheets: () => _spreadsheetProvider.findBudget(
+        walletId: walletId,
+        dateRange: dateRange,
+        transactions: transactions,
+      ),
     );
   }
 

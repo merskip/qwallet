@@ -7,7 +7,6 @@ import 'package:qwallet/data_source/TransactionsProvider.dart';
 import 'package:qwallet/data_source/Wallet.dart';
 import 'package:qwallet/data_source/google_sheets/GoogleSpreadsheetWallet.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetTransaction.dart';
-import 'package:qwallet/data_source/google_sheets/SpreadsheetWallet.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetWalletsProvider.dart';
 
 import '../../utils/IterableFinding.dart';
@@ -34,8 +33,8 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
       return LatestTransactions(
         wallet,
         dateRange ?? wallet.defaultDateRange,
-        wallet.spreadsheetWallet.transfers
-            .map((t) => _toTransaction(wallet, t))
+        wallet.spreadsheetWallet.transactions
+            .map((t) => SpreadsheetTransaction.from(wallet, t))
             .toList(),
       );
     });
@@ -48,10 +47,10 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
   }) {
     assert(walletId.domain == "google_sheets");
     return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
-      final transaction = wallet.spreadsheetWallet.transfers
+      final transaction = wallet.spreadsheetWallet.transactions
           .findFirstOrNull((t) => t.row.toString() == transactionId.id);
       if (transaction == null) return null;
-      return _toTransaction(wallet, transaction);
+      return SpreadsheetTransaction.from(wallet, transaction);
     });
   }
 
@@ -63,8 +62,8 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
   }) {
     assert(walletId.domain == "google_sheets");
     return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
-      var transactions = wallet.spreadsheetWallet.transfers
-          .map((t) => _toTransaction(wallet, t))
+      var transactions = wallet.spreadsheetWallet.transactions
+          .map((t) => SpreadsheetTransaction.from(wallet, t))
           .toList();
 
       if (afterTransaction != null) {
@@ -85,7 +84,7 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     required Identifier<Transaction>? transactionId,
   }) {
     return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
-      final transaction = wallet.spreadsheetWallet.transfers
+      final transaction = wallet.spreadsheetWallet.transactions
           .findFirstOrNull((t) => t.row.toString() == transactionId?.id);
 
       return [
@@ -219,32 +218,6 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
           transferRow: spreadsheetTransaction.spreadsheetTransfer.row,
         )
         .then((value) => walletsProvider.refreshWallet(walletId));
-  }
-
-  SpreadsheetTransaction _toTransaction(
-      SpreadsheetWallet wallet, GoogleSpreadsheetTransaction transfer) {
-    return SpreadsheetTransaction(
-      spreadsheetTransfer: transfer,
-      identifier:
-          Identifier(domain: "google_sheets", id: transfer.row.toString()),
-      type: transfer.amount < 0
-          ? TransactionType.expense
-          : TransactionType.income,
-      title: transfer.description,
-      amount: transfer.amount.abs(),
-      date: transfer.date,
-      category: wallet.categories
-          .findFirstOrNull((c) => c.symbol == transfer.categorySymbol),
-      attachedFiles: transfer.attachedFiles
-          .map((file) => Uri.tryParse(file))
-          .filterNonNull(),
-      excludedFromDailyStatistics:
-          transfer.type != GoogleSpreadsheetTransactionType.current,
-      customFields: {
-        "financingSource": transfer.financingSource,
-        "shop": transfer.shop,
-      },
-    );
   }
 
   @override
