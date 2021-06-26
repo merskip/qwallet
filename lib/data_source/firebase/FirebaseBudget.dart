@@ -19,6 +19,7 @@ class FirebaseBudget extends FirebaseModel<FirebaseBudget> implements Budget {
   final DateTimeRange dateTimeRange;
   late final DateRange? dateRange;
   final List<BudgetItem>? items;
+  final bool isEditable = true;
 
   FirebaseBudget(
     Cloud.DocumentSnapshot snapshot,

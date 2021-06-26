@@ -10,11 +10,13 @@ abstract class Budget implements Identifiable<Budget> {
   final DateTimeRange dateTimeRange;
   final DateRange? dateRange;
   final List<BudgetItem>? items;
+  final bool isEditable;
 
   Budget({
     required this.dateTimeRange,
     required this.dateRange,
     required this.items,
+    required this.isEditable,
   });
 }
 

@@ -8,6 +8,7 @@ class SpreadsheetBudget implements Budget {
   final DateRange? dateRange;
   final DateTimeRange dateTimeRange;
   final List<BudgetItem>? items;
+  final bool isEditable = false;
 
   SpreadsheetBudget({
     required this.identifier,

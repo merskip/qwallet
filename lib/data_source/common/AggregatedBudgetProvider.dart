@@ -26,7 +26,7 @@ class AggregatedBudgetProvider implements BudgetProvider {
     return _onDomain(
       walletId,
       ifFirebase: () => _firebaseProvider.getBudgets(walletId: walletId),
-      ifGoogleSheets: () => throw UnimplementedError(),
+      ifGoogleSheets: () => _spreadsheetProvider.getBudgets(walletId: walletId),
     );
   }
 
@@ -62,7 +62,10 @@ class AggregatedBudgetProvider implements BudgetProvider {
         walletId: walletId,
         budgetId: budgetId,
       ),
-      ifGoogleSheets: () => throw UnimplementedError(),
+      ifGoogleSheets: () => _spreadsheetProvider.getBudget(
+        walletId: walletId,
+        budgetId: budgetId,
+      ),
     );
   }
 

@@ -20,21 +20,18 @@ class SpreadsheetBudgetProvider extends BudgetProvider {
   });
 
   @override
-  Future<Identifier<Budget>> addBudget({
+  Stream<List<Budget>> getBudgets({
     required Identifier<Wallet> walletId,
-    required DateRange dateRange,
   }) {
-    // TODO: implement addBudget
-    throw UnimplementedError();
+    return _getBudget(walletId).map((budget) => [budget]);
   }
 
   @override
-  Future<Identifier<BudgetItem>> addBudgetItem({
+  Stream<Budget> getBudget({
     required Identifier<Wallet> walletId,
     required Identifier<Budget> budgetId,
   }) {
-    // TODO: implement addBudgetItem
-    throw UnimplementedError();
+    return _getBudget(walletId);
   }
 
   @override
@@ -43,6 +40,10 @@ class SpreadsheetBudgetProvider extends BudgetProvider {
     required DateRange dateRange,
     required LatestTransactions transactions,
   }) {
+    return _getBudget(walletId);
+  }
+
+  Stream<Budget> _getBudget(Identifier<Wallet> walletId) {
     return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
       final spreadsheetWallet = wallet.spreadsheetWallet;
 
@@ -75,19 +76,20 @@ class SpreadsheetBudgetProvider extends BudgetProvider {
   }
 
   @override
-  Stream<Budget> getBudget({
+  Future<Identifier<Budget>> addBudget({
     required Identifier<Wallet> walletId,
-    required Identifier<Budget> budgetId,
+    required DateRange dateRange,
   }) {
-    // TODO: implement getBudget
+    // TODO: implement addBudget
     throw UnimplementedError();
   }
 
   @override
-  Stream<List<Budget>> getBudgets({
+  Future<Identifier<BudgetItem>> addBudgetItem({
     required Identifier<Wallet> walletId,
+    required Identifier<Budget> budgetId,
   }) {
-    // TODO: implement getBudgets
+    // TODO: implement addBudgetItem
     throw UnimplementedError();
   }
 

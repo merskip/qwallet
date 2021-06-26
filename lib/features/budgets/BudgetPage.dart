@@ -79,10 +79,12 @@ class _BudgetPageState extends State<BudgetPage> {
             widget.budget.dateTimeRange.formatted()),
       ),
       body: buildBody(context),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => onSelectedAddBudgetItem(context),
-      ),
+      floatingActionButton: widget.budget.isEditable
+          ? FloatingActionButton(
+              child: Icon(Icons.add),
+              onPressed: () => onSelectedAddBudgetItem(context),
+            )
+          : null,
     );
   }
 
@@ -108,7 +110,7 @@ class _BudgetPageState extends State<BudgetPage> {
       Divider(),
       buildBudgetItemCategories(context, budgetItem),
       buildBudgetItemPlannedAmount(context, budgetItem),
-      buildBudgetItemRemove(context, budgetItem),
+      if (widget.budget.isEditable) buildBudgetItemRemove(context, budgetItem),
     ];
   }
 
@@ -121,12 +123,14 @@ class _BudgetPageState extends State<BudgetPage> {
         if (budgetItem.categories.isEmpty) Text("#No selected categories"),
         ...budgetItem.categories.map((c) => buildCategoryTile(context, c)),
       ]),
-      editingContent: (context) => CategoryMultiplePicker(
-        categories: widget.wallet.categories,
-        selectedCategories: budgetItem.categories,
-        onChangeSelectedCategories: (categories) =>
-            selectedCategories = categories,
-      ),
+      editingContent: widget.budget.isEditable
+          ? (context) => CategoryMultiplePicker(
+                categories: widget.wallet.categories,
+                selectedCategories: budgetItem.categories,
+                onChangeSelectedCategories: (categories) =>
+                    selectedCategories = categories,
+              )
+          : null,
       editingSave: () =>
           onSelectedEditCategoriesSave(context, budgetItem, selectedCategories),
     );
@@ -147,12 +151,16 @@ class _BudgetPageState extends State<BudgetPage> {
     return DetailsItemTile(
       title: Text("#Planned amount"),
       value: Text(plannedMoney.formatted),
-      onEdit: (context) async {
-        final newMoney = await InputMoneySheet.show(context, plannedMoney);
-        if (newMoney != null) {
-          onSelectedEditPlannedAmountSave(context, budgetItem, newMoney.amount);
-        }
-      },
+      onEdit: widget.budget.isEditable
+          ? (context) async {
+              final newMoney =
+                  await InputMoneySheet.show(context, plannedMoney);
+              if (newMoney != null) {
+                onSelectedEditPlannedAmountSave(
+                    context, budgetItem, newMoney.amount);
+              }
+            }
+          : null,
     );
   }
 
