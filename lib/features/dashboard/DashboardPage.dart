@@ -268,7 +268,8 @@ class DashboardPageState extends State<DashboardPage> {
 
   List<Widget> buildAppBarActions(BuildContext context, bool hasWallets) {
     return <Widget>[
-      if (hasWallets) buildPushNotificationsButton(context),
+      if (hasWallets && notificationService.isSupported())
+        buildPushNotificationsButton(context),
       if (hasWallets)
         IconButton(
           icon: Icon(Icons.edit_outlined),

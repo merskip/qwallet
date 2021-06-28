@@ -7,9 +7,11 @@ class PushNotificationService {
   static const _platform =
       const MethodChannel('pl.merskip.qwallet/push_notification_service');
 
+  bool isSupported() {
+    return Platform.isAndroid;
+  }
+
   Future<bool> isPermissionGranted() async {
-    if (!Platform.isAndroid)
-      return false;
     try {
       final result = await _platform.invokeMapMethod("isPermissionGranted");
       return result?["isPermissionGranted"] as bool;
