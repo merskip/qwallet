@@ -68,7 +68,10 @@ void main() async {
         crashlytics?.setCrashlyticsCollectionEnabled(false);
       }
 
-      SharedProviders.accountProvider = DefaultAccountProvider();
+      SharedProviders.accountProvider = DefaultAccountProvider(
+        isAdditionalScopesRequired: () async =>
+            (await LocalPreferences.walletsSpreadsheetIds.first).isNotEmpty,
+      );
 
       SharedProviders.firebaseCategoriesProvider = FirebaseCategoriesProvider(
         firestore: firestore,

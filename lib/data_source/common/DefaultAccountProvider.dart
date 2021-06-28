@@ -13,6 +13,8 @@ import 'package:rxdart/rxdart.dart';
 class DefaultAccountProvider extends AccountProvider {
   final _firebaseAuth = FirebaseAuth.instance;
 
+  final FutureOr<bool> Function() isAdditionalScopesRequired;
+
   bool _isInitialized = false;
   late GoogleSignIn _googleSignIn;
   StreamSubscription? _userChangedSubscription;
@@ -22,7 +24,9 @@ class DefaultAccountProvider extends AccountProvider {
   @override
   Account? get account => _accountSubject.value;
 
-  DefaultAccountProvider() {
+  DefaultAccountProvider({
+    required this.isAdditionalScopesRequired,
+  }) {
     _accountSubject = BehaviorSubject<Account>(
       onListen: () => _emitAccount(),
     );
@@ -75,10 +79,6 @@ class DefaultAccountProvider extends AccountProvider {
 
     GoogleSignInAccount? account;
     final googleSignWithScopes = _createGoogleSignInWithScopes();
-    googleSignWithScopes.onCurrentUserChanged.listen((user) {
-      logger.verbose("googleSignWithScopes.onCurrentUserChanged: "
-          "${user != null ? "<exists>" : "null"}");
-    });
 
     try {
       account =
@@ -90,6 +90,12 @@ class DefaultAccountProvider extends AccountProvider {
         stackTrace: stackTrace,
       );
     }
+    if (account == null && await isAdditionalScopesRequired()) {
+      logger.warning(
+          "Failed silently sign in with scopes, but additional scopes is required");
+      account = await googleSignWithScopes.signIn();
+    }
+
     if (account != null) {
       _googleSignIn = googleSignWithScopes;
       logger.info("Sign in using additional scopes");
@@ -102,10 +108,6 @@ class DefaultAccountProvider extends AccountProvider {
       if (!kIsWeb) {
         logger.info("Sign in using basic scope");
         _googleSignIn = _createGoogleSignInBasic();
-        _googleSignIn.onCurrentUserChanged.listen((user) {
-          logger.verbose("googleSignBasic.onCurrentUserChanged: "
-              "${user != null ? "<exists>" : "null"}");
-        });
       } else {
         _googleSignIn = googleSignWithScopes;
       }
