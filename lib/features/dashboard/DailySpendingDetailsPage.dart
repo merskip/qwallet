@@ -268,8 +268,8 @@ class DailySpendingDayBar extends StatelessWidget {
           clipBehavior: Clip.none,
           alignment: Alignment.bottomCenter,
           children: [
-            buildAvailableBudget(context),
             buildExpenses(context),
+            buildAvailableBudget(context),
           ],
         ),
       ),
@@ -277,17 +277,21 @@ class DailySpendingDayBar extends StatelessWidget {
   }
 
   Widget buildAvailableBudget(BuildContext context) {
+    Color borderColor;
+    if (isSelected)
+      borderColor = Theme.of(context).primaryColor;
+    else if (dailySpendingDay.date.isToday)
+      borderColor = Theme.of(context).accentColor;
+    else
+      borderColor = Colors.black26;
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.black12,
-        border: isSelected || dailySpendingDay.date.isToday
-            ? Border.all(
-                width: isSelected ? 1.5 : 2,
-                color: isSelected
-                    ? Theme.of(context).primaryColor
-                    : Theme.of(context).accentColor,
-              )
-            : null,
+        border: Border.all(
+          width: 2.0,
+          color: borderColor,
+        ),
         borderRadius: BorderRadius.circular(8),
       ),
       height: dailySpendingDay.availableBudget * scale + 4,
@@ -327,10 +331,7 @@ class DailySpendingDayBar extends StatelessWidget {
   Widget buildConstantExpenses(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color:
-            dailySpendingDay.regularExpenses > dailySpendingDay.availableBudget
-                ? Colors.red
-                : Colors.blueGrey.shade300,
+        color: Colors.blueGrey.shade300,
         borderRadius: BorderRadius.vertical(
           bottom: Radius.circular(8),
           top: dailySpendingDay.dailyExpenses == 0.0
