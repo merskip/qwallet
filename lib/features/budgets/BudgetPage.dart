@@ -90,17 +90,20 @@ class _BudgetPageState extends State<BudgetPage> {
 
   Widget buildBody(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DetailsItemTile(
-            title: Text("#Date range"),
-            value: Text(widget.budget.dateTimeRange.formatted()),
-          ),
-          ...widget.budget.items!
-              .map((budgetItem) => buildBudgetItem(context, budgetItem))
-              .flatten(),
-        ],
+      child: SafeArea(
+        minimum: const EdgeInsets.only(bottom: 92),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DetailsItemTile(
+              title: Text("#Date range"),
+              value: Text(widget.budget.dateTimeRange.formatted()),
+            ),
+            ...widget.budget.items!
+                .map((budgetItem) => buildBudgetItem(context, budgetItem))
+                .flatten(),
+          ],
+        ),
       ),
     );
   }
