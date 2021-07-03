@@ -69,15 +69,30 @@ class BudgetSection extends StatelessWidget {
     final currentMoney = Money(budgetItem.currentAmount ?? 0, wallet.currency);
     final plannedMoney = Money(budgetItem.plannedAmount, wallet.currency);
     final remainingMoney = plannedMoney - currentMoney;
-    return ListTile(
-      title: buildBudgetItemTitle(context, budgetItem),
-      trailing: Text(remainingMoney.formatted),
-      subtitle: LinearProgressIndicator(
-        value: plannedMoney.amount > 0
-            ? currentMoney.amount / plannedMoney.amount
-            : 0,
-        minHeight: 12,
-        color: remainingMoney.amount < 0 ? Colors.red : null,
+    return InkWell(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildBudgetItemTitle(context, budgetItem),
+            LinearProgressIndicator(
+              value: plannedMoney.amount > 0
+                  ? currentMoney.amount / plannedMoney.amount
+                  : 0,
+              minHeight: 12,
+              color: remainingMoney.amount < 0 ? Colors.red : null,
+            ),
+            SizedBox(height: 6),
+            Row(children: [
+              Text(currentMoney.formatted),
+              Spacer(),
+              Text(remainingMoney.formatted),
+              Spacer(),
+              Text(plannedMoney.formatted),
+            ]),
+          ],
+        ),
       ),
       onTap: () => onSelectedBudgetItem(context, budgetItem),
     );
@@ -92,10 +107,13 @@ class BudgetSection extends StatelessWidget {
         children: [
           ...budgetItem.categories.map((c) {
             return Row(mainAxisSize: MainAxisSize.min, children: [
-              CategoryIcon(c, iconSize: 16, radius: 14),
-              SizedBox(width: 2),
+              CategoryIcon(c, iconSize: 10, radius: 10),
+              SizedBox(width: 4),
               Flexible(
-                child: Text(c.titleText),
+                child: Text(
+                  c.titleText,
+                  style: TextStyle(fontSize: 14, letterSpacing: -0.5),
+                ),
               ),
             ]);
           }),
