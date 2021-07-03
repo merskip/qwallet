@@ -54,7 +54,8 @@ class FirebaseBudgetProvider implements BudgetProvider {
           .doc(walletId.id)
           .collection("budgets")
           .where("dateRangeStart", isEqualTo: dateRange.dateTimeRange.start)
-          .where("dateRangeEnd", isEqualTo: dateRange.dateTimeRange.end)
+          // NOTE: Doesn't work on iOS for unknown reason
+          // .where("dateRangeEnd", isEqualTo: dateRange.dateTimeRange.end)
           .limit(1)
           .snapshots()
           .switchMap((budgetSnapshot) {
