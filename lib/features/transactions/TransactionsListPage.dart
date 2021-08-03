@@ -122,11 +122,13 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
   Stream<List<Transaction>> getNextTransactions({
     Transaction? afterTransaction,
   }) {
-    return SharedProviders.transactionsProvider.getPageableTransactions(
-      walletId: widget.wallet.identifier,
-      limit: itemsPerPage,
-      afterTransaction: afterTransaction,
-    );
+    return SharedProviders.transactionsProvider
+        .getPageableTransactions(
+          walletId: widget.wallet.identifier,
+          limit: itemsPerPage,
+          afterTransaction: afterTransaction,
+        )
+        .asBroadcastStream();
   }
 
   @override
@@ -134,7 +136,8 @@ class _TransactionsContentPageState extends State<_TransactionsContentPage> {
     return SimpleStreamWidget(
       stream: CombineLatestStream.list(transactionsPages),
       builder: (context, List<List<Transaction>> transactionsPages) {
-        isMorePages = transactionsPages.lastOrNull?.isNotEmpty ?? false;
+        isMorePages = (transactionsPages.lastOrNull?.isNotEmpty ?? false) &&
+            transactionsPages.length == this.transactionsPages.length;
 
         final transactions = transactionsPages.flattened.toList();
 

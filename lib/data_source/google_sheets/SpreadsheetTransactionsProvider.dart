@@ -61,20 +61,16 @@ class SpreadsheetTransactionsProvider implements TransactionsProvider {
     required Transaction? afterTransaction,
   }) {
     assert(walletId.domain == "google_sheets");
+    if (afterTransaction != null) {
+      return Stream.value([]);
+    }
+
     return walletsProvider.getWalletByIdentifier(walletId).map((wallet) {
       var transactions = wallet.spreadsheetWallet.transactions
           .map((t) => SpreadsheetTransaction.from(wallet, t))
           .toList();
 
-      if (afterTransaction != null) {
-        final afterIndex = transactions
-            .lastIndexWhere((t) => t.identifier == afterTransaction.identifier);
-        transactions.sublist(afterIndex);
-      }
-      if (transactions.length > limit)
-        return transactions.sublist(0, limit);
-      else
-        return transactions;
+      return transactions;
     });
   }
 
