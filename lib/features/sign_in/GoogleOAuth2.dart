@@ -7,21 +7,17 @@ import 'package:oauth2_client/google_oauth2_client.dart';
 import 'package:oauth2_client/oauth2_client.dart';
 import 'package:oauth2_client/oauth2_helper.dart';
 
-class GoogleAuth {
-  static final instance = GoogleAuth._();
-
+class GoogleOAuth2 {
   late final OAuth2Client _client;
   late final OAuth2Helper _oauthHelper;
 
-  GoogleAuth._();
-
-  void initialize({
+  GoogleOAuth2({
     required String clientId,
-    required String redirectScheme,
+    required String packageName,
   }) {
     _client = GoogleOAuth2Client(
-      customUriScheme: redirectScheme,
-      redirectUri: "$redirectScheme:/oauth2redirect",
+      customUriScheme: packageName,
+      redirectUri: "$packageName:/oauth2redirect",
     );
 
     _oauthHelper = OAuth2Helper(

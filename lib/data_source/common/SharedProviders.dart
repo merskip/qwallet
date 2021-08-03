@@ -3,8 +3,8 @@ import 'package:qwallet/data_source/firebase/FirebaseTransactionsProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetTransactionsProvider.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetWalletsProvider.dart';
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 
-import '../AccountProvider.dart';
 import '../BudgetProvider.dart';
 import '../CategoriesProvider.dart';
 import '../PrivateLoansProvider.dart';
@@ -17,12 +17,13 @@ import 'OrderedWalletsProvider.dart';
 class SharedProviders {
   SharedProviders._();
 
+  static late AuthSuite authSuite;
+
   static late OrderedWalletsProvider orderedWalletsProvider;
   static late WalletsProvider walletsProvider;
   static late CategoriesProvider categoriesProvider;
   static late TransactionsProvider transactionsProvider;
   static late BudgetProvider budgetProvider;
-  static late AccountProvider accountProvider;
   static late UsersProvider usersProvider;
   static late PrivateLoansProvider privateLoansProvider;
   static late RemoteUserPreferencesProvider remoteUserPreferences;

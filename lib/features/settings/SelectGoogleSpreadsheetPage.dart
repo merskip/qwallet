@@ -179,8 +179,7 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
   }
 
   Stream<_SpreadsheetFilesResponse> getSpreadsheetFiles() {
-    final googleApiProvider =
-        GoogleApiProvider(SharedProviders.accountProvider);
+    final googleApiProvider = GoogleApiProvider(SharedProviders.authSuite);
 
     final files = googleApiProvider.driveApi
         .then((driveApi) => driveApi.files.list(
@@ -205,7 +204,7 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
   }
 
   Stream<GoogleAuthClient> getGoogleAuthClient() {
-    return GoogleApiProvider(SharedProviders.accountProvider).client.asStream();
+    return GoogleApiProvider(SharedProviders.authSuite).client.asStream();
   }
 }
 

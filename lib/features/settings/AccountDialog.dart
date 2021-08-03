@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/data_source/Account.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
-import 'package:qwallet/features/sign_in/AuthSuite.dart';
+import 'package:qwallet/features/sign_in/GoogleAuthSuite.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 class AccountDialog extends StatelessWidget {
   void onSelectedSignOut(BuildContext context) async {
-    await AuthSuite.instance.signOut();
+    await SharedProviders.authSuite.signOut();
     Navigator.of(context).popUntil((route) => route.settings.name == "/");
   }
 
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: SharedProviders.accountProvider.getAccount(),
+      stream: GoogleAuthSuite.instance.getAccount(),
       builder: (context, Account account) => SimpleDialog(
         children: [
           buildAccountTile(context, account),

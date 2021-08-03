@@ -1,7 +1,7 @@
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 import 'package:qwallet/logger.dart';
 
 import '../../utils/IterableFinding.dart';
-import '../AccountProvider.dart';
 import 'GoogleSpreadsheetRepository.dart';
 import 'GoogleSpreadsheetWallet.dart';
 
@@ -10,9 +10,9 @@ class CachedGoogleSpreadsheetRepository extends GoogleSpreadsheetRepository {
   final Duration cacheDuration;
 
   CachedGoogleSpreadsheetRepository({
-    required AccountProvider accountProvider,
+    required AuthSuite authSuite,
     required this.cacheDuration,
-  }) : super(accountProvider: accountProvider);
+  }) : super(authSuite: authSuite);
 
   void clearCacheForSpreadsheetId(String spreadsheetId) {
     _clearCachedWallet(spreadsheetId);

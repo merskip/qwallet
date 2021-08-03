@@ -1,30 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart' as CloudFirestore;
-import 'package:firebase_auth/firebase_auth.dart' as FirebaseAuth;
 import 'package:qwallet/Currency.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/PrivateLoansProvider.dart';
 import 'package:qwallet/data_source/UsersProvider.dart';
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 import 'package:qwallet/model/User.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../utils.dart';
-import '../AccountProvider.dart';
 import 'PrivateLoan.dart';
 
 class FirebasePrivateLoansProvider implements PrivateLoansProvider {
-  final AccountProvider accountProvider;
+  final AuthSuite authSuite;
   final UsersProvider usersProvider;
   final CloudFirestore.FirebaseFirestore firestore;
 
   FirebasePrivateLoansProvider({
-    required this.accountProvider,
+    required this.authSuite,
     required this.usersProvider,
     required this.firestore,
   });
 
   @override
   Stream<List<PrivateLoan>> getPrivateLoans({bool includeFullyRepaid = false}) {
-    return onFirebaseUser((user) {
+    return authSuite.getFirebaseUser().flatMap((user) {
       final getSnapshots =
           (CloudFirestore.Query filter(CloudFirestore.Query query)) {
         CloudFirestore.Query query = firestore.collection("privateLoans");
@@ -149,15 +148,5 @@ class FirebasePrivateLoansProvider implements PrivateLoansProvider {
     required Identifier<PrivateLoan> loanId,
   }) {
     return firestore.collection("privateLoans").doc(loanId.id).delete();
-  }
-
-  Stream<T> onFirebaseUser<T>(
-      Stream<T> Function(FirebaseAuth.User user) callback) {
-    return accountProvider.getAccount().flatMap((account) {
-      final user = account.firebaseUser;
-      if (user == null) return Stream.empty();
-
-      return callback(user);
-    });
   }
 }

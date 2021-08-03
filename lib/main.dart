@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -19,7 +20,8 @@ import 'package:qwallet/data_source/firebase/FirebasePrivateLoansProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseRemoteUserPreferencesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetBudgetProvider.dart';
-import 'package:qwallet/features/sign_in/GoogleAuth.dart';
+import 'package:qwallet/features/sign_in/GoogleAuthSuite.dart';
+import 'package:qwallet/features/sign_in/GoogleOAuth2.dart';
 import 'package:qwallet/logger.dart';
 import 'package:qwallet/router.dart';
 
@@ -27,7 +29,6 @@ import 'AppLocalizations.dart';
 import 'LocalPreferences.dart';
 import 'data_source/common/AggregatedTransactionsProvider.dart';
 import 'data_source/common/AggregatedWalletsProvider.dart';
-import 'data_source/common/DefaultAccountProvider.dart';
 import 'data_source/common/OrderedWalletsProvider.dart';
 import 'data_source/common/SharedProviders.dart';
 import 'data_source/firebase/FirebaseTransactionsProvider.dart';
@@ -47,11 +48,6 @@ void main() async {
       WidgetsFlutterBinding.ensureInitialized();
 
       await Firebase.initializeApp();
-      GoogleAuth.instance.initialize(
-        clientId:
-            "207455736812-iivopmrkc4trb5pqpg5h5m10rjbcgiee.apps.googleusercontent.com",
-        redirectScheme: (await PackageInfo.fromPlatform()).packageName,
-      );
 
       firestore.settings = Settings(
         persistenceEnabled: true,
@@ -75,9 +71,13 @@ void main() async {
         crashlytics?.setCrashlyticsCollectionEnabled(false);
       }
 
-      SharedProviders.accountProvider = DefaultAccountProvider(
-        isAdditionalScopesRequired: () async =>
-            (await LocalPreferences.walletsSpreadsheetIds.first).isNotEmpty,
+      SharedProviders.authSuite = GoogleAuthSuite(
+        firebaseAuth: FirebaseAuth.instance,
+        googleAuth: GoogleOAuth2(
+          clientId:
+              "207455736812-iivopmrkc4trb5pqpg5h5m10rjbcgiee.apps.googleusercontent.com",
+          packageName: (await PackageInfo.fromPlatform()).packageName,
+        ),
       );
 
       SharedProviders.firebaseCategoriesProvider = FirebaseCategoriesProvider(
@@ -85,13 +85,13 @@ void main() async {
       );
 
       SharedProviders.firebaseWalletsProvider = FirebaseWalletsProvider(
-        accountProvider: SharedProviders.accountProvider,
+        authSuite: SharedProviders.authSuite,
         firestore: firestore,
         categoriesProvider: SharedProviders.firebaseCategoriesProvider,
       );
 
       final googleSpreadsheetRepository = CachedGoogleSpreadsheetRepository(
-        accountProvider: SharedProviders.accountProvider,
+        authSuite: SharedProviders.authSuite,
         cacheDuration: Duration(minutes: 1),
       );
 
@@ -148,14 +148,14 @@ void main() async {
       );
 
       SharedProviders.privateLoansProvider = FirebasePrivateLoansProvider(
-        accountProvider: SharedProviders.accountProvider,
+        authSuite: SharedProviders.authSuite,
         usersProvider: SharedProviders.usersProvider,
         firestore: firestore,
       );
 
       SharedProviders.remoteUserPreferences =
           FirebaseRemoteUserPreferencesProvider(
-        accountProvider: SharedProviders.accountProvider,
+        authSuite: SharedProviders.authSuite,
         firestore: firestore,
       );
 
