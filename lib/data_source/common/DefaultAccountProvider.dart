@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart';
 import 'package:googleapis/sheets/v4.dart';
@@ -70,73 +69,73 @@ class DefaultAccountProvider extends AccountProvider {
   }
 
   Future<void> _listenGoogleAccountChange() async {
-    logger.debug("Listen Google account change");
-    _userChangedSubscription?.cancel();
-    if (_isInitialized) {
-      await _googleSignIn.currentUser?.clearAuthCache();
-      logger.debug("Cleared auth cache");
-    }
-
-    GoogleSignInAccount? account;
-    final googleSignWithScopes = _createGoogleSignInWithScopes();
-
-    try {
-      account =
-          await googleSignWithScopes.signInSilently(suppressErrors: false);
-    } catch (exception, stackTrace) {
-      logger.verbose(
-        "An exception while trying sign in silently with scopes",
-        exception: exception,
-        stackTrace: stackTrace,
-      );
-    }
-    if (account == null && await isAdditionalScopesRequired()) {
-      logger.warning(
-          "Failed silently sign in with scopes, but additional scopes is required");
-      account = await googleSignWithScopes.signIn();
-    }
-
-    if (account != null) {
-      _googleSignIn = googleSignWithScopes;
-      logger.info("Sign in using additional scopes");
-    } else {
-      logger.verbose(
-          "Failed sign in with scopes, isSignIn=${await googleSignWithScopes.isSignedIn()}, "
-          "currentUser=${googleSignWithScopes.currentUser != null ? "<exists>" : "null"}");
-
-      // Change Google SignIn on web causes crash, so require using with scopes
-      if (!kIsWeb) {
-        logger.info("Sign in using basic scope");
-        _googleSignIn = _createGoogleSignInBasic();
-      } else {
-        _googleSignIn = googleSignWithScopes;
-      }
-    }
-    try {
-      await _googleSignIn.signInSilently(suppressErrors: false);
-    } catch (exception, stackTrace) {
-      logger.verbose(
-        "An exception while trying sign in silently after resolving scopes",
-        exception: exception,
-        stackTrace: stackTrace,
-      );
-    }
-    logger.info("Google isSignIn=${await _googleSignIn.isSignedIn()}, "
-        "currentUser=${_googleSignIn.currentUser != null ? "<exists>" : "null"}");
-
-    if (FirebaseAuth.instance.currentUser != null &&
-        _googleSignIn.currentUser == null) {
-      logger.warning(
-          "Firebase current user is non-null, and Google current user is null while initialization!");
-    }
-
-    _userChangedSubscription = _googleSignIn.onCurrentUserChanged.listen(
-      (account) async {
-        logger.info("Current user changed account.id=${account?.id ?? "null"}");
-        if (account != null) await _firebaseSignIn(account);
-        _emitAccount();
-      },
-    );
+    // logger.debug("Listen Google account change");
+    // _userChangedSubscription?.cancel();
+    // if (_isInitialized) {
+    //   await _googleSignIn.currentUser?.clearAuthCache();
+    //   logger.debug("Cleared auth cache");
+    // }
+    //
+    // GoogleSignInAccount? account;
+    // final googleSignWithScopes = _createGoogleSignInWithScopes();
+    //
+    // try {
+    //   account =
+    //       await googleSignWithScopes.signInSilently(suppressErrors: false);
+    // } catch (exception, stackTrace) {
+    //   logger.verbose(
+    //     "An exception while trying sign in silently with scopes",
+    //     exception: exception,
+    //     stackTrace: stackTrace,
+    //   );
+    // }
+    // if (account == null && await isAdditionalScopesRequired()) {
+    //   logger.warning(
+    //       "Failed silently sign in with scopes, but additional scopes is required");
+    //   account = await googleSignWithScopes.signIn();
+    // }
+    //
+    // if (account != null) {
+    _googleSignIn = _createGoogleSignInBasic();
+    //   logger.info("Sign in using additional scopes");
+    // } else {
+    //   logger.verbose(
+    //       "Failed sign in with scopes, isSignIn=${await googleSignWithScopes.isSignedIn()}, "
+    //       "currentUser=${googleSignWithScopes.currentUser != null ? "<exists>" : "null"}");
+    //
+    //   // Change Google SignIn on web causes crash, so require using with scopes
+    //   if (!kIsWeb) {
+    //     logger.info("Sign in using basic scope");
+    //     _googleSignIn = _createGoogleSignInBasic();
+    //   } else {
+    //     _googleSignIn = googleSignWithScopes;
+    //   }
+    // }
+    // try {
+    //   await _googleSignIn.signInSilently(suppressErrors: false);
+    // } catch (exception, stackTrace) {
+    //   logger.verbose(
+    //     "An exception while trying sign in silently after resolving scopes",
+    //     exception: exception,
+    //     stackTrace: stackTrace,
+    //   );
+    // }
+    // logger.info("Google isSignIn=${await _googleSignIn.isSignedIn()}, "
+    //     "currentUser=${_googleSignIn.currentUser != null ? "<exists>" : "null"}");
+    //
+    // if (FirebaseAuth.instance.currentUser != null &&
+    //     _googleSignIn.currentUser == null) {
+    //   logger.warning(
+    //       "Firebase current user is non-null, and Google current user is null while initialization!");
+    // }
+    //
+    // _userChangedSubscription = _googleSignIn.onCurrentUserChanged.listen(
+    //   (account) async {
+    //     logger.info("Current user changed account.id=${account?.id ?? "null"}");
+    //     if (account != null) await _firebaseSignIn(account);
+    //     _emitAccount();
+    //   },
+    // );
     _isInitialized = true;
     _emitAccount();
   }
