@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:package_info/package_info.dart';
 import 'package:qwallet/data_source/common/AggregatedBudgetProvider.dart';
 import 'package:qwallet/data_source/common/AggregatedCategoriesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseBudgetProvider.dart';
@@ -18,6 +19,7 @@ import 'package:qwallet/data_source/firebase/FirebasePrivateLoansProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseRemoteUserPreferencesProvider.dart';
 import 'package:qwallet/data_source/firebase/FirebaseWalletsProvider.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetBudgetProvider.dart';
+import 'package:qwallet/features/sign_in/GoogleAuth.dart';
 import 'package:qwallet/logger.dart';
 import 'package:qwallet/router.dart';
 
@@ -45,6 +47,11 @@ void main() async {
       WidgetsFlutterBinding.ensureInitialized();
 
       await Firebase.initializeApp();
+      GoogleAuth.instance.initialize(
+        clientId:
+            "207455736812-iivopmrkc4trb5pqpg5h5m10rjbcgiee.apps.googleusercontent.com",
+        redirectScheme: (await PackageInfo.fromPlatform()).packageName,
+      );
 
       firestore.settings = Settings(
         persistenceEnabled: true,

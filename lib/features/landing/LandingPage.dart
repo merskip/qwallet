@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qwallet/data_source/Account.dart';
-import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 import '../sign_in/SignInPage.dart';
@@ -15,9 +14,9 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: SharedProviders.accountProvider.getAccount(),
-      builder: (context, Account account) {
-        if (account.isSignIn()) {
+      stream: AuthSuite.instance.isSignIn(),
+      builder: (context, bool isSignIn) {
+        if (isSignIn) {
           return _homePage(context);
         } else {
           return _signInPage(context);

@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 import 'package:qwallet/logger.dart';
-import 'package:qwallet/utils/OAuth2.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 import 'package:qwallet/widget/VectorImage.dart';
@@ -125,18 +124,14 @@ class _SignInPageState extends State<SignInPage> {
   _singInWithGoogle(BuildContext context) async {
     setState(() => isLoginInProgress = true);
     try {
-      final google = GoogleSignInOAuth2();
-      google.requestAuthentication();
+      AuthSuite.instance.signInWithGoogle();
     } catch (e, stackTrace) {
-      if (e is PlatformException && e.code == "popup_closed_by_user") {
-      } else {
-        logger.error(
-          "Failed while sign in with Google",
-          exception: e,
-          stackTrace: stackTrace,
-        );
-        _handleError(context, e);
-      }
+      logger.error(
+        "Failed while sign in with Google",
+        exception: e,
+        stackTrace: stackTrace,
+      );
+      _handleError(context, e);
     } finally {
       if (mounted) {
         setState(() => isLoginInProgress = false);

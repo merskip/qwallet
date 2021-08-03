@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:oauth2_client/access_token_response.dart';
 import 'package:oauth2_client/google_oauth2_client.dart';
 import 'package:oauth2_client/oauth2_helper.dart';
 
@@ -15,7 +16,7 @@ class GoogleSignInOAuth2 {
         128, (i) => charset[Random.secure().nextInt(charset.length)]).join();
   }
 
-  Future<void> requestAuthentication() async {
+  Future<AccessTokenResponse?> requestAuthentication() async {
     print("Creating GoogleOAuth2Client");
     final client = GoogleOAuth2Client(
       customUriScheme: 'pl.merskip.qwallet',
@@ -33,10 +34,6 @@ class GoogleSignInOAuth2 {
     );
     print("- Created OAuth2Helper");
 
-    final token = await oauth2Helper.getToken();
-
-    final response =
-        await oauth2Helper.get("https://www.googleapis.com/oauth2/v2/userinfo");
-    print(response.body);
+    return oauth2Helper.getToken();
   }
 }

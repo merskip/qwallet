@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/data_source/Account.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 class AccountDialog extends StatelessWidget {
   void onSelectedSignOut(BuildContext context) async {
-    await SharedProviders.accountProvider.signOut();
+    await AuthSuite.instance.signOut();
     Navigator.of(context).popUntil((route) => route.settings.name == "/");
   }
 
