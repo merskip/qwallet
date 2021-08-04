@@ -1,15 +1,15 @@
 import 'package:googleapis/sheets/v4.dart';
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 import 'package:qwallet/logger.dart';
 
 import '../../utils/IterableFinding.dart';
-import '../AccountProvider.dart';
 import 'GoogleSpreadsheetWallet.dart';
 import 'SheetsApiProvider.dart';
 
 class GoogleSpreadsheetRepository extends GoogleApiProvider {
   GoogleSpreadsheetRepository({
-    required AccountProvider accountProvider,
-  }) : super(accountProvider);
+    required AuthSuite authSuite,
+  }) : super(authSuite);
 
   Future<GoogleSpreadsheetWallet> getWalletBySpreadsheetId(
     String spreadsheetId,

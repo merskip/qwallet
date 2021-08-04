@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:qwallet/data_source/Identifier.dart';
 import 'package:qwallet/data_source/firebase/FirebaseCategoriesProvider.dart';
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../Currency.dart';
-import '../AccountProvider.dart';
 import '../Wallet.dart';
 import '../WalletsProvider.dart';
 import 'CloudFirestoreUtils.dart';
@@ -13,24 +12,24 @@ import 'FirebaseCategory.dart';
 import 'FirebaseWallet.dart';
 
 class FirebaseWalletsProvider implements WalletsProvider {
-  final AccountProvider accountProvider;
+  final AuthSuite authSuite;
   final FirebaseCategoriesProvider categoriesProvider;
   final FirebaseFirestore firestore;
 
   final _removedWallets = <Identifier<Wallet>>[];
 
   FirebaseWalletsProvider({
-    required this.accountProvider,
+    required this.authSuite,
     required this.categoriesProvider,
     required this.firestore,
   });
 
   @override
   Stream<List<FirebaseWallet>> getWallets() {
-    return onFirebaseUser((user) {
+    return authSuite.getLastAccount().flatMap((account) {
       return firestore
           .collection("wallets")
-          .where("ownersUid", arrayContains: user.uid)
+          .where("ownersUid", arrayContains: account.uid)
           .snapshots()
           .switchMap(
             (walletsSnapshot) => _parseWalletsSnapshot(walletsSnapshot),
@@ -123,13 +122,5 @@ class FirebaseWalletsProvider implements WalletsProvider {
               walletSnapshot,
               categories as List<FirebaseCategory>,
             ));
-  }
-
-  Stream<T> onFirebaseUser<T>(Stream<T> Function(User user) callback) {
-    return accountProvider.getAccount().flatMap((account) {
-      final user = account.firebaseUser;
-      if (user == null) return Stream.error("account.firebaseUser is null");
-      return callback(user);
-    });
   }
 }

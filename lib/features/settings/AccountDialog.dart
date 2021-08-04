@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
-import 'package:qwallet/data_source/Account.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 class AccountDialog extends StatelessWidget {
   void onSelectedSignOut(BuildContext context) async {
-    await SharedProviders.accountProvider.signOut();
+    await SharedProviders.authSuite.signOut();
     Navigator.of(context).popUntil((route) => route.settings.name == "/");
   }
 
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: SharedProviders.accountProvider.getAccount(),
+      stream: SharedProviders.authSuite.getLastAccount(),
       builder: (context, Account account) => SimpleDialog(
         children: [
           buildAccountTile(context, account),
+          buildTokenTitle(context, account),
           Divider(),
           buildSignOut(context),
         ],
@@ -25,22 +26,31 @@ class AccountDialog extends StatelessWidget {
   }
 
   Widget buildAccountTile(BuildContext context, Account account) {
-    final avatarUrl = account.getAvatarUrl();
-    final firebaseUser = account.firebaseUser;
-    if (firebaseUser == null) return Container();
+    final avatarUrl = account.avatarUrl;
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+        backgroundImage:
+            account.avatarUrl != null ? NetworkImage(account.avatarUrl!) : null,
         backgroundColor: Colors.black12,
         child: avatarUrl == null
             ? Icon(Icons.person, color: Colors.black54)
             : null,
       ),
       title: Text(
-        firebaseUser.displayName ?? "",
+        account.displayName,
         style: Theme.of(context).textTheme.headline6,
       ),
-      subtitle: Text(firebaseUser.email ?? ""),
+      subtitle: Text(account.email),
+    );
+  }
+
+  Widget buildTokenTitle(BuildContext context, Account account) {
+    return ListTile(
+      title: Text("OAuth2 token valid until"),
+      subtitle: Text("${account.expirationDate}"),
+      trailing: account.hasRefreshToken
+          ? Icon(Icons.refresh, color: Colors.green)
+          : Icon(Icons.warning, color: Colors.orange),
     );
   }
 
