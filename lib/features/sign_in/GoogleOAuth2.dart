@@ -42,7 +42,8 @@ class GoogleOAuth2 {
   }
 
   Future<Map<String, String>> getAuthHeaders() async {
-    final token = await getLocalToken();
+    if (await getLocalToken() == null) Future.error("No local token");
+    final token = await _oauthHelper.getToken();
     final accessToken = token?.accessToken;
     if (accessToken == null) return Future.error("No access token");
 
