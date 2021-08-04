@@ -1,7 +1,7 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:googleapis/drive/v3.dart';
 import 'package:googleapis/oauth2/v2.dart';
-import 'package:googleapis/sheets/v4.dart';
 import 'package:oauth2_client/access_token_response.dart';
 import 'package:oauth2_client/google_oauth2_client.dart';
 import 'package:oauth2_client/oauth2_client.dart';
@@ -10,16 +10,6 @@ import 'package:oauth2_client/oauth2_helper.dart';
 class GoogleOAuth2 {
   late final OAuth2Client _client;
   late OAuth2Helper _oauthHelper;
-
-  final _minimumScope = <String>[
-    Oauth2Api.userinfoProfileScope,
-  ];
-
-  final _googleSheetScope = <String>[
-    Oauth2Api.userinfoProfileScope,
-    DriveApi.driveReadonlyScope,
-    SheetsApi.spreadsheetsScope
-  ];
 
   GoogleOAuth2({
     required String clientId,
@@ -30,11 +20,24 @@ class GoogleOAuth2 {
       redirectUri: "$packageName:/oauth2redirect",
     );
 
-    _oauthHelper = OAuth2Helper(
-      _client,
-      grantType: OAuth2Helper.AUTHORIZATION_CODE,
-      clientId: clientId,
-      scopes: _minimumScope,
+    _oauthHelper = OAuth2Helper(_client,
+        grantType: OAuth2Helper.AUTHORIZATION_CODE,
+        clientId: clientId,
+        scopes: [],
+        authCodeParams: {
+          "include_granted_scopes": "true",
+        });
+  }
+
+  Future<OAuthCredential> signIn({
+    List<String> scopes = const [],
+  }) async {
+    scopes.add(Oauth2Api.openidScope);
+    _oauthHelper.scopes = scopes;
+    final token = await _oauthHelper.fetchToken();
+    return GoogleAuthProvider.credential(
+      accessToken: token.accessToken,
+      idToken: token.idToken,
     );
   }
 
@@ -49,11 +52,13 @@ class GoogleOAuth2 {
     };
   }
 
-  Future<bool> hasGoogleSheetsPermission() async {
-    final scope = (await getLocalToken())?.scope;
-    if (scope == null) return false;
-    return scope.contains(DriveApi.driveReadonlyScope) &&
-        scope.contains(SheetsApi.spreadsheetsScope);
+  Future<bool> hasScope(List<String> scopes) async {
+    final tokenScope = (await getLocalToken())?.scope;
+    if (tokenScope == null) return false;
+    for (final scope in scopes) {
+      if (!tokenScope.contains(scope)) return false;
+    }
+    return true;
   }
 
   Future<AccessTokenResponse?> getLocalToken() async {
@@ -64,25 +69,19 @@ class GoogleOAuth2 {
   }
 
   Future<List<String>> _getWidestScope(OAuth2Helper helper) async {
-    final tokenWithSheets =
-        await helper.tokenStorage.getToken(_googleSheetScope);
-    return tokenWithSheets != null ? _googleSheetScope : _minimumScope;
-  }
+    final serializedStoredTokens =
+        await helper.tokenStorage.storage.read(helper.tokenStorage.key);
+    if (serializedStoredTokens == null) return [];
+    final Map<String, dynamic> storedTokens =
+        jsonDecode(serializedStoredTokens);
 
-  Future<OAuthCredential> signIn() async {
-    final token = await _oauthHelper.fetchToken();
-    return GoogleAuthProvider.credential(
-      accessToken: token.accessToken,
-      idToken: token.idToken,
-    );
-  }
+    final scopes = storedTokens.values
+        .map((value) => (value['scope'] as List).cast<String>());
+    if (scopes.isEmpty) return [];
 
-  Future<void> requestGoogleSheetPermissions() {
-    _oauthHelper.scopes = _googleSheetScope;
-    _oauthHelper.authCodeParams = {
-      "include_granted_scopes": "true",
-    };
-    return _oauthHelper.fetchToken();
+    final longestScope =
+        scopes.reduce((lhs, rhs) => rhs.length > lhs.length ? rhs : lhs);
+    return longestScope;
   }
 
   Future<void> signOut() async {

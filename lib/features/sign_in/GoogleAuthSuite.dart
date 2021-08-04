@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:googleapis/drive/v3.dart';
+import 'package:googleapis/sheets/v4.dart';
 import 'package:qwallet/logger.dart';
+import 'package:qwallet/utils/IterableFinding.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'AuthSuite.dart';
@@ -31,23 +34,20 @@ class GoogleAuthSuite extends AuthSuite {
   }
 
   @override
-  Future<void> signInWithGoogle() async {
-    logger.info("Requested sign in with Google");
-    final credential = await googleAuth.signIn();
+  Future<void> signInWithGoogle({List<AuthScope> scopes = const []}) async {
+    logger.info("Requested sign in with Google with scopes: $scopes");
+    final credential = await googleAuth.signIn(
+      scopes:
+          scopes.map((scope) => _getGoogleAuthScopes(scope)).flatten().toList(),
+    );
     await firebaseAuth.signInWithCredential(credential);
     _refresh();
   }
 
   @override
-  Stream<bool> hasGoogleSheetsPermission() {
-    return getAccount()
-        .flatMap((_) => googleAuth.hasGoogleSheetsPermission().asStream());
-  }
-
-  @override
-  Future<void> requestGoogleSheetsPermission() async {
-    await googleAuth.requestGoogleSheetPermissions();
-    _refresh();
+  Stream<bool> listenAuthScope(AuthScope scope) {
+    return getAccount().flatMap(
+        (_) => googleAuth.hasScope(_getGoogleAuthScopes(scope)).asStream());
   }
 
   @override
@@ -56,6 +56,16 @@ class GoogleAuthSuite extends AuthSuite {
     await firebaseAuth.signOut();
     await googleAuth.signOut();
     _refresh();
+  }
+
+  List<String> _getGoogleAuthScopes(AuthScope scope) {
+    switch (scope) {
+      case AuthScope.googleSheet:
+        return [
+          DriveApi.driveReadonlyScope,
+          SheetsApi.spreadsheetsScope,
+        ];
+    }
   }
 
   void _refresh() async {

@@ -12,15 +12,17 @@ abstract class AuthSuite {
 
   Stream<Account?> getAccount();
 
+  Future<void> signInWithGoogle({List<AuthScope> scopes});
+
+  Stream<bool> listenAuthScope(AuthScope scope);
+
   Future<Map<String, String>> getAuthHeaders();
 
-  Future<void> signInWithGoogle();
-
   Future<void> signOut();
+}
 
-  Stream<bool> hasGoogleSheetsPermission();
-
-  Future<void> requestGoogleSheetsPermission();
+enum AuthScope {
+  googleSheet,
 }
 
 class Account {

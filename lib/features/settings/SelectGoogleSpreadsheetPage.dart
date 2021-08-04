@@ -7,6 +7,7 @@ import 'package:qwallet/data_source/google_sheets/GoogleAuthClient.dart';
 import 'package:qwallet/data_source/google_sheets/GoogleSpreadsheetWallet.dart';
 import 'package:qwallet/data_source/google_sheets/SheetsApiProvider.dart';
 import 'package:qwallet/data_source/google_sheets/SpreadsheetWallet.dart';
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/DetailsItemTile.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
@@ -44,7 +45,7 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
     required WidgetBuilder onGainPermission,
   }) {
     return SimpleStreamWidget(
-      stream: SharedProviders.authSuite.hasGoogleSheetsPermission(),
+      stream: SharedProviders.authSuite.listenAuthScope(AuthScope.googleSheet),
       builder: (context, bool hasPermission) {
         if (hasPermission) {
           return onGainPermission(context);
@@ -62,7 +63,9 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
         child: PrimaryButton(
           child: Text("Allow to Google Sheets"),
           onPressed: () {
-            SharedProviders.authSuite.requestGoogleSheetsPermission();
+            SharedProviders.authSuite.signInWithGoogle(scopes: [
+              AuthScope.googleSheet,
+            ]);
           },
         ),
       ),

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 import 'package:qwallet/logger.dart';
 import 'package:qwallet/widget/PrimaryButton.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -125,7 +126,11 @@ class _SignInPageState extends State<SignInPage> {
   _singInWithGoogle(BuildContext context) async {
     setState(() => isLoginInProgress = true);
     try {
-      await SharedProviders.authSuite.signInWithGoogle();
+      final needsGoogleSheet =
+          (await LocalPreferences.walletsSpreadsheetIds.first).isNotEmpty;
+      await SharedProviders.authSuite.signInWithGoogle(scopes: [
+        if (needsGoogleSheet) AuthScope.googleSheet,
+      ]);
     } catch (e, stackTrace) {
       if (e is PlatformException && e.code == "CANCELED") return;
       logger.error(
