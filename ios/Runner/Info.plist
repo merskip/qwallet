@@ -28,7 +28,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.207455736812-g1cmlf3n67714t062pb889vpadqlbavt</string>
-				 <string>pl.merskip.wallet</string>
+				<string>pl.merskip.wallet</string>
 			</array>
 		</dict>
 	</array>

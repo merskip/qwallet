@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -75,7 +76,8 @@ void main() async {
         firebaseAuth: FirebaseAuth.instance,
         googleAuth: GoogleOAuth2(
           clientId:
-              "207455736812-iivopmrkc4trb5pqpg5h5m10rjbcgiee.apps.googleusercontent.com",
+              Platform.isAndroid ? "207455736812-iivopmrkc4trb5pqpg5h5m10rjbcgiee.apps.googleusercontent.com" :
+          "207455736812-g1cmlf3n67714t062pb889vpadqlbavt.apps.googleusercontent.com",
           packageName: (await PackageInfo.fromPlatform()).packageName,
         ),
       );
