@@ -31,8 +31,7 @@ class GoogleOAuth2 {
         "include_granted_scopes": "true",
       },
       afterAuthorizationCodeCb: (AuthorizationResponse response) {
-        logger.info("Received new authorization code: "
-            "code=${response.code}, state=${response.state}");
+        logger.info("Received new authorization code");
       },
     );
   }
