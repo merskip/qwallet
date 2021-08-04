@@ -87,6 +87,7 @@ class GoogleOAuth2 {
   Future<void> signOut() async {
     await _oauthHelper.disconnect();
     await _oauthHelper.removeAllTokens();
+    _oauthHelper.scopes = [];
   }
 }
 

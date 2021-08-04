@@ -17,6 +17,7 @@ class AccountDialog extends StatelessWidget {
       builder: (context, Account account) => SimpleDialog(
         children: [
           buildAccountTile(context, account),
+          buildTokenTitle(context, account),
           Divider(),
           buildSignOut(context),
         ],
@@ -40,6 +41,16 @@ class AccountDialog extends StatelessWidget {
         style: Theme.of(context).textTheme.headline6,
       ),
       subtitle: Text(account.email),
+    );
+  }
+
+  Widget buildTokenTitle(BuildContext context, Account account) {
+    return ListTile(
+      title: Text("OAuth2 token valid until"),
+      subtitle: Text("${account.expirationDate}"),
+      trailing: account.hasRefreshToken
+          ? Icon(Icons.refresh, color: Colors.green)
+          : Icon(Icons.warning, color: Colors.orange),
     );
   }
 

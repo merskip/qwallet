@@ -37,6 +37,10 @@ class Account {
 
   String? get avatarUrl => firebaseUser.photoURL;
 
+  DateTime? get expirationDate => oauth2Token.expirationDate;
+
+  bool get hasRefreshToken => oauth2Token.hasRefreshToken();
+
   Account({
     required this.firebaseUser,
     required this.oauth2Token,
