@@ -23,7 +23,7 @@ class FirebasePrivateLoansProvider implements PrivateLoansProvider {
 
   @override
   Stream<List<PrivateLoan>> getPrivateLoans({bool includeFullyRepaid = false}) {
-    return authSuite.getFirebaseUser().flatMap((user) {
+    return authSuite.getLastAccount().flatMap((account) {
       final getSnapshots =
           (CloudFirestore.Query filter(CloudFirestore.Query query)) {
         CloudFirestore.Query query = firestore.collection("privateLoans");
@@ -36,8 +36,8 @@ class FirebasePrivateLoansProvider implements PrivateLoansProvider {
       };
 
       return CombineLatestStream.combine3(
-        getSnapshots((q) => q.where("lenderUid", isEqualTo: user.uid)),
-        getSnapshots((q) => q.where("borrowerUid", isEqualTo: user.uid)),
+        getSnapshots((q) => q.where("lenderUid", isEqualTo: account.uid)),
+        getSnapshots((q) => q.where("borrowerUid", isEqualTo: account.uid)),
         usersProvider.getUsers().asStream(),
         (
           CloudFirestore.QuerySnapshot loansAsLender,

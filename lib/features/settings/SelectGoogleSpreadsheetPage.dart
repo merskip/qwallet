@@ -44,7 +44,7 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
     required WidgetBuilder onGainPermission,
   }) {
     return SimpleStreamWidget(
-      stream: SharedProviders.accountProvider.hasGoogleSheetsPermission(),
+      stream: SharedProviders.authSuite.hasGoogleSheetsPermission(),
       builder: (context, bool hasPermission) {
         if (hasPermission) {
           return onGainPermission(context);
@@ -62,7 +62,7 @@ class SelectGoogleSpreadsheetPage extends StatelessWidget {
         child: PrimaryButton(
           child: Text("Allow to Google Sheets"),
           onPressed: () {
-            SharedProviders.accountProvider.requestGoogleSheetsPermission();
+            SharedProviders.authSuite.requestGoogleSheetsPermission();
           },
         ),
       ),

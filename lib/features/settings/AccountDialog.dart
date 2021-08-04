@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
-import 'package:qwallet/data_source/Account.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
-import 'package:qwallet/features/sign_in/GoogleAuthSuite.dart';
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 class AccountDialog extends StatelessWidget {
@@ -14,7 +13,7 @@ class AccountDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SimpleStreamWidget(
-      stream: GoogleAuthSuite.instance.getAccount(),
+      stream: SharedProviders.authSuite.getLastAccount(),
       builder: (context, Account account) => SimpleDialog(
         children: [
           buildAccountTile(context, account),
@@ -26,22 +25,21 @@ class AccountDialog extends StatelessWidget {
   }
 
   Widget buildAccountTile(BuildContext context, Account account) {
-    final avatarUrl = account.getAvatarUrl();
-    final firebaseUser = account.firebaseUser;
-    if (firebaseUser == null) return Container();
+    final avatarUrl = account.avatarUrl;
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+        backgroundImage:
+            account.avatarUrl != null ? NetworkImage(account.avatarUrl!) : null,
         backgroundColor: Colors.black12,
         child: avatarUrl == null
             ? Icon(Icons.person, color: Colors.black54)
             : null,
       ),
       title: Text(
-        firebaseUser.displayName ?? "",
+        account.displayName,
         style: Theme.of(context).textTheme.headline6,
       ),
-      subtitle: Text(firebaseUser.email ?? ""),
+      subtitle: Text(account.email),
     );
   }
 

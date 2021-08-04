@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/LocalPreferences.dart';
-import 'package:qwallet/data_source/Account.dart';
 import 'package:qwallet/data_source/RemoteUserPreferences.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/features/settings/SelectGoogleSpreadsheetPage.dart';
+import 'package:qwallet/features/sign_in/AuthSuite.dart';
 import 'package:qwallet/utils.dart';
 import 'package:qwallet/widget/MarkdownPage.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
@@ -130,23 +130,23 @@ class SettingsPage extends StatelessWidget {
 
   Widget buildAccountLoadingTile(BuildContext context) {
     return SimpleStreamWidget(
-      stream: SharedProviders.accountProvider.getAccount(),
+      stream: SharedProviders.authSuite.getLastAccount(),
       builder: (context, Account account) => buildAccountTile(context, account),
     );
   }
 
   Widget buildAccountTile(BuildContext context, Account account) {
-    final avatarUrl = account.getAvatarUrl();
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+        backgroundImage:
+            account.avatarUrl != null ? NetworkImage(account.avatarUrl!) : null,
         backgroundColor: Colors.black12,
-        child: avatarUrl == null
+        child: account.avatarUrl == null
             ? Icon(Icons.person, color: Colors.black54)
             : null,
       ),
-      title: Text(account.getCommonName(context)),
-      subtitle: Text(account.getCommonSubtitle(context)),
+      title: Text(account.displayName),
+      subtitle: Text(account.email),
       onTap: () {
         showDialog(
           context: context,

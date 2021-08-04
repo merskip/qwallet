@@ -18,10 +18,10 @@ class FirebaseRemoteUserPreferencesProvider
 
   @override
   Stream<RemoteUserPreferences> getUserPreferences() {
-    return authSuite.getFirebaseUser().flatMap((user) {
+    return authSuite.getLastAccount().flatMap((account) {
       return firestore
           .collection("usersPreferences")
-          .doc(user.uid)
+          .doc(account.uid)
           .snapshots()
           .map((snapshot) => RemoteUserPreferences(
                 isGoogleSheetsWalletEnabled:

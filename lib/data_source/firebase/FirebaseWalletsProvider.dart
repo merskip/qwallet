@@ -26,10 +26,10 @@ class FirebaseWalletsProvider implements WalletsProvider {
 
   @override
   Stream<List<FirebaseWallet>> getWallets() {
-    return authSuite.getFirebaseUser().flatMap((user) {
+    return authSuite.getLastAccount().flatMap((account) {
       return firestore
           .collection("wallets")
-          .where("ownersUid", arrayContains: user.uid)
+          .where("ownersUid", arrayContains: account.uid)
           .snapshots()
           .switchMap(
             (walletsSnapshot) => _parseWalletsSnapshot(walletsSnapshot),

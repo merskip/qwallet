@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:googleapis/drive/v2.dart';
 import 'package:googleapis/oauth2/v2.dart';
-import 'package:googleapis/sheets/v4.dart';
 import 'package:oauth2_client/access_token_response.dart';
 import 'package:oauth2_client/google_oauth2_client.dart';
 import 'package:oauth2_client/oauth2_client.dart';
@@ -26,15 +24,14 @@ class GoogleOAuth2 {
       clientId: clientId,
       scopes: [
         Oauth2Api.userinfoProfileScope,
-        DriveApi.driveReadonlyScope,
-        SheetsApi.spreadsheetsScope
       ],
     );
   }
 
-  Future<bool> isSignIn() async {
+  Future<AccessTokenResponse?> getLocalToken() async {
     final token = await _oauthHelper.getTokenFromStorage();
-    return token?.isValid() ?? false;
+    if (token == null) return null;
+    return token.isValid() ? token : null;
   }
 
   Future<Map<String, String>> getAuthHeaders() async {
