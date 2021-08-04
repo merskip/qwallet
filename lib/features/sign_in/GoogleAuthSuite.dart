@@ -40,14 +40,14 @@ class GoogleAuthSuite extends AuthSuite {
 
   @override
   Stream<bool> hasGoogleSheetsPermission() {
-    // TODO: implement hasGoogleSheetsPermission
-    throw UnimplementedError();
+    return getAccount()
+        .flatMap((_) => googleAuth.hasGoogleSheetsPermission().asStream());
   }
 
   @override
-  Future<void> requestGoogleSheetsPermission() {
-    // TODO: implement requestGoogleSheetsPermission
-    throw UnimplementedError();
+  Future<void> requestGoogleSheetsPermission() async {
+    await googleAuth.requestGoogleSheetPermissions();
+    _refresh();
   }
 
   @override
@@ -60,18 +60,19 @@ class GoogleAuthSuite extends AuthSuite {
 
   void _refresh() async {
     final firebaseUser = firebaseAuth.currentUser;
-    final oauth2Token = await googleAuth.getLocalToken();
+    final token = await googleAuth.getLocalToken();
     logger.verbose("Refreshing account:\n"
-        " - firebaseAuth.currentUser = ${firebaseUser != null ? "<has value>" : "<null>"}\n"
-        " - googleAuth.getLocalToken() = ${oauth2Token != null ? "<has value>" : "<null>"}");
-    if ((firebaseUser == null) != (oauth2Token == null))
+        " - firebase user: ${firebaseUser != null ? "<has value>" : "<null>"}\n"
+        " - OAuth2 token: ${token != null ? "<has value>" : "<null>"}");
+    if ((firebaseUser == null) != (token == null))
       logger.warning(
           "Occurred inconsistent state of Firebase Auth and Google OAuth2 token");
 
-    if (firebaseUser != null && oauth2Token != null) {
+    if (firebaseUser != null && token != null) {
+      logger.verbose("OAuth2 token scopes: ${token.scope}");
       _accountSubject.add(Account(
         firebaseUser: firebaseUser,
-        oauth2Token: oauth2Token,
+        oauth2Token: token,
       ));
     } else {
       _accountSubject.add(null);
