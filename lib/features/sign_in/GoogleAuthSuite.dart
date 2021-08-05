@@ -19,7 +19,7 @@ class GoogleAuthSuite extends AuthSuite {
     required this.googleAuth,
   }) {
     _accountSubject = BehaviorSubject(
-      onListen: () => _refresh(),
+      onListen: () => refresh(),
     );
   }
 
@@ -41,7 +41,7 @@ class GoogleAuthSuite extends AuthSuite {
           scopes.map((scope) => _getGoogleAuthScopes(scope)).flatten().toList(),
     );
     await firebaseAuth.signInWithCredential(credential);
-    _refresh();
+    await refresh();
   }
 
   @override
@@ -55,7 +55,7 @@ class GoogleAuthSuite extends AuthSuite {
     logger.info("Requested sign out");
     await firebaseAuth.signOut();
     await googleAuth.signOut();
-    _refresh();
+    await refresh();
   }
 
   List<String> _getGoogleAuthScopes(AuthScope scope) {
@@ -68,7 +68,8 @@ class GoogleAuthSuite extends AuthSuite {
     }
   }
 
-  void _refresh() async {
+  @override
+  Future<void> refresh() async {
     final firebaseUser = firebaseAuth.currentUser;
     final token = await googleAuth.getLocalToken();
     logger.verbose("Refreshing account:\n"

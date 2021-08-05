@@ -147,7 +147,8 @@ class SettingsPage extends StatelessWidget {
       ),
       title: Text(account.displayName),
       subtitle: Text(account.email),
-      onTap: () {
+      onTap: () async {
+        await SharedProviders.authSuite.refresh();
         showDialog(
           context: context,
           builder: (context) => AccountDialog(),

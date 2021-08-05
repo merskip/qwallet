@@ -19,6 +19,8 @@ abstract class AuthSuite {
   Future<Map<String, String>> getAuthHeaders();
 
   Future<void> signOut();
+
+  Future<void> refresh();
 }
 
 enum AuthScope {
