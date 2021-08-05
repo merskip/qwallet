@@ -197,6 +197,12 @@ class _TransactionPageState extends State<TransactionPage> {
             onTap: () => onSelectedAttachedFilesTakePhoto(context),
           ),
           ListTile(
+            leading: Icon(Icons.photo),
+            title: Text(
+                AppLocalizations.of(context).attachedFileSelectFromGallery),
+            onTap: () => onSelectedAttachedFilesSelectFromGallery(context),
+          ),
+          ListTile(
             leading: Icon(Icons.attach_file),
             title: Text(AppLocalizations.of(context).attachedFileSelectFiles),
             onTap: () => onSelectedAttachedFileSelectFile(context),
@@ -214,6 +220,22 @@ class _TransactionPageState extends State<TransactionPage> {
     ) as LocalUniversalFile?;
     if (photoFile != null) {
       _addAttachFiles([photoFile]);
+    }
+  }
+
+  void onSelectedAttachedFilesSelectFromGallery(BuildContext context) async {
+    Navigator.of(context).pop();
+
+    final result = await FilePicker.platform
+        .pickFiles(type: FileType.image, allowMultiple: true);
+    if (result != null) {
+      final files = result.paths
+          .filterNonNull()
+          .map((p) => LocalUniversalFile(File(p)))
+          .toList();
+      setState(() {
+        _addAttachFiles(files);
+      });
     }
   }
 

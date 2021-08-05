@@ -1508,6 +1508,11 @@ extension AttachedFilesLocalizations on AppLocalizations {
         pl: "Zrób zdjęcie",
       );
 
+  String get attachedFileSelectFromGallery => _locale(
+        en: "Select from gallery",
+        pl: "Wybierz z galerii",
+      );
+
   String get attachedFileSelectFiles => _locale(
         en: "Select files",
         pl: "Wybierz pliki",

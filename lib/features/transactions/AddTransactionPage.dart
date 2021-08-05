@@ -227,6 +227,12 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
             onTap: () => onSelectedAttachedFilesTakePhoto(context),
           ),
           ListTile(
+            leading: Icon(Icons.photo),
+            title: Text(
+                AppLocalizations.of(context).attachedFileSelectFromGallery),
+            onTap: () => onSelectedAttachedFilesSelectFromGallery(context),
+          ),
+          ListTile(
             leading: Icon(Icons.attach_file),
             title: Text(AppLocalizations.of(context).attachedFileSelectFiles),
             onTap: () => onSelectedAttachedFileSelectFile(context),
@@ -245,6 +251,22 @@ class _AddTransactionFormState extends State<_AddTransactionForm> {
     if (photoFile != null) {
       setState(() {
         attachedFiles.add(photoFile);
+      });
+    }
+  }
+
+  void onSelectedAttachedFilesSelectFromGallery(BuildContext context) async {
+    Navigator.of(context).pop();
+
+    final result = await FilePicker.platform
+        .pickFiles(type: FileType.image, allowMultiple: true);
+    if (result != null) {
+      final files = result.paths
+          .filterNonNull()
+          .map((p) => LocalUniversalFile(File(p)))
+          .toList();
+      setState(() {
+        attachedFiles.addAll(files);
       });
     }
   }
