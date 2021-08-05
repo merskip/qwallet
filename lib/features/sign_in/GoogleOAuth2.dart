@@ -3,11 +3,9 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:googleapis/oauth2/v2.dart';
 import 'package:oauth2_client/access_token_response.dart';
-import 'package:oauth2_client/authorization_response.dart';
 import 'package:oauth2_client/google_oauth2_client.dart';
 import 'package:oauth2_client/oauth2_client.dart';
 import 'package:oauth2_client/oauth2_helper.dart';
-import 'package:qwallet/logger.dart';
 
 class GoogleOAuth2 {
   late final OAuth2Client _client;
@@ -29,9 +27,6 @@ class GoogleOAuth2 {
       scopes: [],
       authCodeParams: {
         "include_granted_scopes": "true",
-      },
-      afterAuthorizationCodeCb: (AuthorizationResponse response) {
-        logger.info("Received new authorization code");
       },
     );
   }

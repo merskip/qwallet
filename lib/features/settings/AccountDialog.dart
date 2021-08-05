@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qwallet/AppLocalizations.dart';
 import 'package:qwallet/data_source/common/SharedProviders.dart';
 import 'package:qwallet/features/sign_in/AuthSuite.dart';
+import 'package:qwallet/utils/IterableFinding.dart';
 import 'package:qwallet/widget/SimpleStreamWidget.dart';
 
 class AccountDialog extends StatelessWidget {
@@ -17,7 +18,7 @@ class AccountDialog extends StatelessWidget {
       builder: (context, Account account) => SimpleDialog(
         children: [
           buildAccountTile(context, account),
-          buildTokenTitle(context, account),
+          ...buildDetails(context, account),
           Divider(),
           buildSignOut(context),
         ],
@@ -44,14 +45,34 @@ class AccountDialog extends StatelessWidget {
     );
   }
 
-  Widget buildTokenTitle(BuildContext context, Account account) {
-    return ListTile(
-      title: Text("OAuth2 token valid until"),
-      subtitle: Text("${account.expirationDate}"),
-      trailing: account.hasRefreshToken
-          ? Icon(Icons.refresh, color: Colors.green)
-          : Icon(Icons.warning, color: Colors.orange),
-    );
+  List<Widget> buildDetails(BuildContext context, Account account) {
+    final details = getAccountDetails(context, account);
+    return [
+      ...details.map((entry) => ListTile(
+            title: Text(entry.key),
+            subtitle: Text(entry.value),
+          ))
+    ];
+  }
+
+  List<MapEntry<String, String>> getAccountDetails(
+      BuildContext context, Account account) {
+    return [
+      MapEntry("Firebase UID", account.firebaseUser.uid),
+      MapEntry("Account created",
+          "${account.firebaseUser.metadata.creationTime?.toLocal()}"),
+      MapEntry("Last sign in",
+          "${account.firebaseUser.metadata.lastSignInTime?.toLocal()}"),
+      ...account.firebaseUser.providerData
+          .map((userInfo) => <MapEntry<String, String>>[
+                MapEntry(
+                    "Provider",
+                    "ID: ${userInfo.providerId}\n"
+                        "UID: ${userInfo.uid}"),
+              ])
+          .flatten(),
+      MapEntry("Token expiration time", "${account.expirationDate?.toLocal()}"),
+    ];
   }
 
   Widget buildSignOut(BuildContext context) {
